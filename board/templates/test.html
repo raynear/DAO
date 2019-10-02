@@ -1,0 +1,55 @@
+{% load socialaccount %}
+<body>
+ 
+    <h1>hello world</h1>
+    {% if user.is_authenticated %}
+    <span>{{ user }}님이 로그인중입니다.</span>
+ 
+    {% for account in user.socialaccount_set.all %}
+
+ <h2>nickname {{ account.extra_data.properties.nickname }}</h2>
+ <img src="{{ account.extra_data.properties.profile_image }}"/>
+ <img src="{{ account.extra_data.properties.thumbnail_image }}"/>
+ <h2>Kakao_account</h2>
+ <h2>{{ account.extra_data.kakao_account.profile.nickname }}</h2>
+ <img src="{{ account.extra_data.kakao_account.profile.thumbnail_image_url }}"/>
+ <img src="{{ account.extra_data.kakao_account.profile.profile_image_url }}"/>
+ <h2>{{ account.extra_data.kakao_account.has_email }}</h2>
+ <h2>{{ account.extra_data.kakao_account.email_needs_agreement }}</h2>
+ <h2>{{ account.extra_data.kakao_account.is_email_valid }}</h2>
+ <h2>{{ account.extra_data.kakao_account.is_email_verified }}</h2>
+ <h2>{{ account.extra_data.kakao_account.email }}</h2>
+ <h2>{{ account.extra_data.kakao_account.has_age_range }}</h2>
+ <h2>{{ account.extra_data.kakao_account.age_range_needs_agreement }}</h2>
+ <h2>{{ account.extra_data.kakao_account.age_range }}</h2>
+ <h2>{{ account.extra_data.kakao_account.has_gender }}</h2>
+ <h2>{{ account.extra_data.kakao_account.gender_needs_agreement }}</h2>
+ <h2>{{ account.extra_data.kakao_account.gender }}</h2>
+
+
+ 
+     {% comment %} show avatar from url {% endcomment %}
+     <h2 style="text-transform:capitalize;">{{ account.provider }} account data</h2>
+ 
+     <p><img width="50" height="50" src="{{ account.get_avatar_url }}"/></p>
+ 
+     <p>UID: <a href="{{ account.extra_data.link }}">{{ account.uid }}</a></p>
+ 
+     <p>Username: {{ account.extra_data.username }}</p>
+      <p>First Name: {{ account.extra_data.first_name }}</p>
+      <p>Last Name: {{ account.extra_data.last_name }}</p>
+ 
+      <p>Dashboard Link:
+      <a href="{{ account.extra_data.link }}">{{ account.extra_data.link }}</a></p>
+      {% empty %}
+      <p>you haven't any social account please</p>
+
+    {% endfor %}
+ 
+ 
+    {% endif %}
+    <h2><a href="/accounts/login">로그인</a></h2>
+    <h2><a href="{% provider_login_url 'kakao' method='oauth2' %}">카카오 로그인</a></h2>
+    <h2><a href="/accounts/logout">로그아웃</a></h2>
+    <h2><a href="/accounts/signup">회원가입</a></h2>
+</body>
