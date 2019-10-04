@@ -11,35 +11,32 @@ class BoardModel(models.Model):
         return self.name
 
 
-class ArticleModel(models.Model):
+class ProposalModel(models.Model):
     board = models.ForeignKey(BoardModel, on_delete=models.CASCADE)
     subject = models.CharField(max_length=50, blank=True)
-#    name = models.ForeignKey(UserModel)
+    txHash = models.CharField(max_length=300, blank=True)
     contents = models.TextField(default="")
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
-    view_cnt = models.IntegerField(null=True, blank=False, default=0)
+    expire_at = models.DateTimeField()
 
     def __str__(self):
         return self.subject
 
 
-class CommentModel(models.Model):
-    article = models.ForeignKey(ArticleModel, on_delete=models.CASCADE)
-    comment = models.CharField(max_length=300, blank=False)
+class SelectItemModel(models.Model):
+    proposal = models.ForeignKey(ProposalModel, on_delete=models.CASCADE)
+    contents = models.TextField(default="")
+
+    def __str__(self):
+        return self.contents
+
+
+class VoteModel(models.Model):
+    select = models.ForeignKey(SelectItemModel, on_delete=models.CASCADE)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
+    txHash = models.CharField(max_length=300, blank=False)
 
     def __str__(self):
-        return self.comment
-
-
-class ThumbModel(models.Model):
-    article = models.ForeignKey(ArticleModel, on_delete=models.CASCADE)
-    comment = models.ForeignKey(CommentModel, on_delete=models.CASCADE)
-    create_date = models.DateTimeField(auto_now_add=True)
-    up = models.IntegerField(null=False, blank=True)
-    down = models.IntegerField(null=False, blank=True)
-
-    def __str__(self):
-        return str(self.up)
+        return self.txHash

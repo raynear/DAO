@@ -1,7 +1,7 @@
 import graphene
 
 from graphene_django.types import DjangoObjectType
-from .models import BoardModel, ArticleModel, CommentModel, ThumbModel
+from .models import BoardModel, ProposalModel, SelectItemModel, VoteModel
 
 
 class BoardModelType(DjangoObjectType):
@@ -9,35 +9,35 @@ class BoardModelType(DjangoObjectType):
         model = BoardModel
 
 
-class ArticleModelType(DjangoObjectType):
+class ProposalModelType(DjangoObjectType):
     class Meta:
-        model = ArticleModel
+        model = ProposalModel
 
 
-class CommentModelType(DjangoObjectType):
+class SelectItemModelType(DjangoObjectType):
     class Meta:
-        model = CommentModel
+        model = SelectItemModel
 
 
-class ThumbModelType(DjangoObjectType):
+class VoteModelType(DjangoObjectType):
     class Meta:
-        model = ThumbModel
+        model = VoteModel
 
 
 class Query(object):
     all_board = graphene.List(BoardModelType)
-    all_article = graphene.List(ArticleModelType)
-    all_comment = graphene.List(CommentModelType)
-    all_thumb = graphene.List(ThumbModelType)
+    all_proposal = graphene.List(ProposalModelType)
+    all_selectitem = graphene.List(SelectItemModelType)
+    all_vote = graphene.List(VoteModelType)
 
     def resolve_all_board(self, info, **kwargs):
         return BoardModel.objects.all()
 
-    def resolve_all_article(self, info, **kwargs):
-        return ArticleModel.objects.select_related('board').all()
+    def resolve_all_proposal(self, info, **kwargs):
+        return ProposalModel.objects.select_related('board').all()
 
-    def resolve_all_comment(self, info, **kwargs):
-        return CommentModel.objects.select_related('article').all()
+    def resolve_all_selectitem(self, info, **kwargs):
+        return SelectItemModel.objects.select_related('proposal').all()
 
-    def resolve_all_thumb(self, info, **kwargs):
-        return ThumbModel.objects.select_related('article').all()
+    def resolve_all_vote(self, info, **kwargs):
+        return VoteModel.objects.select_related('selectitem').all()
