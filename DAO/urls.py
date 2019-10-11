@@ -22,9 +22,9 @@ from . import views
 from .schema import schema
 
 urlpatterns = [
+    path('oauth/', include('social_django.urls')),
     path(r'admin/', admin.site.urls),
     path(r'board/', include('board.urls')),
-    path(r'accounts/', include('allauth.urls')),
     path(r'graphql/', GraphQLView.as_view(graphiql=True, schema=schema)),
     path(r'csrf/', views.csrf)
 ]

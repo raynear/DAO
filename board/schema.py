@@ -41,3 +41,7 @@ class Query(object):
 
     def resolve_all_vote(self, info, **kwargs):
         return VoteModel.objects.select_related('selectitem').all()
+
+
+class Mutation(object):
+    all_board = graphene.List(BoardModelType)

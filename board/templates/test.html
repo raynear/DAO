@@ -1,9 +1,9 @@
-{% load socialaccount %}
 <body>
  
     <h1>hello world</h1>
     {% if user.is_authenticated %}
     <span>{{ user }}님이 로그인중입니다.</span>
+    <span>{{ user.extra_data.kakao_account.email }}A</span>
  
     {% for account in user.socialaccount_set.all %}
 
@@ -48,8 +48,6 @@
  
  
     {% endif %}
-    <h2><a href="/accounts/login">로그인</a></h2>
-    <h2><a href="{% provider_login_url 'kakao' method='oauth2' %}">카카오 로그인</a></h2>
-    <h2><a href="/accounts/logout">로그아웃</a></h2>
-    <h2><a href="/accounts/signup">회원가입</a></h2>
+
+    <h2><a href="{% url 'social:begin' 'kakao'%}">Kakao</a></h2>
 </body>
