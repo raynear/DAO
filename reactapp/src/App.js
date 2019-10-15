@@ -5,6 +5,7 @@ import { ApolloProvider } from "react-apollo";
 
 //import Continents from './Continents';
 import Proposals from './Proposals';
+import ProposalForm from './NewProposal';
 
 import './App.css';
 
@@ -82,6 +83,7 @@ const App = () => {
             }}
           >
             <Proposals />
+            <ProposalForm />
           </Content>
         </Layout>
       </Layout>

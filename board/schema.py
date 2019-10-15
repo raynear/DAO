@@ -43,5 +43,50 @@ class Query(object):
         return VoteModel.objects.select_related('selectitem').all()
 
 
-class Mutation(object):
-    all_board = graphene.List(BoardModelType)
+class NewProposal(graphene.Mutation):
+    class Arguments:
+        subject = graphene.String()
+        contents = graphene.String(required=True)
+        boardID = graphene.String()
+        expire_at = graphene.DateTime()
+        #proposal_data = ProposalInput(required=True)
+
+    #proposal = graphene.Field(ProposalModel)
+    proposal = graphene.Field(ProposalModelType)
+
+    def mutate(self, info, subject, contents, boardID, expire_at):
+        #        proposal = ProposalModel(
+        #            subject=proposal_data.subject,
+        #            contents=proposal_data.contents
+        #        )
+        #proposal = ProposalModel(subject=subject, contents=contents, pk=id)
+        selectedBoard = BoardModel.objects.get(id=boardID)
+        proposal = ProposalModel.objects.create(
+            subject=subject,
+            contents=contents,
+            board=selectedBoard,
+            expire_at=expire_at)
+        proposal.save()
+        return NewProposal(proposal=proposal)
+
+
+class NewSelectItem(graphene.Mutation):
+    class Arguments:
+        proposalID = graphene.String()
+        contents = graphene.String(required=True)
+
+    selectItem = graphene.Field(SelectItemModelType)
+
+    def mutate(self, info, proposalID, contents):
+        selectedProposal = ProposalModel.objects.get(id=proposalID)
+        selectItem = SelectItemModel.objects.create(
+            proposal=selectedProposal,
+            contents=contents)
+        selectItem.save()
+        return NewSelectItem(selectItem=selectItem)
+
+
+class MyMutation(graphene.ObjectType):
+    new_proposal = NewProposal.Field()
+    new_selectItem = NewSelectItem.Field()
+#    all_board = graphene.List(BoardModelType)

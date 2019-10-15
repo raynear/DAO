@@ -20,7 +20,7 @@ function Proposals() {
   if (loading) return (<p>Loading...</p>);
   if (error) return (<p>Error!:{error}</p>);
   return (
-    <Fragment>
+    <div>
       {data.allProposal.map(({ id, subject, contents, selectitemmodelSet }) => (
         <div key={id}>
           <h3>{subject}</h3>
@@ -28,13 +28,13 @@ function Proposals() {
           <form>
             {selectitemmodelSet.map(({ id, contents }) => (
               <Fragment>
-                <input type="radio" name="test" value={contents} /> {contents}<br />
+                <input key={id} type="radio" name="test" value={contents} /> {contents}<br />
               </Fragment>
             ))}
           </form>
         </div>
       ))}
-    </Fragment>
+    </div>
   );
 }
 
