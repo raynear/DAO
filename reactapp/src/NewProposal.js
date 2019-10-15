@@ -1,27 +1,12 @@
 import React, { useState, useEffect } from 'react';
 //import { Fragment } from 'react';
-//import gql from 'graphql-tag';
-//import { useQuery } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Form, Input, Button/*, Tooltip, Icon, Select, Row, Col*/ } from 'antd';
 const { TextArea } = Input;
-/*
 const SET_PROPOSAL = gql`
-  mutation {
-  }
-`;
-*/
-
-/*
-mutation {
-  newSelectitem(proposalID: "5", contents: "44444444444") {
-    selectItem {
-      id
-    }
-  }
-}
-
-mutation {
-  newProposal(subject:"새로운 Proposal", contents:"이것이야말로 새로운 프로포절을 보내는 테스트이다", boardID:"1", expireAt:"2019-10-20T01:54:56+00:00"){
+mutation NewProposal($subject:String!, $contents:String!, $boardID:String!, $expired_at:String!){
+  newProposal(subject:$subject, contents:$contents, boardID:$boardID, expired_at:$expired_at){
     proposal{
       id
       subject
@@ -29,10 +14,22 @@ mutation {
     }
   }
 }
-*/
+`;
+
+const SET_SELECTITEM = gql`
+mutation NewSelectitem($proposalID:String!, $contents:String!){
+  newSelectitem(proposalID: $proposalID, contents: $contents) {
+    selectItem {
+      id
+    }
+  }
+}
+`;
 
 function ProposalForm() {
   const [selectItems, setSelectItems] = useState([{ id: 0, value: "" }, { id: 1, value: "" }]);
+
+  const [addProposal] = useMutation(SET_PROPOSAL);
 
   const addSelectItem = () => {
     setSelectItems([
@@ -53,13 +50,17 @@ function ProposalForm() {
     setSelectItems(selectItems);
   }
 
+  function submitProposal() {
+    addProposal({ variables: { $subject: "test", $contents: "contents test" } });
+  }
+
   return (
     <Form>
       <Form.Item label="Subject">
         <Input />
       </Form.Item>
       <TextArea label="contents" placeholder="Proposal Contents" />
-      <Button type="primary" block onClick={addSelectItem}>Add new select item</Button>
+      <Button type="secondary" block onClick={addSelectItem}>Add new select item</Button>
       {
         selectItems.map((item) => {
           //let selectLabel = "" + item.id;
@@ -70,6 +71,7 @@ function ProposalForm() {
           )
         })
       }
+      <Button type="primary" block onClick={submitProposal}>Submit</Button>
     </Form>
   );
 }
