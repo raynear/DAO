@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React/*, { useState }*/ from 'react';
 
 import ApolloClient from 'apollo-boost';
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -8,7 +8,7 @@ import Cookies from 'js-cookie';
 
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles'
-import { CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, Link, ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
+import { CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
 import { Menu, Notifications, ChevronLeft, Dashboard, ShoppingCart } from '@material-ui/icons';
 
 import Proposals from './Proposals';
@@ -93,7 +93,7 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
   },
   fixedHeight: {
-    height: 240,
+    height: 600,
   },
 }));
 
@@ -124,15 +124,63 @@ const client = new ApolloClient({
 //  cache: new InMemoryCache()
 //});
 
+interface propType {
+  type: string;
+}
+
+/*function MainContents(props: propType) {
+  const classes = useStyles();
+  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+  if (props.type === "ProposalList") {
+    return (
+      <Proposals />
+    )
+  }
+  if (props.type === "NewProposal") {
+    return (
+      <ProposalForm />
+    )
+  }
+  if (props.type === "Dashboard") {
+    return (
+      <Container maxWidth="lg" className={classes.container}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={8} lg={9}>
+            <Paper className={fixedHeightPaper}>
+              <Proposals />
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={4} lg={3}>
+            <Paper className={fixedHeightPaper}>
+              <ProposalForm />
+            </Paper>
+          </Grid>
+          <Grid item xs={12}>
+            <Paper className={classes.paper}>
+              ORDERS
+                </Paper>
+          </Grid>
+        </Grid>
+      </Container>
+    )
+  }
+}
+*/
 const App = () => {
   const classes = useStyles();
+
+  const [page, setPage] = React.useState("1");
+
   const [open, setOpen] = React.useState(true);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   return (
@@ -190,19 +238,16 @@ const App = () => {
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
             <Grid container spacing={3}>
-              {/* Chart */}
               <Grid item xs={12} md={8} lg={9}>
                 <Paper className={fixedHeightPaper}>
                   <Proposals />
                 </Paper>
               </Grid>
-              {/* Recent Deposits */}
               <Grid item xs={12} md={4} lg={3}>
                 <Paper className={fixedHeightPaper}>
                   <ProposalForm />
                 </Paper>
               </Grid>
-              {/* Recent Orders */}
               <Grid item xs={12}>
                 <Paper className={classes.paper}>
                   ORDERS
@@ -210,6 +255,7 @@ const App = () => {
               </Grid>
             </Grid>
           </Container>
+
           <Copyright />
         </main>
       </div>

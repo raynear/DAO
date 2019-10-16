@@ -1,9 +1,9 @@
 import React from 'react';
-import { Fragment } from 'react';
+//import { Fragment } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { Card, CardActions, CardContent, Button, Typography, FormControl, FormLabel, FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
+import { Card/*, CardActions*/, CardContent/*, Button*/, Typography, FormControl/*, FormLabel*/, FormControlLabel, Radio, RadioGroup, Container, Grid } from '@material-ui/core';
 
 const GET_PROPOSALS = gql`
   query {
@@ -47,6 +47,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   formControl: {
     margin: theme.spacing(3),
   },
+  container: {
+    paddingTop: theme.spacing(4),
+    paddingBottom: theme.spacing(4),
+  },
 }));
 
 function Proposals() {
@@ -55,23 +59,28 @@ function Proposals() {
   if (loading) return (<p>Loading...</p>);
   if (error) return (<p>Error!:{error}</p>);
   return (
-    <div>
-      {data.allProposal.map((item: proposal) => (
-        <Card className={classes.card}>
-          <CardContent>
-            <Typography className={classes.title} color="textSecondary" gutterBottom>{item.subject}</Typography>
-            <Typography variant="h5">{item.contents}</Typography>
-            <FormControl>
-              <RadioGroup>
-                {item.selectitemmodelSet.map((selectItem) => (
-                  <FormControlLabel control={<Radio />} value={selectItem.contents} label={selectItem.contents} />
-                ))}
-              </RadioGroup>
-            </FormControl>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <Container maxWidth="lg" className={classes.container}>
+      <Grid container spacing={3}>
+        {data.allProposal.map((item: proposal) => (
+          <Grid item xs={12} md={8} lg={9}>
+            <Card key={item.id} className={classes.card}>
+              <CardContent>
+                <Typography className={classes.title} color="textSecondary" gutterBottom> Type Of Proposal</Typography>
+                <Typography variant="h5" color="textPrimary" gutterBottom>{item.subject}</Typography>
+                <Typography variant="h6" color="textSecondary">{item.contents}</Typography>
+                <FormControl>
+                  <RadioGroup>
+                    {item.selectitemmodelSet.map((selectItem) => (
+                      <FormControlLabel key={selectItem.contents} control={<Radio />} value={selectItem.contents} label={selectItem.contents} />
+                    ))}
+                  </RadioGroup>
+                </FormControl>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Container>
   );
 }
 
