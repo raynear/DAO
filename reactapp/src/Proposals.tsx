@@ -1,9 +1,9 @@
 import React from 'react';
-//import { Fragment } from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { Card/*, CardActions*/, CardContent/*, Button*/, Typography, FormControl/*, FormLabel*/, FormControlLabel, Radio, RadioGroup, Container, Grid } from '@material-ui/core';
+import { Card, CardContent, Typography, FormControl, FormControlLabel, Radio, RadioGroup, Container, Grid } from '@material-ui/core';
+
+import useStyles from './Style';
 
 const GET_PROPOSALS = gql`
   query {
@@ -28,30 +28,6 @@ interface proposal {
   contents: "",
   selectitemmodelSet: Array<selectItem>
 }
-
-const useStyles = makeStyles((theme: Theme) => createStyles({
-  card: {
-    minWidth: 275,
-  },
-  bullet: {
-    display: 'inline-block',
-    margin: '0 2px',
-    transform: 'scale(0.8)',
-  },
-  title: {
-    fontSize: 14,
-  },
-  pos: {
-    marginBottom: 12,
-  },
-  formControl: {
-    margin: theme.spacing(3),
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4),
-  },
-}));
 
 function Proposals() {
   const classes = useStyles();
