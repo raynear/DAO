@@ -1,4 +1,4 @@
-import React/*, { useState }*/ from 'react';
+import React, { Fragment } from 'react';
 
 import clsx from 'clsx';
 import { CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
@@ -16,7 +16,6 @@ interface propType {
 
 function MainContents(props: propType) {
   const classes = useStyles();
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
   if (props.type === "ProposalList") {
     return (
@@ -29,25 +28,23 @@ function MainContents(props: propType) {
   }
   else {
     return (
-      <Container maxWidth="lg" className={classes.container}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={8} lg={9}>
-            <Paper className={fixedHeightPaper}>
-              <Proposals />
-            </Paper>
-          </Grid>
-          <Grid item xs={12} md={4} lg={3}>
-            <Paper className={fixedHeightPaper}>
-              <ProposalForm />
-            </Paper>
-          </Grid>
-          <Grid item xs={12}>
-            <Paper className={classes.paper}>
-              ORDERS
-                </Paper>
-          </Grid>
+      <Fragment>
+        <Grid item xs={12} md={8} lg={9}>
+          <Paper className={clsx(classes.paper, classes.fixedHeight)}>
+            <Proposals />
+          </Paper>
         </Grid>
-      </Container>
+        <Grid item xs={12} md={4} lg={3}>
+          <Paper className={clsx(classes.paper, classes.fixedHeight)}>
+            ORDERS
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper className={classes.paper}>
+            <ProposalForm />
+          </Paper>
+        </Grid>
+      </Fragment>
     )
   }
 }
@@ -124,7 +121,11 @@ function Layout() {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <MainContents type={page} />
+        <Container maxWidth="lg" className={classes.container}>
+          <Grid container spacing={3}>
+            <MainContents type={page} />
+          </Grid>
+        </Container>
         <Copyright />
       </main>
     </div>

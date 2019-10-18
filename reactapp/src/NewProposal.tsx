@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { Fragment } from 'react';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
-import { Container, Grid, Card, CardContent, TextField, Button, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { Paper, Grid, TextField, Button, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardTimePicker,
+  KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 import useStyles from './Style';
 
@@ -26,7 +31,8 @@ mutation NewProposal($subject:String!, $contents:String!, $boardID:String!, $exp
   }
 }
 `;
-/*
+
+
 const SET_SELECTITEM = gql`
 mutation NewSelectitem($proposalID:String!, $contents:String!){
   newSelectitem(proposalID: $proposalID, contents: $contents) {
@@ -36,7 +42,19 @@ mutation NewSelectitem($proposalID:String!, $contents:String!){
   }
 }
 `;
-*/
+
+
+const SET_SELECTITEMLIST = gql`
+mutation NewSelectItems($list:[SelectItemInput]){
+  newSelectitem(inputList:$list) {
+    selectItem {
+      id
+      contents
+    }
+  }
+}
+`;
+
 
 interface Board {
   id: string;
@@ -45,20 +63,26 @@ interface Board {
 interface Comment {
   subject: string;
   contents: string;
+  board: string;
 }
 
 function ProposalForm() {
   const classes = useStyles();
   const [selectItems, setSelectItems] = useState([{ id: 0, value: "" }, { id: 1, value: "" }]);
-  const [values, setValues] = useState<Comment>({ subject: "", contents: "" });
-  const [boards, setBoards] = useState();
+  const [values, setValues] = useState<Comment>({ subject: "", contents: "", board: "" });
+  const [boards, setBoards] = useState([]);
+  const [selectedDate, setSelectedDate] = React.useState<Date | null>(
+    new Date('2019-10-18T21:11:54'),
+  );
 
-  const [addProposal] = useMutation(SET_PROPOSAL);
+  const [mutateProposal] = useMutation(SET_PROPOSAL);
+  const [mutateSelectItem] = useMutation(SET_SELECTITEM);
+  const [mutateSelectItemList] = useMutation(SET_SELECTITEMLIST);
 
   const { loading, error, data } = useQuery(GET_BOARDS);
-  if (!loading && !error && data && boards) {
-    let boards = data.allBoard.map((item: Board) => item.name);
-    setBoards(boards);
+  if (!loading && !error && data && Array.isArray(boards) && boards.length === 0) {
+    let aBoards = data.allBoard.map((item: Board) => ({ "id": item.id, "name": item.name }));
+    setBoards(aBoards);
   }
 
   const addSelectItem = () => {
@@ -71,58 +95,116 @@ function ProposalForm() {
     ]);
   };
 
-  // const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
-  //   setValues(oldValues => ({
-  //     ...oldValues,
-  //     [event.target.name as string]: event.target.value,
-  //   }));
-  // };
+  function handleSelectItemChange(index: number, value: string) {
+    const tmpSelectItems = selectItems.map(l => Object.assign({}, l));
+    tmpSelectItems.map((item, idx) => {
+      if (idx === index) {
+        tmpSelectItems[idx] = { id: idx, value: value };
+      }
+    });
+    setSelectItems(tmpSelectItems);
+  };
 
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+  };
 
   const handleProposalChange = (name: keyof Comment) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setValues({ ...values, [name]: event.target.value });
   };
 
+  const handleBoardChange = (name: keyof Comment) => (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    setValues({ ...values, [name]: String(event.target.value) });
+  };
+
   function submitProposal() {
-    addProposal({ variables: { subject: values.subject, contents: values.contents, boardID: "1", expireAt: "2019-11-05T00:00:00+00:00" } });
+    console.log({ subject: values.subject, contents: values.contents, boardID: values.board, expireAt: (selectedDate != null && selectedDate.toISOString()) });
+
+    mutateProposal({ variables: { subject: values.subject, contents: values.contents, boardID: values.board, expireAt: ((selectedDate != null) ? selectedDate.toISOString() : "2019-10-05T09:00:00") } })
+      .then((result) => {
+        let newProposalID = result.data.newProposal.proposal.id;
+        let tmpSelectItemList: { proposalID: String, contents: String }[] = [];
+        selectItems.map((item) => {
+          tmpSelectItemList.push({ proposalID: newProposalID, contents: item.value });
+          //await mutateSelectItem({ variables: { proposalID: newProposalID, contents: item.value } });
+        });
+        console.log(tmpSelectItemList);
+        mutateSelectItemList({ variables: { list: tmpSelectItemList } });
+      })
   }
 
   return (
-    <Container maxWidth="lg" className={classes.container}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={12} lg={12}>
-          <Card className={classes.card}>
-            <CardContent>
-              <form>
-                <TextField id="subject" label="Subject" value={values.subject} onChange={handleProposalChange('subject')} margin="normal" />
-                <TextField id="content" label="Contents" value={values.contents} onChange={handleProposalChange('contents')} multiline rows="10" placeholder="Proposal Contents" margin="normal" />
-                <FormControl>
-                  <InputLabel>Board</InputLabel>
-                  <Select>
-                    {boards && boards.map((item: string) => {
-                      return (
-                        <MenuItem value={item} />
-                      )
-                    })}
-                  </Select>
-                </FormControl>
-                <Button color="primary" onClick={addSelectItem}>Add new select item</Button>
-                {
-                  selectItems.map((item) => {
+    <Grid item xs={12} md={12} lg={12}>
+      <Paper className={classes.paper}>
+        <form>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={12} lg={12}>
+              <FormControl>
+                <InputLabel>Board</InputLabel>
+                <Select value={values.board} onChange={handleBoardChange('board')}>
+                  {(boards.length > 0) && boards.map((item: { id: string, name: string }) => {
                     return (
-                      <Fragment key={item.id}>
-                        <TextField id={String(item.id)} label={String(item.id + 1)} name={String(item.id)} value={item.value} /> <br />
-                      </Fragment>
+                      <MenuItem key={item.id} value={item.id}>{item.name}</MenuItem>
                     )
-                  })
-                }
-                <Button color="primary" onClick={submitProposal}>Submit</Button>
-              </form>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid >
-    </Container >
+                  })}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+              <TextField id="subject" label="Subject" value={values.subject} onChange={handleProposalChange('subject')} margin="normal" fullWidth />
+            </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+              <TextField id="content" label="Contents" value={values.contents} onChange={handleProposalChange('contents')} multiline rows="10" placeholder="Proposal Contents" margin="normal"  fullWidth/>
+            </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <Grid container justify="space-around">
+                  <KeyboardDatePicker
+                    disableToolbar
+                    variant="inline"
+                    format="MM/dd/yyyy"
+                    margin="normal"
+                    id="date-picker-inline"
+                    label="Date picker inline"
+                    value={selectedDate}
+                    onChange={handleDateChange}
+                    KeyboardButtonProps={{
+                      'aria-label': 'change date',
+                    }}
+                  />
+                  <KeyboardTimePicker
+                    margin="normal"
+                    variant="inline"
+                    id="time-picker"
+                    label="Time picker"
+                    value={selectedDate}
+                    onChange={handleDateChange}
+                    KeyboardButtonProps={{
+                      'aria-label': 'change time',
+                    }}
+                  />
+                </Grid>
+              </MuiPickersUtilsProvider>
+            </Grid>
+            <Grid item xs={12} md={12} lg={12}>
+              <Button color="primary" onClick={addSelectItem}>Add new select item</Button>
+            </Grid>
+            {
+              selectItems.map((item, idx) => {
+                return (
+                  <Grid key={idx} item xs={12} md={12} lg={12}>
+                    <TextField id={String(item.id)} label={String(item.id + 1)} name={String(item.id)} value={item.value} onChange={(e) => { handleSelectItemChange(idx, e.target.value) }} fullWidth/> <br />
+                  </Grid>
+                )
+              })
+            }
+            <Grid item xs={12} md={12} lg={12}>
+              <Button color="primary" onClick={submitProposal}>Submit</Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Paper>
+    </Grid>
   );
 }
 

@@ -25,6 +25,12 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     container: {
         paddingTop: theme.spacing(4),
         paddingBottom: theme.spacing(4),
+        display: 'flex',
+        flexWrap: 'wrap',
+    },
+    textField: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
     },
     root: {
         display: 'flex',
@@ -91,6 +97,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
         display: 'flex',
         overflow: 'auto',
         flexDirection: 'column',
+    },
+    grid: {
+        margin: theme.spacing(1),
+        padding: theme.spacing(1)
     },
     fixedHeight: {
         height: 600,

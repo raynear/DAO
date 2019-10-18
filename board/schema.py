@@ -70,19 +70,27 @@ class NewProposal(graphene.Mutation):
         return NewProposal(proposal=proposal)
 
 
+class SelectItemInput(graphene.InputObjectType):
+    proposalID = graphene.String()
+    contents = graphene.String(required=True)
+
+
 class NewSelectItem(graphene.Mutation):
     class Arguments:
-        proposalID = graphene.String()
-        contents = graphene.String(required=True)
+        inputList = graphene.List(SelectItemInput)
 
     selectItem = graphene.Field(SelectItemModelType)
 
-    def mutate(self, info, proposalID, contents):
-        selectedProposal = ProposalModel.objects.get(id=proposalID)
-        selectItem = SelectItemModel.objects.create(
-            proposal=selectedProposal,
-            contents=contents)
-        selectItem.save()
+    class Meta:
+        description = "add new select item"
+
+    def mutate(self, info, inputList):
+        for input in inputList:
+            selectedProposal = ProposalModel.objects.get(id=input.proposalID)
+            selectItem = SelectItemModel.objects.create(
+                proposal=selectedProposal,
+                contents=input.contents)
+            selectItem.save()
         return NewSelectItem(selectItem=selectItem)
 
 
