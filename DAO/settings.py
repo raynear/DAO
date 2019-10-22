@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 AUTHENTICATION_BACKENDS = (
     'graphql_jwt.backends.JSONWebTokenBackend',
     'social_core.backends.kakao.KakaoOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -148,14 +149,17 @@ STATIC_URL = '/static/'
 # auth
 
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
-LOGIN_REDIRECT_URL = "/board/kakao"
+LOGIN_REDIRECT_URL = "/graphql"
 ACCOUNT_AUTHENTICATED_LOGOUT_REDIRECTS = True
-ACCOUNT_LOGOUT_REDIRECT_URL = "/board/kakao"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/graphql"
 
 # Social Auth
 
 SOCIAL_AUTH_KAKAO_KEY = "7e0fdea97adc876ef96f46284c1be4d0"
 SOCIAL_AUTH_KAKAO_SECRET = "7e0fdea97adc876ef96f46284c1be4d0"
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "695621917647-c565v74i0htj4pmklcovit60hmo5vgok.apps.googleusercontent.com"
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "CufUVoD3Gkjl03El01ygAzYQ"
 
 SOCIAL_AUTH_PIPELINE = [
     # Get the information we can about the user and return it in a simple

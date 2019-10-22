@@ -60,6 +60,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
             duration: theme.transitions.duration.enteringScreen,
         }),
     },
+    margin: {
+        margin: theme.spacing(1),
+    },
     menuButton: {
         marginRight: 36,
     },

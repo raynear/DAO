@@ -2,8 +2,22 @@
  
     <h1>hello world</h1>
     {% if user.is_authenticated %}
-    <span>{{ user }}님이 로그인중입니다.</span>
-    <span>{{ user.extra_data.kakao_account.email }}A</span>
+    <span>{{ user }}님이 로그인중입니다.</span><br/>
+    <span>{{user.username}}</span><br/>
+<span>{{user.first_name}}</span><br/>
+<span>{{user.last_name}}</span><br/>
+<span>{{user.email}}</span><br/>
+<span>{{user.groups}}</span><br/>
+<span>{{user.user_permissions}}</span><br/>
+<span>{{user.is_staff}}</span><br/>
+<span>{{user.is_active}}</span><br/>
+<span>{{user.is_superuser}}</span><br/>
+<span>{{user.last_login}}</span><br/>
+<span>{{user.date_joined}}</span><br/>
+<span>: {{user.social_details}}</span><br/>
+<span>extra data : {{user.extra_data}}</span><br/>
+<span>user_social_auth : {{user_social_auth.user}}</span><br/>
+    <span>{{ user.extra_data.kakao_account.email }}A</span><br/>
  
     {% for account in user.socialaccount_set.all %}
 
@@ -50,4 +64,5 @@
     {% endif %}
 
     <h2><a href="{% url 'social:begin' 'kakao'%}">Kakao</a></h2>
+    <h2><a href="{% url 'social:begin' 'google-oauth2'%}">Google</a></h2>
 </body>

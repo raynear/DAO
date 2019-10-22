@@ -12,10 +12,18 @@ class UserType(DjangoObjectType):
 
 class Query(board.schema.Query, graphene.ObjectType):
 
+    me = graphene.Field(UserType)
     users = graphene.List(UserType)
 
-    def resolver_users(self, info, **kwargs):
+    def resolve_users(self, info, **kwargs):
         return get_user_model().objects.all()
+
+    def resolve_me(self, info, **kwargs):
+        print(info.context.user.social_auth)
+        if not info.context.user.is_authenticated:
+            return None
+        else:
+            return info.context.user
     pass
 
 

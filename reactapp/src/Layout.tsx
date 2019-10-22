@@ -1,14 +1,38 @@
-import React, { Fragment } from 'react';
+import React, { Fragment } from "react";
 
-import clsx from 'clsx';
-import { CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, Badge, Container, Grid, Paper, ListItem, ListItemIcon, ListItemText } from '@material-ui/core'
-import { Menu, Notifications, ChevronLeft, Dashboard, ListAltRounded, AddCircleRounded } from '@material-ui/icons';
+import clsx from "clsx";
+import {
+  CssBaseline,
+  Drawer,
+  AppBar,
+  Toolbar,
+  List,
+  Typography,
+  Divider,
+  IconButton,
+  Badge,
+  Container,
+  Grid,
+  Paper,
+  ListItem,
+  ListItemIcon,
+  ListItemText
+} from "@material-ui/core";
+import {
+  Menu,
+  Notifications,
+  ChevronLeft,
+  Dashboard,
+  ListAltRounded,
+  AddCircleRounded
+} from "@material-ui/icons";
 
-import Proposals from './Proposals';
-import ProposalForm from './NewProposal';
-import Copyright from './Copyright';
+import Proposals from "./Proposals";
+import ProposalForm from "./NewProposal";
+import Copyright from "./Copyright";
+import Login from "./Login";
 
-import useStyles from './Style';
+import useStyles from "./Style";
 
 interface propType {
   type?: string;
@@ -18,15 +42,10 @@ function MainContents(props: propType) {
   const classes = useStyles();
 
   if (props.type === "ProposalList") {
-    return (
-      <Proposals />
-    )
+    return <Proposals />;
   } else if (props.type === "NewProposal") {
-    return (
-      <ProposalForm />
-    )
-  }
-  else {
+    return <ProposalForm />;
+  } else {
     return (
       <Fragment>
         <Grid item xs={12} md={8} lg={9}>
@@ -45,7 +64,7 @@ function MainContents(props: propType) {
           </Paper>
         </Grid>
       </Fragment>
-    )
+    );
   }
 }
 
@@ -66,18 +85,33 @@ function Layout() {
   return (
     <div className={classes.root}>
       <CssBaseline />
-      <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
+      <AppBar
+        position="absolute"
+        className={clsx(classes.appBar, open && classes.appBarShift)}
+      >
         <Toolbar className={classes.toolbar}>
           <IconButton
             edge="start"
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
+            className={clsx(
+              classes.menuButton,
+              open && classes.menuButtonHidden
+            )}
           >
             <Menu />
           </IconButton>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>Muljom-DAO</Typography>
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            className={classes.title}
+          >
+            Muljom-DAO
+          </Typography>
+          <Login />
           <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
               <Notifications />
@@ -88,7 +122,7 @@ function Layout() {
       <Drawer
         variant="permanent"
         classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose)
         }}
         open={open}
       >
