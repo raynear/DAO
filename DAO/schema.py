@@ -19,7 +19,6 @@ class Query(board.schema.Query, graphene.ObjectType):
         return get_user_model().objects.all()
 
     def resolve_me(self, info, **kwargs):
-        print(info.context.user.social_auth)
         if not info.context.user.is_authenticated:
             return None
         else:

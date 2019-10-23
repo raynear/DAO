@@ -27,6 +27,9 @@ import {
   AddCircleRounded
 } from "@material-ui/icons";
 
+import { useApolloClient } from "@apollo/react-hooks";
+import gql from "graphql-tag";
+
 import Proposals from "./Proposals";
 import ProposalForm from "./NewProposal";
 import Copyright from "./Copyright";
@@ -70,9 +73,9 @@ function MainContents(props: propType) {
 
 function Layout() {
   const classes = useStyles();
+  const client = useApolloClient();
 
   const [page, setPage] = React.useState("Dashboard");
-
   const [open, setOpen] = React.useState(true);
 
   const handleDrawerOpen = () => {
@@ -80,6 +83,18 @@ function Layout() {
   };
   const handleDrawerClose = () => {
     setOpen(false);
+
+    client
+      .query({
+        query: gql`
+          {
+            data @client
+          }
+        `
+      })
+      .then(result => {
+        console.log("read", result);
+      });
   };
 
   return (
