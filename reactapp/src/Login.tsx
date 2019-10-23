@@ -1,6 +1,9 @@
-import React, { Fragment } from "react";
+import React from "react";
 import gql from "graphql-tag";
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
+import { Avatar } from "@material-ui/core";
+
+import useStyles from "./Style";
 
 const GET_USER = gql`
   query {
@@ -19,11 +22,11 @@ const GET_USER = gql`
 `;
 
 function Login() {
+  const classes = useStyles();
   const client = useApolloClient();
   const { loading, error, data } = useQuery(GET_USER);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
-  console.log(data);
   if (
     !(
       data !== undefined &&
@@ -45,13 +48,14 @@ function Login() {
         data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
     }
   });
-  console.log("test11111111111111111");
 
   //  console.log(data.me.socialAuth.edges[0].node.extraData);
   return (
-    <Fragment>
-      <p>{data.me.username}</p>
-    </Fragment>
+    <Avatar
+      alt={data.me.username}
+      src={data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage}
+      className={classes.noMarginPadding}
+    />
   );
 }
 

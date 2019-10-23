@@ -46,7 +46,7 @@ function Proposals() {
   return (
     <Fragment>
       {data.allProposal.map((item: proposal, idx: number) => (
-        <Grid className={classes.grid} key={idx} item xs={12} lg={5}>
+        <Grid className={classes.grid} key={idx} item xs={12} lg={6}>
           <Paper className={classes.paper}>
             <Typography
               className={classes.title}

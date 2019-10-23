@@ -14,23 +14,28 @@ const client = new ApolloClient({
   credentials: "include",
   // async operation with fetch to get csrf token
   request: async operation => {
-    const csrftoken = await fetch("http://localhost:8000/csrf/")
-      .then(response => response.json())
-      .then(data => data.csrfToken);
-    // set the cookie 'csrftoken'
-    Cookies.set("csrftoken", csrftoken);
-    const token = Cookies.get("token");
+    let csrf = Cookies.get("csrftoken");
+    if (csrf === undefined) {
+      let csrftoken = await fetch("http://localhost:8000/csrf/")
+        .then(response => response.json())
+        .then(data => data.csrfToken);
+      // set the cookie 'csrftoken'
+      Cookies.set("csrftoken", csrftoken);
+      csrf = csrftoken;
+    }
     operation.setContext({
       // set the 'X-CSRFToken' header to the csrftoken
       headers: {
-        "X-CSRFToken": csrftoken,
-        authorization: token ? `Bearer ${token}` : ""
+        "X-CSRFToken": csrf
+        //authorization: token ? `Bearer ${token}` : ""
       }
     });
   },
   cache: new InMemoryCache(),
   clientState: {
-    defaults: {},
+    defaults: {
+      data: { username: "", email: "", photo: "", __typename: "user" }
+    },
     resolvers: {},
     typeDefs: ``
   }

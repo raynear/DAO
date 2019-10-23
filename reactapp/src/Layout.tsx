@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment /*, useEffect */ } from "react";
 
 import clsx from "clsx";
 import {
@@ -16,19 +16,20 @@ import {
   Paper,
   ListItem,
   ListItemIcon,
-  ListItemText
+  ListItemText,
+  Menu,
+  MenuItem
 } from "@material-ui/core";
 import {
-  Menu,
-  Notifications,
   ChevronLeft,
   Dashboard,
   ListAltRounded,
   AddCircleRounded
 } from "@material-ui/icons";
+import MenuIcon from "@material-ui/icons/Menu";
 
-import { useApolloClient } from "@apollo/react-hooks";
-import gql from "graphql-tag";
+//import { useApolloClient } from "@apollo/react-hooks";
+//import gql from "graphql-tag";
 
 import Proposals from "./Proposals";
 import ProposalForm from "./NewProposal";
@@ -73,30 +74,41 @@ function MainContents(props: propType) {
 
 function Layout() {
   const classes = useStyles();
-  const client = useApolloClient();
+  //  const client = useApolloClient();
 
   const [page, setPage] = React.useState("Dashboard");
   const [open, setOpen] = React.useState(true);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
+  };
 
+  const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  /*  useEffect(() => {
     client
       .query({
         query: gql`
           {
-            data @client
+            username @client
           }
         `
       })
       .then(result => {
-        console.log("read", result);
+        console.log(result);
       });
-  };
-
+  });
+*/
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -115,7 +127,7 @@ function Layout() {
               open && classes.menuButtonHidden
             )}
           >
-            <Menu />
+            <MenuIcon />
           </IconButton>
           <Typography
             component="h1"
@@ -126,12 +138,30 @@ function Layout() {
           >
             Muljom-DAO
           </Typography>
-          <Login />
-          <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <Notifications />
+          <IconButton
+            aria-controls="user_menu"
+            color="inherit"
+            onClick={handleMenu}
+          >
+            <Badge
+              badgeContent={4}
+              color="secondary"
+              className={classes.noMarginPadding}
+            >
+              <Login />
             </Badge>
           </IconButton>
+          <Menu
+            id="user_menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+            <MenuItem onClick={handleMenuClose}>MyMy</MenuItem>
+            <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -171,7 +201,7 @@ function Layout() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
-          <Grid container spacing={3}>
+          <Grid container spacing={0}>
             <MainContents type={page} />
           </Grid>
         </Container>
