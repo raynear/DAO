@@ -62,14 +62,14 @@ function Proposal() {
         </Typography>
         <FormControl>
           <RadioGroup>
-            {data.selectitemmodelSet.map(selectItem => (
+            {/*data.selectitemmodelSet.map(selectItem => (
               <FormControlLabel
                 key={selectItem.contents}
                 control={<Radio />}
                 value={selectItem.contents}
                 label={selectItem.contents}
               />
-            ))}
+            ))*/}
           </RadioGroup>
         </FormControl>
       </Paper>

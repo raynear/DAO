@@ -1,3 +1,4 @@
+from django.db.models import Q
 import graphene
 
 from graphene_django.types import DjangoObjectType
@@ -29,6 +30,29 @@ class Query(object):
     all_proposal = graphene.List(ProposalModelType)
     all_selectitem = graphene.List(SelectItemModelType)
     all_vote = graphene.List(VoteModelType)
+
+    proposals = graphene.List(
+        ProposalModelType,
+        search=graphene.String(),
+        first=graphene.Int(),
+        skip=graphene.Int()
+    )
+
+    def resolve_proposals(self, info, search=None, first=None, skip=None, **kwargs):
+        qs = ProposalModel.objects.all()
+
+        if search:
+            filter = (
+                Q(subject__icontains=search) |
+                Q(contents__icontains=search)
+            )
+            qs = qs.filter(filter)
+        if skip:
+            qs = qs[skip:]
+        if first:
+            qs = qs[:first]
+
+        return qs
 
     def resolve_all_board(self, info, **kwargs):
         return BoardModel.objects.all()
