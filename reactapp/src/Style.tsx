@@ -28,13 +28,38 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: 12
     },
     formControl: {
-      margin: theme.spacing(3)
+      margin: theme.spacing(2),
+      minwidth: 240
+    },
+    papercontainer: {
+      spacing: theme.spacing(0),
+      margin: theme.spacing(2),
+      padding: theme.spacing(0)
+    },
+    paper: {
+      margin: theme.spacing(2),
+      padding: theme.spacing(2),
+      display: "flex",
+      overflow: "auto",
+      flexDirection: "column"
+    },
+    rootcontainer: {
+      spacing: theme.spacing(0),
+      margin: theme.spacing(0),
+      padding: theme.spacing(1),
+      display: "flex",
+      flexwrap: "wrap"
     },
     container: {
-      paddingTop: theme.spacing(4),
-      paddingBottom: theme.spacing(4),
+      spacing: theme.spacing(0),
+      margin: theme.spacing(0),
+      padding: theme.spacing(0),
       display: "flex",
-      flexWrap: "wrap"
+      flexwrap: "wrap"
+    },
+    grid: {
+      margin: theme.spacing(0),
+      padding: theme.spacing(0)
     },
     textField: {
       marginLeft: theme.spacing(1),
@@ -106,16 +131,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flexGrow: 1,
       height: "100vh",
       overflow: "auto"
-    },
-    paper: {
-      padding: theme.spacing(2),
-      display: "flex",
-      overflow: "auto",
-      flexDirection: "column"
-    },
-    grid: {
-      margin: theme.spacing(0),
-      padding: theme.spacing(1)
     },
     fixedHeight: {
       height: 600

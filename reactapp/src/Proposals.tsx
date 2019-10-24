@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import {
@@ -44,7 +44,7 @@ function Proposals() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
   return (
-    <Fragment>
+    <Grid container className={classes.container} spacing={0}>
       {data.allProposal.map((item: proposal, idx: number) => (
         <Grid className={classes.grid} key={idx} item xs={12} lg={6}>
           <Paper className={classes.paper}>
@@ -77,7 +77,7 @@ function Proposals() {
           </Paper>
         </Grid>
       ))}
-    </Fragment>
+    </Grid>
   );
 }
 

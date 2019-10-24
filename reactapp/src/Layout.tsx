@@ -53,7 +53,7 @@ function MainContents(props: propType) {
     return (
       <Fragment>
         <Grid item xs={12} md={8} lg={9}>
-          <Paper className={clsx(classes.paper, classes.fixedHeight)}>
+          <Paper className={clsx(classes.papercontainer, classes.fixedHeight)}>
             <Proposals />
           </Paper>
         </Grid>
@@ -62,11 +62,7 @@ function MainContents(props: propType) {
             ORDERS
           </Paper>
         </Grid>
-        <Grid item xs={12}>
-          <Paper className={classes.paper}>
-            <ProposalForm />
-          </Paper>
-        </Grid>
+        <ProposalForm />
       </Fragment>
     );
   }
@@ -200,7 +196,7 @@ function Layout() {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
+        <Container maxWidth="lg" className={classes.rootcontainer}>
           <Grid container spacing={0}>
             <MainContents type={page} />
           </Grid>

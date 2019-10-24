@@ -3,6 +3,7 @@ import React from "react";
 import ApolloClient from "apollo-boost";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloProvider } from "react-apollo";
+import { BrowserRouter } from "react-router-dom";
 
 import Cookies from "js-cookie";
 
@@ -43,9 +44,11 @@ const client = new ApolloClient({
 
 function App() {
   return (
-    <ApolloProvider client={client}>
-      <Layout />
-    </ApolloProvider>
+    <BrowserRouter>
+      <ApolloProvider client={client}>
+        <Layout />
+      </ApolloProvider>
+    </BrowserRouter>
   );
 }
 

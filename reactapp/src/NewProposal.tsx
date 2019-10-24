@@ -11,6 +11,7 @@ import {
   Select,
   MenuItem
 } from "@material-ui/core";
+import { AddRounded } from "@material-ui/icons";
 import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
@@ -191,12 +192,12 @@ function ProposalForm() {
   }
 
   return (
-    <Grid item xs={12} md={12} lg={12}>
+    <Grid className={classes.grid} item xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
         <form>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={12} lg={12}>
-              <FormControl>
+          <Grid container spacing={0} className={classes.container}>
+            <Grid className={classes.grid} item xs={12} md={12} lg={12}>
+              <FormControl className={classes.formControl}>
                 <InputLabel>Board</InputLabel>
                 <Select
                   value={values.board}
@@ -213,7 +214,7 @@ function ProposalForm() {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <TextField
                 id="subject"
                 label="Subject"
@@ -223,7 +224,7 @@ function ProposalForm() {
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <TextField
                 id="content"
                 label="Contents"
@@ -236,44 +237,69 @@ function ProposalForm() {
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Grid container justify="space-around">
-                  <KeyboardDatePicker
-                    disableToolbar
-                    variant="inline"
-                    format="MM/dd/yyyy"
-                    margin="normal"
-                    id="date-picker-inline"
-                    label="Date picker inline"
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date"
-                    }}
-                  />
-                  <KeyboardTimePicker
-                    margin="normal"
-                    variant="inline"
-                    id="time-picker"
-                    label="Time picker"
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                    KeyboardButtonProps={{
-                      "aria-label": "change time"
-                    }}
-                  />
+                <Grid
+                  className={classes.container}
+                  container
+                  justify="space-around"
+                >
+                  <Grid item>
+                    <KeyboardDatePicker
+                      disableToolbar
+                      variant="inline"
+                      format="MM/dd/yyyy"
+                      margin="normal"
+                      id="date-picker-inline"
+                      label="Date picker inline"
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date"
+                      }}
+                    />
+                  </Grid>
+                  <Grid item>
+                    <KeyboardTimePicker
+                      margin="normal"
+                      variant="inline"
+                      id="time-picker"
+                      label="Time picker"
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      KeyboardButtonProps={{
+                        "aria-label": "change time"
+                      }}
+                    />
+                  </Grid>
                 </Grid>
               </MuiPickersUtilsProvider>
+              <br />
+              <br />
             </Grid>
-            <Grid item xs={12} md={12} lg={12}>
+            <Grid
+              className={classes.grid}
+              item
+              xs={12}
+              md={12}
+              lg={12}
+              style={{ textAlign: "right" }}
+            >
               <Button color="primary" onClick={addSelectItem}>
-                Add new select item
+                <AddRounded />
+                Add select item
               </Button>
             </Grid>
             {selectItems.map((item, idx) => {
               return (
-                <Grid key={idx} item xs={12} md={12} lg={12}>
+                <Grid
+                  className={classes.grid}
+                  key={idx}
+                  item
+                  xs={12}
+                  md={12}
+                  lg={12}
+                >
                   <TextField
                     id={String(item.id)}
                     label={String(item.id + 1)}
@@ -288,7 +314,14 @@ function ProposalForm() {
                 </Grid>
               );
             })}
-            <Grid item xs={12} md={12} lg={12}>
+            <Grid
+              className={classes.grid}
+              item
+              style={{ textAlign: "center" }}
+              xs={12}
+              md={12}
+              lg={12}
+            >
               <Button color="primary" onClick={submitProposal}>
                 Submit
               </Button>
