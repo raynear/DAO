@@ -31,32 +31,35 @@ function Login() {
     !(
       data !== undefined &&
       data.hasOwnProperty("me") &&
-      data.me.hasOwnProperty("socialAuth")
+      data.me.hasOwnProperty("socialAuth") &&
+      data.me.socialAuth.hasOwnProperty("edges") &&
+      data.me.socialAuth.edges.length > 0
     )
-    // &&
-    //    data.me.socialAuth.hasOwnProperty("edges") &&
     //    data.me.socialAuth.edges[0].hasOwnProperty("node") &&
     //    data.me.socialAuth.edges[0].node.hasOwnProperty("extraData")
   ) {
     return <a href="http://localhost:8000/oauth/login/kakao">Login</a>;
-  }
-  client.writeData({
-    data: {
-      username: data.me.username,
-      email: data.me.email,
-      photo:
-        data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
-    }
-  });
+  } else {
+    client.writeData({
+      data: {
+        username: data.me.username,
+        email: data.me.email,
+        photo:
+          data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
+      }
+    });
 
-  //  console.log(data.me.socialAuth.edges[0].node.extraData);
-  return (
-    <Avatar
-      alt={data.me.username}
-      src={data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage}
-      className={classes.noMarginPadding}
-    />
-  );
+    //  console.log(data.me.socialAuth.edges[0].node.extraData);
+    return (
+      <Avatar
+        alt={data.me.username}
+        src={
+          data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
+        }
+        className={classes.noMarginPadding}
+      />
+    );
+  }
 }
 
 export default Login;
