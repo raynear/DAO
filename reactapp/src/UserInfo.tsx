@@ -77,7 +77,7 @@ function UserInfo() {
         >
           <MenuItem onClick={handleMenuClose}>Sign Up</MenuItem>
           <MenuItem onClick={handleMenuClose}>
-            <a href="http://localhost:8000/oauth/login/kakao">
+            <a href="http://localhost:8080/oauth/login/kakao">
               <Typography component="h6">Login</Typography>
             </a>
           </MenuItem>

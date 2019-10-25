@@ -1,5 +1,5 @@
-import React, { Fragment /*, useEffect */ } from "react";
-
+import React from "react";
+import { Link } from "react-router-dom";
 import clsx from "clsx";
 import {
   CssBaseline,
@@ -12,22 +12,24 @@ import {
   IconButton,
   Container,
   Grid,
-  Paper,
   ListItem,
   ListItemIcon,
   ListItemText
 } from "@material-ui/core";
 import {
   ChevronLeft,
-  Dashboard,
   ListAltRounded,
   AddCircleRounded
 } from "@material-ui/icons";
 import MenuIcon from "@material-ui/icons/Menu";
+import DashboardIcon from "@material-ui/icons/Dashboard";
+
+import { Switch, Route } from "react-router-dom";
 
 //import { useApolloClient } from "@apollo/react-hooks";
 //import gql from "graphql-tag";
 
+import Dashboard from "./Dashboard";
 import Proposals from "./Proposals";
 import ProposalForm from "./NewProposal";
 import Copyright from "./Copyright";
@@ -35,41 +37,10 @@ import UserInfo from "./UserInfo";
 
 import useStyles from "./Style";
 
-interface propType {
-  type?: string;
-}
-
-function MainContents(props: propType) {
-  const classes = useStyles();
-
-  if (props.type === "ProposalList") {
-    return <Proposals />;
-  } else if (props.type === "NewProposal") {
-    return <ProposalForm />;
-  } else {
-    return (
-      <Fragment>
-        <Grid item xs={12} md={8} lg={9}>
-          <Paper className={clsx(classes.papercontainer, classes.fixedHeight)}>
-            <Proposals />
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={4} lg={3}>
-          <Paper className={clsx(classes.paper, classes.fixedHeight)}>
-            ORDERS
-          </Paper>
-        </Grid>
-        <ProposalForm />
-      </Fragment>
-    );
-  }
-}
-
 function Layout() {
   const classes = useStyles();
   //  const client = useApolloClient();
 
-  const [page, setPage] = React.useState("Dashboard");
   const [open, setOpen] = React.useState(true);
 
   const handleDrawerOpen = () => {
@@ -79,6 +50,14 @@ function Layout() {
     setOpen(false);
   };
 
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  const handleListItemClick = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    i: number
+  ) => {
+    setSelectedIndex(i);
+  };
   /*  useEffect(() => {
     client
       .query({
@@ -140,19 +119,37 @@ function Layout() {
         </div>
         <Divider />
         <List>
-          <ListItem button onClick={() => setPage("Dashboard")}>
+          <ListItem
+            button
+            component={Link}
+            to="/"
+            selected={selectedIndex === 0}
+            onClick={(e: any) => handleListItemClick(e, 0)}
+          >
             <ListItemIcon>
-              <Dashboard />
+              <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItem>
-          <ListItem button onClick={() => setPage("ProposalList")}>
+          <ListItem
+            button
+            component={Link}
+            to="/Proposals"
+            selected={selectedIndex === 1}
+            onClick={(e: any) => handleListItemClick(e, 1)}
+          >
             <ListItemIcon>
               <ListAltRounded />
             </ListItemIcon>
             <ListItemText primary="Proposal List" />
           </ListItem>
-          <ListItem button onClick={() => setPage("NewProposal")}>
+          <ListItem
+            button
+            component={Link}
+            to="/NewProposal"
+            selected={selectedIndex === 2}
+            onClick={(e: any) => handleListItemClick(e, 2)}
+          >
             <ListItemIcon>
               <AddCircleRounded />
             </ListItemIcon>
@@ -164,7 +161,11 @@ function Layout() {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.rootcontainer}>
           <Grid container spacing={0}>
-            <MainContents type={page} />
+            <Switch>
+              <Route exact path="/" component={Dashboard} />
+              <Route exact path="/NewProposal" component={ProposalForm} />
+              <Route exact path="/Proposals" component={Proposals} />
+            </Switch>
           </Grid>
         </Container>
         <Copyright />
