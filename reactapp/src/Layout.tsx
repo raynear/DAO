@@ -10,15 +10,12 @@ import {
   Typography,
   Divider,
   IconButton,
-  Badge,
   Container,
   Grid,
   Paper,
   ListItem,
   ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem
+  ListItemText
 } from "@material-ui/core";
 import {
   ChevronLeft,
@@ -34,7 +31,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import Proposals from "./Proposals";
 import ProposalForm from "./NewProposal";
 import Copyright from "./Copyright";
-import Login from "./Login";
+import UserInfo from "./UserInfo";
 
 import useStyles from "./Style";
 
@@ -74,21 +71,12 @@ function Layout() {
 
   const [page, setPage] = React.useState("Dashboard");
   const [open, setOpen] = React.useState(true);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
-  };
-
-  const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
   };
 
   /*  useEffect(() => {
@@ -126,38 +114,16 @@ function Layout() {
             <MenuIcon />
           </IconButton>
           <Typography
-            component="h1"
+            component="h6"
             variant="h6"
             color="inherit"
             noWrap
-            className={classes.title}
+            style={{ flexGrow: 1 }}
           >
             Muljom-DAO
           </Typography>
-          <IconButton
-            aria-controls="user_menu"
-            color="inherit"
-            onClick={handleMenu}
-          >
-            <Badge
-              badgeContent={4}
-              color="secondary"
-              className={classes.noMarginPadding}
-            >
-              <Login />
-            </Badge>
-          </IconButton>
-          <Menu
-            id="user_menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>MyMy</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
-          </Menu>
+
+          <UserInfo />
         </Toolbar>
       </AppBar>
       <Drawer

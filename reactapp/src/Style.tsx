@@ -28,13 +28,14 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: 12
     },
     formControl: {
-      margin: theme.spacing(2),
+      margin: theme.spacing(1),
       minwidth: 240
     },
     papercontainer: {
       spacing: theme.spacing(0),
       margin: theme.spacing(2),
-      padding: theme.spacing(0)
+      padding: theme.spacing(0),
+      overflow: "auto"
     },
     paper: {
       margin: theme.spacing(2),
@@ -61,9 +62,12 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(0),
       padding: theme.spacing(0)
     },
+    selectLabel: {
+      margin: theme.spacing(0),
+      marginLeft: theme.spacing(2)
+    },
     textField: {
-      marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1)
+      margin: theme.spacing(1)
     },
     root: {
       display: "flex"

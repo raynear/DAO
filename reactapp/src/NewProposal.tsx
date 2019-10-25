@@ -198,10 +198,12 @@ function ProposalForm() {
           <Grid container spacing={0} className={classes.container}>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <FormControl className={classes.formControl}>
-                <InputLabel>Board</InputLabel>
+                <InputLabel className={classes.selectLabel}>Board</InputLabel>
                 <Select
                   value={values.board}
                   onChange={handleBoardChange("board")}
+                  variant="outlined"
+                  style={{ minWidth: 120 }}
                 >
                   {boards.length > 0 &&
                     boards.map((item: { id: string; name: string }) => {
@@ -222,6 +224,8 @@ function ProposalForm() {
                 onChange={handleProposalChange("subject")}
                 margin="normal"
                 fullWidth
+                className={classes.textField}
+                variant="outlined"
               />
             </Grid>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
@@ -231,13 +235,16 @@ function ProposalForm() {
                 value={values.contents}
                 onChange={handleProposalChange("contents")}
                 multiline
-                rows="10"
+                rows="20"
                 placeholder="Proposal Contents"
                 margin="normal"
                 fullWidth
+                className={classes.textField}
+                variant="outlined"
               />
             </Grid>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
+              <br />
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid
                   className={classes.container}
@@ -252,6 +259,7 @@ function ProposalForm() {
                       margin="normal"
                       id="date-picker-inline"
                       label="Date picker inline"
+                      className={classes.textField}
                       value={selectedDate}
                       onChange={handleDateChange}
                       KeyboardButtonProps={{
@@ -265,6 +273,7 @@ function ProposalForm() {
                       variant="inline"
                       id="time-picker"
                       label="Time picker"
+                      className={classes.textField}
                       value={selectedDate}
                       onChange={handleDateChange}
                       KeyboardButtonProps={{
@@ -274,7 +283,6 @@ function ProposalForm() {
                   </Grid>
                 </Grid>
               </MuiPickersUtilsProvider>
-              <br />
               <br />
             </Grid>
             <Grid
@@ -309,6 +317,8 @@ function ProposalForm() {
                       handleSelectItemChange(idx, e.target.value);
                     }}
                     fullWidth
+                    className={classes.textField}
+                    variant="outlined"
                   />{" "}
                   <br />
                 </Grid>
@@ -322,7 +332,11 @@ function ProposalForm() {
               md={12}
               lg={12}
             >
-              <Button color="primary" onClick={submitProposal}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={submitProposal}
+              >
                 Submit
               </Button>
             </Grid>
