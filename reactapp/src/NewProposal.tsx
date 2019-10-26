@@ -158,13 +158,6 @@ function ProposalForm() {
   };
 
   function submitProposal() {
-    console.log({
-      subject: values.subject,
-      contents: values.contents,
-      boardID: values.board,
-      expireAt: selectedDate != null && selectedDate.toISOString()
-    });
-
     mutateProposal({
       variables: {
         subject: values.subject,

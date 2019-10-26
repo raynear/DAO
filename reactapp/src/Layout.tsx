@@ -30,6 +30,7 @@ import { Switch, Route } from "react-router-dom";
 //import gql from "graphql-tag";
 
 import Dashboard from "./Dashboard";
+import Proposal from "./Proposal";
 import Proposals from "./Proposals";
 import ProposalForm from "./NewProposal";
 import Copyright from "./Copyright";
@@ -165,6 +166,7 @@ function Layout() {
               <Route exact path="/" component={Dashboard} />
               <Route exact path="/NewProposal" component={ProposalForm} />
               <Route exact path="/Proposals" component={Proposals} />
+              <Route exact path="/Proposal/:id" component={Proposal} />
             </Switch>
           </Grid>
         </Container>

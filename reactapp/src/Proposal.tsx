@@ -1,21 +1,21 @@
-import React, { Fragment } from "react";
+import React from "react";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import {
   Paper,
   Typography,
-  FormControl,
   FormControlLabel,
-  Radio,
+  FormControl,
   RadioGroup,
+  Radio,
   Grid
 } from "@material-ui/core";
 
 import useStyles from "./Style";
 
 const GET_PROPOSAL = gql`
-  query {
-    allProposal {
+  query Proposal($id: Int!) {
+    proposal(id: $id) {
       subject
       contents
       selectitemmodelSet {
@@ -30,17 +30,13 @@ interface selectItem {
   contents: "";
 }
 
-interface proposal {
-  id: "";
-  subject: "";
-  contents: "";
-  selectitemmodelSet: Array<selectItem>;
-}
-
-function Proposal() {
+function Proposal({ match }: any) {
   const classes = useStyles();
 
-  const { loading, error, data } = useQuery(GET_PROPOSAL);
+  const id = match.params.id;
+  const { loading, error, data } = useQuery(GET_PROPOSAL, {
+    variables: { id: id }
+  });
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
   return (
@@ -55,21 +51,23 @@ function Proposal() {
           Type Of Proposal
         </Typography>
         <Typography variant="h5" color="textPrimary" gutterBottom>
-          {data.subject}
+          {data.proposal[0].subject}
         </Typography>
         <Typography variant="h6" color="textSecondary">
-          {data.contents}
+          {data.proposal[0].contents}
         </Typography>
         <FormControl>
           <RadioGroup>
-            {/*data.selectitemmodelSet.map(selectItem => (
-              <FormControlLabel
-                key={selectItem.contents}
-                control={<Radio />}
-                value={selectItem.contents}
-                label={selectItem.contents}
-              />
-            ))*/}
+            {data.proposal[0].selectitemmodelSet.map(
+              (selectItem: selectItem) => (
+                <FormControlLabel
+                  key={selectItem.contents}
+                  control={<Radio />}
+                  value={selectItem.contents}
+                  label={selectItem.contents}
+                />
+              )
+            )}
           </RadioGroup>
         </FormControl>
       </Paper>

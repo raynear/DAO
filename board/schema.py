@@ -1,6 +1,6 @@
 from django.db.models import Q
+from django.contrib.auth.models import User
 import graphene
-
 from graphene_django.types import DjangoObjectType
 from .models import BoardModel, ProposalModel, SelectItemModel, VoteModel
 
@@ -31,12 +31,22 @@ class Query(object):
     all_selectitem = graphene.List(SelectItemModelType)
     all_vote = graphene.List(VoteModelType)
 
+    proposal = graphene.List(ProposalModelType, id=graphene.Int())
+
     proposals = graphene.List(
         ProposalModelType,
         search=graphene.String(),
         first=graphene.Int(),
         skip=graphene.Int()
     )
+
+    def resolve_proposal(self, info, id=None, **kwargs):
+        qs = ProposalModel.objects.all()
+        if id:
+            filter = (Q(id__icontains=id))
+            qs = qs.filter(filter)
+
+        return qs
 
     def resolve_proposals(self, info, search=None, first=None, skip=None, **kwargs):
         qs = ProposalModel.objects.all()
@@ -86,6 +96,7 @@ class NewProposal(graphene.Mutation):
         #proposal = ProposalModel(subject=subject, contents=contents, pk=id)
         selectedBoard = BoardModel.objects.get(id=boardID)
         proposal = ProposalModel.objects.create(
+            author=info.context.user,
             subject=subject,
             contents=contents,
             board=selectedBoard,
