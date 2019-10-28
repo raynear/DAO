@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+import SimpleReactValidator from "simple-react-validator";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import {
   Paper,
   Grid,
+  Typography,
   TextField,
   Button,
   FormControl,
+  FormHelperText,
   InputLabel,
   Select,
   MenuItem
@@ -20,9 +23,19 @@ import {
 } from "@material-ui/pickers";
 
 import useStyles from "./Style";
+import useForceUpdate from "./useForceUpdate";
 
-const GET_BOARDS = gql`
-  query {
+const GET_PROPOSAL = gql`
+  query Proposal($id: Int!) {
+    proposal(id: $id) {
+      subject
+      contents
+      published
+      expireAt
+      selectitemmodelSet {
+        contents
+      }
+    }
     allBoard {
       id
       name
@@ -79,19 +92,46 @@ interface Board {
   id: string;
   name: string;
 }
-interface Comment {
+interface Proposal {
   subject: string;
   contents: string;
   board: string;
 }
+interface SelectItem {
+  id: number;
+  contents: string;
+}
 
-function ProposalForm() {
+const validator = new SimpleReactValidator({
+  locale: "en",
+  className: "text-danger",
+  element: (message: any, className: any) => (
+    <Typography variant="caption" color="error" className={className}>
+      {message}
+    </Typography>
+  )
+});
+
+function ProposalForm({ match }: any) {
   const classes = useStyles();
-  const [selectItems, setSelectItems] = useState([
-    { id: 0, value: "" },
-    { id: 1, value: "" }
+  const forceUpdate = useForceUpdate();
+
+  let proposal_id: any;
+  if (
+    match !== undefined &&
+    match.hasOwnProperty("params") &&
+    match.params.hasOwnProperty("proposal_id")
+  ) {
+    proposal_id = match.params.proposal_id;
+  } else {
+    proposal_id = 0;
+  }
+
+  const [selectItems, setSelectItems] = useState<SelectItem>([
+    { id: 0, contents: "" },
+    { id: 1, contents: "" }
   ]);
-  const [values, setValues] = useState<Comment>({
+  const [values, setValues] = useState<Proposal>({
     subject: "",
     contents: "",
     board: ""
@@ -102,10 +142,11 @@ function ProposalForm() {
   );
 
   const [mutateProposal] = useMutation(SET_PROPOSAL);
-  //  const [mutateSelectItem] = useMutation(SET_SELECTITEM);
   const [mutateSelectItemList] = useMutation(SET_SELECTITEMLIST);
 
-  const { loading, error, data } = useQuery(GET_BOARDS);
+  const { loading, error, data } = useQuery(GET_PROPOSAL, {
+    variables: { id: proposal_id }
+  });
   if (
     !loading &&
     !error &&
@@ -118,6 +159,22 @@ function ProposalForm() {
       name: item.name
     }));
     setBoards(aBoards);
+
+    const aProposal = data.proposal[0];
+    setValues({
+      subject: aProposal.subject,
+      contents: aProposal.contents,
+      board: aProposal.board
+    });
+
+    setSelectedDate(new Date(aProposal.expireAt));
+
+    let tmpSelectItems: Array[SelectItem] = [];
+    aProposal.selectitemmodelSet.map((item: any) => {
+      tmpSelectItems.push({ id: item.id, contents: item.contents });
+    });
+    setSelectItems(aProposal.selectitemmodelSet);
+    console.log(tmpSelectItems);
   }
 
   const addSelectItem = () => {
@@ -145,19 +202,24 @@ function ProposalForm() {
     setSelectedDate(date);
   };
 
-  const handleProposalChange = (name: keyof Comment) => (
+  const handleProposalChange = (name: keyof Proposal) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setValues({ ...values, [name]: event.target.value });
   };
 
-  const handleBoardChange = (name: keyof Comment) => (
+  const handleBoardChange = (name: keyof Proposal) => (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
   ) => {
     setValues({ ...values, [name]: String(event.target.value) });
   };
 
   function submitProposal() {
+    if (!validator.allValid()) {
+      validator.showMessages();
+      forceUpdate();
+      return;
+    }
     mutateProposal({
       variables: {
         subject: values.subject,
@@ -207,7 +269,14 @@ function ProposalForm() {
                       );
                     })}
                 </Select>
+                <FormHelperText>
+                  {proposal_id}
+                  <Typography variant="caption" color="error">
+                    {validator.message("select", values.board, "required")}
+                  </Typography>
+                </FormHelperText>
               </FormControl>
+              <br />
             </Grid>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <TextField
@@ -219,7 +288,13 @@ function ProposalForm() {
                 fullWidth
                 className={classes.textField}
                 variant="outlined"
+                helperText={validator.message(
+                  "subject",
+                  values.subject,
+                  "required|min:10"
+                )}
               />
+              <br />
             </Grid>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <TextField
@@ -234,6 +309,11 @@ function ProposalForm() {
                 fullWidth
                 className={classes.textField}
                 variant="outlined"
+                helperText={validator.message(
+                  "contents",
+                  values.contents,
+                  "required|min:10"
+                )}
               />
             </Grid>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
@@ -311,8 +391,13 @@ function ProposalForm() {
                     }}
                     fullWidth
                     className={classes.textField}
+                    helperText={validator.message(
+                      "contents",
+                      item.value,
+                      "required"
+                    )}
                     variant="outlined"
-                  />{" "}
+                  />
                   <br />
                 </Grid>
               );

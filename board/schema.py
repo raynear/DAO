@@ -53,8 +53,8 @@ class Query(object):
 
         if search:
             filter = (
-                Q(subject__icontains=search) |
-                Q(contents__icontains=search)
+                (Q(subject__icontains=search) | Q(contents__icontains=search)) &
+                (Q(author__exact=info.context.user) | Q(publish__exact=True))
             )
             qs = qs.filter(filter)
         if skip:

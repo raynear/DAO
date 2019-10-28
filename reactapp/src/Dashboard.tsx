@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { Grid, Paper } from "@material-ui/core";
 
 import Proposals from "./Proposals";
-import ProposalForm from "./NewProposal";
+import ProposalForm from "./EditProposal";
 
 import useStyles from "./Style";
 

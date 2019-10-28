@@ -32,7 +32,7 @@ import { Switch, Route } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import Proposal from "./Proposal";
 import Proposals from "./Proposals";
-import ProposalForm from "./NewProposal";
+import ProposalForm from "./EditProposal";
 import Copyright from "./Copyright";
 import UserInfo from "./UserInfo";
 
@@ -147,7 +147,7 @@ function Layout() {
           <ListItem
             button
             component={Link}
-            to="/NewProposal"
+            to="/EditProposal"
             selected={selectedIndex === 2}
             onClick={(e: any) => handleListItemClick(e, 2)}
           >
@@ -164,7 +164,12 @@ function Layout() {
           <Grid container spacing={0}>
             <Switch>
               <Route exact path="/" component={Dashboard} />
-              <Route exact path="/NewProposal" component={ProposalForm} />
+              <Route
+                exact
+                path="/EditProposal/:proposal_id"
+                component={ProposalForm}
+              />
+              <Route exact path="/EditProposal/" component={ProposalForm} />
               <Route exact path="/Proposals" component={Proposals} />
               <Route exact path="/Proposal/:id" component={Proposal} />
             </Switch>

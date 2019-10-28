@@ -59,9 +59,9 @@ function Proposal({ match }: any) {
         <FormControl>
           <RadioGroup>
             {data.proposal[0].selectitemmodelSet.map(
-              (selectItem: selectItem) => (
+              (selectItem: selectItem, idx: number) => (
                 <FormControlLabel
-                  key={selectItem.contents}
+                  key={idx}
                   control={<Radio />}
                   value={selectItem.contents}
                   label={selectItem.contents}
