@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import {
@@ -8,6 +8,7 @@ import {
   FormControl,
   RadioGroup,
   Radio,
+  Button,
   Grid
 } from "@material-ui/core";
 
@@ -16,11 +17,20 @@ import useStyles from "./Style";
 const GET_PROPOSAL = gql`
   query Proposal($id: Int!) {
     proposal(id: $id) {
+      author {
+        username
+      }
       subject
       contents
+      published
+      expireAt
       selectitemmodelSet {
+        id
         contents
       }
+    }
+    me {
+      username
     }
   }
 `;
@@ -33,12 +43,98 @@ interface selectItem {
 function Proposal({ match }: any) {
   const classes = useStyles();
 
+  const [voteSelect, setVoteSelect] = useState("");
+
   const id = match.params.id;
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setVoteSelect((event.target as HTMLInputElement).value);
+  };
+
   const { loading, error, data } = useQuery(GET_PROPOSAL, {
     variables: { id: id }
   });
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
+
+  function SelectItemList() {
+    return (
+      <div>
+        {data.proposal.selectitemmodelSet.map(
+          (selectItem: selectItem, idx: number) => (
+            <Typography key={idx}>{selectItem.contents}</Typography>
+          )
+        )}
+      </div>
+    );
+  }
+
+  function RadioButtons() {
+    return (
+      <FormControl>
+        <RadioGroup value={voteSelect} onChange={handleChange}>
+          {data.proposal.selectitemmodelSet.map(
+            (selectItem: selectItem, idx: number) => (
+              <FormControlLabel
+                key={idx}
+                control={<Radio />}
+                value={selectItem.contents}
+                label={selectItem.contents}
+              />
+            )
+          )}
+        </RadioGroup>
+      </FormControl>
+    );
+  }
+
+  function SelectList() {
+    if (data.proposal.published === false) {
+      return <SelectItemList />;
+    } else {
+      return <RadioButtons />;
+    }
+  }
+
+  function VoteButton() {
+    return (
+      <Button variant="contained" color="primary" disabled={voteSelect === ""}>
+        Vote
+      </Button>
+    );
+  }
+
+  function PublishButton() {
+    return (
+      <Button variant="contained" color="primary">
+        Publish
+      </Button>
+    );
+  }
+
+  function Publish() {
+    console.log("publish");
+  }
+
+  function Vote() {
+    console.log("vote");
+  }
+
+  function ActionButton() {
+    if (data.proposal.published) {
+      return <VoteButton />;
+    } else {
+      return <PublishButton />;
+    }
+  }
+
+  if (
+    data.proposal.author.username !== data.me.username &&
+    !data.proposal.published
+  ) {
+    return <Typography>it's not published</Typography>;
+  }
+
   return (
     <Grid className={classes.grid} item xs={12} lg={6}>
       <Paper className={classes.paper}>
@@ -51,25 +147,18 @@ function Proposal({ match }: any) {
           Type Of Proposal
         </Typography>
         <Typography variant="h5" color="textPrimary" gutterBottom>
-          {data.proposal[0].subject}
+          {data.proposal.subject}
         </Typography>
         <Typography variant="h6" color="textSecondary">
-          {data.proposal[0].contents}
+          {data.proposal.contents}
         </Typography>
-        <FormControl>
-          <RadioGroup>
-            {data.proposal[0].selectitemmodelSet.map(
-              (selectItem: selectItem, idx: number) => (
-                <FormControlLabel
-                  key={idx}
-                  control={<Radio />}
-                  value={selectItem.contents}
-                  label={selectItem.contents}
-                />
-              )
-            )}
-          </RadioGroup>
-        </FormControl>
+        <Typography variant="h6" color="textPrimary">
+          expire at:
+          {data.proposal.expireAt}
+        </Typography>
+        <SelectList />
+        <br />
+        <ActionButton />
       </Paper>
     </Grid>
   );

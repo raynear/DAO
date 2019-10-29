@@ -5,8 +5,11 @@
 - [x] 단독 proposal view => route 적용, id로 proposal 읽어오기
 - [x] author 붙이기
 - [x] new proposal에서 empty check => https://www.npmjs.com/package/simple-react-validator#betweenminmaxtypeoptional 사용
-- [ ] edit proposal
-- [ ] proposal에서 vote 기능 추가
+- [x] edit proposal
+  - [x] select item 삭제 버튼 추가
+- [ ] proposal에서 vote 기능
+  - [ ] proposal에서 voted 아니면 vote 버튼 보이도록
+  - [ ] proposal에서 author일 경우 publish 버튼 보이도록
 - [ ] management page
   - [ ] P-Rep용 
     - [ ] writen proposals

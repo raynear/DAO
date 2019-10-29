@@ -1,6 +1,7 @@
 from django.db.models import Q
 from django.contrib.auth.models import User
 import graphene
+from graphql import GraphQLError
 from graphene_django.types import DjangoObjectType
 from .models import BoardModel, ProposalModel, SelectItemModel, VoteModel
 
@@ -41,6 +42,10 @@ class Query(object):
     )
 
     def resolve_proposal(self, info, id=None, **kwargs):
+        if id == -1:
+            return None
+#            raise GraphQLError('No Proposal')
+
         return ProposalModel.objects.get(pk=id)
 
     def resolve_proposals(self, info, search=None, first=None, skip=None, **kwargs):
@@ -72,90 +77,72 @@ class Query(object):
         return VoteModel.objects.select_related('selectitem').all()
 
 
-class NewProposal(graphene.Mutation):
-    class Arguments:
-        subject = graphene.String()
-        contents = graphene.String(required=True)
-        boardID = graphene.String()
-        expire_at = graphene.DateTime()
-        #proposal_data = ProposalInput(required=True)
-
-    #proposal = graphene.Field(ProposalModel)
-    proposal = graphene.Field(ProposalModelType)
-
-    def mutate(self, info, subject, contents, boardID, expire_at):
-        #        proposal = ProposalModel(
-        #            subject=proposal_data.subject,
-        #            contents=proposal_data.contents
-        #        )
-        #proposal = ProposalModel(subject=subject, contents=contents, pk=id)
-        proposal = ProposalModel.objects.create(
-            author=info.context.user,
-            subject=subject,
-            contents=contents,
-            board=selectedBoard,
-            expire_at=expire_at)
-        proposal.save()
-        return NewProposal(proposal=proposal)
-
-
-class EditProposal(graphene.Mutation):
-    class Arguments:
-        id = graphene.Int()
-        subject = graphene.String()
-        contents = graphene.String(required=True)
-        boardID = graphene.String()
-        expire_at = graphene.DateTime()
-        #proposal_data = ProposalInput(required=True)
-
-    #proposal = graphene.Field(ProposalModel)
-    proposal = graphene.Field(ProposalModelType)
-
-    def mutate(self, info, id, subject, contents, boardID, expire_at):
-        #        proposal = ProposalModel(
-        #            subject=proposal_data.subject,
-        #            contents=proposal_data.contents
-        #        )
-        #proposal = ProposalModel(subject=subject, contents=contents, pk=id)
-        selectedBoard = BoardModel.objects.get(id=boardID)
-        print("test11111111111111111111111111111111111111")
-        proposal = ProposalModel.objects.get(pk=id)
-        print("proposal:", proposal)
-        proposal.author = info.context.user
-        proposal.subject = subject
-        proposal.contents = contents
-        proposal.board = selectedBoard
-        proposal.expire_at = expire_at
-        proposal.save()
-        return EditProposal(proposal=proposal)
-
-
 class SelectItemInput(graphene.InputObjectType):
-    proposalID = graphene.String()
+    item_id = graphene.Int()
     contents = graphene.String(required=True)
 
 
-class NewSelectItem(graphene.Mutation):
+class SetProposal(graphene.Mutation):
     class Arguments:
-        inputList = graphene.List(SelectItemInput)
+        proposal_id = graphene.Int()
+        subject = graphene.String()
+        contents = graphene.String(required=True)
+        board_id = graphene.Int()
+        published = graphene.Boolean()
+        expire_at = graphene.DateTime()
+        select_item_list = graphene.List(SelectItemInput)
 
-    selectItem = graphene.Field(SelectItemModelType)
+    proposal = graphene.Field(ProposalModelType)
 
-    class Meta:
-        description = "add new select item"
+    def mutate(self, info, proposal_id, subject, contents, published, board_id, expire_at, select_item_list):
+        selectedBoard = BoardModel.objects.get(id=board_id)
+        try:
+            proposal = ProposalModel.objects.get(pk=proposal_id)
+        except ProposalModel.DoesNotExist:
+            proposal = ProposalModel.objects.create(
+                author=info.context.user,
+                subject=subject,
+                contents=contents,
+                published=published,
+                board=selectedBoard,
+                expire_at=expire_at)
+            proposal.save()
+            for item in select_item_list:
+                selectItem = SelectItemModel.objects.create(
+                    proposal=proposal,
+                    contents=item.contents)
+                selectItem.save()
+        else:
+            proposal.author = info.context.user
+            proposal.subject = subject
+            proposal.contents = contents
+            proposal.board = selectedBoard
+            proposal.expire_at = expire_at
+            proposal.save()
 
-    def mutate(self, info, inputList):
-        for input in inputList:
-            selectedProposal = ProposalModel.objects.get(id=input.proposalID)
-            selectItem = SelectItemModel.objects.create(
-                proposal=selectedProposal,
-                contents=input.contents)
-            selectItem.save()
-        return NewSelectItem(selectItem=selectItem)
+            selectItem = SelectItemModel.objects.filter(proposal=proposal)
+            for aItem in selectItem:
+                flag = False
+                for bItem in select_item_list:
+                    if aItem == bItem:
+                        flag = True
+                if flag == False:
+                    aItem.delete()
+
+            for item in select_item_list:
+                try:
+                    selectItem = SelectItemModel.objects.get(id=item.item_id)
+                except SelectItemModel.DoesNotExist:
+                    selectItem = SelectItemModel.objects.create(
+                        proposal=proposal,
+                        contents=item.contents)
+                    selectItem.save()
+                else:
+                    selectItem.contents = item.contents
+                    selectItem.save()
+        return SetProposal(proposal=proposal)
 
 
 class MyMutation(graphene.ObjectType):
-    new_proposal = NewProposal.Field()
-    edit_proposal = EditProposal.Field()
-    new_selectItem = NewSelectItem.Field()
+    set_proposal = SetProposal.Field()
 #    all_board = graphene.List(BoardModelType)

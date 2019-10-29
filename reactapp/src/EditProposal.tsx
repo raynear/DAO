@@ -36,6 +36,7 @@ const GET_PROPOSAL = gql`
       published
       expireAt
       selectitemmodelSet {
+        id
         contents
       }
     }
@@ -47,45 +48,34 @@ const GET_PROPOSAL = gql`
 `;
 
 const SET_PROPOSAL = gql`
-  mutation NewProposal(
+  mutation SetProposal(
+    $proposalId: Int
     $subject: String!
     $contents: String!
-    $boardID: String!
+    $boardId: Int!
+    $published: Boolean!
     $expireAt: DateTime!
+    $selectItemList: [SelectItemInput]
   ) {
-    newProposal(
+    setProposal(
+      proposalId: $proposalId
       subject: $subject
       contents: $contents
-      boardID: $boardID
+      boardId: $boardId
+      published: $published
       expireAt: $expireAt
+      selectItemList: $selectItemList
     ) {
       proposal {
         id
         subject
         contents
-      }
-    }
-  }
-`;
-
-/*
-const SET_SELECTITEM = gql`
-mutation NewSelectitem($proposalID:String!, $contents:String!){
-  newSelectitem(proposalID: $proposalID, contents: $contents) {
-    selectItem {
-      id
-    }
-  }
-}
-`;
-*/
-
-const SET_SELECTITEMLIST = gql`
-  mutation NewSelectItems($list: [SelectItemInput]) {
-    newSelectitem(inputList: $list) {
-      selectItem {
-        id
-        contents
+        published
+        expireAt
+        selectitemmodelSet {
+          id
+          contents
+        }
       }
     }
   }
@@ -131,8 +121,8 @@ function ProposalForm({ match }: any) {
   }
 
   const [selectItems, setSelectItems] = useState([
-    { id: 0, contents: "" },
-    { id: 1, contents: "" }
+    { id: 1, contents: "" },
+    { id: 2, contents: "" }
   ]);
   const [values, setValues] = useState<Proposal>({
     subject: "",
@@ -145,7 +135,6 @@ function ProposalForm({ match }: any) {
   );
 
   const [mutateProposal] = useMutation(SET_PROPOSAL);
-  const [mutateSelectItemList] = useMutation(SET_SELECTITEMLIST);
 
   const { loading, error, data } = useQuery(GET_PROPOSAL, {
     variables: { id: proposal_id }
@@ -162,10 +151,12 @@ function ProposalForm({ match }: any) {
 
     if (
       data !== undefined &&
+      data !== null &&
       data.hasOwnProperty("proposal") &&
-      data.proposal.length > 0
+      data.proposal !== null
     ) {
-      const aProposal = data.proposal[0];
+      const aProposal = data.proposal;
+      console.log(aProposal);
       setValues({
         subject: aProposal.subject,
         contents: aProposal.contents,
@@ -177,6 +168,7 @@ function ProposalForm({ match }: any) {
       let tmpSelectItems: SelectItem[] = [];
       aProposal.selectitemmodelSet.map((item: any) => {
         tmpSelectItems.push({ id: item.id, contents: item.contents });
+        return item;
       });
       setSelectItems(aProposal.selectitemmodelSet);
       console.log(tmpSelectItems);
@@ -184,24 +176,58 @@ function ProposalForm({ match }: any) {
   }, [data]);
 
   const addSelectItem = () => {
-    setSelectItems([
+    let emptyIndex = selectItems.length + 1;
+    for (let i = 1; i < selectItems.length + 1; i++) {
+      let flag = false;
+      selectItems.map(item => {
+        if (item.id === i) {
+          flag = true;
+          return item;
+        }
+        return item;
+      });
+      if (flag === false) {
+        emptyIndex = i;
+        break;
+      }
+    }
+
+    let tmpSelectItems = [
       ...selectItems,
       {
-        id: selectItems.length,
+        id: emptyIndex,
         contents: ""
       }
-    ]);
+    ];
+
+    tmpSelectItems.sort(function(a, b) {
+      return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+    });
+
+    setSelectItems(tmpSelectItems);
   };
 
   function handleSelectItemChange(index: number, value: string) {
     const tmpSelectItems = selectItems.map(l => Object.assign({}, l));
-    tmpSelectItems.map((_, idx) => {
-      if (idx === index) {
-        tmpSelectItems[idx] = { id: idx, contents: value };
+    tmpSelectItems.map((item, idx) => {
+      if (item.id === index) {
+        tmpSelectItems[idx] = { id: item.id, contents: value };
       }
-      return _;
+      return item;
     });
     setSelectItems(tmpSelectItems);
+  }
+
+  function deleteSelectItem(index: number) {
+    const tmpSelectItems = selectItems.map(l => Object.assign({}, l));
+    const itemToFind = tmpSelectItems.find(item => {
+      return item.id === index;
+    });
+    if (itemToFind !== undefined) {
+      const idx = tmpSelectItems.indexOf(itemToFind);
+      if (idx > -1) tmpSelectItems.splice(idx, 1);
+      setSelectItems(tmpSelectItems);
+    }
   }
 
   const handleDateChange = (date: Date | null) => {
@@ -226,30 +252,39 @@ function ProposalForm({ match }: any) {
       forceUpdate();
       return;
     }
-    mutateProposal({
+
+    let tmpSelectItemList: { itemId: Number; contents: String }[] = [];
+    selectItems.map(item => {
+      tmpSelectItemList.push({
+        itemId: item.id,
+        contents: item.contents
+      });
+      //await mutateSelectItem({ variables: { proposalID: newProposalID, contents: item.value } });
+      return item;
+    });
+
+    let mutate_var: { [index: string]: any } = {
       variables: {
         subject: values.subject,
         contents: values.contents,
-        boardID: values.board,
+        boardId: values.board,
+        published: false,
         expireAt:
           selectedDate != null
             ? selectedDate.toISOString()
-            : "2019-10-05T09:00:00"
+            : "2019-10-05T09:00:00",
+        selectItemList: tmpSelectItemList
       }
-    }).then(result => {
-      let newProposalID = result.data.newProposal.proposal.id;
-      let tmpSelectItemList: { proposalID: String; contents: String }[] = [];
-      selectItems.map(item => {
-        tmpSelectItemList.push({
-          proposalID: newProposalID,
-          contents: item.contents
-        });
-        //await mutateSelectItem({ variables: { proposalID: newProposalID, contents: item.value } });
-        return item;
-      });
-      console.log(tmpSelectItemList);
-      mutateSelectItemList({ variables: { list: tmpSelectItemList } });
-    });
+    };
+
+    if (proposal_id !== -1) {
+      //      mutate_var.variables["proposalId"] = proposal_id;
+      console.log(mutate_var["variables"]);
+      mutate_var["variables"]["proposalId"] = proposal_id;
+      console.log(mutate_var["variables"]["proposalId"]);
+    }
+
+    mutateProposal(mutate_var);
   }
 
   return (
@@ -389,11 +424,11 @@ function ProposalForm({ match }: any) {
                 >
                   <TextField
                     id={String(item.id)}
-                    label={String(item.id + 1)}
+                    label={String(item.id)}
                     name={String(item.id)}
                     value={item.contents}
                     onChange={e => {
-                      handleSelectItemChange(idx, e.target.value);
+                      handleSelectItemChange(item.id, e.target.value);
                     }}
                     fullWidth
                     className={classes.textField}
@@ -403,6 +438,16 @@ function ProposalForm({ match }: any) {
                       "required"
                     )}
                     variant="outlined"
+                    InputProps={{
+                      endAdornment: (
+                        <Button
+                          color="secondary"
+                          onClick={() => deleteSelectItem(item.id)}
+                        >
+                          Delete
+                        </Button>
+                      )
+                    }}
                   />
                   <br />
                 </Grid>
