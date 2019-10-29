@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import SimpleReactValidator from "simple-react-validator";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/react-hooks";
@@ -28,6 +28,9 @@ import useForceUpdate from "./useForceUpdate";
 const GET_PROPOSAL = gql`
   query Proposal($id: Int!) {
     proposal(id: $id) {
+      board {
+        id
+      }
       subject
       contents
       published
@@ -124,10 +127,10 @@ function ProposalForm({ match }: any) {
   ) {
     proposal_id = match.params.proposal_id;
   } else {
-    proposal_id = 0;
+    proposal_id = -1;
   }
 
-  const [selectItems, setSelectItems] = useState<SelectItem>([
+  const [selectItems, setSelectItems] = useState([
     { id: 0, contents: "" },
     { id: 1, contents: "" }
   ]);
@@ -147,42 +150,45 @@ function ProposalForm({ match }: any) {
   const { loading, error, data } = useQuery(GET_PROPOSAL, {
     variables: { id: proposal_id }
   });
-  if (
-    !loading &&
-    !error &&
-    data &&
-    Array.isArray(boards) &&
-    boards.length === 0
-  ) {
-    let aBoards = data.allBoard.map((item: Board) => ({
-      id: item.id,
-      name: item.name
-    }));
-    setBoards(aBoards);
 
-    const aProposal = data.proposal[0];
-    setValues({
-      subject: aProposal.subject,
-      contents: aProposal.contents,
-      board: aProposal.board
-    });
+  useMemo(() => {
+    if (!loading && !error && data) {
+      let aBoards = data.allBoard.map((item: Board) => ({
+        id: item.id,
+        name: item.name
+      }));
+      setBoards(aBoards);
+    }
 
-    setSelectedDate(new Date(aProposal.expireAt));
+    if (
+      data !== undefined &&
+      data.hasOwnProperty("proposal") &&
+      data.proposal.length > 0
+    ) {
+      const aProposal = data.proposal[0];
+      setValues({
+        subject: aProposal.subject,
+        contents: aProposal.contents,
+        board: aProposal.board.id
+      });
 
-    let tmpSelectItems: Array[SelectItem] = [];
-    aProposal.selectitemmodelSet.map((item: any) => {
-      tmpSelectItems.push({ id: item.id, contents: item.contents });
-    });
-    setSelectItems(aProposal.selectitemmodelSet);
-    console.log(tmpSelectItems);
-  }
+      setSelectedDate(new Date(aProposal.expireAt));
+
+      let tmpSelectItems: SelectItem[] = [];
+      aProposal.selectitemmodelSet.map((item: any) => {
+        tmpSelectItems.push({ id: item.id, contents: item.contents });
+      });
+      setSelectItems(aProposal.selectitemmodelSet);
+      console.log(tmpSelectItems);
+    }
+  }, [data]);
 
   const addSelectItem = () => {
     setSelectItems([
       ...selectItems,
       {
         id: selectItems.length,
-        value: ""
+        contents: ""
       }
     ]);
   };
@@ -191,7 +197,7 @@ function ProposalForm({ match }: any) {
     const tmpSelectItems = selectItems.map(l => Object.assign({}, l));
     tmpSelectItems.map((_, idx) => {
       if (idx === index) {
-        tmpSelectItems[idx] = { id: idx, value: value };
+        tmpSelectItems[idx] = { id: idx, contents: value };
       }
       return _;
     });
@@ -236,7 +242,7 @@ function ProposalForm({ match }: any) {
       selectItems.map(item => {
         tmpSelectItemList.push({
           proposalID: newProposalID,
-          contents: item.value
+          contents: item.contents
         });
         //await mutateSelectItem({ variables: { proposalID: newProposalID, contents: item.value } });
         return item;
@@ -385,7 +391,7 @@ function ProposalForm({ match }: any) {
                     id={String(item.id)}
                     label={String(item.id + 1)}
                     name={String(item.id)}
-                    value={item.value}
+                    value={item.contents}
                     onChange={e => {
                       handleSelectItemChange(idx, e.target.value);
                     }}
@@ -393,7 +399,7 @@ function ProposalForm({ match }: any) {
                     className={classes.textField}
                     helperText={validator.message(
                       "contents",
-                      item.value,
+                      item.contents,
                       "required"
                     )}
                     variant="outlined"

@@ -32,7 +32,6 @@ const GET_USER = gql`
 function UserInfo() {
   const classes = useStyles();
   const [badgeCnt, setBadgeCnt] = React.useState(0);
-  const [badgeVisible, setBadgeVisible] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -104,7 +103,7 @@ function UserInfo() {
         >
           <Badge
             badgeContent={badgeCnt}
-            invisible={badgeVisible}
+            invisible={badgeCnt !== 0}
             color="secondary"
             className={classes.noMarginPadding}
           >
