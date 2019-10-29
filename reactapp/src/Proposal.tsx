@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import gql from "graphql-tag";
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import {
   Paper,
   Typography,
@@ -11,6 +11,8 @@ import {
   Button,
   Grid
 } from "@material-ui/core";
+
+import useForceUpdate from "./useForceUpdate";
 
 import useStyles from "./Style";
 
@@ -35,6 +37,17 @@ const GET_PROPOSAL = gql`
   }
 `;
 
+const SET_PUBLISH = gql`
+  mutation PublishProposal($proposalId: Int!) {
+    publishProposal(proposalId: $proposalId) {
+      proposal {
+        id
+        published
+      }
+    }
+  }
+`;
+
 interface selectItem {
   id: "";
   contents: "";
@@ -43,9 +56,13 @@ interface selectItem {
 function Proposal({ match }: any) {
   const classes = useStyles();
 
+  const forceUpdate = useForceUpdate();
+
   const [voteSelect, setVoteSelect] = useState("");
 
   const id = match.params.id;
+
+  const [mutatePublish] = useMutation(SET_PUBLISH);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVoteSelect((event.target as HTMLInputElement).value);
@@ -98,7 +115,12 @@ function Proposal({ match }: any) {
 
   function VoteButton() {
     return (
-      <Button variant="contained" color="primary" disabled={voteSelect === ""}>
+      <Button
+        variant="contained"
+        color="primary"
+        disabled={voteSelect === ""}
+        onClick={() => Vote()}
+      >
         Vote
       </Button>
     );
@@ -106,14 +128,18 @@ function Proposal({ match }: any) {
 
   function PublishButton() {
     return (
-      <Button variant="contained" color="primary">
+      <Button variant="contained" color="primary" onClick={() => Publish()}>
         Publish
       </Button>
     );
   }
 
   function Publish() {
-    console.log("publish");
+    mutatePublish({
+      variables: { proposalId: id }
+    }).then(() => {
+      forceUpdate();
+    });
   }
 
   function Vote() {

@@ -82,6 +82,34 @@ class SelectItemInput(graphene.InputObjectType):
     contents = graphene.String(required=True)
 
 
+class PublishProposal(graphene.Mutation):
+    class Arguments:
+        proposal_id = graphene.Int()
+
+    proposal = graphene.Field(ProposalModelType)
+
+    def mutate(self, info, proposal_id):
+        proposal = ProposalModel.objects.get(pk=proposal_id)
+        proposal.published = True
+        proposal.save()
+
+        return PublishProposal(proposal=proposal)
+
+
+class VoteProposal(graphene.Mutation):
+    class Arguments:
+        select_item = graphene.String()
+    vote = graphene.Field(VoteModelType)
+
+    def mutate(self, info, select_item):
+        vote = VoteModel.objects.create(
+            voter=info.context.user,
+            select=select_item
+        )
+        vote.save()
+        return VoteProposal(select_item=select_item)
+
+
 class SetProposal(graphene.Mutation):
     class Arguments:
         proposal_id = graphene.Int()
@@ -116,6 +144,7 @@ class SetProposal(graphene.Mutation):
             proposal.author = info.context.user
             proposal.subject = subject
             proposal.contents = contents
+            proposal.published = False
             proposal.board = selectedBoard
             proposal.expire_at = expire_at
             proposal.save()
@@ -144,5 +173,6 @@ class SetProposal(graphene.Mutation):
 
 
 class MyMutation(graphene.ObjectType):
+    publish_proposal = PublishProposal.Field()
     set_proposal = SetProposal.Field()
 #    all_board = graphene.List(BoardModelType)

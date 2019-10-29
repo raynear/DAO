@@ -265,6 +265,7 @@ function ProposalForm({ match }: any) {
 
     let mutate_var: { [index: string]: any } = {
       variables: {
+        proposalId: proposal_id,
         subject: values.subject,
         contents: values.contents,
         boardId: values.board,
@@ -310,12 +311,13 @@ function ProposalForm({ match }: any) {
                       );
                     })}
                 </Select>
-                <FormHelperText>
-                  {proposal_id}
-                  <Typography variant="caption" color="error">
-                    {validator.message("select", values.board, "required")}
-                  </Typography>
-                </FormHelperText>
+                {validator.message("select", values.board, "required") && (
+                  <FormHelperText>
+                    <Typography variant="caption" color="error">
+                      {validator.message("select", values.board, "required")}
+                    </Typography>
+                  </FormHelperText>
+                )}
               </FormControl>
               <br />
             </Grid>

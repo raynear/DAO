@@ -8,8 +8,10 @@
 - [x] edit proposal
   - [x] select item 삭제 버튼 추가
 - [ ] proposal에서 vote 기능
-  - [ ] proposal에서 voted 아니면 vote 버튼 보이도록
-  - [ ] proposal에서 author일 경우 publish 버튼 보이도록
+  - [x] proposal에서 voted 아니면 vote 버튼 보이도록
+  - [x] proposal에서 author일 경우 publish 버튼 보이도록
+  - [ ] publish 기능 구현
+  - [ ] vote 기능 구현
 - [ ] management page
   - [ ] P-Rep용 
     - [ ] writen proposals
