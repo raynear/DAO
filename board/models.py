@@ -14,7 +14,13 @@ class BoardModel(models.Model):
 
 class ProposalModel(models.Model):
     author = models.ForeignKey(
-        get_user_model(), related_name='proposals', on_delete=models.SET_NULL, null=True, blank=True, default=get_user_model())
+        get_user_model(),
+        related_name="proposals",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=get_user_model(),
+    )
     board = models.ForeignKey(BoardModel, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
     subject = models.CharField(max_length=50, blank=True)
@@ -39,7 +45,13 @@ class SelectItemModel(models.Model):
 
 class VoteModel(models.Model):
     voter = models.ForeignKey(
-        get_user_model(), related_name='votes', on_delete=models.SET_NULL, null=True, blank=True, default=get_user_model())
+        get_user_model(),
+        related_name="votes",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        default=get_user_model(),
+    )
     select = models.ForeignKey(SelectItemModel, on_delete=models.CASCADE)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)

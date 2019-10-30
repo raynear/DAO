@@ -7,11 +7,17 @@
 - [x] new proposal에서 empty check => https://www.npmjs.com/package/simple-react-validator#betweenminmaxtypeoptional 사용
 - [x] edit proposal
   - [x] select item 삭제 버튼 추가
-- [ ] proposal에서 vote 기능
+- [x] proposal에서 vote 기능
   - [x] proposal에서 voted 아니면 vote 버튼 보이도록
   - [x] proposal에서 author일 경우 publish 버튼 보이도록
-  - [ ] publish 기능 구현
-  - [ ] vote 기능 구현
+  - [x] publish 기능 구현
+  - [x] vote 기능 구현
+- [ ] navigation connect
+  - [ ] publish 이후 refresh
+  - [ ] vote 이후 refresh
+  - [ ] vote 이후 vote result view
+  - [ ] edit proposal 이후 해당 글 proposal로 이동
+  - [ ] proposal에서 publish되지 않았을때 edit 버튼 => edit proposal로 이동
 - [ ] management page
   - [ ] P-Rep용 
     - [ ] writen proposals

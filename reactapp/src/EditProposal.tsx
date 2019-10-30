@@ -162,7 +162,12 @@ function ProposalForm({ match }: any) {
     }
   }, [data]);
 
-  if (data !== undefined && data.proposal.published) {
+  if (
+    data !== undefined &&
+    data.proposal !== undefined &&
+    data.proposal !== null &&
+    data.proposal.published
+  ) {
     return (
       <Grid className={classes.grid} item xs={12} md={12} lg={12}>
         <Paper className={classes.paper}>
