@@ -78,7 +78,7 @@ class Query(object):
 
 
 class SelectItemInput(graphene.InputObjectType):
-    item_id = graphene.Int()
+    index = graphene.Int()
     contents = graphene.String(required=True)
 
 
@@ -138,6 +138,7 @@ class SetProposal(graphene.Mutation):
             for item in select_item_list:
                 selectItem = SelectItemModel.objects.create(
                     proposal=proposal,
+                    index=item.index,
                     contents=item.contents)
                 selectItem.save()
         else:

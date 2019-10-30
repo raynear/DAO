@@ -90,10 +90,6 @@ interface Proposal {
   contents: string;
   board: string;
 }
-interface SelectItem {
-  id: number;
-  contents: string;
-}
 
 const validator = new SimpleReactValidator({
   locale: "en",
@@ -120,10 +116,7 @@ function ProposalForm({ match }: any) {
     proposal_id = -1;
   }
 
-  const [selectItems, setSelectItems] = useState([
-    { id: 1, contents: "" },
-    { id: 2, contents: "" }
-  ]);
+  const [selectItems, setSelectItems] = useState(["", ""]);
   const [values, setValues] = useState<Proposal>({
     subject: "",
     contents: "",
@@ -165,69 +158,29 @@ function ProposalForm({ match }: any) {
 
       setSelectedDate(new Date(aProposal.expireAt));
 
-      let tmpSelectItems: SelectItem[] = [];
-      aProposal.selectitemmodelSet.map((item: any) => {
-        tmpSelectItems.push({ id: item.id, contents: item.contents });
+      let tmpSelectItems: string[] = [];
+      aProposal.selectitemmodelSet.map((item: any, idx: number) => {
+        tmpSelectItems.push(item.contents);
         return item;
       });
-      setSelectItems(aProposal.selectitemmodelSet);
-      console.log(tmpSelectItems);
+      setSelectItems(tmpSelectItems);
     }
   }, [data]);
 
   const addSelectItem = () => {
-    let emptyIndex = selectItems.length + 1;
-    for (let i = 1; i < selectItems.length + 1; i++) {
-      let flag = false;
-      selectItems.map(item => {
-        if (item.id === i) {
-          flag = true;
-          return item;
-        }
-        return item;
-      });
-      if (flag === false) {
-        emptyIndex = i;
-        break;
-      }
-    }
-
-    let tmpSelectItems = [
-      ...selectItems,
-      {
-        id: emptyIndex,
-        contents: ""
-      }
-    ];
-
-    tmpSelectItems.sort(function(a, b) {
-      return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-    });
-
-    setSelectItems(tmpSelectItems);
+    setSelectItems([...selectItems, ""]);
   };
 
   function handleSelectItemChange(index: number, value: string) {
-    const tmpSelectItems = selectItems.map(l => Object.assign({}, l));
-    tmpSelectItems.map((item, idx) => {
-      if (item.id === index) {
-        tmpSelectItems[idx] = { id: item.id, contents: value };
-      }
-      return item;
-    });
+    const tmpSelectItems = selectItems;
+    tmpSelectItems[index] = value;
     setSelectItems(tmpSelectItems);
   }
 
   function deleteSelectItem(index: number) {
-    const tmpSelectItems = selectItems.map(l => Object.assign({}, l));
-    const itemToFind = tmpSelectItems.find(item => {
-      return item.id === index;
-    });
-    if (itemToFind !== undefined) {
-      const idx = tmpSelectItems.indexOf(itemToFind);
-      if (idx > -1) tmpSelectItems.splice(idx, 1);
-      setSelectItems(tmpSelectItems);
-    }
+    const tmpSelectItems = selectItems;
+    tmpSelectItems.splice(index, 1);
+    setSelectItems(tmpSelectItems);
   }
 
   const handleDateChange = (date: Date | null) => {
@@ -253,11 +206,11 @@ function ProposalForm({ match }: any) {
       return;
     }
 
-    let tmpSelectItemList: { itemId: Number; contents: String }[] = [];
-    selectItems.map(item => {
+    let tmpSelectItemList: { index: Number; contents: String }[] = [];
+    selectItems.map((item, idx) => {
       tmpSelectItemList.push({
-        itemId: item.id,
-        contents: item.contents
+        index: idx,
+        contents: item
       });
       //await mutateSelectItem({ variables: { proposalID: newProposalID, contents: item.value } });
       return item;
@@ -425,26 +378,22 @@ function ProposalForm({ match }: any) {
                   lg={12}
                 >
                   <TextField
-                    id={String(item.id)}
-                    label={String(item.id)}
-                    name={String(item.id)}
-                    value={item.contents}
+                    id={String(idx + 1)}
+                    label={String(idx + 1)}
+                    name={String(idx + 1)}
+                    value={item}
                     onChange={e => {
-                      handleSelectItemChange(item.id, e.target.value);
+                      handleSelectItemChange(idx, e.target.value);
                     }}
                     fullWidth
                     className={classes.textField}
-                    helperText={validator.message(
-                      "contents",
-                      item.contents,
-                      "required"
-                    )}
+                    helperText={validator.message("contents", item, "required")}
                     variant="outlined"
                     InputProps={{
                       endAdornment: (
                         <Button
                           color="secondary"
-                          onClick={() => deleteSelectItem(item.id)}
+                          onClick={() => deleteSelectItem(idx)}
                         >
                           Delete
                         </Button>
