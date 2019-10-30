@@ -38,13 +38,13 @@ class Query(object):
         ProposalModelType,
         search=graphene.String(),
         first=graphene.Int(),
-        skip=graphene.Int()
+        skip=graphene.Int(),
     )
 
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
             return None
-#            raise GraphQLError('No Proposal')
+        #            raise GraphQLError('No Proposal')
 
         return ProposalModel.objects.get(pk=id)
 
@@ -52,9 +52,8 @@ class Query(object):
         qs = ProposalModel.objects.all()
 
         if search:
-            filter = (
-                (Q(subject__icontains=search) | Q(contents__icontains=search)) &
-                (Q(author__exact=info.context.user) | Q(publish__exact=True))
+            filter = (Q(subject__icontains=search) | Q(contents__icontains=search)) & (
+                Q(author__exact=info.context.user) | Q(publish__exact=True)
             )
             qs = qs.filter(filter)
         if skip:
@@ -68,13 +67,13 @@ class Query(object):
         return BoardModel.objects.all()
 
     def resolve_all_proposal(self, info, **kwargs):
-        return ProposalModel.objects.select_related('board').all()
+        return ProposalModel.objects.select_related("board").all()
 
     def resolve_all_selectitem(self, info, **kwargs):
-        return SelectItemModel.objects.select_related('proposal').all()
+        return SelectItemModel.objects.select_related("proposal").all()
 
     def resolve_all_vote(self, info, **kwargs):
-        return VoteModel.objects.select_related('selectitem').all()
+        return VoteModel.objects.select_related("selectitem").all()
 
 
 class SelectItemInput(graphene.InputObjectType):
@@ -98,16 +97,20 @@ class PublishProposal(graphene.Mutation):
 
 class VoteProposal(graphene.Mutation):
     class Arguments:
-        select_item = graphene.String()
+        select_item_index = graphene.Int()
+        proposal_id = graphene.Int()
+
     vote = graphene.Field(VoteModelType)
 
-    def mutate(self, info, select_item):
-        vote = VoteModel.objects.create(
-            voter=info.context.user,
-            select=select_item
-        )
+    def mutate(self, info, proposal_id, select_item_index):
+        proposal = ProposalModel.objects.get(pk=proposal_id)
+        qs = SelectItemModel.objects.all()
+        filter = Q(proposal__exact=proposal) & Q(index__exact=select_item_index)
+        qs = qs.filter(filter)
+
+        vote = VoteModel.objects.create(voter=info.context.user, select=qs[0])
         vote.save()
-        return VoteProposal(select_item=select_item)
+        return VoteProposal(vote=vote)
 
 
 class SetProposal(graphene.Mutation):
@@ -122,7 +125,17 @@ class SetProposal(graphene.Mutation):
 
     proposal = graphene.Field(ProposalModelType)
 
-    def mutate(self, info, proposal_id, subject, contents, published, board_id, expire_at, select_item_list):
+    def mutate(
+        self,
+        info,
+        proposal_id,
+        subject,
+        contents,
+        published,
+        board_id,
+        expire_at,
+        select_item_list,
+    ):
         selectedBoard = BoardModel.objects.get(id=board_id)
         try:
             proposal = ProposalModel.objects.get(pk=proposal_id)
@@ -133,13 +146,13 @@ class SetProposal(graphene.Mutation):
                 contents=contents,
                 published=published,
                 board=selectedBoard,
-                expire_at=expire_at)
+                expire_at=expire_at,
+            )
             proposal.save()
             for item in select_item_list:
                 selectItem = SelectItemModel.objects.create(
-                    proposal=proposal,
-                    index=item.index,
-                    contents=item.contents)
+                    proposal=proposal, index=item.index, contents=item.contents
+                )
                 selectItem.save()
         else:
             proposal.author = info.context.user
@@ -150,30 +163,22 @@ class SetProposal(graphene.Mutation):
             proposal.expire_at = expire_at
             proposal.save()
 
-            selectItem = SelectItemModel.objects.filter(proposal=proposal)
-            for aItem in selectItem:
-                flag = False
-                for bItem in select_item_list:
-                    if aItem == bItem:
-                        flag = True
-                if flag == False:
-                    aItem.delete()
+            selectItems = SelectItemModel.objects.filter(proposal=proposal)
+            for aItem in selectItems:
+                aItem.delete()
 
             for item in select_item_list:
-                try:
-                    selectItem = SelectItemModel.objects.get(id=item.item_id)
-                except SelectItemModel.DoesNotExist:
-                    selectItem = SelectItemModel.objects.create(
-                        proposal=proposal,
-                        contents=item.contents)
-                    selectItem.save()
-                else:
-                    selectItem.contents = item.contents
-                    selectItem.save()
+                selectItem = SelectItemModel.objects.create(
+                    proposal=proposal, index=item.index, contents=item.contents
+                )
+                selectItem.save()
         return SetProposal(proposal=proposal)
 
 
 class MyMutation(graphene.ObjectType):
     publish_proposal = PublishProposal.Field()
     set_proposal = SetProposal.Field()
+    vote_proposal = VoteProposal.Field()
+
+
 #    all_board = graphene.List(BoardModelType)

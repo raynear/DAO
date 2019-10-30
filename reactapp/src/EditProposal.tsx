@@ -37,6 +37,7 @@ const GET_PROPOSAL = gql`
       expireAt
       selectitemmodelSet {
         id
+        index
         contents
       }
     }
@@ -68,13 +69,8 @@ const SET_PROPOSAL = gql`
     ) {
       proposal {
         id
-        subject
-        contents
-        published
-        expireAt
         selectitemmodelSet {
           id
-          contents
         }
       }
     }
@@ -89,6 +85,7 @@ interface Proposal {
   subject: string;
   contents: string;
   board: string;
+  date: Date;
 }
 
 const validator = new SimpleReactValidator({
@@ -120,12 +117,10 @@ function ProposalForm({ match }: any) {
   const [values, setValues] = useState<Proposal>({
     subject: "",
     contents: "",
-    board: ""
+    board: "",
+    date: new Date("2019-10-18T21:11:54")
   });
   const [boards, setBoards] = useState([]);
-  const [selectedDate, setSelectedDate] = React.useState<Date | null>(
-    new Date("2019-10-18T21:11:54")
-  );
 
   const [mutateProposal] = useMutation(SET_PROPOSAL);
 
@@ -149,14 +144,14 @@ function ProposalForm({ match }: any) {
       data.proposal !== null
     ) {
       const aProposal = data.proposal;
-      console.log(aProposal);
       setValues({
         subject: aProposal.subject,
         contents: aProposal.contents,
-        board: aProposal.board.id
+        board: aProposal.board.id,
+        date: new Date(aProposal.expireAt)
       });
 
-      setSelectedDate(new Date(aProposal.expireAt));
+      //      setSelectedDate(new Date(aProposal.expireAt));
 
       let tmpSelectItems: string[] = [];
       aProposal.selectitemmodelSet.map((item: any, idx: number) => {
@@ -167,36 +162,54 @@ function ProposalForm({ match }: any) {
     }
   }, [data]);
 
+  if (data !== undefined && data.proposal.published) {
+    return (
+      <Grid className={classes.grid} item xs={12} md={12} lg={12}>
+        <Paper className={classes.paper}>
+          <Typography variant="h5" color="secondary">
+            Proposal "{data.proposal.subject}" is already published.
+          </Typography>
+          <Typography variant="h5" color="textPrimary">
+            Published Proposal edit is prohibited.
+          </Typography>
+        </Paper>
+      </Grid>
+    );
+  }
+
   const addSelectItem = () => {
     setSelectItems([...selectItems, ""]);
   };
 
-  function handleSelectItemChange(index: number, value: string) {
-    const tmpSelectItems = selectItems;
-    tmpSelectItems[index] = value;
-    setSelectItems(tmpSelectItems);
-  }
+  const handleSelectItemChange = (index: number) => (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSelectItems([
+      ...selectItems.slice(0, index),
+      event.target.value,
+      ...selectItems.slice(index + 1)
+    ]);
+  };
 
   function deleteSelectItem(index: number) {
-    const tmpSelectItems = selectItems;
-    tmpSelectItems.splice(index, 1);
-    setSelectItems(tmpSelectItems);
+    let tmp = selectItems;
+    tmp.splice(index, 1);
+    setSelectItems(tmp);
+    forceUpdate();
   }
 
   const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date);
+    if (date) {
+      setValues({ ...values, date: date });
+    }
   };
 
   const handleProposalChange = (name: keyof Proposal) => (
-    event: React.ChangeEvent<HTMLInputElement>
+    event:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<{ name?: string; value: unknown }>
   ) => {
     setValues({ ...values, [name]: event.target.value });
-  };
-
-  const handleBoardChange = (name: keyof Proposal) => (
-    event: React.ChangeEvent<{ name?: string; value: unknown }>
-  ) => {
-    setValues({ ...values, [name]: String(event.target.value) });
   };
 
   function submitProposal() {
@@ -224,19 +237,12 @@ function ProposalForm({ match }: any) {
         boardId: values.board,
         published: false,
         expireAt:
-          selectedDate != null
-            ? selectedDate.toISOString()
+          values.date != null
+            ? values.date.toISOString()
             : "2019-10-05T09:00:00",
         selectItemList: tmpSelectItemList
       }
     };
-
-    if (proposal_id !== -1) {
-      //      mutate_var.variables["proposalId"] = proposal_id;
-      console.log(mutate_var["variables"]);
-      mutate_var["variables"]["proposalId"] = proposal_id;
-      console.log(mutate_var["variables"]["proposalId"]);
-    }
 
     mutateProposal(mutate_var);
   }
@@ -251,7 +257,7 @@ function ProposalForm({ match }: any) {
                 <InputLabel className={classes.selectLabel}>Board</InputLabel>
                 <Select
                   value={values.board}
-                  onChange={handleBoardChange("board")}
+                  onChange={handleProposalChange("board")}
                   variant="outlined"
                   style={{ minWidth: 120 }}
                 >
@@ -329,7 +335,7 @@ function ProposalForm({ match }: any) {
                       id="date-picker-inline"
                       label="Date picker inline"
                       className={classes.textField}
-                      value={selectedDate}
+                      value={values.date}
                       onChange={handleDateChange}
                       KeyboardButtonProps={{
                         "aria-label": "change date"
@@ -343,7 +349,7 @@ function ProposalForm({ match }: any) {
                       id="time-picker"
                       label="Time picker"
                       className={classes.textField}
-                      value={selectedDate}
+                      value={values.date}
                       onChange={handleDateChange}
                       KeyboardButtonProps={{
                         "aria-label": "change time"
@@ -382,9 +388,7 @@ function ProposalForm({ match }: any) {
                     label={String(idx + 1)}
                     name={String(idx + 1)}
                     value={item}
-                    onChange={e => {
-                      handleSelectItemChange(idx, e.target.value);
-                    }}
+                    onChange={handleSelectItemChange(idx)}
                     fullWidth
                     className={classes.textField}
                     helperText={validator.message("contents", item, "required")}

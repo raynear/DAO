@@ -29,8 +29,8 @@ class ProposalModel(models.Model):
 
 
 class SelectItemModel(models.Model):
-    index = models.IntegerField(default=0)
     proposal = models.ForeignKey(ProposalModel, on_delete=models.CASCADE)
+    index = models.IntegerField(default=0)
     contents = models.TextField(default="")
 
     def __str__(self):

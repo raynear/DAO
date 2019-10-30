@@ -27,7 +27,7 @@ const GET_PROPOSAL = gql`
       published
       expireAt
       selectitemmodelSet {
-        id
+        index
         contents
       }
     }
@@ -48,8 +48,18 @@ const SET_PUBLISH = gql`
   }
 `;
 
+const SET_VOTE = gql`
+  mutation VoteProposal($proposalId: Int!, $selectItemIndex: Int!) {
+    voteProposal(proposalId: $proposalId, selectItemIndex: $selectItemIndex) {
+      vote {
+        id
+      }
+    }
+  }
+`;
+
 interface selectItem {
-  id: "";
+  index: 0;
   contents: "";
 }
 
@@ -58,14 +68,15 @@ function Proposal({ match }: any) {
 
   const forceUpdate = useForceUpdate();
 
-  const [voteSelect, setVoteSelect] = useState("");
+  const [voteSelect, setVoteSelect] = useState();
 
   const id = match.params.id;
 
   const [mutatePublish] = useMutation(SET_PUBLISH);
+  const [mutateVote] = useMutation(SET_VOTE);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setVoteSelect((event.target as HTMLInputElement).value);
+    setVoteSelect(parseInt((event.target as HTMLInputElement).value));
   };
 
   const { loading, error, data } = useQuery(GET_PROPOSAL, {
@@ -95,7 +106,7 @@ function Proposal({ match }: any) {
               <FormControlLabel
                 key={idx}
                 control={<Radio />}
-                value={selectItem.contents}
+                value={selectItem.index}
                 label={selectItem.contents}
               />
             )
@@ -118,7 +129,7 @@ function Proposal({ match }: any) {
       <Button
         variant="contained"
         color="primary"
-        disabled={voteSelect === ""}
+        disabled={voteSelect === -1}
         onClick={() => Vote()}
       >
         Vote
@@ -143,7 +154,11 @@ function Proposal({ match }: any) {
   }
 
   function Vote() {
-    console.log("vote");
+    mutateVote({
+      variables: { proposalId: id, selectItemIndex: voteSelect }
+    }).then(() => {
+      forceUpdate();
+    });
   }
 
   function ActionButton() {
