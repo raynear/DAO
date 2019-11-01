@@ -32,7 +32,7 @@ class Query(object):
     all_selectitem = graphene.List(SelectItemModelType)
     all_vote = graphene.List(VoteModelType)
 
-    is_voted = graphene.List(VoteModelType, proposal_id=graphene.Int())
+    is_voted = graphene.List(ProposalModelType, proposal_id=graphene.Int())
 
     proposal = graphene.Field(ProposalModelType, id=graphene.Int())
 
@@ -58,7 +58,7 @@ class Query(object):
             if len(qs2) > 0:
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 flag = True
-                return qs2
+                return proposal
 
         return None
 
