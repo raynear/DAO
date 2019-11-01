@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import {
@@ -41,8 +41,17 @@ const SET_PUBLISH = gql`
   mutation PublishProposal($proposalId: Int!) {
     publishProposal(proposalId: $proposalId) {
       proposal {
-        id
+        author {
+          username
+        }
+        subject
+        contents
         published
+        expireAt
+        selectitemmodelSet {
+          index
+          contents
+        }
       }
     }
   }
@@ -65,9 +74,9 @@ interface selectItem {
 
 function Proposal({ match }: any) {
   const classes = useStyles();
-
   const forceUpdate = useForceUpdate();
 
+  const [values, setValues] = useState();
   const [voteSelect, setVoteSelect] = useState();
 
   const id = match.params.id;
@@ -139,9 +148,14 @@ function Proposal({ match }: any) {
 
   function PublishButton() {
     return (
-      <Button variant="contained" color="primary" onClick={() => Publish()}>
-        Publish
-      </Button>
+      <Fragment>
+        <Button variant="outlined" color="primary" href={"/EditProposal/" + id}>
+          Edit
+        </Button>
+        <Button variant="contained" color="primary" onClick={() => Publish()}>
+          Publish
+        </Button>
+      </Fragment>
     );
   }
 

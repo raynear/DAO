@@ -17,9 +17,9 @@
   - [ ] vote 이후 refresh
   - [ ] vote 이후 vote result view
   - [ ] edit proposal 이후 해당 글 proposal로 이동
-  - [ ] proposal에서 publish되지 않았을때 edit 버튼 => edit proposal로 이동
+  - [x] proposal에서 publish되지 않았을때 edit 버튼 => edit proposal로 이동
 - [ ] management page
-  - [ ] P-Rep용 
+  - [ ] P-Rep용
     - [ ] writen proposals
     - [ ] edit proposal
     - [ ] publish proposal
