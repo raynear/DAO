@@ -13,7 +13,7 @@
   - [x] publish 기능 구현
   - [x] vote 기능 구현
 - [ ] navigation connect
-  - [ ] publish 이후 refresh
+  - [x] publish 이후 refresh
   - [ ] vote 이후 refresh
   - [ ] vote 이후 vote result view
   - [ ] edit proposal 이후 해당 글 proposal로 이동

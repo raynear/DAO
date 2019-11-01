@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import SimpleReactValidator from "simple-react-validator";
+import { Redirect } from "react-router-dom";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import {
@@ -21,6 +21,7 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker
 } from "@material-ui/pickers";
+import SimpleReactValidator from "simple-react-validator";
 
 import useStyles from "./Style";
 import useForceUpdate from "./useForceUpdate";
@@ -129,36 +130,28 @@ function ProposalForm({ match }: any) {
   });
 
   useMemo(() => {
-    if (!loading && !error && data) {
+    if (data) {
       let aBoards = data.allBoard.map((item: Board) => ({
         id: item.id,
         name: item.name
       }));
       setBoards(aBoards);
-    }
+      if (data.hasOwnProperty("proposal") && data.proposal !== null) {
+        const aProposal = data.proposal;
+        setValues({
+          subject: aProposal.subject,
+          contents: aProposal.contents,
+          board: aProposal.board.id,
+          date: new Date(aProposal.expireAt)
+        });
 
-    if (
-      data !== undefined &&
-      data !== null &&
-      data.hasOwnProperty("proposal") &&
-      data.proposal !== null
-    ) {
-      const aProposal = data.proposal;
-      setValues({
-        subject: aProposal.subject,
-        contents: aProposal.contents,
-        board: aProposal.board.id,
-        date: new Date(aProposal.expireAt)
-      });
-
-      //      setSelectedDate(new Date(aProposal.expireAt));
-
-      let tmpSelectItems: string[] = [];
-      aProposal.selectitemmodelSet.map((item: any, idx: number) => {
-        tmpSelectItems.push(item.contents);
-        return item;
-      });
-      setSelectItems(tmpSelectItems);
+        let tmpSelectItems: string[] = [];
+        aProposal.selectitemmodelSet.map((item: any) => {
+          tmpSelectItems.push(item.contents);
+          return item;
+        });
+        setSelectItems(tmpSelectItems);
+      }
     }
   }, [data]);
 
@@ -249,7 +242,12 @@ function ProposalForm({ match }: any) {
       }
     };
 
-    mutateProposal(mutate_var);
+    mutateProposal(mutate_var).then(result => {
+      console.log(result);
+      return (
+        <Redirect to={"/Proposal/" + result.data.setProposal.proposal.id} />
+      );
+    });
   }
 
   return (

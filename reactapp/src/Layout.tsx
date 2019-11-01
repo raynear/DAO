@@ -30,11 +30,11 @@ import { Switch, Route } from "react-router-dom";
 //import gql from "graphql-tag";
 
 import Dashboard from "./Dashboard";
-import Proposal from "./Proposal";
+import GQLGetProposal from "./GQLProposal";
 import Proposals from "./Proposals";
 import ProposalForm from "./EditProposal";
 import Copyright from "./Copyright";
-import UserInfo from "./UserInfo";
+import GQLUserInfo from "./GQLUserInfo";
 
 import useStyles from "./Style";
 
@@ -103,7 +103,7 @@ function Layout() {
             Muljom-DAO
           </Typography>
 
-          <UserInfo />
+          <GQLUserInfo />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -171,7 +171,7 @@ function Layout() {
               />
               <Route exact path="/EditProposal/" component={ProposalForm} />
               <Route exact path="/Proposals" component={Proposals} />
-              <Route exact path="/Proposal/:id" component={Proposal} />
+              <Route exact path="/Proposal/:id" component={GQLGetProposal} />
             </Switch>
           </Grid>
         </Container>

@@ -32,6 +32,8 @@ class Query(object):
     all_selectitem = graphene.List(SelectItemModelType)
     all_vote = graphene.List(VoteModelType)
 
+    is_voted = graphene.List(VoteModelType, proposal_id=graphene.Int())
+
     proposal = graphene.Field(ProposalModelType, id=graphene.Int())
 
     proposals = graphene.List(
@@ -40,6 +42,25 @@ class Query(object):
         first=graphene.Int(),
         skip=graphene.Int(),
     )
+
+    def resolve_is_voted(self, info, proposal_id):
+        proposal = ProposalModel.objects.get(pk=proposal_id)
+        qs = SelectItemModel.objects.all()
+        qs = qs.filter(Q(proposal__exact=proposal))
+        print("A")
+        print(qs)
+        flag = False
+        for item in qs:
+            qs2 = VoteModel.objects.all()
+            qs2 = qs2.filter(Q(voter__exact=info.context.user) & Q(select__exact=item))
+            print("B")
+            print(qs2)
+            if len(qs2) > 0:
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                flag = True
+                return qs2
+
+        return None
 
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
