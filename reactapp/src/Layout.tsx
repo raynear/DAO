@@ -32,7 +32,8 @@ import { Switch, Route } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import GQLGetProposal from "./GQLProposal";
 import Proposals from "./Proposals";
-import ProposalForm from "./EditProposal";
+//import EditProposal from "./EditProposal";
+import GQLEditProposal from "./GQLEditProposal";
 import Copyright from "./Copyright";
 import GQLUserInfo from "./GQLUserInfo";
 
@@ -167,9 +168,9 @@ function Layout() {
               <Route
                 exact
                 path="/EditProposal/:proposal_id"
-                component={ProposalForm}
+                component={GQLEditProposal}
               />
-              <Route exact path="/EditProposal/" component={ProposalForm} />
+              <Route exact path="/EditProposal/" component={GQLEditProposal} />
               <Route exact path="/Proposals" component={Proposals} />
               <Route exact path="/Proposal/:id" component={GQLGetProposal} />
             </Switch>

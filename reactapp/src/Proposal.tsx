@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import {
   Paper,
   Typography,
@@ -10,6 +10,9 @@ import {
   Grid
 } from "@material-ui/core";
 
+import gql from "graphql-tag";
+import { useApolloClient } from "@apollo/react-hooks";
+
 import useStyles from "./Style";
 
 interface selectItem {
@@ -20,7 +23,10 @@ interface selectItem {
 function Proposal(props: any) {
   const classes = useStyles();
 
+  const client = useApolloClient();
+
   const [voteSelect, setVoteSelect] = useState();
+  const [username, setUsername] = useState("");
 
   const id = props.match.params.id;
   const proposal = props.proposal;
@@ -29,13 +35,40 @@ function Proposal(props: any) {
     setVoteSelect(parseInt((event.target as HTMLInputElement).value));
   };
 
-  function SelectItemList() {
+  function GetVotersVotingPower(voter: string) {
+    return 100;
+  }
+
+  function SelectItemList(props: any) {
+    let VoteItem: number[] = [];
+    for (let i in proposal.selectitemmodelSet) {
+      let VotingPower = 0;
+      for (let j in proposal.selectitemmodelSet[i].votemodelSet) {
+        VotingPower += GetVotersVotingPower(
+          proposal.selectitemmodelSet[i].votemodelSet[j].voter.username
+        );
+      }
+      VoteItem.push(VotingPower);
+    }
     return (
       <Fragment>
         {proposal.selectitemmodelSet.map(
-          (selectItem: selectItem, idx: number) => (
-            <Typography key={idx}>{selectItem.contents}</Typography>
-          )
+          (selectItem: selectItem, idx: number) => {
+            if (props.voted === idx) {
+              return (
+                <Typography key={idx}>
+                  {selectItem.contents}
+                  {"(" + VoteItem[idx] + ")"} {"<= You Voted"}
+                </Typography>
+              );
+            } else {
+              return (
+                <Typography key={idx}>
+                  {selectItem.contents} {"(" + VoteItem[idx] + ")"}
+                </Typography>
+              );
+            }
+          }
         )}
       </Fragment>
     );
@@ -60,9 +93,39 @@ function Proposal(props: any) {
     );
   }
 
+  useEffect(() => {
+    client
+      .query({
+        query: gql`
+          {
+            username @client
+          }
+        `
+      })
+      .then(result => {
+        if (username === "") {
+          setUsername(result.data.username);
+        }
+      });
+  });
+
   function SelectList() {
-    if (proposal.published === false /* || username in proposal.votedlist */) {
-      return <SelectItemList />;
+    let SelectList = proposal.selectitemmodelSet;
+
+    let votedIdx = -1;
+    let flag = false;
+    for (let i in SelectList) {
+      for (let j in SelectList[i].votemodelSet) {
+        if (username === SelectList[i].votemodelSet[j].voter.username) {
+          votedIdx = parseInt(i);
+          flag = true;
+          break;
+        }
+      }
+    }
+
+    if (proposal.published === false || flag) {
+      return <SelectItemList voted={votedIdx} />;
     } else {
       return <RadioButtons />;
     }
@@ -99,7 +162,19 @@ function Proposal(props: any) {
   }
 
   function ActionButton() {
-    if (false /*username in votedlist*/) {
+    let SelectList = proposal.selectitemmodelSet;
+
+    let flag = false;
+    for (let i in SelectList) {
+      for (let j in SelectList[i].votemodelSet) {
+        if (username === SelectList[i].votemodelSet[j].voter.username) {
+          flag = true;
+          break;
+        }
+      }
+    }
+
+    if (flag) {
       return <div> </div>;
     } else if (proposal.published) {
       return <VoteButton />;

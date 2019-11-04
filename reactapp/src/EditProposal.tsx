@@ -1,7 +1,4 @@
-import React, { useState, useMemo } from "react";
-import { Redirect } from "react-router-dom";
-import gql from "graphql-tag";
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import React, { useState } from "react";
 import {
   Paper,
   Grid,
@@ -26,62 +23,6 @@ import SimpleReactValidator from "simple-react-validator";
 import useStyles from "./Style";
 import useForceUpdate from "./useForceUpdate";
 
-const GET_PROPOSAL = gql`
-  query Proposal($id: Int!) {
-    proposal(id: $id) {
-      board {
-        id
-      }
-      subject
-      contents
-      published
-      expireAt
-      selectitemmodelSet {
-        id
-        index
-        contents
-      }
-    }
-    allBoard {
-      id
-      name
-    }
-  }
-`;
-
-const SET_PROPOSAL = gql`
-  mutation SetProposal(
-    $proposalId: Int
-    $subject: String!
-    $contents: String!
-    $boardId: Int!
-    $published: Boolean!
-    $expireAt: DateTime!
-    $selectItemList: [SelectItemInput]
-  ) {
-    setProposal(
-      proposalId: $proposalId
-      subject: $subject
-      contents: $contents
-      boardId: $boardId
-      published: $published
-      expireAt: $expireAt
-      selectItemList: $selectItemList
-    ) {
-      proposal {
-        id
-        selectitemmodelSet {
-          id
-        }
-      }
-    }
-  }
-`;
-
-interface Board {
-  id: string;
-  name: string;
-}
 interface Proposal {
   subject: string;
   contents: string;
@@ -99,81 +40,44 @@ const validator = new SimpleReactValidator({
   )
 });
 
-function ProposalForm({ match }: any) {
+function EditProposal(props: any) {
   const classes = useStyles();
   const forceUpdate = useForceUpdate();
 
   let proposal_id: any;
   if (
-    match !== undefined &&
-    match.hasOwnProperty("params") &&
-    match.params.hasOwnProperty("proposal_id")
+    props.match !== undefined &&
+    props.match.hasOwnProperty("params") &&
+    props.match.params.hasOwnProperty("proposal_id")
   ) {
-    proposal_id = match.params.proposal_id;
+    proposal_id = props.match.params.proposal_id;
   } else {
     proposal_id = -1;
   }
 
-  const [selectItems, setSelectItems] = useState(["", ""]);
-  const [values, setValues] = useState<Proposal>({
+  const emptyProposal = {
     subject: "",
     contents: "",
-    board: "",
-    date: new Date("2019-10-18T21:11:54")
+    board: { id: "" },
+    expireAt: "2019-10-18T21:11:54",
+    selectitemmodelSet: []
+  };
+
+  const proposal = props.proposal ? props.proposal : emptyProposal;
+
+  let tmpSelectItems: string[] = [];
+  proposal.selectitemmodelSet.map((item: any) => {
+    tmpSelectItems.push(item.contents);
+    return item;
   });
-  const [boards, setBoards] = useState([]);
 
-  const [mutateProposal] = useMutation(SET_PROPOSAL);
-
-  const { loading, error, data } = useQuery(GET_PROPOSAL, {
-    variables: { id: proposal_id }
+  const [selectItems, setSelectItems] = useState(tmpSelectItems);
+  const [values, setValues] = useState<Proposal>({
+    subject: proposal.subject,
+    contents: proposal.contents,
+    board: proposal.board.id,
+    date: new Date(proposal.expireAt)
   });
-
-  useMemo(() => {
-    if (data) {
-      let aBoards = data.allBoard.map((item: Board) => ({
-        id: item.id,
-        name: item.name
-      }));
-      setBoards(aBoards);
-      if (data.hasOwnProperty("proposal") && data.proposal !== null) {
-        const aProposal = data.proposal;
-        setValues({
-          subject: aProposal.subject,
-          contents: aProposal.contents,
-          board: aProposal.board.id,
-          date: new Date(aProposal.expireAt)
-        });
-
-        let tmpSelectItems: string[] = [];
-        aProposal.selectitemmodelSet.map((item: any) => {
-          tmpSelectItems.push(item.contents);
-          return item;
-        });
-        setSelectItems(tmpSelectItems);
-      }
-    }
-  }, [data]);
-
-  if (
-    data !== undefined &&
-    data.proposal !== undefined &&
-    data.proposal !== null &&
-    data.proposal.published
-  ) {
-    return (
-      <Grid className={classes.grid} item xs={12} md={12} lg={12}>
-        <Paper className={classes.paper}>
-          <Typography variant="h5" color="secondary">
-            Proposal "{data.proposal.subject}" is already published.
-          </Typography>
-          <Typography variant="h5" color="textPrimary">
-            Published Proposal edit is prohibited.
-          </Typography>
-        </Paper>
-      </Grid>
-    );
-  }
 
   const addSelectItem = () => {
     setSelectItems([...selectItems, ""]);
@@ -218,7 +122,7 @@ function ProposalForm({ match }: any) {
     }
 
     let tmpSelectItemList: { index: Number; contents: String }[] = [];
-    selectItems.map((item, idx) => {
+    selectItems.map((item: any, idx: any) => {
       tmpSelectItemList.push({
         index: idx,
         contents: item
@@ -242,12 +146,7 @@ function ProposalForm({ match }: any) {
       }
     };
 
-    mutateProposal(mutate_var).then(result => {
-      console.log(result);
-      return (
-        <Redirect to={"/Proposal/" + result.data.setProposal.proposal.id} />
-      );
-    });
+    props.submitProposal(mutate_var);
   }
 
   return (
@@ -264,8 +163,8 @@ function ProposalForm({ match }: any) {
                   variant="outlined"
                   style={{ minWidth: 120 }}
                 >
-                  {boards.length > 0 &&
-                    boards.map((item: { id: string; name: string }) => {
+                  {props.boards.length > 0 &&
+                    props.boards.map((item: { id: string; name: string }) => {
                       return (
                         <MenuItem key={item.id} value={item.id}>
                           {item.name}
@@ -376,7 +275,7 @@ function ProposalForm({ match }: any) {
                 Add select item
               </Button>
             </Grid>
-            {selectItems.map((item, idx) => {
+            {selectItems.map((item: any, idx: any) => {
               return (
                 <Grid
                   className={classes.grid}
@@ -394,7 +293,7 @@ function ProposalForm({ match }: any) {
                     onChange={handleSelectItemChange(idx)}
                     fullWidth
                     className={classes.textField}
-                    helperText={validator.message("contents", item, "required")}
+                    helperText={validator.message("item", item, "required")}
                     variant="outlined"
                     InputProps={{
                       endAdornment: (
@@ -434,4 +333,4 @@ function ProposalForm({ match }: any) {
   );
 }
 
-export default ProposalForm;
+export default EditProposal;

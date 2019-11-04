@@ -13,7 +13,8 @@ import useStyles from "./Style";
 
 function UserInfo(props: any) {
   const classes = useStyles();
-  const [badgeCnt, setBadgeCnt] = React.useState(0);
+  //const [badgeCnt, setBadgeCnt] = React.useState(0);
+  const badgeCnt = 0;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -75,7 +76,7 @@ function UserInfo(props: any) {
         >
           <Badge
             badgeContent={badgeCnt}
-            invisible={badgeCnt !== 0}
+            invisible={badgeCnt === 0}
             color="secondary"
             className={classes.noMarginPadding}
           >

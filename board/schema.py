@@ -32,7 +32,7 @@ class Query(object):
     all_selectitem = graphene.List(SelectItemModelType)
     all_vote = graphene.List(VoteModelType)
 
-    is_voted = graphene.List(ProposalModelType, proposal_id=graphene.Int())
+    is_voted = graphene.Field(ProposalModelType, proposal_id=graphene.Int())
 
     proposal = graphene.Field(ProposalModelType, id=graphene.Int())
 
@@ -47,16 +47,11 @@ class Query(object):
         proposal = ProposalModel.objects.get(pk=proposal_id)
         qs = SelectItemModel.objects.all()
         qs = qs.filter(Q(proposal__exact=proposal))
-        print("A")
-        print(qs)
         flag = False
         for item in qs:
             qs2 = VoteModel.objects.all()
             qs2 = qs2.filter(Q(voter__exact=info.context.user) & Q(select__exact=item))
-            print("B")
-            print(qs2)
             if len(qs2) > 0:
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                 flag = True
                 return proposal
 
@@ -65,7 +60,7 @@ class Query(object):
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
             return None
-        #            raise GraphQLError('No Proposal')
+        #raise GraphQLError('No Proposal')
 
         return ProposalModel.objects.get(pk=id)
 
@@ -121,7 +116,8 @@ class VoteProposal(graphene.Mutation):
         select_item_index = graphene.Int()
         proposal_id = graphene.Int()
 
-    vote = graphene.Field(VoteModelType)
+    #    vote = graphene.Field(VoteModelType)
+    proposal = graphene.Field(ProposalModelType)
 
     def mutate(self, info, proposal_id, select_item_index):
         proposal = ProposalModel.objects.get(pk=proposal_id)
@@ -131,7 +127,7 @@ class VoteProposal(graphene.Mutation):
 
         vote = VoteModel.objects.create(voter=info.context.user, select=qs[0])
         vote.save()
-        return VoteProposal(vote=vote)
+        return VoteProposal(proposal=proposal)
 
 
 class SetProposal(graphene.Mutation):

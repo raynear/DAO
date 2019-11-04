@@ -17,6 +17,11 @@ const GET_PROPOSAL = gql`
       selectitemmodelSet {
         index
         contents
+        votemodelSet {
+          voter {
+            username
+          }
+        }
       }
     }
     me {
@@ -39,6 +44,11 @@ const SET_PUBLISH = gql`
         selectitemmodelSet {
           index
           contents
+          votemodelSet {
+            voter {
+              username
+            }
+          }
         }
       }
     }
@@ -48,8 +58,23 @@ const SET_PUBLISH = gql`
 const SET_VOTE = gql`
   mutation VoteProposal($proposalId: Int!, $selectItemIndex: Int!) {
     voteProposal(proposalId: $proposalId, selectItemIndex: $selectItemIndex) {
-      vote {
-        id
+      proposal {
+        author {
+          username
+        }
+        subject
+        contents
+        published
+        expireAt
+        selectitemmodelSet {
+          index
+          contents
+          votemodelSet {
+            voter {
+              username
+            }
+          }
+        }
       }
     }
   }
@@ -57,7 +82,7 @@ const SET_VOTE = gql`
 
 function GQLGetProposal({ match }: any) {
   const id = match.params.id;
-  //  const forceUpdate = useForceUpdate;
+  //const forceUpdate = useForceUpdate;
   const [values, setValues] = useState();
 
   const [mutatePublish] = useMutation(SET_PUBLISH);
@@ -75,8 +100,7 @@ function GQLGetProposal({ match }: any) {
     mutateVote({
       variables: { proposalId: id, selectItemIndex: voteSelect }
     }).then(voteResult => {
-      console.log("Vote");
-      console.log(voteResult);
+      setValues(voteResult.data.voteProposal.proposal);
     });
   }
 

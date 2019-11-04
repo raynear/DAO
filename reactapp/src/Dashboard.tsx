@@ -3,7 +3,8 @@ import clsx from "clsx";
 import { Grid, Paper } from "@material-ui/core";
 
 import Proposals from "./Proposals";
-import ProposalForm from "./EditProposal";
+//import EditProposal from "./EditProposal";
+import GQLEditProposal from "./GQLEditProposal";
 
 import useStyles from "./Style";
 
@@ -17,7 +18,7 @@ function Dashboard() {
           <Proposals />
         </Paper>
       </Grid>
-      <ProposalForm />
+      <GQLEditProposal />
     </Fragment>
   );
 }

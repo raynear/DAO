@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import gql from "graphql-tag";
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
 
@@ -25,22 +25,17 @@ function GQLUserInfo() {
 
   const { loading, error, data } = useQuery(GET_USER);
 
-  useMemo(() => {
-    if (data) {
-      console.log(data);
-      client.writeData({
-        data: {
-          username: data.me.username,
-          email: data.me.email
-          //          photo:
-          //            data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
-        }
-      });
-    }
-  }, [data]);
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
+  if (data) {
+    client.writeData({
+      data: {
+        username: data.me.username,
+        email: data.me.email
+        //photo:data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
+      }
+    });
+  }
   return <UserInfo data={data} />;
 }
 

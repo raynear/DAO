@@ -12,12 +12,13 @@
   - [x] proposal에서 author일 경우 publish 버튼 보이도록
   - [x] publish 기능 구현
   - [x] vote 기능 구현
-- [ ] navigation connect
+- [x] navigation connect
   - [x] publish 이후 refresh
-  - [ ] vote 이후 refresh
-  - [ ] vote 이후 vote result view
+  - [x] vote 이후 refresh
+  - [x] vote 이후 vote result view
   - [ ] edit proposal 이후 해당 글 proposal로 이동
   - [x] proposal에서 publish되지 않았을때 edit 버튼 => edit proposal로 이동
+- [x] EditProposal을 GQL과 분리
 - [ ] management page
   - [ ] P-Rep용
     - [ ] writen proposals
