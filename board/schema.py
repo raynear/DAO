@@ -60,7 +60,7 @@ class Query(object):
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
             return None
-        #raise GraphQLError('No Proposal')
+        # raise GraphQLError('No Proposal')
 
         return ProposalModel.objects.get(pk=id)
 
@@ -193,9 +193,6 @@ class SetProposal(graphene.Mutation):
 
 
 class MyMutation(graphene.ObjectType):
-    publish_proposal = PublishProposal.Field()
     set_proposal = SetProposal.Field()
+    publish_proposal = PublishProposal.Field()
     vote_proposal = VoteProposal.Field()
-
-
-#    all_board = graphene.List(BoardModelType)

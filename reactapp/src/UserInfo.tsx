@@ -56,7 +56,9 @@ function UserInfo(props: any) {
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
         >
-          <MenuItem onClick={handleMenuClose}>Sign Up</MenuItem>
+          <MenuItem onClick={handleMenuClose}>
+            <a href="/Sign/up">Sign Up</a>
+          </MenuItem>
           <MenuItem onClick={handleMenuClose}>
             <a href="http://localhost:8080/oauth/login/kakao">
               <Typography component="h6">Login</Typography>

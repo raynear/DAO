@@ -30,12 +30,12 @@ import { Switch, Route } from "react-router-dom";
 //import gql from "graphql-tag";
 
 import Dashboard from "./Dashboard";
-import GQLGetProposal from "./GQLProposal";
 import Proposals from "./Proposals";
-//import EditProposal from "./EditProposal";
+import GQLGetProposal from "./GQLProposal";
 import GQLEditProposal from "./GQLEditProposal";
-import Copyright from "./Copyright";
 import GQLUserInfo from "./GQLUserInfo";
+import GQLSign from "./GQLSign";
+import Copyright from "./Copyright";
 
 import useStyles from "./Style";
 
@@ -173,6 +173,7 @@ function Layout() {
               <Route exact path="/EditProposal/" component={GQLEditProposal} />
               <Route exact path="/Proposals" component={Proposals} />
               <Route exact path="/Proposal/:id" component={GQLGetProposal} />
+              <Route exact path="/Sign/:type" component={GQLSign} />
             </Switch>
           </Grid>
         </Container>

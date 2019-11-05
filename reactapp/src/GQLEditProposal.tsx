@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment, useState } from "react";
 import { Redirect } from "react-router-dom";
 import gql from "graphql-tag";
 import { useQuery, useMutation } from "@apollo/react-hooks";
@@ -68,6 +68,7 @@ function GQLEditProposal({ match }: any) {
     proposal_id = -1;
   }
 
+  const [redirect, setRedirect] = useState();
   const [mutateProposal] = useMutation(SET_PROPOSAL);
 
   const { loading, error, data } = useQuery(GET_PROPOSAL, {
@@ -76,22 +77,28 @@ function GQLEditProposal({ match }: any) {
 
   function submitProposal(mutate_var: any) {
     mutateProposal(mutate_var).then(result => {
-      console.log("redirect test:", result);
-      return (
-        <Redirect to={"/Proposal/" + result.data.setProposal.proposal.id} />
-      );
+      setRedirect(result.data.setProposal.proposal.id);
     });
+  }
+
+  function renderRedirect() {
+    if (redirect) {
+      return <Redirect to={"/Proposal/" + redirect} />;
+    }
   }
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
   return (
-    <EditProposal
-      match={match}
-      boards={data.allBoard}
-      proposal={data.proposal}
-      submitProposal={submitProposal}
-    />
+    <Fragment>
+      {renderRedirect()}
+      <EditProposal
+        match={match}
+        boards={data.allBoard}
+        proposal={data.proposal}
+        submitProposal={submitProposal}
+      />
+    </Fragment>
   );
 }
 
