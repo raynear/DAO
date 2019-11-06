@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "sslserver",
     "board",
+    "account",
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -63,11 +64,11 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     #    'graphql_jwt.middleware.JSONWebTokenMiddleware',
 ]
 
@@ -105,6 +106,7 @@ DATABASES = {
 }
 
 
+AUTH_USER_MODEL = "account.User"
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
@@ -200,5 +202,6 @@ CORS_ORIGIN_WHITELIST = (
     "http://localhost:8080",
 )
 
+CSRF_COOKIE_SECURE = False
 CSRF_TRUSTED_ORIGINS = ["https://localhost:3000", "http://localhost:3000"]
 

@@ -22,4 +22,5 @@ reactapp/yarn-error.log*
 
 DAO/__pycache__
 board/__pycache__
+account/__pycache__
 db.sqlite3

@@ -1,5 +1,9 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from account.models import User
+
+user = get_user_model()
+user = User
 
 # Create your models here.
 
@@ -14,12 +18,12 @@ class BoardModel(models.Model):
 
 class ProposalModel(models.Model):
     author = models.ForeignKey(
-        get_user_model(),
+        user,
         related_name="proposals",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        default=get_user_model(),
+        default=user,
     )
     board = models.ForeignKey(BoardModel, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
@@ -45,12 +49,12 @@ class SelectItemModel(models.Model):
 
 class VoteModel(models.Model):
     voter = models.ForeignKey(
-        get_user_model(),
+        user,
         related_name="votes",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        default=get_user_model(),
+        default=user,
     )
     select = models.ForeignKey(SelectItemModel, on_delete=models.CASCADE)
     create_at = models.DateTimeField(auto_now_add=True)

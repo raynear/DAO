@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate
 import graphene
 import graphql_social_auth
 from graphene_django import DjangoObjectType
@@ -18,7 +19,11 @@ class Query(board.schema.Query, graphene.ObjectType):
     )
 
     def resolve_get_user(self, info, username, password):
-        return get_user_model().objects.get(username=username, password=password)
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            return user
+        else:
+            return None
 
     def resolve_users(self, info, **kwargs):
         return get_user_model().objects.all()
@@ -41,12 +46,10 @@ class SetUser(graphene.Mutation):
 
     def mutate(self, info, username, password):
         try:
-            user = get_user_model().objects.create(
-                username=username, password=password,
-            )
+            user = get_user_model().objects.get(username=username, password=password)
         except get_user_model().DoesNotExist:
-            user = get_user_model().objects.get(username=username)
-        else:
+            user = get_user_model().objects.create(username=username)
+            user.set_password(password)
             user.save()
 
         return SetUser(user=user)

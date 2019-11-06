@@ -49,13 +49,6 @@ function Sign(props: any) {
 
   function SignUp() {
     console.log(signInfo);
-    console.log(
-      validator.message(
-        "password",
-        [signInfo.password, signInfo.password2],
-        "required|same"
-      )
-    );
     if (!validator.allValid()) {
       validator.showMessages();
       forceUpdate();
