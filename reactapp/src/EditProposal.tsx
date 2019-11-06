@@ -221,6 +221,19 @@ function EditProposal(props: any) {
               />
             </Grid>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
+              <TextField
+                id="contentview"
+                label="ContentsView"
+                value={values.contents}
+                multiline
+                rows="20"
+                margin="normal"
+                fullWidth
+                className={classes.textField}
+                variant="outlined"
+              />
+            </Grid>
+            <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <br />
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid
