@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
 import graphene
+import graphql_jwt
 import graphql_social_auth
 from graphene_django import DjangoObjectType
 import board.schema
@@ -57,6 +58,9 @@ class SetUser(graphene.Mutation):
 
 class Mutation(board.schema.MyMutation, graphene.ObjectType):
     # social_auth = graphql_social_auth.SocialAuthJWT.Field()
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
     social_auth = graphql_social_auth.SocialAuth.Field()
     set_user = SetUser.Field()
     pass
