@@ -20,8 +20,6 @@ import {
 } from "@material-ui/pickers";
 import SimpleReactValidator from "simple-react-validator";
 
-import ReactMarkdown from "react-markdown";
-
 import "codemirror/lib/codemirror.css";
 import "tui-editor/dist/tui-editor.min.css";
 import "tui-editor/dist/tui-editor-contents.min.css";

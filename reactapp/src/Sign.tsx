@@ -20,8 +20,6 @@ function Sign(props: any) {
       same: {
         message: "input two password same.",
         rule: (val: any, params: any) => {
-          console.log(val, params);
-          console.log(val[0] === val[1]);
           return val[0] === val[1];
         }
       }
@@ -48,7 +46,6 @@ function Sign(props: any) {
   }
 
   function SignUp() {
-    console.log(signInfo);
     if (!validator.allValid()) {
       validator.showMessages();
       forceUpdate();
@@ -59,7 +56,6 @@ function Sign(props: any) {
   }
 
   function SignIn() {
-    console.log(signInfo);
     if (!validator.allValid()) {
       validator.showMessages();
       forceUpdate();
@@ -173,6 +169,15 @@ function Sign(props: any) {
               <Grid item className={classes.grid} xs={12} md={12} lg={12}>
                 <Button variant="contained" color="primary" onClick={SignIn}>
                   Sign in
+                </Button>
+              </Grid>
+              <Grid item className={classes.grid} xs={12} md={12} lg={6}>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  href="https://localhost:8080/oauth/login/kakao"
+                >
+                  Kakao Login
                 </Button>
               </Grid>
             </Grid>

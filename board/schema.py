@@ -1,8 +1,11 @@
 from django.db.models import Q
 from django.contrib.auth.models import User
+
 import graphene
 from graphql import GraphQLError
 from graphene_django.types import DjangoObjectType
+from graphql_jwt.decorators import superuser_required, staff_member_required
+
 from .models import BoardModel, ProposalModel, SelectItemModel, VoteModel
 
 
@@ -50,7 +53,8 @@ class Query(object):
         flag = False
         for item in qs:
             qs2 = VoteModel.objects.all()
-            qs2 = qs2.filter(Q(voter__exact=info.context.user) & Q(select__exact=item))
+            qs2 = qs2.filter(Q(voter__exact=info.context.user)
+                             & Q(select__exact=item))
             if len(qs2) > 0:
                 flag = True
                 return proposal
@@ -82,12 +86,15 @@ class Query(object):
     def resolve_all_board(self, info, **kwargs):
         return BoardModel.objects.all()
 
+    @staff_member_required
     def resolve_all_proposal(self, info, **kwargs):
         return ProposalModel.objects.select_related("board").all()
 
+    @superuser_required
     def resolve_all_selectitem(self, info, **kwargs):
         return SelectItemModel.objects.select_related("proposal").all()
 
+    @staff_member_required
     def resolve_all_vote(self, info, **kwargs):
         return VoteModel.objects.select_related("selectitem").all()
 
@@ -122,7 +129,8 @@ class VoteProposal(graphene.Mutation):
     def mutate(self, info, proposal_id, select_item_index):
         proposal = ProposalModel.objects.get(pk=proposal_id)
         qs = SelectItemModel.objects.all()
-        filter = Q(proposal__exact=proposal) & Q(index__exact=select_item_index)
+        filter = Q(proposal__exact=proposal) & Q(
+            index__exact=select_item_index)
         qs = qs.filter(filter)
 
         vote = VoteModel.objects.create(voter=info.context.user, select=qs[0])

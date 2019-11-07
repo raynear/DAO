@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from graphene_django.views import GraphQLView
+from graphql_jwt.decorators import jwt_cookie
 import board.views
 from . import views
 
@@ -25,6 +26,6 @@ urlpatterns = [
     path('oauth/', include('social_django.urls')),
     path(r'admin/', admin.site.urls),
     path(r'board/', include('board.urls')),
-    path(r'graphql/', GraphQLView.as_view(graphiql=True, schema=schema)),
+    path(r'graphql/', jwt_cookie(GraphQLView.as_view(graphiql=True, schema=schema))),
     path(r'csrf/', views.csrf)
 ]

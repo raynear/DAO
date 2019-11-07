@@ -60,7 +60,7 @@ function UserInfo(props: any) {
             <a href="/Sign/up">Sign Up</a>
           </MenuItem>
           <MenuItem onClick={handleMenuClose}>
-            <a href="https://localhost:8080/oauth/login/kakao">
+            <a href="/Sign/in">
               <Typography component="h6">Login</Typography>
             </a>
           </MenuItem>

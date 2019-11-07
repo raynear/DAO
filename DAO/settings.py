@@ -47,10 +47,10 @@ INSTALLED_APPS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    "graphql_jwt.backends.JSONWebTokenBackend",
     "social_core.backends.kakao.KakaoOAuth2",
     "social_core.backends.google.GoogleOAuth2",
     "django.contrib.auth.backends.ModelBackend",
+    "graphql_jwt.backends.JSONWebTokenBackend",
 )
 
 SITE_ID = 1
@@ -58,6 +58,10 @@ SITE_ID = 1
 GRAPHENE = {
     "SCHEMA": "DAO.schema.schema",
     "MIDDLEWARE": ["graphql_jwt.middleware.JSONWebTokenMiddleware"],
+}
+
+GRAPHQL_JWT = {
+    'JWT_ALLOW_ARGUMENT': True,
 }
 
 MIDDLEWARE = [
@@ -200,8 +204,12 @@ CORS_ORIGIN_WHITELIST = (
     "http://localhost:3000",
     "https://localhost:3000",
     "http://localhost:8080",
+    "https://localhost:8080",
+    "http://127.0.0.1:3000",
+    "https://127.0.0.1:3000",
+    "http://127.0.0.1:8080",
+    "https://127.0.0.1:8080",
 )
 
 CSRF_COOKIE_SECURE = False
 CSRF_TRUSTED_ORIGINS = ["https://localhost:3000", "http://localhost:3000"]
-

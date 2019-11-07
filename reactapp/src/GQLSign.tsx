@@ -21,6 +21,14 @@ const GET_ME = gql`
   }
 `;
 
+const TOKEN_AUTH = gql`
+  mutation TokenAuth($username: String!, $password: String!) {
+    tokenAuth(username: $username, password: $password) {
+      token
+    }
+  }
+`;
+
 const GET_USER = gql`
   query GetUser($username: String!, $password: String!) {
     getUser(username: $username, password: $password) {
@@ -46,6 +54,7 @@ function GQLSign({ match }: any) {
 
   const [redirect, setRedirect] = useState();
   const [mutateSignup] = useMutation(SET_USER);
+  const [mutateTokenAuth] = useMutation(TOKEN_AUTH);
 
   function renderRedirect() {
     if (redirect) {
@@ -63,22 +72,19 @@ function GQLSign({ match }: any) {
   }
 
   function SignIn(username: string, password: string) {
-    const { loading, error, data } = useQuery(GET_USER, {
+    mutateTokenAuth({
       variables: { username: username, password: password }
+    }).then(result => {
+      console.log(result);
+      document.cookie = "JWT" + "=" + result.data.tokenAuth.token;
     });
-
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error!:{error}</p>;
-    if (data) {
-      console.log(data);
-    }
   }
 
   const { loading, error, data } = useQuery(GET_ME);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
-  if (data) {
+  if (data && data.me) {
     client.writeData({
       data: {
         username: data.me.username,

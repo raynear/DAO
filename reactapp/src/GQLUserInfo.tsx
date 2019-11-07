@@ -27,7 +27,8 @@ function GQLUserInfo() {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
-  if (data) {
+  if (data && data.me) {
+    console.log(data);
     client.writeData({
       data: {
         username: data.me.username,

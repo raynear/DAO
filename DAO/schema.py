@@ -2,8 +2,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate
 import graphene
 import graphql_jwt
+from graphql_jwt.decorators import login_required
 import graphql_social_auth
 from graphene_django import DjangoObjectType
+
 import board.schema
 
 
@@ -18,6 +20,12 @@ class Query(board.schema.Query, graphene.ObjectType):
     get_user = graphene.Field(
         UserType, username=graphene.String(), password=graphene.String()
     )
+
+    viewer = graphene.Field(UserType, token=graphene.String(required=True))
+
+    @login_required
+    def resolve_viewer(self, info, **kwargs):
+        return info.context.user
 
     def resolve_get_user(self, info, username, password):
         user = authenticate(username=username, password=password)

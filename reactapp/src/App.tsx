@@ -10,14 +10,15 @@ import Cookies from "js-cookie";
 import Layout from "./Layout";
 
 const client = new ApolloClient({
-  uri: "http://localhost:8080/graphql/",
+  uri: "https://localhost:8080/graphql/",
   // tell apollo to include credentials for csrf token protection
   credentials: "include",
   // async operation with fetch to get csrf token
   request: async operation => {
+    let jwt = Cookies.get("JWT");
     let csrf = Cookies.get("csrftoken");
     if (csrf === undefined) {
-      let csrftoken = await fetch("http://localhost:8080/csrf/")
+      let csrftoken = await fetch("https://localhost:8080/csrf/")
         .then(response => response.json())
         .then(data => data.csrfToken);
       // set the cookie 'csrftoken'
@@ -27,8 +28,8 @@ const client = new ApolloClient({
     operation.setContext({
       // set the 'X-CSRFToken' header to the csrftoken
       headers: {
-        "X-CSRFToken": csrf
-        //authorization: token ? `Bearer ${token}` : ""
+        "X-CSRFToken": csrf,
+        Authorization: jwt ? `Bearer ${jwt}` : ""
       }
     });
   },
