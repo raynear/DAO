@@ -199,6 +199,7 @@ SOCIAL_AUTH_PIPELINE = [
 # CORS
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_REPLACE_HTTPS_REFERER = True   # react 합치고 난 뒤에 제거해야됨. http=>https 호출 허용
 
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:3000",
