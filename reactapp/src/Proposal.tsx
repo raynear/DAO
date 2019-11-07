@@ -13,6 +13,8 @@ import {
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 
+import ReactMarkdown from "react-markdown";
+
 import useStyles from "./Style";
 
 interface selectItem {
@@ -197,9 +199,11 @@ function Proposal(props: any) {
         <Typography variant="h5" color="textPrimary" gutterBottom>
           {proposal.subject}
         </Typography>
-        <Typography variant="h6" color="textSecondary">
-          {proposal.contents}
-        </Typography>
+        <ReactMarkdown
+          source={proposal.contents.split("\n").join("  \n")}
+          skipHtml={false}
+          escapeHtml={false}
+        />
         <Typography variant="h6" color="textPrimary">
           expire at:
           {proposal.expireAt}

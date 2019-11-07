@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Paper,
   Grid,
@@ -20,15 +20,15 @@ import {
 } from "@material-ui/pickers";
 import SimpleReactValidator from "simple-react-validator";
 
+import ReactMarkdown from "react-markdown";
+
+import "codemirror/lib/codemirror.css";
+import "tui-editor/dist/tui-editor.min.css";
+import "tui-editor/dist/tui-editor-contents.min.css";
+import { Editor } from "@toast-ui/react-editor";
+
 import useStyles from "./Style";
 import useForceUpdate from "./useForceUpdate";
-
-interface Proposal {
-  subject: string;
-  contents: string;
-  board: string;
-  date: Date;
-}
 
 const validator = new SimpleReactValidator({
   locale: "en",
@@ -72,12 +72,18 @@ function EditProposal(props: any) {
   });
 
   const [selectItems, setSelectItems] = useState(tmpSelectItems);
-  const [values, setValues] = useState<Proposal>({
+  const [values, setValues] = useState({
     subject: proposal.subject,
     contents: proposal.contents,
     board: proposal.board.id,
     date: new Date(proposal.expireAt)
   });
+
+  useEffect(() => {
+    editorRef.current.getInstance().setValue(values.contents);
+  }, []);
+
+  let editorRef = React.createRef<any>();
 
   const addSelectItem = () => {
     setSelectItems([...selectItems, ""]);
@@ -106,12 +112,18 @@ function EditProposal(props: any) {
     }
   };
 
-  const handleProposalChange = (name: keyof Proposal) => (
+  const handleProposalChange = (name: string) => (
     event:
       | React.ChangeEvent<HTMLInputElement>
       | React.ChangeEvent<{ name?: string; value: unknown }>
   ) => {
     setValues({ ...values, [name]: event.target.value });
+  };
+
+  const handleEditorChange = () => {
+    const value = editorRef.current.getInstance().getValue();
+
+    setValues({ ...values, contents: value });
   };
 
   function submitProposal() {
@@ -188,8 +200,6 @@ function EditProposal(props: any) {
                 label="Subject"
                 value={values.subject}
                 onChange={handleProposalChange("subject")}
-                margin="normal"
-                fullWidth
                 className={classes.textField}
                 variant="outlined"
                 helperText={validator.message(
@@ -201,38 +211,30 @@ function EditProposal(props: any) {
               <br />
             </Grid>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
-              <TextField
-                id="content"
-                label="Contents"
-                value={values.contents}
-                onChange={handleProposalChange("contents")}
-                multiline
-                rows="20"
-                placeholder="Proposal Contents"
-                margin="normal"
-                fullWidth
-                className={classes.textField}
-                variant="outlined"
-                helperText={validator.message(
-                  "contents",
-                  values.contents,
-                  "required|min:10"
-                )}
+              <Editor
+                usageStatistics={false}
+                height="600px"
+                initialEditType="wysiwyg"
+                useCommandShortcut={true}
+                exts={[
+                  {
+                    name: "chart",
+                    minWidth: 100,
+                    maxWidth: 600,
+                    minHeight: 100,
+                    maxHeight: 300
+                  },
+                  "scrollSync",
+                  "colorSyntax",
+                  "uml",
+                  "mark",
+                  "table"
+                ]}
+                ref={editorRef}
+                onChange={handleEditorChange}
               />
             </Grid>
-            <Grid className={classes.grid} item xs={12} md={12} lg={12}>
-              <TextField
-                id="contentview"
-                label="ContentsView"
-                value={values.contents}
-                multiline
-                rows="20"
-                margin="normal"
-                fullWidth
-                className={classes.textField}
-                variant="outlined"
-              />
-            </Grid>
+
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <br />
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -304,7 +306,6 @@ function EditProposal(props: any) {
                     name={String(idx + 1)}
                     value={item}
                     onChange={handleSelectItemChange(idx)}
-                    fullWidth
                     className={classes.textField}
                     helperText={validator.message("item", item, "required")}
                     variant="outlined"

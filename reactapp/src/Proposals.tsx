@@ -12,6 +12,8 @@ import {
   TextField
 } from "@material-ui/core";
 
+import ReactMarkdown from "react-markdown";
+
 import useStyles from "./Style";
 
 const GET_PROPOSALS = gql`
@@ -130,9 +132,11 @@ function Proposals() {
                 {item.subject}
               </Link>
             </Typography>
-            <Typography variant="h6" color="textSecondary">
-              {item.contents}
-            </Typography>
+            <ReactMarkdown
+              source={item.contents.split("\n").join("  \n")}
+              skipHtml={false}
+              escapeHtml={false}
+            />
             {item.selectitemmodelSet.map((selectItem, idx) => (
               <Typography variant="body1" key={idx} color="textSecondary">
                 {selectItem.contents}

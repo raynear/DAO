@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: 12
     },
     formControl: {
-      margin: theme.spacing(1),
+      margin: theme.spacing(0),
       minwidth: 240
     },
     papercontainer: {
@@ -60,14 +60,15 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     grid: {
       margin: theme.spacing(0),
-      padding: theme.spacing(0)
+      padding: theme.spacing(1)
     },
     selectLabel: {
       margin: theme.spacing(0),
       marginLeft: theme.spacing(2)
     },
     textField: {
-      margin: theme.spacing(1)
+      margin: theme.spacing(0),
+      width: "100%"
     },
     root: {
       display: "flex"
