@@ -4,10 +4,13 @@ import {
   Typography,
   IconButton,
   Badge,
+  Link,
   Menu,
   MenuItem
 } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
+
+import Cookies from "js-cookie";
 
 import useStyles from "./Style";
 
@@ -24,20 +27,61 @@ function UserInfo(props: any) {
     setAnchorEl(null);
   };
 
+  const handleMenuLogout = () => {
+    setAnchorEl(null);
+    Cookies.remove("JWT");
+    console.log("is removed jwt?", Cookies.get("JWT"));
+  };
+
   const data = props.data;
 
   if (
-    !(
-      data !== undefined &&
-      data.hasOwnProperty("me") &&
-      data.me !== null &&
-      data.me.hasOwnProperty("socialAuth") &&
-      data.me.socialAuth.hasOwnProperty("edges") &&
-      data.me.socialAuth.edges.length > 0
-    )
+    data !== undefined &&
+    data.hasOwnProperty("me") &&
+    data.me !== null // &&
+    //      data.me.hasOwnProperty("socialAuth") &&
+    //      data.me.socialAuth.hasOwnProperty("edges") &&
+    //      data.me.socialAuth.edges.length > 0
     //    data.me.socialAuth.edges[0].hasOwnProperty("node") &&
     //    data.me.socialAuth.edges[0].node.hasOwnProperty("extraData")
   ) {
+    console.log("userinfo1", data);
+    return (
+      <Fragment>
+        <IconButton
+          aria-controls="user_menu"
+          color="inherit"
+          onClick={handleMenu}
+        >
+          <Badge
+            badgeContent={badgeCnt}
+            invisible={badgeCnt === 0}
+            color="secondary"
+            className={classes.noMarginPadding}
+          >
+            <Avatar
+              alt={data.me.username}
+              src={""}
+              className={classes.noMarginPadding}
+            />
+          </Badge>
+        </IconButton>
+        <Menu
+          id="user_menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+        >
+          <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+          <MenuItem onClick={handleMenuLogout} href="/">
+            Logout
+          </MenuItem>
+        </Menu>
+      </Fragment>
+    );
+  } else {
+    console.log("userinfo2", data);
     return (
       <Fragment>
         <IconButton
@@ -57,51 +101,16 @@ function UserInfo(props: any) {
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleMenuClose}>
-            <a href="/Sign/up">Sign Up</a>
+            <Link href="/Sign/up" style={{ textDecoration: "none" }}>
+              <Typography component="h6">Sign Up</Typography>
+            </Link>
           </MenuItem>
+
           <MenuItem onClick={handleMenuClose}>
-            <a href="/Sign/in">
+            <Link href="/Sign/in" style={{ textDecoration: "none" }}>
               <Typography component="h6">Login</Typography>
-            </a>
+            </Link>
           </MenuItem>
-        </Menu>
-      </Fragment>
-    );
-  } else {
-    //  console.log(data.me.socialAuth.edges[0].node.extraData);
-    return (
-      <Fragment>
-        <IconButton
-          aria-controls="user_menu"
-          color="inherit"
-          onClick={handleMenu}
-        >
-          <Badge
-            badgeContent={badgeCnt}
-            invisible={badgeCnt === 0}
-            color="secondary"
-            className={classes.noMarginPadding}
-          >
-            <Avatar
-              alt={data.me.username}
-              src={
-                data.me.socialAuth.edges[0].node.extraData.properties
-                  .thumbnailImage
-              }
-              className={classes.noMarginPadding}
-            />
-          </Badge>
-        </IconButton>
-        <Menu
-          id="user_menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleMenuClose}
-        >
-          <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-          <MenuItem onClick={handleMenuClose}>MyMy</MenuItem>
-          <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
         </Menu>
       </Fragment>
     );

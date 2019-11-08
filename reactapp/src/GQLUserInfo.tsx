@@ -2,13 +2,11 @@ import React from "react";
 import gql from "graphql-tag";
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
 
-import Cookies from "js-cookie";
-
 import UserInfo from "./UserInfo";
 
-const GET_USER = gql`
-  query Me($token: String!) {
-    me(token: $token) {
+const GET_ME = gql`
+  query {
+    me {
       username
       email
       socialAuth {
@@ -25,15 +23,12 @@ const GET_USER = gql`
 function GQLUserInfo() {
   const client = useApolloClient();
 
-  const myToken = Cookies.get("JWT");
-  const { loading, error, data } = useQuery(GET_USER, {
-    variables: { token: myToken ? myToken : "" }
-  });
+  const { loading, error, data } = useQuery(GET_ME);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error!:{error}</p>;
+  //  if (error) return <p>Error!:</p>;
   if (data && data.me) {
-    console.log(data);
+    console.log("GQLUserInfo", data);
     client.writeData({
       data: {
         username: data.me.username,

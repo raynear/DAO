@@ -19,8 +19,8 @@
   - [x] edit proposal 이후 해당 글 proposal로 이동
   - [x] proposal에서 publish되지 않았을때 edit 버튼 => edit proposal로 이동
 - [x] EditProposal을 GQL과 분리
-- [ ] 회원
-  - [ ] 회원가입 페이지
+- [x] 회원
+  - [x] 회원가입 페이지
   - [ ] 인증 페이지
   - [ ] 인증 부분 score 작성해서 테스트
 - [ ] management page

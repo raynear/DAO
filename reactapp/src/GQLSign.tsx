@@ -3,7 +3,10 @@ import { Redirect } from "react-router-dom";
 import gql from "graphql-tag";
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 
+import Cookies from "js-cookie";
+
 import Sign from "./Sign";
+import { Typography } from "@material-ui/core";
 
 const GET_ME = gql`
   query {
@@ -29,15 +32,6 @@ const TOKEN_AUTH = gql`
   }
 `;
 
-const GET_USER = gql`
-  query GetUser($username: String!, $password: String!) {
-    getUser(username: $username, password: $password) {
-      username
-      email
-    }
-  }
-`;
-
 const SET_USER = gql`
   mutation SetUser($username: String!, $password: String!) {
     setUser(username: $username, password: $password) {
@@ -58,7 +52,7 @@ function GQLSign({ match }: any) {
 
   function renderRedirect() {
     if (redirect) {
-      return <Redirect to={"/"} />;
+      return <Redirect to={redirect} />;
     }
   }
 
@@ -67,7 +61,7 @@ function GQLSign({ match }: any) {
       variables: { username: username, password: password }
     }).then(result => {
       console.log(result);
-      setRedirect(result);
+      setRedirect("/Sign/in");
     });
   }
 
@@ -75,15 +69,19 @@ function GQLSign({ match }: any) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(result => {
-      console.log(result);
-      document.cookie = "JWT" + "=" + result.data.tokenAuth.token;
+      Cookies.set("JWT", result.data.tokenAuth.token, { expires: 7 });
+      setRedirect("/");
     });
+  }
+
+  function UserDetail() {
+    return <Typography>UserDetail</Typography>;
   }
 
   const { loading, error, data } = useQuery(GET_ME);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error!:{error}</p>;
+  //  if (error) return <p>Error!:</p>;
   if (data && data.me) {
     client.writeData({
       data: {
@@ -93,6 +91,7 @@ function GQLSign({ match }: any) {
       }
     });
   }
+  console.log("GQLSign2", data);
   return (
     <Fragment>
       {renderRedirect()}
