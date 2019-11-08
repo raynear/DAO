@@ -15,33 +15,11 @@ class UserType(DjangoObjectType):
 
 
 class Query(board.schema.Query, graphene.ObjectType):
-    me = graphene.Field(UserType)
-    users = graphene.List(UserType)
-    get_user = graphene.Field(
-        UserType, username=graphene.String(), password=graphene.String()
-    )
-
-    viewer = graphene.Field(UserType, token=graphene.String(required=True))
+    me = graphene.Field(UserType, token=graphene.String(required=True))
 
     @login_required
-    def resolve_viewer(self, info, **kwargs):
-        return info.context.user
-
-    def resolve_get_user(self, info, username, password):
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            return user
-        else:
-            return None
-
-    def resolve_users(self, info, **kwargs):
-        return get_user_model().objects.all()
-
     def resolve_me(self, info, **kwargs):
-        if not info.context.user.is_authenticated:
-            return None
-        else:
-            return info.context.user
+        return info.context.user
 
     pass
 
