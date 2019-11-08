@@ -69,7 +69,10 @@ function GQLSign({ match }: any) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(result => {
-      Cookies.set("JWT", result.data.tokenAuth.token, { expires: 7 });
+      Cookies.set("JWT", result.data.tokenAuth.token, {
+        expires: 7,
+        domain: "http://localhost:3000/"
+      });
       setRedirect("/");
     });
   }

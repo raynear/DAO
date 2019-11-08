@@ -20,17 +20,21 @@ function UserInfo(props: any) {
   const badgeCnt = 0;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const handleMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    Cookies.remove("JWT");
+    console.log("is removed jwt?", Cookies.get("JWT"));
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = () => {
+    Cookies.remove("JWT", { domain: "http://localhost:3000/" });
+    console.log("is removed jwt?", Cookies.get("JWT"));
     setAnchorEl(null);
   };
 
   const handleMenuLogout = () => {
-    setAnchorEl(null);
     Cookies.remove("JWT");
     console.log("is removed jwt?", Cookies.get("JWT"));
+    setAnchorEl(null);
   };
 
   const data = props.data;

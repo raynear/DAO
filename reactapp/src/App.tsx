@@ -22,7 +22,10 @@ const client = new ApolloClient({
         .then(response => response.json())
         .then(data => data.csrfToken);
       // set the cookie 'csrftoken'
-      Cookies.set("csrftoken", csrftoken, { expires: 7 });
+      Cookies.set("csrftoken", csrftoken, {
+        expires: 7,
+        domain: "http://localhost:3000/"
+      });
       csrf = csrftoken;
     }
     operation.setContext({
