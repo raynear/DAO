@@ -15,7 +15,6 @@ const client = new ApolloClient({
   credentials: "include",
   // async operation with fetch to get csrf token
   request: async operation => {
-    let jwt = Cookies.get("JWT");
     let csrf = Cookies.get("csrftoken");
     if (csrf === undefined) {
       let csrftoken = await fetch("https://localhost:8080/csrf/")
@@ -31,8 +30,7 @@ const client = new ApolloClient({
     operation.setContext({
       // set the 'X-CSRFToken' header to the csrftoken
       headers: {
-        "X-CSRFToken": csrf,
-        Authorization: jwt ? `Bearer ${jwt}` : ""
+        "X-CSRFToken": csrf
       }
     });
   },

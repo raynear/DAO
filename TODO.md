@@ -21,6 +21,8 @@
 - [x] EditProposal을 GQL과 분리
 - [x] 회원
   - [x] 회원가입 페이지
+  - [x] Logout
+  - [ ] Sign 후 refresh
   - [ ] 인증 페이지
   - [ ] 인증 부분 score 작성해서 테스트
 - [ ] management page

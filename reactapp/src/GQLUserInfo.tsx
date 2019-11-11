@@ -1,6 +1,6 @@
 import React from "react";
 import gql from "graphql-tag";
-import { useQuery, useApolloClient } from "@apollo/react-hooks";
+import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 
 import UserInfo from "./UserInfo";
 
@@ -20,10 +20,20 @@ const GET_ME = gql`
   }
 `;
 
+const LOG_OUT = gql`
+  mutation Logout {
+    logout {
+      noop
+    }
+  }
+`;
+
 function GQLUserInfo() {
   const client = useApolloClient();
 
-  const { loading, error, data } = useQuery(GET_ME);
+  const [mutateLogout] = useMutation(LOG_OUT);
+
+  const { loading, data } = useQuery(GET_ME);
 
   if (loading) return <p>Loading...</p>;
   //  if (error) return <p>Error!:</p>;
@@ -37,7 +47,7 @@ function GQLUserInfo() {
       }
     });
   }
-  return <UserInfo data={data} />;
+  return <UserInfo data={data} Logout={mutateLogout} />;
 }
 
 export default GQLUserInfo;

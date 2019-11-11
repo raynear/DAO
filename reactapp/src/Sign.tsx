@@ -112,6 +112,11 @@ function Sign(props: any) {
                   type="password"
                   value={signInfo.password2}
                   onChange={handleSignInfo}
+                  onKeyPress={e => {
+                    if (e.key === "Enter") {
+                      SignIn();
+                    }
+                  }}
                   helperText={SameValidate([
                     signInfo.password,
                     signInfo.password2
@@ -159,6 +164,11 @@ function Sign(props: any) {
                   type="password"
                   value={signInfo.password}
                   onChange={handleSignInfo}
+                  onKeyPress={e => {
+                    if (e.key === "Enter") {
+                      SignIn();
+                    }
+                  }}
                   helperText={validator.message(
                     "password",
                     signInfo.password,

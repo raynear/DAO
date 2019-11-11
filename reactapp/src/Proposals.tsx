@@ -12,6 +12,8 @@ import {
   TextField
 } from "@material-ui/core";
 
+import clsx from "clsx";
+
 import ReactMarkdown from "react-markdown";
 
 import useStyles from "./Style";
@@ -85,66 +87,70 @@ function Proposals() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
   return (
-    <Grid container className={classes.container} spacing={0}>
-      <Grid item className={classes.grid} xs={12} lg={12}>
-        <TextField
-          className={classes.textField}
-          label="search"
-          type="text"
-          value={queryValues.search}
-          onChange={handleChange("search")}
-        />
-        <TextField
-          className={classes.textField}
-          label="first"
-          type="number"
-          value={queryValues.first}
-          onChange={handleChange("first")}
-        />
-        <TextField
-          className={classes.textField}
-          label="skip"
-          type="number"
-          value={queryValues.skip}
-          onChange={handleChange("skip")}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => queryFilters()}
-        >
-          fetch!
-        </Button>
-      </Grid>
-      {data.proposals.map((item: proposal, idx: number) => (
-        <Grid className={classes.grid} key={idx} item xs={12} lg={6}>
-          <Paper className={classes.paper}>
-            <Typography
-              className={classes.title}
-              color="textSecondary"
-              gutterBottom
-            >
-              {" "}
-              Type Of Proposal
-            </Typography>
-            <Typography variant="h5" color="textPrimary" gutterBottom>
-              <Link href={"/Proposal/" + item.id} color="textPrimary">
-                {item.subject}
-              </Link>
-            </Typography>
-            <ReactMarkdown
-              source={item.contents.split("\n").join("  \n")}
-              skipHtml={false}
-              escapeHtml={false}
+    <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+      <Paper className={clsx(classes.papercontainer, classes.fixedHeight)}>
+        <Grid container className={classes.container} spacing={0}>
+          <Grid item className={classes.grid} xs={12} lg={12}>
+            <TextField
+              className={classes.textField}
+              label="search"
+              type="text"
+              value={queryValues.search}
+              onChange={handleChange("search")}
             />
-            {item.selectitemmodelSet.map((selectItem, idx) => (
-              <Typography variant="body1" key={idx} color="textSecondary">
-                {selectItem.contents}
-              </Typography>
-            ))}
-          </Paper>
+            <TextField
+              className={classes.textField}
+              label="first"
+              type="number"
+              value={queryValues.first}
+              onChange={handleChange("first")}
+            />
+            <TextField
+              className={classes.textField}
+              label="skip"
+              type="number"
+              value={queryValues.skip}
+              onChange={handleChange("skip")}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => queryFilters()}
+            >
+              fetch!
+            </Button>
+          </Grid>
+          {data.proposals.map((item: proposal, idx: number) => (
+            <Grid item className={classes.grid} key={idx} xs={12} lg={6}>
+              <Paper className={classes.paper}>
+                <Typography
+                  className={classes.title}
+                  color="textSecondary"
+                  gutterBottom
+                >
+                  {" "}
+                  Type Of Proposal
+                </Typography>
+                <Typography variant="h5" color="textPrimary" gutterBottom>
+                  <Link href={"/Proposal/" + item.id} color="textPrimary">
+                    {item.subject}
+                  </Link>
+                </Typography>
+                <ReactMarkdown
+                  source={item.contents.split("\n").join("  \n")}
+                  skipHtml={false}
+                  escapeHtml={false}
+                />
+                {item.selectitemmodelSet.map((selectItem, idx) => (
+                  <Typography variant="body1" key={idx} color="textSecondary">
+                    {selectItem.contents}
+                  </Typography>
+                ))}
+              </Paper>
+            </Grid>
+          ))}
         </Grid>
-      ))}
+      </Paper>
     </Grid>
   );
 }

@@ -160,10 +160,10 @@ function EditProposal(props: any) {
   }
 
   return (
-    <Grid className={classes.grid} item xs={12} md={12} lg={12}>
+    <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
         <form>
-          <Grid container spacing={0} className={classes.container}>
+          <Grid container className={classes.container} spacing={0}>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <FormControl className={classes.formControl}>
                 <InputLabel className={classes.selectLabel}>Board</InputLabel>

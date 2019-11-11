@@ -22,10 +22,29 @@ from . import views
 
 from .schema import schema
 
+
+class CustomGraphQLView(GraphQLView):
+    def dispatch(self, request, *args, **kwargs):
+        response = super().dispatch(request, *args, **kwargs)
+        response = self._delete_cookies_on_response_if_needed(
+            request, response)
+        return response
+
+    def _delete_cookies_on_response_if_needed(self, request, response):
+        data = self.parse_body(request)
+        operation_name = self.get_graphql_params(request, data)[2]
+
+        if operation_name and operation_name == 'Logout':
+            response.delete_cookie('JWT')
+
+        return response
+
+
 urlpatterns = [
     path('oauth/', include('social_django.urls')),
     path(r'admin/', admin.site.urls),
     path(r'board/', include('board.urls')),
-    path(r'graphql/', jwt_cookie(GraphQLView.as_view(graphiql=True, schema=schema))),
+    path(r'graphql/', jwt_cookie(CustomGraphQLView.as_view(graphiql=True, schema=schema))),
+    #path(r'graphql/', GraphQLView.as_view(graphiql=True, schema=schema)),
     path(r'csrf/', views.csrf)
 ]

@@ -3,10 +3,8 @@ import { Redirect } from "react-router-dom";
 import gql from "graphql-tag";
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 
-import Cookies from "js-cookie";
-
 import Sign from "./Sign";
-import { Typography } from "@material-ui/core";
+//import { Typography } from "@material-ui/core";
 
 const GET_ME = gql`
   query {
@@ -69,19 +67,15 @@ function GQLSign({ match }: any) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(result => {
-      Cookies.set("JWT", result.data.tokenAuth.token, {
-        expires: 7,
-        domain: "http://localhost:3000/"
-      });
       setRedirect("/");
     });
   }
 
-  function UserDetail() {
-    return <Typography>UserDetail</Typography>;
-  }
+  //function UserDetail() {
+  //  return <Typography>UserDetail</Typography>;
+  //}
 
-  const { loading, error, data } = useQuery(GET_ME);
+  const { loading, data } = useQuery(GET_ME);
 
   if (loading) return <p>Loading...</p>;
   //  if (error) return <p>Error!:</p>;

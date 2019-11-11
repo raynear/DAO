@@ -21,8 +21,6 @@ class Query(board.schema.Query, graphene.ObjectType):
     def resolve_me(self, info, **kwargs):
         return info.context.user
 
-    pass
-
 
 class SetUser(graphene.Mutation):
     class Arguments:
@@ -42,6 +40,13 @@ class SetUser(graphene.Mutation):
         return SetUser(user=user)
 
 
+class Logout(graphene.Mutation):
+    noop = graphene.Field(graphene.Boolean)
+
+    def mutate(self, info):
+        pass
+
+
 class Mutation(board.schema.MyMutation, graphene.ObjectType):
     # social_auth = graphql_social_auth.SocialAuthJWT.Field()
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
@@ -49,6 +54,7 @@ class Mutation(board.schema.MyMutation, graphene.ObjectType):
     refresh_token = graphql_jwt.Refresh.Field()
     social_auth = graphql_social_auth.SocialAuth.Field()
     set_user = SetUser.Field()
+    logout = Logout.Field()
     pass
 
 
