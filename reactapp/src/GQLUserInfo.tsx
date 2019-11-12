@@ -39,11 +39,22 @@ function GQLUserInfo() {
   //  if (error) return <p>Error!:</p>;
   if (data && data.me) {
     console.log("GQLUserInfo", data);
+    let photo = "";
+    try {
+      if (
+        data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
+      ) {
+        photo =
+          data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage;
+      }
+    } catch {
+      console.log("no social login");
+    }
     client.writeData({
       data: {
         username: data.me.username,
-        email: data.me.email
-        //photo:data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
+        email: data.me.email,
+        photo: photo
       }
     });
   }

@@ -71,7 +71,9 @@ function UserInfo(props: any) {
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
         >
-          <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+          <MenuItem onClick={handleMenuClose} href="/Profile">
+            Profile
+          </MenuItem>
           <MenuItem onClick={handleMenuLogout} href="/">
             Logout
           </MenuItem>
@@ -88,7 +90,7 @@ function UserInfo(props: any) {
           onClick={handleMenu}
         >
           <Avatar className={classes.noMarginPadding}>
-            <AccountCircle />
+            <AccountCircle fontSize="large" />
           </Avatar>
         </IconButton>
         <Menu

@@ -88,7 +88,7 @@ function Proposals() {
   if (error) return <p>Error!:{error}</p>;
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-      <Paper className={clsx(classes.papercontainer, classes.fixedHeight)}>
+      <Paper className={classes.papercontainer}>
         <Grid container className={classes.container} spacing={0}>
           <Grid item className={classes.grid} xs={12} lg={12}>
             <TextField
