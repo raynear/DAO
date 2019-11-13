@@ -69,7 +69,9 @@ class MulJomDaO(IconScoreBase):
 
     @external(readonly=False)
     def SetProposal(self, _Subject: string, _Contents: string):
-        self.
+        if owner == self.msg.sender:
+            self._proposal[SUBJECT] = _Subject
+            self._proposal[CONTENTS] = _Contents
 
     @external(readonly=True)
     def hello(self) -> str:
