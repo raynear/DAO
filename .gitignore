@@ -26,3 +26,8 @@ account/__pycache__
 board/migrations
 account/migrations
 db.sqlite3
+
+SCORE/.score
+SCORE/.statedb
+SCORE/rc.log
+SCORE/tbears.log
