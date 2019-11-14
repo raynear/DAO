@@ -1,9 +1,10 @@
-import React/*, { Fragment }*/ from "react";
+import React, {/* Fragment*/useState } from "react";
 import {
   Grid,
   Paper,
   //  Avatar,
   Typography,
+  Button,
   IconButton//,
   //  Link
 } from "@material-ui/core";
@@ -15,12 +16,13 @@ import IconService from 'icon-sdk-js';
 
 function UserInfo(props: any) {
   const classes = useStyles();
+  const [fromAddress, setFromAddress] = useState("");
 
   let photo = "";
   //  const data = props.data;
 
-  const MAIN_NET = "http://127.0.0.1:9000/api/v3";
-  const TO_CONTRACT = "cxd820466407181c1446bb96ea4a4818f97a57af4c";
+  const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
+  const TO_CONTRACT = "cx8eab4819e0a7ba159b4f761a3bb109cf09380fb7";
   const provider = new IconService.HttpProvider(MAIN_NET);
   const icon_service = new IconService(provider);
   const IconBuilder = IconService.IconBuilder;
@@ -52,18 +54,25 @@ function UserInfo(props: any) {
     console.log(result.blockHash);
   }
 
+  function selectWallet() {
+    window.dispatchEvent(new CustomEvent('ICONEX_RELAY_REQUEST', {
+      detail: {
+        type: 'REQUEST_ADDRESS'
+      }
+    }));
+  }
+
   async function aa() {
     let result = await icon_service.getBlock('latest').execute();
-    console.log(result.blockHash);
+    console.log(result);
 
-    let from_wallet = "hxe7af5fcfd8dfc67530a01a0e403882687528dfcb";
     let method_name = "Verify";
-    let params = { "blockHash": result.blockHash, "id": "raynear" };
+    let params = { "_BlockHeight": result.height, "_BlockHash": result.blockHash, "_ID": "raynear" };
 
     let timestamp = new Date();
     var txBuilder = new IconBuilder.CallTransactionBuilder();
     var txObj = txBuilder
-      .from(from_wallet)
+      .from(fromAddress)
       .to(TO_CONTRACT)
       .nid(IconConverter.toBigNumber("3"))
       .version(IconConverter.toBigNumber("3"))
@@ -79,6 +88,7 @@ function UserInfo(props: any) {
       "id": 0
     });
     const parsed = JSON.parse(scoreData);
+    console.log(parsed)
     const customEvent = new CustomEvent("ICONEX_RELAY_REQUEST", {
       detail: {
         type: 'REQUEST_JSON-RPC',
@@ -98,6 +108,8 @@ function UserInfo(props: any) {
     } else if (type === "RESPONSE_JSON-RPC") {
       console.log("response json rpc");
       console.log(payload);
+    } else if (type === "RESPONSE_ADDRESS") {
+      setFromAddress(payload);
     }
   };
   window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
@@ -133,6 +145,7 @@ function UserInfo(props: any) {
             <IconButton onClick={aa}>
               <Facebook />
             </IconButton>
+            <Button onClick={selectWallet}>SelectWallet</Button>
           </Grid>
         </Grid>
       </Paper>
