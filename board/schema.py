@@ -6,7 +6,18 @@ from graphql import GraphQLError
 from graphene_django.types import DjangoObjectType
 from graphql_jwt.decorators import superuser_required, staff_member_required
 
+from iconsdk.icon_service import IconService
+from iconsdk.providers.http_provider import HTTPProvider
+from iconsdk.builder.transaction_builder import CallTransactionBuilder
+from iconsdk.builder.call_builder import CallBuilder
+from iconsdk.signed_transaction import SignedTransaction
+from iconsdk.wallet.wallet import KeyWallet
+
+import json
+
 from .models import BoardModel, ProposalModel, SelectItemModel, VoteModel
+
+NETWORK = "http://localhost:9000"
 
 
 class BoardModelType(DjangoObjectType):
@@ -115,6 +126,40 @@ class PublishProposal(graphene.Mutation):
         proposal.published = True
         proposal.save()
 
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
+        wallet = KeyWallet.load(
+            "./key_store_raynear", "ekdrms1!")
+
+        call = CallBuilder()\
+            .to("cx2a65ab5d07c3f28dc620b637ee857a845a8539fa")\
+            .method("GetVerifyInfoByID")\
+            .params({"_ID": info.context.user})\
+            .build()
+
+        result = icon_service.call(call)
+        result_json = json.loads(result)
+
+        if result_json['confirmed']:
+            transaction = CallTransactionBuilder()\
+                .from_(wallet.get_address())\
+                .to("cx2a65ab5d07c3f28dc620b637ee857a845a8539fa")\
+                .step_limit(1000000000)\
+                .nid(3)\
+                .method("SetProposal")\
+                .params({"_Subject": proposal.subject, "_Contents": proposal.contents, "_Proposer": proposal.author})\
+                .build()
+
+            signed_transaction = SignedTransaction(transaction, wallet)
+            tx_hash = icon_service.send_transaction(signed_transaction)
+            proposal.txHash = tx_hash
+
+#
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!! 작업중 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+#
+
+        proposal.save()
         return PublishProposal(proposal=proposal)
 
 

@@ -1,82 +1,70 @@
-import React, {/* Fragment*/useState } from "react";
+import React, { useState } from "react";
 import {
   Grid,
   Paper,
-  //  Avatar,
   Typography,
-  Button,
-  IconButton//,
-  //  Link
+  Divider,
+  Button
 } from "@material-ui/core";
-import { AccountCircle, Facebook } from "@material-ui/icons";
+import { AccountCircle } from "@material-ui/icons";
+
+import gql from "graphql-tag";
+import { useMutation } from "@apollo/react-hooks";
+
+import IconService from 'icon-sdk-js';
+import clsx from "clsx";
 
 import useStyles from "./Style";
 
-import IconService from 'icon-sdk-js';
+const ASK_VERIFY = gql`
+mutation AskVerify($targetAddress:String!){
+  askVerify(targetAddress:$targetAddress){
+    noop
+  }
+}
+`;
 
-function UserInfo(props: any) {
+function Profile(props: any) {
   const classes = useStyles();
+
   const [fromAddress, setFromAddress] = useState("");
+  const [verifiedAddress, setVerifiedAddress] = useState("");
+  const [verifyInfo, setVerifyInfo] = useState();
+
+  const [askVerify] = useMutation(ASK_VERIFY, { variables: { targetAddress: fromAddress } });
 
   let photo = "";
   //  const data = props.data;
 
-  const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
-  const TO_CONTRACT = "cx8eab4819e0a7ba159b4f761a3bb109cf09380fb7";
+  //  const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
+  const MAIN_NET = "http://localhost:9000/api/v3";
+  const TO_CONTRACT = "cx2a65ab5d07c3f28dc620b637ee857a845a8539fa";
   const provider = new IconService.HttpProvider(MAIN_NET);
   const icon_service = new IconService(provider);
   const IconBuilder = IconService.IconBuilder;
   const IconConverter = IconService.IconConverter;
 
   async function json_rpc_call(method_name: string, params: any) {
+    console.log("params", params);
     var callBuilder = new IconBuilder.CallBuilder();
     var callObj = callBuilder
       .to(TO_CONTRACT)
       .method(method_name)
       .params(params)
       .build();
+
+    console.log(callObj);
     return await icon_service.call(callObj).execute();
   }
   async function json_rpc_transaction_call(from_wallet: string, method_name: string, params: any) {
-    // Need to sign or send to ICONex
+    let timestamp = new Date();
     var txBuilder = new IconBuilder.CallTransactionBuilder();
     var txObj = txBuilder
       .from(from_wallet)
       .to(TO_CONTRACT)
-      .method(method_name)
-      .params(params)
-      .build();
-    return await icon_service.call(txObj).execute();
-  }
-
-  async function callLastBlock() {
-    let result = await icon_service.getBlock('latest').execute();
-    console.log(result.blockHash);
-  }
-
-  function selectWallet() {
-    window.dispatchEvent(new CustomEvent('ICONEX_RELAY_REQUEST', {
-      detail: {
-        type: 'REQUEST_ADDRESS'
-      }
-    }));
-  }
-
-  async function aa() {
-    let result = await icon_service.getBlock('latest').execute();
-    console.log(result);
-
-    let method_name = "Verify";
-    let params = { "_BlockHeight": result.height, "_BlockHash": result.blockHash, "_ID": "raynear" };
-
-    let timestamp = new Date();
-    var txBuilder = new IconBuilder.CallTransactionBuilder();
-    var txObj = txBuilder
-      .from(fromAddress)
-      .to(TO_CONTRACT)
       .nid(IconConverter.toBigNumber("3"))
       .version(IconConverter.toBigNumber("3"))
-      .stepLimit(IconConverter.toBigNumber("10000000"))
+      .stepLimit(IconConverter.toBigNumber("100000000"))
       .timestamp(timestamp.valueOf() * 1000)
       .method(method_name)
       .params(params)
@@ -87,8 +75,8 @@ function UserInfo(props: any) {
       "params": IconConverter.toRawTransaction(txObj),
       "id": 0
     });
+
     const parsed = JSON.parse(scoreData);
-    console.log(parsed)
     const customEvent = new CustomEvent("ICONEX_RELAY_REQUEST", {
       detail: {
         type: 'REQUEST_JSON-RPC',
@@ -97,6 +85,40 @@ function UserInfo(props: any) {
     }
     );
     window.dispatchEvent(customEvent);
+  }
+
+  function selectWallet() {
+    window.dispatchEvent(new CustomEvent('ICONEX_RELAY_REQUEST', {
+      detail: {
+        type: 'REQUEST_ADDRESS'
+      }
+    }));
+  }
+
+  async function AskVerify() {
+    let result = await askVerify()
+    console.log(result);
+  }
+
+  /*  async function callVerify2() {
+      let result = await json_rpc_call("GetVerifyInfoByAddress", { "_Address": fromAddress });
+      console.log(result);
+    }
+  */
+  async function callVerify() {
+    let result = await json_rpc_call("GetVerifyInfoByID", { "_ID": props.data.me.username });
+    console.log(result);
+    let result_json = JSON.parse(result);
+    setVerifiedAddress(result_json.address);
+    setVerifyInfo(result_json.confirmed);
+  }
+
+  async function sendVerify() {
+    let result = await icon_service.getBlock('latest').execute();
+
+    let params = { "_BlockHeight": result.height.toString(), "_BlockHash": result.blockHash, "_ID": "raynear" };
+
+    json_rpc_transaction_call(fromAddress, "Verify", params);
   }
 
   const eventHandler = (event: any) => {
@@ -120,32 +142,41 @@ function UserInfo(props: any) {
         <Grid container className={classes.container} spacing={0}>
           <Grid className={classes.grid} item xs={4} md={4} lg={4}>
             {photo === "" &&
-              <AccountCircle />
+              <AccountCircle fontSize="large" />
             }
             {photo !== "" &&
               <img src={photo} />
             }
           </Grid>
           <Grid className={classes.grid} item xs={8} md={8} lg={8}>
-            <Typography>My Name</Typography>
+            <Typography>Name: {props.data.me.username}</Typography>
           </Grid>
-          <Grid>
-            <IconButton href="https://localhost:8080/oauth/login/facebook">
-              <Facebook />
-            </IconButton>
-            <IconButton href="https://localhost:8080/oauth/login/google">
-              <Facebook />
-            </IconButton>
-            <IconButton href="https://localhost:8080/oauth/login/kakao">
-              <Facebook />
-            </IconButton>
-            <IconButton onClick={callLastBlock}>
-              <Facebook />
-            </IconButton>
-            <IconButton onClick={aa}>
-              <Facebook />
-            </IconButton>
-            <Button onClick={selectWallet}>SelectWallet</Button>
+          <Grid className={classes.grid} item xs={8} md={8} lg={8}>
+            <Typography>Verified Address: {verifiedAddress}</Typography>
+          </Grid>
+          <Grid className={classes.grid} item xs={8} md={8} lg={8}>
+            <Typography>is Verified: {String(verifyInfo)}</Typography>
+          </Grid>
+          <Grid className={clsx(classes.grid, classes.center)} item xs={12} md={12} lg={12}>
+            <Button variant="contained" color="primary" fullWidth onClick={callVerify}>get Verify Info</Button>
+          </Grid>
+          <Grid className={classes.grid} item xs={12} md={12} lg={12}>
+            <br />
+            <Divider />
+            <br />
+            <br />
+            <Typography variant="body2">If you want verify ICON address select wallet from iconex and send verify to ICON network. and Ask Verify for confirming</Typography>
+            <br />
+            <Typography variant="subtitle1">Connected Address: {fromAddress}</Typography>
+          </Grid>
+          <Grid className={clsx(classes.grid, classes.center)} item xs={4} md={4} lg={4}>
+            <Button variant="contained" color="primary" onClick={selectWallet}>Select Wallet</Button>
+          </Grid>
+          <Grid className={clsx(classes.grid, classes.center)} item xs={4} md={4} lg={4}>
+            <Button variant="contained" color="primary" disabled={fromAddress === ""} onClick={sendVerify}>send Verify</Button>
+          </Grid>
+          <Grid className={clsx(classes.grid, classes.center)} item xs={4} md={4} lg={4}>
+            <Button variant="contained" color="primary" onClick={AskVerify}>Ask Verify</Button>
           </Grid>
         </Grid>
       </Paper>
@@ -153,4 +184,10 @@ function UserInfo(props: any) {
   );
 }
 
-export default UserInfo;
+export default Profile;
+
+/*
+href="https://localhost:8080/oauth/login/facebook"
+href="https://localhost:8080/oauth/login/google"
+href="https://localhost:8080/oauth/login/kakao"
+*/

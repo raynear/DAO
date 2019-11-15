@@ -30,7 +30,10 @@ class MulJomDaO(IconScoreBase):
     def __init__(self, db: IconScoreDatabase) -> None:
         super().__init__(db)
 
+        self._averify_id = DictDB(
+            self._VERIFY_ID, db, value_type=Address, depth=2)
         self._verify_id = DictDB(self._VERIFY_ID, db, value_type=str, depth=2)
+        self._iverify_id = DictDB(self._VERIFY_ID, db, value_type=int, depth=2)
         self._bverify_id = DictDB(
             self._VERIFY_ID, db, value_type=bool, depth=2)
 
@@ -56,7 +59,7 @@ class MulJomDaO(IconScoreBase):
 
     @external(readonly=False)
     def TransferOwnership(self, _NewOwnerAddress: Address):
-        if self._owner.get() == self.msg.sender:
+        if self._owner.get() == self.msg.sender or self.owner == self.msg.sender:
             self._ready_to_owner.set(_NewOwnerAddress)
 
     @external(readonly=False)
@@ -74,45 +77,54 @@ class MulJomDaO(IconScoreBase):
     def Verify(self, _BlockHeight: int, _BlockHash: str, _ID: str):
         if self.block_height > _BlockHeight+30:
             revert("verifying time over")
-        self._verify_id[_ID][self.ADDRESS] = self.msg.sender
-        self._verify_id[self.msg.sender][self.ID] = _ID
-        self._verify_id[self.msg.sender][self.BLOCKHEIGHT] = _BlockHeight
-        self._verify_id[self.msg.sender][self.BLOCKHASH] = _BlockHash
-        self._bverify_id[self.msg.sender][self.CONFIRMED] = False
+
+        self._averify_id[_ID][self.ADDRESS] = self.msg.sender
+        self._verify_id[str(self.msg.sender)][self.ID] = _ID
+        self._iverify_id[str(self.msg.sender)][self.BLOCKHEIGHT] = _BlockHeight
+        self._verify_id[str(self.msg.sender)][self.BLOCKHASH] = _BlockHash
+        self._bverify_id[str(self.msg.sender)][self.CONFIRMED] = False
 
     @external(readonly=False)
-    def ConfirmVerify(self, _TargetAddress: Address):
+    def ConfirmVerify(self, _TargetAddress: Address) -> bool:
         if self._owner.get() == self.msg.sender:
-            self._bverify_id[_TargetAddress][self.CONFIRMED] = True
+            self._bverify_id[str(_TargetAddress)][self.CONFIRMED] = True
+            return True
+        return False
 
     @external(readonly=True)
     def GetVerifyInfoByAddress(self, _Address: Address) -> str:
         return_json = dict()
-        return_json[self.ADDRESS] = _Address
-        return_json[self.ID] = self._verify_id[_Address][self.ID]
-        return_json[self.BLOCKHEIGHT] = self._verify_id[_Address][self.BLOCKHEIGHT]
-        return_json[self.BLOCKHASH] = self._verify_id[_Address][self.BLOCKHASH]
-        return_json[self.CONFIRMED] = self._bverify_id[_Address][self.CONFIRMED]
+        return_json[self.ADDRESS] = str(_Address)
+        return_json[self.ID] = self._verify_id[str(_Address)][self.ID]
+        return_json[self.BLOCKHEIGHT] = self._iverify_id[str(
+            _Address)][self.BLOCKHEIGHT]
+        return_json[self.BLOCKHASH] = self._verify_id[str(
+            _Address)][self.BLOCKHASH]
+        return_json[self.CONFIRMED] = self._bverify_id[str(
+            _Address)][self.CONFIRMED]
 
         return json_dumps(return_json)
 
     @external(readonly=True)
     def GetVerifyInfoByID(self, _ID: str) -> str:
-        AddressByID = self._verify_id[_ID][self.ADDRESS]
+        AddressByID = self._averify_id[_ID][self.ADDRESS]
         return_json = dict()
-        return_json[self.ADDRESS] = AddressByID
-        return_json[self.ID] = self._verify_id[AddressByID][self.ID]
-        return_json[self.BLOCKHEIGHT] = self._verify_id[AddressByID][self.BLOCKHEIGHT]
-        return_json[self.BLOCKHASH] = self._verify_id[AddressByID][self.BLOCKHASH]
-        return_json[self.CONFIRMED] = self._bverify_id[AddressByID][self.CONFIRMED]
+        return_json[self.ADDRESS] = str(AddressByID)
+        return_json[self.ID] = self._verify_id[str(AddressByID)][self.ID]
+        return_json[self.BLOCKHEIGHT] = self._iverify_id[str(
+            AddressByID)][self.BLOCKHEIGHT]
+        return_json[self.BLOCKHASH] = self._verify_id[str(
+            AddressByID)][self.BLOCKHASH]
+        return_json[self.CONFIRMED] = self._bverify_id[str(
+            AddressByID)][self.CONFIRMED]
 
         return json_dumps(return_json)
 
     @external(readonly=False)
     def Vote(self, _ProposalID: str, _UserID: str, _VoteItem: int):
         if self._owner.get() == self.msg.sender:
-            voter_address = self._verify_id[_UserID][self.ADDRESS]
-            if self._bverify_id[voter_address][self.CONFIRMED]:
+            voter_address = self._averify_id[_UserID][self.ADDRESS]
+            if self._bverify_id[str(voter_address)][self.CONFIRMED]:
                 vote_idx = self._ivote[_ProposalID][self.COUNT][self.COUNT]+1
                 self._vote[_ProposalID][str(vote_idx)][self.VOTER] = _UserID
                 self._ivote[_ProposalID][str(

@@ -26,7 +26,7 @@ class User(AbstractBaseUser):
     email = models.EmailField(
         verbose_name="email address", max_length=255
     )
-    icon_auth = models.CharField(max_length=255, default="")
+    icon_auth = models.BooleanField(default=False)
     icon_address = models.CharField(max_length=255, default="")
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)

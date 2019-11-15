@@ -31,7 +31,7 @@ import { Switch, Route } from "react-router-dom";
 
 import Dashboard from "./Dashboard";
 import Proposals from "./Proposals";
-import Profile from "./Profile";
+import GQLProfile from "./GQLProfile";
 import GQLGetProposal from "./GQLProposal";
 import GQLEditProposal from "./GQLEditProposal";
 import GQLUserInfo from "./GQLUserInfo";
@@ -171,8 +171,8 @@ function Layout() {
                 path="/EditProposal/:proposal_id"
                 component={GQLEditProposal}
               />
-              <Route exact path="/EditProposal/" component={GQLEditProposal} />
-              <Route exact path="/Profile/" component={Profile} />
+              <Route exact path="/EditProposal" component={GQLEditProposal} />
+              <Route exact path="/Profile" component={GQLProfile} />
               <Route exact path="/Proposals" component={Proposals} />
               <Route exact path="/Proposal/:id" component={GQLGetProposal} />
               <Route exact path="/Sign/:type" component={GQLSign} />

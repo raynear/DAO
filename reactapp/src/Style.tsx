@@ -62,6 +62,9 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(0),
       padding: theme.spacing(1)
     },
+    center: {
+      textAlign: "center"
+    },
     selectLabel: {
       margin: theme.spacing(0),
       marginLeft: theme.spacing(2)
