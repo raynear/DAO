@@ -16,8 +16,7 @@ from iconsdk.wallet.wallet import KeyWallet
 import json
 
 import board.schema
-
-NETWORK = "http://localhost:9000"
+from board.icon_network import NETWORK, SCORE_ADDRESS
 
 
 class UserType(DjangoObjectType):
@@ -71,7 +70,7 @@ class AskVerify(graphene.Mutation):
             "./key_store_raynear", "ekdrms1!")
 
         call = CallBuilder()\
-            .to("cx2a65ab5d07c3f28dc620b637ee857a845a8539fa")\
+            .to(SCORE_ADDRESS)\
             .method("GetVerifyInfoByAddress")\
             .params({"_Address": target_address})\
             .build()
@@ -83,7 +82,7 @@ class AskVerify(graphene.Mutation):
         if result_json['blockhash'] == '0x'+a_block['block_hash']:
             transaction = CallTransactionBuilder()\
                 .from_(wallet.get_address())\
-                .to("cx2a65ab5d07c3f28dc620b637ee857a845a8539fa")\
+                .to(SCORE_ADDRESS)\
                 .step_limit(10000000)\
                 .nid(3)\
                 .method("ConfirmVerify")\

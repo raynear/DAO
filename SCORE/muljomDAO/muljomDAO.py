@@ -13,6 +13,7 @@ class MulJomDaO(IconScoreBase):
     SUBJECT = "subject"
     CONTENTS = "contents"
     PROPOSER = "proposer"
+    EXPIREDATE = "expire_date"
     SELECTITEM = "select_item"
     COUNT = "count"
     VOTE = "vote"
@@ -70,7 +71,7 @@ class MulJomDaO(IconScoreBase):
 
 #
 #
-# ID 중복체크, unverify추가
+# ID 중복체크, un verify추가
 #
 #
     @external(readonly=False)
@@ -145,19 +146,21 @@ class MulJomDaO(IconScoreBase):
         return json_dumps(return_json)
 
     @external(readonly=False)
-    def SetProposal(self, _Subject: str, _Contents: str, _Proposer: str, _SelectItems: str):
+    def SetProposal(self, _Subject: str, _Contents: str, _Proposer: str, _ExpireDate: str, _SelectItems: str) -> int:
         if self._owner.get() == self.msg.sender:
             self._proposal_idx.set(self._proposal_idx.get()+1)
             pid = str(self._proposal_idx.get())
             self._proposal[pid][self.SUBJECT] = _Subject
             self._proposal[pid][self.CONTENTS] = _Contents
             self._proposal[pid][self.PROPOSER] = _Proposer
-            self._vote[pid][self.COUNT] = str(0)
+            self._proposal[pid][self.EXPIREDATE] = _ExpireDate
+            self._ivote[pid][self.COUNT][self.COUNT] = 0
 
             select_items = json_loads(_SelectItems)
             self._select_item[pid][self.COUNT] = str(len(select_items))
             for idx, val in enumerate(select_items):
                 self._select_item[pid][str(idx)] = val
+            return self._proposal_idx.get()
 
     @external(readonly=True)
     def GetProposal(self, _ProposalID: str) -> str:

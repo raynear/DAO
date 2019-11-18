@@ -17,7 +17,7 @@ import json
 
 from .models import BoardModel, ProposalModel, SelectItemModel, VoteModel
 
-NETWORK = "http://localhost:9000"
+from .icon_network import NETWORK, SCORE_ADDRESS
 
 
 class BoardModelType(DjangoObjectType):
@@ -124,42 +124,50 @@ class PublishProposal(graphene.Mutation):
     def mutate(self, info, proposal_id):
         proposal = ProposalModel.objects.get(pk=proposal_id)
         proposal.published = True
-        proposal.save()
 
         icon_service = IconService(HTTPProvider(NETWORK, 3))
-        wallet = KeyWallet.load(
-            "./key_store_raynear", "ekdrms1!")
 
         call = CallBuilder()\
-            .to("cx2a65ab5d07c3f28dc620b637ee857a845a8539fa")\
+            .to(SCORE_ADDRESS)\
             .method("GetVerifyInfoByID")\
-            .params({"_ID": info.context.user})\
+            .params({"_ID": info.context.user.username})\
             .build()
 
         result = icon_service.call(call)
         result_json = json.loads(result)
 
         if result_json['confirmed']:
+            selectItems = SelectItemModel.objects.filter(proposal=proposal)
+            _select_item = '['
+            for idx, item in enumerate(selectItems):
+                _select_item += "\""+item.contents+"\""
+                if idx < len(selectItems)-1:
+                    _select_item += ','
+            _select_item += ']'
+
+            wallet = KeyWallet.load(
+                "./key_store_raynear", "ekdrms1!")
+
             transaction = CallTransactionBuilder()\
                 .from_(wallet.get_address())\
-                .to("cx2a65ab5d07c3f28dc620b637ee857a845a8539fa")\
-                .step_limit(1000000000)\
+                .to(SCORE_ADDRESS)\
+                .step_limit(10000000000)\
                 .nid(3)\
                 .method("SetProposal")\
-                .params({"_Subject": proposal.subject, "_Contents": proposal.contents, "_Proposer": proposal.author})\
+                .params({"_Subject": proposal.subject, "_Contents": proposal.contents, "_Proposer": proposal.author.username, "_ExpireDate": proposal.expire_at.isoformat(), "_SelectItems": _select_item})\
                 .build()
 
             signed_transaction = SignedTransaction(transaction, wallet)
             tx_hash = icon_service.send_transaction(signed_transaction)
+
+#            print(tx_hash)
+#            tx_result = icon_service.get_transaction_result(tx_hash)
+#            print(tx_result['status'])
+#            tx_result_json = json.loads(tx_result)
+#            print(tx_result_json)
+
             proposal.txHash = tx_hash
-
-#
-#
-# !!!!!!!!!!!!!!!!!!!!!!!!! 작업중 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#
-#
-
-        proposal.save()
+            proposal.save()
         return PublishProposal(proposal=proposal)
 
 

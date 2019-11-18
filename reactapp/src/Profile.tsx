@@ -38,7 +38,7 @@ function Profile(props: any) {
 
   //  const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
   const MAIN_NET = "http://localhost:9000/api/v3";
-  const TO_CONTRACT = "cx2a65ab5d07c3f28dc620b637ee857a845a8539fa";
+  const TO_CONTRACT = "cxc9d6eff2eab537e0da399922430fb3d6af1fd9b4";
   const provider = new IconService.HttpProvider(MAIN_NET);
   const icon_service = new IconService(provider);
   const IconBuilder = IconService.IconBuilder;

@@ -105,7 +105,7 @@ function Proposal(props: any) {
         `
       })
       .then(result => {
-        if (username === "") {
+        if (username === "" && result.data !== null) {
           setUsername(result.data.username);
         }
       });

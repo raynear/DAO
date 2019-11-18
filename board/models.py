@@ -28,6 +28,7 @@ class ProposalModel(models.Model):
     board = models.ForeignKey(BoardModel, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
     subject = models.CharField(max_length=50, blank=True)
+    proposal_id = models.IntegerField(default=0, blank=True)
     txHash = models.CharField(max_length=300, blank=True)
     contents = models.TextField(default="")
     create_at = models.DateTimeField(auto_now_add=True)
