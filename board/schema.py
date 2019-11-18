@@ -160,11 +160,11 @@ class PublishProposal(graphene.Mutation):
             signed_transaction = SignedTransaction(transaction, wallet)
             tx_hash = icon_service.send_transaction(signed_transaction)
 
-#            print(tx_hash)
-#            tx_result = icon_service.get_transaction_result(tx_hash)
-#            print(tx_result['status'])
-#            tx_result_json = json.loads(tx_result)
-#            print(tx_result_json)
+            print(tx_hash)
+            tx_result = icon_service.get_transaction_result(tx_hash)
+            print(tx_result['status'])
+            tx_result_json = json.loads(tx_result)
+            print(tx_result_json)
 
             proposal.txHash = tx_hash
             proposal.save()

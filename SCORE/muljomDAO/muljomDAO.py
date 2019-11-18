@@ -43,9 +43,10 @@ class MulJomDaO(IconScoreBase):
             self._READYTOOWNER, db, value_type=Address)
 
         self._proposal_idx = VarDB(self._PROPOSAL_IDX, db, value_type=int)
-        self._proposal = DictDB(self._PROPOSAL, db, value_type=str, depth=2)
+        self._proposal = DictDB(self._PROPOSAL, db, value_type=str, depth=3)
+        self._iproposal = DictDB(self._PROPOSAL, db, value_type=int, depth=3)
         self._select_item = DictDB(
-            self._SELECTITEM, db, value_type=str, depth=2)
+            self._SELECTITEM, db, value_type=str, depth=3)
 
         self._vote = DictDB(self.VOTE, db, value_type=str, depth=3)
         self._ivote = DictDB(self.VOTE, db, value_type=int, depth=3)
@@ -146,31 +147,28 @@ class MulJomDaO(IconScoreBase):
         return json_dumps(return_json)
 
     @external(readonly=False)
-    def SetProposal(self, _Subject: str, _Contents: str, _Proposer: str, _ExpireDate: str, _SelectItems: str) -> int:
+    def SetProposal(self, _Subject: str, _Contents: str, _Proposer: str, _ExpireDate: str, _SelectItems: str) -> str:
         if self._owner.get() == self.msg.sender:
-            self._proposal_idx.set(self._proposal_idx.get()+1)
-            pid = str(self._proposal_idx.get())
-            self._proposal[pid][self.SUBJECT] = _Subject
-            self._proposal[pid][self.CONTENTS] = _Contents
-            self._proposal[pid][self.PROPOSER] = _Proposer
-            self._proposal[pid][self.EXPIREDATE] = _ExpireDate
-            self._ivote[pid][self.COUNT][self.COUNT] = 0
-
+            pid = str(self._iproposal[_Proposer][self.ID][self.ID]+1)
+            self._proposal[_Proposer][pid][self.SUBJECT] = _Subject
+            self._proposal[_Proposer][pid][self.CONTENTS] = _Contents
+            self._proposal[_Proposer][pid][self.EXPIREDATE] = _ExpireDate
+            self._ivote[_Proposer][pid][self.COUNT] = 0
             select_items = json_loads(_SelectItems)
-            self._select_item[pid][self.COUNT] = str(len(select_items))
+            self._select_item[_Proposer][pid][self.COUNT] = str(
+                len(select_items))
             for idx, val in enumerate(select_items):
-                self._select_item[pid][str(idx)] = val
-            return self._proposal_idx.get()
+                self._select_item[_Proposer][pid][str(idx)] = val
+            return str(self._proposal[_Proposer][self.ID][self.ID])
 
     @external(readonly=True)
-    def GetProposal(self, _ProposalID: str) -> str:
+    def GetProposal(self, _Proposer: str, _ProposalID: str) -> str:
         return_json = dict()
-        return_json[self.SUBJECT] = self._proposal[_ProposalID][self.SUBJECT]
-        return_json[self.CONTENTS] = self._proposal[_ProposalID][self.CONTENTS]
-        return_json[self.PROPOSER] = self._proposal[_ProposalID][self.PROPOSER]
+        return_json[self.SUBJECT] = self._proposal[_Proposer][_ProposalID][self.SUBJECT]
+        return_json[self.CONTENTS] = self._proposal[_Proposer][_ProposalID][self.CONTENTS]
 
         return_json[self.SELECTITEM] = []
-        for i in range(int(self._select_item[_ProposalID][self.COUNT])):
+        for i in range(int(self._select_item[_Proposer][_ProposalID][self.COUNT])):
             return_json[self.SELECTITEM].append(
                 self._select_item[_ProposalID][str(i)])
 
