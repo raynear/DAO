@@ -38,7 +38,7 @@ function Profile(props: any) {
 
   //  const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
   const MAIN_NET = "http://localhost:9000/api/v3";
-  const TO_CONTRACT = "cxe477e360795be454fdd28c2924c86feaef6203fd";
+  const TO_CONTRACT = "cxf902c266429235e3849042f6104f57b06e868212";
   const provider = new IconService.HttpProvider(MAIN_NET);
   const icon_service = new IconService(provider);
   const IconBuilder = IconService.IconBuilder;
@@ -137,50 +137,40 @@ function Profile(props: any) {
   window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
 
   return (
-    <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-      <Paper className={classes.paper}>
-        <Grid container className={classes.container} spacing={0}>
-          <Grid className={classes.grid} item xs={4} md={4} lg={4}>
-            {photo === "" &&
-              <AccountCircle fontSize="large" />
-            }
-            {photo !== "" &&
-              <img src={photo} />
-            }
-          </Grid>
-          <Grid className={classes.grid} item xs={8} md={8} lg={8}>
-            <Typography>Name: {props.data.me.username}</Typography>
-          </Grid>
-          <Grid className={classes.grid} item xs={8} md={8} lg={8}>
-            <Typography>Verified Address: {verifiedAddress}</Typography>
-          </Grid>
-          <Grid className={classes.grid} item xs={8} md={8} lg={8}>
-            <Typography>is Verified: {String(verifyInfo)}</Typography>
-          </Grid>
-          <Grid className={clsx(classes.grid, classes.center)} item xs={12} md={12} lg={12}>
-            <Button variant="contained" color="primary" fullWidth onClick={callVerify}>get Verify Info</Button>
-          </Grid>
-          <Grid className={classes.grid} item xs={12} md={12} lg={12}>
-            <br />
-            <Divider />
-            <br />
-            <br />
-            <Typography variant="body2">If you want verify ICON address select wallet from iconex and send verify to ICON network. and Ask Verify for confirming</Typography>
-            <br />
-            <Typography variant="subtitle1">Connected Address: {fromAddress}</Typography>
-          </Grid>
-          <Grid className={clsx(classes.grid, classes.center)} item xs={4} md={4} lg={4}>
-            <Button variant="contained" color="primary" onClick={selectWallet}>Select Wallet</Button>
-          </Grid>
-          <Grid className={clsx(classes.grid, classes.center)} item xs={4} md={4} lg={4}>
-            <Button variant="contained" color="primary" disabled={fromAddress === ""} onClick={sendVerify}>send Verify</Button>
-          </Grid>
-          <Grid className={clsx(classes.grid, classes.center)} item xs={4} md={4} lg={4}>
-            <Button variant="contained" color="primary" onClick={AskVerify}>Ask Verify</Button>
-          </Grid>
-        </Grid>
-      </Paper>
-    </Grid>
+    <>
+      <Grid className={classes.grid} item xs={4} md={4} lg={4}>
+        {photo === "" &&
+          <AccountCircle fontSize="large" />
+        }
+        {photo !== "" &&
+          <img src={photo} />
+        }
+      </Grid>
+      <Grid className={classes.grid} item xs={8} md={8} lg={8}>
+        <Typography>Name: {props.data.me.username}</Typography>
+      </Grid>
+      <Grid className={classes.grid} item xs={8} md={8} lg={8}>
+        <Typography>Verified Address: {verifiedAddress}</Typography>
+      </Grid>
+      <Grid className={classes.grid} item xs={8} md={8} lg={8}>
+        <Typography>is Verified: {String(verifyInfo)}</Typography>
+      </Grid>
+      <Grid className={classes.grid} item xs={12} md={12} lg={12}>
+        <br />
+        <Divider />
+        <br />
+        <Typography variant="subtitle1">Connected Address: {fromAddress}</Typography>
+      </Grid>
+      <Grid className={clsx(classes.grid, classes.center)} item xs={4} md={4} lg={4}>
+        <Button variant="contained" color="primary" onClick={selectWallet}>Select Wallet</Button>
+      </Grid>
+      <Grid className={clsx(classes.grid, classes.center)} item xs={4} md={4} lg={4}>
+        <Button variant="contained" color="primary" disabled={fromAddress === ""} onClick={sendVerify}>send Verify</Button>
+      </Grid>
+      <Grid className={clsx(classes.grid, classes.center)} item xs={4} md={4} lg={4}>
+        <Button variant="contained" color="primary" fullWidth onClick={callVerify}>get Verify Info</Button>
+      </Grid>
+    </>
   );
 }
 

@@ -59,7 +59,6 @@ function GQLSign({ match }: any) {
       variables: { username: username, password: password }
     }).then(result => {
       console.log(result);
-      setRedirect("/Sign/in");
     });
   }
 
@@ -67,7 +66,7 @@ function GQLSign({ match }: any) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(result => {
-      setRedirect("/");
+      console.log(result);
     });
   }
 

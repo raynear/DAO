@@ -33,7 +33,6 @@ class MulJomDaO(IconScoreBase):
 
         self._averify_id = DictDB(
             self._VERIFY_ID, db, value_type=Address, depth=2)
-        self._verify_id = DictDB(self._VERIFY_ID, db, value_type=str, depth=2)
         self._iverify_id = DictDB(self._VERIFY_ID, db, value_type=int, depth=2)
         self._bverify_id = DictDB(
             self._VERIFY_ID, db, value_type=bool, depth=2)
@@ -47,6 +46,8 @@ class MulJomDaO(IconScoreBase):
         self._iproposal = DictDB(self._PROPOSAL, db, value_type=int, depth=3)
         self._select_item = DictDB(
             self._SELECTITEM, db, value_type=str, depth=3)
+        self._iselect_item = DictDB(
+            self._SELECTITEM, db, value_type=int, depth=3)
 
         self._vote = DictDB(self.VOTE, db, value_type=str, depth=3)
         self._ivote = DictDB(self.VOTE, db, value_type=int, depth=3)
@@ -70,28 +71,14 @@ class MulJomDaO(IconScoreBase):
             self._owner.set(self._ready_to_owner.get())
             self._ready_to_owner.remove()
 
-#
-#
-# ID 중복체크, un verify추가
-#
-#
     @external(readonly=False)
-    def Verify(self, _BlockHeight: int, _BlockHash: str, _ID: str):
-        if self.block_height > _BlockHeight+30:
-            revert("verifying time over")
-
-        self._averify_id[_ID][self.ADDRESS] = self.msg.sender
-        self._verify_id[str(self.msg.sender)][self.ID] = _ID
-        self._iverify_id[str(self.msg.sender)][self.BLOCKHEIGHT] = _BlockHeight
-        self._verify_id[str(self.msg.sender)][self.BLOCKHASH] = _BlockHash
-        self._bverify_id[str(self.msg.sender)][self.CONFIRMED] = False
-
-    @external(readonly=False)
-    def ConfirmVerify(self, _TargetAddress: Address) -> bool:
-        if self._owner.get() == self.msg.sender:
-            self._bverify_id[str(_TargetAddress)][self.CONFIRMED] = True
-            return True
-        return False
+    def Verify(self, _BlockHash: str, _ID: str):
+        if (self._averify_id[_ID][self.ADDRESS] and self._averify_id[_ID][self.ADDRESS] == self.msg.sender) or not self._averify_id[_ID][self.ADDRESS]:
+            self._averify_id[_ID][self.ADDRESS] = self.msg.sender
+            self._verify_id[str(self.msg.sender)][self.ID] = _ID
+            self._verify_id[str(self.msg.sender)][self.BLOCKHASH] = _BlockHash
+            self._verify_id[str(self.msg.sender)
+                            ][self.BLOCKHEIGHT] = self.block_height
 
     @external(readonly=True)
     def GetVerifyInfoByAddress(self, _Address: Address) -> str:
@@ -155,8 +142,7 @@ class MulJomDaO(IconScoreBase):
             self._proposal[_Proposer][pid][self.EXPIREDATE] = _ExpireDate
             self._ivote[_Proposer][pid][self.COUNT] = 0
             select_items = json_loads(_SelectItems)
-            self._select_item[_Proposer][pid][self.COUNT] = str(
-                len(select_items))
+            self._iselect_item[_Proposer][pid][self.COUNT] = len(select_items)
             for idx, val in enumerate(select_items):
                 self._select_item[_Proposer][pid][str(idx)] = val
             return str(self._proposal[_Proposer][self.ID][self.ID])
@@ -168,7 +154,7 @@ class MulJomDaO(IconScoreBase):
         return_json[self.CONTENTS] = self._proposal[_Proposer][_ProposalID][self.CONTENTS]
 
         return_json[self.SELECTITEM] = []
-        for i in range(int(self._select_item[_Proposer][_ProposalID][self.COUNT])):
+        for i in range(self._iselect_item[_Proposer][_ProposalID][self.COUNT]):
             return_json[self.SELECTITEM].append(
                 self._select_item[_ProposalID][str(i)])
 

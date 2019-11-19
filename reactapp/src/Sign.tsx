@@ -1,13 +1,20 @@
 import React, { Fragment, useState } from "react";
-import { Grid, Paper, TextField, Button, Typography } from "@material-ui/core";
+import { Switch, Route } from "react-router-dom";
+
+import { Stepper, Step, StepLabel, Grid, Paper, TextField, Button, Typography } from "@material-ui/core";
 import SimpleReactValidator from "simple-react-validator";
 
 import useForceUpdate from "./useForceUpdate";
 import useStyles from "./Style";
 
+import GQLProfile from "./GQLProfile";
+
 function Sign(props: any) {
   const classes = useStyles();
   const forceUpdate = useForceUpdate();
+
+  const [activeStep, setActiveStep] = React.useState(0);
+  const steps = ['Sign in', 'Verify ICON address', 'Confirm'];
 
   const [signInfo, setSignInfo] = useState({
     username: "",
@@ -52,6 +59,8 @@ function Sign(props: any) {
       return;
     } else {
       props.SignUp(signInfo.username, signInfo.password);
+      props.SignIn(signInfo.username, signInfo.password);
+      setActiveStep(activeStep + 1);
     }
   }
 
@@ -70,69 +79,127 @@ function Sign(props: any) {
   }
 
   function Up() {
-    return (
-      <Fragment>
-        <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-          <Paper className={classes.paper}>
-            <Grid container className={classes.container}>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                <TextField
-                  id="username"
-                  label="User Name"
-                  name="username"
-                  type="text"
-                  value={signInfo.username}
-                  onChange={handleSignInfo}
-                  helperText={validator.message(
-                    "username",
-                    signInfo.username,
-                    "required|min:3"
-                  )}
-                />
-              </Grid>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                <TextField
-                  id="password"
-                  label="Password"
-                  name="password"
-                  type="password"
-                  value={signInfo.password}
-                  onChange={handleSignInfo}
-                  helperText={SameValidate([
-                    signInfo.password,
-                    signInfo.password2
-                  ])}
-                />
-              </Grid>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                <TextField
-                  id="password2"
-                  label="Password2"
-                  name="password2"
-                  type="password"
-                  value={signInfo.password2}
-                  onChange={handleSignInfo}
-                  onKeyPress={e => {
-                    if (e.key === "Enter") {
-                      SignIn();
-                    }
-                  }}
-                  helperText={SameValidate([
-                    signInfo.password,
-                    signInfo.password2
-                  ])}
-                />
-              </Grid>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                <Button variant="contained" color="primary" onClick={SignUp}>
-                  Sign up
+    if (activeStep === 0) {
+      return (
+        <Fragment>
+          <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+            <Paper className={classes.paper}>
+              <Grid container className={classes.container}>
+                <Grid item={true}>
+                  <Stepper activeStep={activeStep} alternativeLabel>
+                    {steps.map(label => (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </Grid>
+                <Grid item={true} className={classes.grid} xs={12} md={12} lg={12}>
+                  <TextField
+                    id="username"
+                    label="User Name"
+                    name="username"
+                    type="text"
+                    value={signInfo.username}
+                    onChange={handleSignInfo}
+                    helperText={validator.message(
+                      "username",
+                      signInfo.username,
+                      "required|min:3"
+                    )}
+                  />
+                </Grid>
+                <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+                  <TextField
+                    id="password"
+                    label="Password"
+                    name="password"
+                    type="password"
+                    value={signInfo.password}
+                    onChange={handleSignInfo}
+                    helperText={SameValidate([
+                      signInfo.password,
+                      signInfo.password2
+                    ])}
+                  />
+                </Grid>
+                <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+                  <TextField
+                    id="password2"
+                    label="Password(again)"
+                    name="password2"
+                    type="password"
+                    value={signInfo.password2}
+                    onChange={handleSignInfo}
+                    onKeyPress={e => {
+                      if (e.key === "Enter") {
+                        SignIn();
+                      }
+                    }}
+                    helperText={SameValidate([
+                      signInfo.password,
+                      signInfo.password2
+                    ])}
+                  />
+                </Grid>
+                <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+                  <Button variant="contained" color="primary" onClick={SignUp}>
+                    Sign up
                 </Button>
+                </Grid>
               </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
-      </Fragment>
-    );
+            </Paper>
+          </Grid>
+        </Fragment>
+      );
+    }
+    else if (activeStep === 1) {
+      return (
+        <Fragment>
+          <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+            <Paper className={classes.paper}>
+              <Grid container className={classes.container}>
+                <Grid item={true}>
+                  <Stepper activeStep={activeStep} alternativeLabel>
+                    {steps.map(label => (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </Grid>
+                <Grid item={true} className={classes.grid} xs={12} md={12} lg={12}>
+                  <GQLProfile />
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+        </Fragment>
+      );
+    } else {
+      return (
+        <Fragment>
+          <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+            <Paper className={classes.paper}>
+              <Grid container className={classes.container}>
+                <Grid item={true}>
+                  <Stepper activeStep={activeStep} alternativeLabel>
+                    {steps.map(label => (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </Grid>
+                <Grid item={true} className={classes.grid} xs={12} md={12} lg={12}>
+                  <Typography>Good Job</Typography>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+        </Fragment>
+      );
+    }
   }
 
   function In() {
@@ -197,13 +264,12 @@ function Sign(props: any) {
     );
   }
 
-  if (props.match.params.type.toLowerCase() === "in") {
-    return In();
-  } else if (props.match.params.type.toLowerCase() === "up") {
-    return Up();
-  } else {
-    return <div> </div>;
-  }
+  return (
+    <Switch>
+      <Route exact path="/in" component={In} />
+      <Route exact path="/up" component={Up} />
+    </Switch>
+  )
 }
 
 export default Sign;

@@ -208,6 +208,54 @@ function EditProposal(props: any) {
               />
               <br />
             </Grid>
+            <Grid
+              className={classes.grid}
+              item
+              xs={12}
+              md={12}
+              lg={12}
+              style={{ textAlign: "right" }}
+            >
+              <Button color="primary" onClick={addSelectItem}>
+                <AddRounded />
+                Add select item
+              </Button>
+            </Grid>
+            {selectItems.map((item: any, idx: any) => {
+              return (
+                <Grid
+                  className={classes.grid}
+                  key={idx}
+                  item
+                  xs={12}
+                  md={12}
+                  lg={12}
+                >
+                  <TextField
+                    id={String(idx + 1)}
+                    label={String(idx + 1)}
+                    name={String(idx + 1)}
+                    value={item}
+                    onChange={handleSelectItemChange(idx)}
+                    className={classes.textField}
+                    helperText={validator.message("item", item, "required")}
+                    variant="outlined"
+                    InputProps={{
+                      endAdornment: (
+                        <Button
+                          color="secondary"
+                          onClick={() => deleteSelectItem(idx)}
+                        >
+                          Delete
+                        </Button>
+                      )
+                    }}
+                  />
+                  <br />
+                </Grid>
+              );
+            })}
+
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <Editor
                 usageStatistics={false}
@@ -275,53 +323,6 @@ function EditProposal(props: any) {
               </MuiPickersUtilsProvider>
               <br />
             </Grid>
-            <Grid
-              className={classes.grid}
-              item
-              xs={12}
-              md={12}
-              lg={12}
-              style={{ textAlign: "right" }}
-            >
-              <Button color="primary" onClick={addSelectItem}>
-                <AddRounded />
-                Add select item
-              </Button>
-            </Grid>
-            {selectItems.map((item: any, idx: any) => {
-              return (
-                <Grid
-                  className={classes.grid}
-                  key={idx}
-                  item
-                  xs={12}
-                  md={12}
-                  lg={12}
-                >
-                  <TextField
-                    id={String(idx + 1)}
-                    label={String(idx + 1)}
-                    name={String(idx + 1)}
-                    value={item}
-                    onChange={handleSelectItemChange(idx)}
-                    className={classes.textField}
-                    helperText={validator.message("item", item, "required")}
-                    variant="outlined"
-                    InputProps={{
-                      endAdornment: (
-                        <Button
-                          color="secondary"
-                          onClick={() => deleteSelectItem(idx)}
-                        >
-                          Delete
-                        </Button>
-                      )
-                    }}
-                  />
-                  <br />
-                </Grid>
-              );
-            })}
             <Grid
               className={classes.grid}
               item
