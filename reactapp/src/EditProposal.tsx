@@ -63,13 +63,8 @@ function EditProposal(props: any) {
 
   const proposal = props.proposal ? props.proposal : emptyProposal;
 
-  let tmpSelectItems: string[] = [];
-  proposal.selectitemmodelSet.map((item: any) => {
-    tmpSelectItems.push(item.contents);
-    return item;
-  });
 
-  const [selectItems, setSelectItems] = useState(tmpSelectItems);
+  const [selectItems, setSelectItems] = useState(["", "", "", ""]);
   const [values, setValues] = useState({
     subject: proposal.subject,
     contents: proposal.contents,
@@ -78,6 +73,14 @@ function EditProposal(props: any) {
   });
 
   useEffect(() => {
+    let tmpSelectItems: string[] = [];
+    proposal.selectitemmodelSet.map((item: any) => {
+      tmpSelectItems.push(item.contents);
+      return item;
+    });
+    if (tmpSelectItems.length > 0) {
+      setSelectItems(tmpSelectItems);
+    }
     editorRef.current.getInstance().setValue(values.contents);
   }, []);
 

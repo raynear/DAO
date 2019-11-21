@@ -34,6 +34,7 @@ class MulJomDaO(IconScoreBase):
         self._averify_id = DictDB(
             self._VERIFY_ID, db, value_type=Address, depth=2)
         self._iverify_id = DictDB(self._VERIFY_ID, db, value_type=int, depth=2)
+        self._verify_id = DictDB(self._VERIFY_ID, db, value_type=str, depth=2)
         self._bverify_id = DictDB(
             self._VERIFY_ID, db, value_type=bool, depth=2)
 
@@ -141,7 +142,9 @@ class MulJomDaO(IconScoreBase):
             self._proposal[_Proposer][pid][self.CONTENTS] = _Contents
             self._proposal[_Proposer][pid][self.EXPIREDATE] = _ExpireDate
             self._ivote[_Proposer][pid][self.COUNT] = 0
+
             select_items = json_loads(_SelectItems)
+            # json_load 하면 dict나 array로 type이 결정되는데 어떤 타입인지 확인하는 부분이 없다.
             self._iselect_item[_Proposer][pid][self.COUNT] = len(select_items)
             for idx, val in enumerate(select_items):
                 self._select_item[_Proposer][pid][str(idx)] = val

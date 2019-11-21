@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Grid,
-  Paper,
   Typography,
   Divider,
   Button
@@ -24,12 +23,12 @@ mutation AskVerify($targetAddress:String!){
 }
 `;
 
-function Profile(props: any) {
+function VerifyICON(props: any) {
   const classes = useStyles();
 
   const [fromAddress, setFromAddress] = useState("");
+  const [isPRep, setIsPRep] = useState("");
   const [verifiedAddress, setVerifiedAddress] = useState("");
-  const [verifyInfo, setVerifyInfo] = useState();
 
   const [askVerify] = useMutation(ASK_VERIFY, { variables: { targetAddress: fromAddress } });
 
@@ -38,7 +37,7 @@ function Profile(props: any) {
 
   //  const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
   const MAIN_NET = "http://localhost:9000/api/v3";
-  const TO_CONTRACT = "cxf902c266429235e3849042f6104f57b06e868212";
+  const TO_CONTRACT = "cxd142e259bdc019289afd13efdcda23ba126eb69d";
   const provider = new IconService.HttpProvider(MAIN_NET);
   const icon_service = new IconService(provider);
   const IconBuilder = IconService.IconBuilder;
@@ -110,13 +109,31 @@ function Profile(props: any) {
     console.log(result);
     let result_json = JSON.parse(result);
     setVerifiedAddress(result_json.address);
-    setVerifyInfo(result_json.confirmed);
+
+    const provider2 = new IconService.HttpProvider("https://ctz.solidwallet.io/api/v3");
+    const icon_service2 = new IconService(provider2);
+
+    var callBuilder = new IconBuilder.CallBuilder();
+    var callObj = callBuilder
+      .to("cx0000000000000000000000000000000000000000")
+      .method("getPReps")
+      .params()
+      .build();
+
+    let PRepList = await icon_service2.call(callObj).execute();
+
+    PRepList.preps.forEach((item: any, idx: number, array: any) => {
+      if (item.address === result_json.address) {
+        console.log("YOU ARE P-REP!!!!!");
+      }
+    });
+
   }
 
   async function sendVerify() {
     let result = await icon_service.getBlock('latest').execute();
 
-    let params = { "_BlockHeight": result.height.toString(), "_BlockHash": result.blockHash, "_ID": "raynear" };
+    let params = { "_BlockHash": result.blockHash, "_ID": "raynear" };
 
     json_rpc_transaction_call(fromAddress, "Verify", params);
   }
@@ -153,7 +170,7 @@ function Profile(props: any) {
         <Typography>Verified Address: {verifiedAddress}</Typography>
       </Grid>
       <Grid className={classes.grid} item xs={8} md={8} lg={8}>
-        <Typography>is Verified: {String(verifyInfo)}</Typography>
+        <Typography>{isPRep}</Typography>
       </Grid>
       <Grid className={classes.grid} item xs={12} md={12} lg={12}>
         <br />
@@ -174,7 +191,7 @@ function Profile(props: any) {
   );
 }
 
-export default Profile;
+export default VerifyICON;
 
 /*
 href="https://localhost:8080/oauth/login/facebook"

@@ -3,7 +3,7 @@ import { Redirect } from "react-router-dom";
 import gql from "graphql-tag";
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 
-import Sign from "./Sign";
+import SignIn from "./SignIn";
 //import { Typography } from "@material-ui/core";
 
 const GET_ME = gql`
@@ -30,22 +30,10 @@ const TOKEN_AUTH = gql`
   }
 `;
 
-const SET_USER = gql`
-  mutation SetUser($username: String!, $password: String!) {
-    setUser(username: $username, password: $password) {
-      user {
-        username
-        email
-      }
-    }
-  }
-`;
-
-function GQLSign({ match }: any) {
+function GQLSignIn({ match }: any) {
   const client = useApolloClient();
 
   const [redirect, setRedirect] = useState();
-  const [mutateSignup] = useMutation(SET_USER);
   const [mutateTokenAuth] = useMutation(TOKEN_AUTH);
 
   function renderRedirect() {
@@ -54,25 +42,13 @@ function GQLSign({ match }: any) {
     }
   }
 
-  function SignUp(username: string, password: string) {
-    mutateSignup({
-      variables: { username: username, password: password }
-    }).then(result => {
-      console.log(result);
-    });
-  }
-
-  function SignIn(username: string, password: string) {
+  function LogIn(username: string, password: string) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(result => {
       console.log(result);
     });
   }
-
-  //function UserDetail() {
-  //  return <Typography>UserDetail</Typography>;
-  //}
 
   const { loading, data } = useQuery(GET_ME);
 
@@ -91,9 +67,9 @@ function GQLSign({ match }: any) {
   return (
     <Fragment>
       {renderRedirect()}
-      <Sign match={match} SignUp={SignUp} SignIn={SignIn} />
+      <SignIn match={match} LogIn={LogIn} />
     </Fragment>
   );
 }
 
-export default GQLSign;
+export default GQLSignIn;

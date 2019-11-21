@@ -2,7 +2,7 @@ import React from "react";
 import gql from "graphql-tag";
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
 
-import Profile from "./Profile";
+import VerifyICON from "./VerifyICON";
 
 const GET_ME = gql`
   query {
@@ -21,7 +21,7 @@ const GET_ME = gql`
 `;
 
 
-function GQLProfile() {
+function GQLVerifyICON() {
   const client = useApolloClient();
 
   const { loading, data } = useQuery(GET_ME);
@@ -49,7 +49,7 @@ function GQLProfile() {
       }
     });
   }
-  return <Profile data={data} />;
+  return <VerifyICON data={data} />;
 }
 
-export default GQLProfile;
+export default GQLVerifyICON;

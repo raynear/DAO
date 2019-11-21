@@ -31,11 +31,12 @@ import { Switch, Route } from "react-router-dom";
 
 import Dashboard from "./Dashboard";
 import Proposals from "./Proposals";
-import GQLProfile from "./GQLProfile";
+import GQLProfile from "./GQLVerifyICON";
 import GQLGetProposal from "./GQLProposal";
 import GQLEditProposal from "./GQLEditProposal";
 import GQLUserInfo from "./GQLUserInfo";
-import GQLSign from "./GQLSign";
+import GQLSignIn from "./GQLSignIn";
+import GQLSignUp from "./GQLSignUp";
 import Copyright from "./Copyright";
 
 import useStyles from "./Style";
@@ -175,7 +176,8 @@ function Layout() {
               <Route exact path="/Profile" component={GQLProfile} />
               <Route exact path="/Proposals" component={Proposals} />
               <Route exact path="/Proposal/:id" component={GQLGetProposal} />
-              <Route exact path="/Sign/:type" component={GQLSign} />
+              <Route exact path="/SignIn" component={GQLSignIn} />
+              <Route exact path="/SignUp" component={GQLSignUp} />
             </Switch>
           </Grid>
         </Container>
