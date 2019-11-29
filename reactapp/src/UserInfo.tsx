@@ -37,11 +37,11 @@ function UserInfo(props: any) {
     data !== undefined &&
     data.hasOwnProperty("me") &&
     data.me !== null // &&
-    //      data.me.hasOwnProperty("socialAuth") &&
-    //      data.me.socialAuth.hasOwnProperty("edges") &&
-    //      data.me.socialAuth.edges.length > 0
-    //    data.me.socialAuth.edges[0].hasOwnProperty("node") &&
-    //    data.me.socialAuth.edges[0].node.hasOwnProperty("extraData")
+    // data.me.hasOwnProperty("socialAuth") &&
+    // data.me.socialAuth.hasOwnProperty("edges") &&
+    // data.me.socialAuth.edges.length > 0
+    // data.me.socialAuth.edges[0].hasOwnProperty("node") &&
+    // data.me.socialAuth.edges[0].node.hasOwnProperty("extraData")
   ) {
     console.log("userinfo1", data);
     return (
@@ -101,13 +101,13 @@ function UserInfo(props: any) {
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleMenuClose}>
-            <Link href="/Sign/up" style={{ textDecoration: "none" }}>
+            <Link href="/Signup" style={{ textDecoration: "none" }}>
               <Typography component="h6">Sign Up</Typography>
             </Link>
           </MenuItem>
 
           <MenuItem onClick={handleMenuClose}>
-            <Link href="/Sign/in" style={{ textDecoration: "none" }}>
+            <Link href="/Signin" style={{ textDecoration: "none" }}>
               <Typography component="h6">Login</Typography>
             </Link>
           </MenuItem>

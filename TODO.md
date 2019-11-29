@@ -22,9 +22,9 @@
 - [x] 회원
   - [x] 회원가입 페이지
   - [x] Logout
-  - [ ] Sign 후 refresh
-  - [ ] 인증 페이지
-  - [ ] 인증 부분 score 작성해서 테스트
+  - [x] Sign 후 refresh
+  - [x] 인증 페이지
+  - [x] 인증 부분 score 작성해서 테스트
 - [ ] management page
   - [ ] P-Rep용
     - [ ] writen proposals

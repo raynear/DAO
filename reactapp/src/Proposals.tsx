@@ -9,7 +9,11 @@ import {
   Link,
   Grid,
   Button,
-  TextField
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@material-ui/core";
 
 //import clsx from "clsx";
@@ -48,6 +52,7 @@ interface proposal {
 }
 
 interface value {
+  selectedPRep: string;
   search: string;
   first: number;
   skip: number;
@@ -56,11 +61,13 @@ interface value {
 function Proposals() {
   const classes = useStyles();
   const [values, setValues] = React.useState<value>({
+    selectedPRep: "",
     search: "",
     first: 10,
     skip: 0
   });
   const [queryValues, setQueryValues] = React.useState<value>({
+    selectedPRep: "",
     search: "",
     first: 10,
     skip: 0
@@ -90,6 +97,20 @@ function Proposals() {
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.papercontainer}>
         <Grid container className={classes.container} spacing={0}>
+          <Grid item className={classes.grid} xs={12} lg={12}>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <InputLabel className={classes.selectLabel}>Board</InputLabel>
+              <Select
+                value={values.selectedPRep}
+                onChange={() => handleChange("selectedPRep")}
+                style={{ minWidth: 120 }}
+              >
+                <MenuItem value={"test"/*item.id*/}>
+                  {"item.name"}
+                </MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
           <Grid item className={classes.grid} xs={12} lg={12}>
             <TextField
               className={classes.textField}

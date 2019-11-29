@@ -9,7 +9,8 @@ import {
   FormHelperText,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Slider
 } from "@material-ui/core";
 import { AddRounded } from "@material-ui/icons";
 import DateFnsUtils from "@date-io/date-fns";
@@ -66,6 +67,8 @@ function EditProposal(props: any) {
 
   const [selectItems, setSelectItems] = useState(["", "", "", ""]);
   const [values, setValues] = useState({
+    quorumRate: 50,
+    tokenRate: 50,
     subject: proposal.subject,
     contents: proposal.contents,
     board: proposal.board.id,
@@ -114,11 +117,18 @@ function EditProposal(props: any) {
   };
 
   const handleProposalChange = (name: string) => (
-    event:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<{ name?: string; value: unknown }>
+    event: React.ChangeEvent<any>
   ) => {
     setValues({ ...values, [name]: event.target.value });
+  };
+
+  const handleSliderChange = (name: string) => (event: any, newValue: number | number[]) => {
+    if (Array.isArray(newValue)) {
+      setValues({ ...values, [name]: newValue[0] });
+    }
+    else {
+      setValues({ ...values, [name]: newValue });
+    }
   };
 
   const handleEditorChange = () => {
@@ -168,12 +178,11 @@ function EditProposal(props: any) {
         <form>
           <Grid container className={classes.container} spacing={0}>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
-              <FormControl className={classes.formControl}>
+              <FormControl variant="outlined" className={classes.formControl}>
                 <InputLabel className={classes.selectLabel}>Board</InputLabel>
                 <Select
                   value={values.board}
                   onChange={handleProposalChange("board")}
-                  variant="outlined"
                   style={{ minWidth: 120 }}
                 >
                   {props.boards.length > 0 &&
@@ -334,10 +343,55 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
+              <Typography><b>Quorum : {values.quorumRate}</b></Typography>
+              <Slider
+                value={values.quorumRate}
+                onChange={handleSliderChange("quorumRate")}
+                defaultValue={50}
+                getAriaValueText={(val) => val + "%"}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="auto"
+                step={5}
+                marks
+                min={0}
+                max={100}
+              />
+            </Grid>
+            <Grid
+              className={classes.grid}
+              item
+              style={{ textAlign: "center" }}
+              xs={12}
+              md={12}
+              lg={12}
+            >
+              <Typography><b>Token : {values.tokenRate}</b></Typography>
+              <Slider
+                value={values.tokenRate}
+                onChange={handleSliderChange("tokenRate")}
+                defaultValue={50}
+                getAriaValueText={(val) => val + "%"}
+                aria-labelledby="discrete-slider"
+                valueLabelDisplay="auto"
+                step={5}
+                marks
+                min={0}
+                max={100}
+              />
+            </Grid>
+            <Grid
+              className={classes.grid}
+              item
+              style={{ textAlign: "center" }}
+              xs={12}
+              md={12}
+              lg={12}
+            >
               <Button
                 variant="contained"
                 color="primary"
                 onClick={submitProposal}
+                fullWidth
               >
                 Submit
               </Button>

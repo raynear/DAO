@@ -77,7 +77,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
-    #    'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    # "graphql_jwt.middleware.JSONWebTokenMiddleware",
 ]
 
 ROOT_URLCONF = "DAO.urls"
