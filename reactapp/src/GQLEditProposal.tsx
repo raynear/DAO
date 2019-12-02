@@ -14,6 +14,8 @@ const GET_PROPOSAL = gql`
       contents
       published
       expireAt
+      quorumRate
+      tokenRate
       selectitemmodelSet {
         id
         index
@@ -34,6 +36,8 @@ const SET_PROPOSAL = gql`
     $contents: String!
     $boardId: Int!
     $published: Boolean!
+    $quorumRate: Int!
+    $tokenRate: Int!
     $expireAt: DateTime!
     $selectItemList: [SelectItemInput]
   ) {
@@ -43,6 +47,8 @@ const SET_PROPOSAL = gql`
       contents: $contents
       boardId: $boardId
       published: $published
+      quorumRate: $quorumRate
+      tokenRate: $tokenRate
       expireAt: $expireAt
       selectItemList: $selectItemList
     ) {

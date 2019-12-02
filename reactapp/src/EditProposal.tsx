@@ -67,8 +67,8 @@ function EditProposal(props: any) {
 
   const [selectItems, setSelectItems] = useState(["", "", "", ""]);
   const [values, setValues] = useState({
-    quorumRate: 50,
-    tokenRate: 50,
+    quorumRate: proposal.quorumRate,
+    tokenRate: proposal.tokenRate,
     subject: proposal.subject,
     contents: proposal.contents,
     board: proposal.board.id,
@@ -161,6 +161,8 @@ function EditProposal(props: any) {
         contents: values.contents,
         boardId: values.board,
         published: false,
+        quorumRate: values.quorumRate,
+        tokenRate: values.tokenRate,
         expireAt:
           values.date != null
             ? values.date.toISOString()

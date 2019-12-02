@@ -97,15 +97,12 @@ class Query(object):
     def resolve_all_board(self, info, **kwargs):
         return BoardModel.objects.all()
 
-    @staff_member_required
     def resolve_all_proposal(self, info, **kwargs):
         return ProposalModel.objects.select_related("board").all()
 
-    @superuser_required
     def resolve_all_selectitem(self, info, **kwargs):
         return SelectItemModel.objects.select_related("proposal").all()
 
-    @staff_member_required
     def resolve_all_vote(self, info, **kwargs):
         return VoteModel.objects.select_related("selectitem").all()
 
@@ -199,6 +196,8 @@ class SetProposal(graphene.Mutation):
         board_id = graphene.Int()
         published = graphene.Boolean()
         expire_at = graphene.DateTime()
+        quorum_rate = graphene.Int()
+        token_rate = graphene.Int()
         select_item_list = graphene.List(SelectItemInput)
 
     proposal = graphene.Field(ProposalModelType)
@@ -210,6 +209,8 @@ class SetProposal(graphene.Mutation):
         subject,
         contents,
         published,
+        quorum_rate,
+        token_rate,
         board_id,
         expire_at,
         select_item_list,
@@ -223,6 +224,8 @@ class SetProposal(graphene.Mutation):
                 subject=subject,
                 contents=contents,
                 published=published,
+                quorum_rate=quorum_rate,
+                token_rate=token_rate,
                 board=selectedBoard,
                 expire_at=expire_at,
             )
@@ -237,6 +240,8 @@ class SetProposal(graphene.Mutation):
             proposal.subject = subject
             proposal.contents = contents
             proposal.published = False
+            proposal.quorum_rate = quorum_rate
+            proposal.token_rate = token_rate
             proposal.board = selectedBoard
             proposal.expire_at = expire_at
             proposal.save()

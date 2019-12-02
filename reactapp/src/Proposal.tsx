@@ -10,12 +10,19 @@ import {
   Grid
 } from "@material-ui/core";
 
+import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
+
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 
 import ReactMarkdown from "react-markdown";
 
 import useStyles from "./Style";
+
+let data = [
+  { name: 'Quorum', th: 0, voted: 0 },
+  { name: 'Token', th: 0, voted: 0 },
+];
 
 interface selectItem {
   index: 0;
@@ -109,6 +116,9 @@ function Proposal(props: any) {
           setUsername(result.data.username);
         }
       });
+
+    data[0].th = proposal.quorumRate;
+    data[1].th = proposal.tokenRate;
   });
 
   function SelectList() {
@@ -124,6 +134,11 @@ function Proposal(props: any) {
           break;
         }
       }
+    }
+
+    if (votedIdx >= 0) {
+      data[0].voted = votedIdx;
+      data[1].voted = votedIdx;
     }
 
     if (proposal.published === false || flag) {
@@ -204,11 +219,28 @@ function Proposal(props: any) {
           skipHtml={false}
           escapeHtml={false}
         />
-        <Typography variant="h6" color="textPrimary">
+        <Typography variant="caption" color="textPrimary">
           expire at:
           {proposal.expireAt}
         </Typography>
+        <br />
+        <br />
         <SelectList />
+        <BarChart
+          width={200}
+          height={200}
+          data={data}
+          margin={{
+            top: 20, right: 20, left: 20, bottom: 5,
+          }}
+        >
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey="th" fill="#8884d8" background={{ fill: '#EEEEEE' }} />
+          <Bar dataKey="voted" fill="#3377ff" background={{ fill: '#EEEEEE' }} />
+        </BarChart>
         <br />
         <ActionButton />
       </Paper>

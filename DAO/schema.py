@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
+
 from django.contrib.auth import authenticate
 import graphene
 import graphql_jwt
@@ -27,9 +29,11 @@ class UserType(DjangoObjectType):
 class Query(board.schema.Query, graphene.ObjectType):
     me = graphene.Field(UserType)
 
-    @login_required
     def resolve_me(self, info, **kwargs):
-        return info.context.user
+        user = info.context.user
+        if user.is_anonymous:
+            return None
+        return user
 
 
 class SetUser(graphene.Mutation):

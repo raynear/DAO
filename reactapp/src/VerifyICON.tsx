@@ -37,7 +37,7 @@ function VerifyICON(props: any) {
 
   //  const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
   const MAIN_NET = "http://localhost:9000/api/v3";
-  const TO_CONTRACT = "cxd142e259bdc019289afd13efdcda23ba126eb69d";
+  const TO_CONTRACT = "cx2e019e69cac769857042fd1efd079981bcd66a62";
   const provider = new IconService.HttpProvider(MAIN_NET);
   const icon_service = new IconService(provider);
   const IconBuilder = IconService.IconBuilder;
@@ -111,18 +111,20 @@ function VerifyICON(props: any) {
     setVerifiedAddress(result_json.address);
 
     const provider2 = new IconService.HttpProvider("https://ctz.solidwallet.io/api/v3");
+    // const provider2 = new IconService.HttpProvider("http://localhost:9000/api/v3");
     const icon_service2 = new IconService(provider2);
 
     var callBuilder = new IconBuilder.CallBuilder();
     var callObj = callBuilder
       .to("cx0000000000000000000000000000000000000000")
       .method("getPReps")
-      .params()
+      .params({ "startRanking": "0x1", "endRanking": "0x60" })
       .build();
 
     let PRepList = await icon_service2.call(callObj).execute();
 
     PRepList.preps.forEach((item: any, idx: number, array: any) => {
+      console.log(item);
       if (item.address === result_json.address) {
         console.log("YOU ARE P-REP!!!!!");
       }
@@ -133,7 +135,7 @@ function VerifyICON(props: any) {
   async function sendVerify() {
     let result = await icon_service.getBlock('latest').execute();
 
-    let params = { "_BlockHash": result.blockHash, "_ID": "raynear" };
+    let params = { "_BlockHash": result.blockHash, "_ID": props.data.me.username };
 
     json_rpc_transaction_call(fromAddress, "Verify", params);
   }

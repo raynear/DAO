@@ -25,6 +25,7 @@
   - [x] Sign 후 refresh
   - [x] 인증 페이지
   - [x] 인증 부분 score 작성해서 테스트
+  - [x] Login 안된 상태에서 에러 fix
 - [ ] management page
   - [ ] P-Rep용
     - [ ] writen proposals

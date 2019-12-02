@@ -31,6 +31,8 @@ class ProposalModel(models.Model):
     proposal_id = models.IntegerField(default=0, blank=True)
     txHash = models.CharField(max_length=300, blank=True)
     contents = models.TextField(default="")
+    quorum_rate = models.IntegerField(default=0)
+    token_rate = models.IntegerField(default=0)
     create_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
     expire_at = models.DateTimeField()

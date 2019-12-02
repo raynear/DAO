@@ -13,6 +13,8 @@ const GET_PROPOSAL = gql`
       subject
       contents
       published
+      quorumRate
+      tokenRate
       expireAt
       selectitemmodelSet {
         index
@@ -40,6 +42,8 @@ const SET_PUBLISH = gql`
         subject
         contents
         published
+        quorumRate
+        tokenRate
         expireAt
         selectitemmodelSet {
           index
@@ -65,6 +69,8 @@ const SET_VOTE = gql`
         subject
         contents
         published
+        quorumRate
+        tokenRate
         expireAt
         selectitemmodelSet {
           index

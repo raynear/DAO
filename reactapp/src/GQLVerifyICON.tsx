@@ -23,11 +23,10 @@ const GET_ME = gql`
 
 function GQLVerifyICON() {
   const client = useApolloClient();
-
-  const { loading, data } = useQuery(GET_ME);
+  const { loading, error, data } = useQuery(GET_ME);
 
   if (loading) return <p>Loading...</p>;
-  //  if (error) return <p>Error!:</p>;
+  if (error) return <p>Error!:</p>;
   if (data && data.me) {
     console.log("GQLUserInfo", data);
     let photo = "";

@@ -71,11 +71,15 @@ function UserInfo(props: any) {
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
         >
-          <MenuItem onClick={handleMenuClose} href="/Profile">
-            Profile
+          <MenuItem onClick={handleMenuClose}>
+            <Link href="/Profile" style={{ textDecoration: "none" }}>
+              <Typography component="h6">Profile</Typography>
+            </Link>
           </MenuItem>
-          <MenuItem onClick={handleMenuLogout} href="/">
-            Logout
+          <MenuItem onClick={handleMenuLogout}>
+            <Link href="/" style={{ textDecoration: "none" }}>
+              <Typography component="h6">Logout</Typography>
+            </Link>
           </MenuItem>
         </Menu>
       </Fragment>
