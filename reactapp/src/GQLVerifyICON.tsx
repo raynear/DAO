@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { withRouter } from 'react-router-dom';
 import { Grid, Typography, Divider, Button } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 
@@ -22,7 +23,7 @@ function GQLVerifyICON(props: any) {
 
   const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
   // const MAIN_NET = "http://localhost:9000/api/v3";
-  const TO_CONTRACT = "cx0c7201f0f3a5974613044cbb2d911efc852d73d9";
+  const TO_CONTRACT = "cx90cc523d941a25e5f2e704192f6b09655ccbc1ff";
   const provider = new IconService.HttpProvider(MAIN_NET);
   const icon_service = new IconService(provider);
   const IconBuilder = IconService.IconBuilder;
@@ -184,4 +185,4 @@ function GQLVerifyICON(props: any) {
   );
 }
 
-export default GQLVerifyICON;
+export default withRouter(GQLVerifyICON);

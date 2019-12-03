@@ -1,33 +1,13 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { withRouter, Link, BrowserRouter, Switch, Route } from "react-router-dom";
 import clsx from "clsx";
-import {
-  CssBaseline,
-  Drawer,
-  AppBar,
-  Toolbar,
-  List,
-  Typography,
-  Divider,
-  IconButton,
-  Container,
-  Grid,
-  ListItem,
-  ListItemIcon,
-  ListItemText
-} from "@material-ui/core";
-import {
-  ChevronLeft,
-  ListAltRounded,
-  AddCircleRounded
-} from "@material-ui/icons";
-import MenuIcon from "@material-ui/icons/Menu";
-import DashboardIcon from "@material-ui/icons/Dashboard";
+import { CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, Container, Grid, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { ChevronLeft, ListAltRounded, AddCircleRounded, Menu as MenuIcon, Dashboard as DashboardIcon } from "@material-ui/icons";
 
-import { Switch, Route } from "react-router-dom";
+import useForceUpdate from "./useForceUpdate";
 
-//import { useApolloClient } from "@apollo/react-hooks";
-//import gql from "graphql-tag";
+// import { useApolloClient } from "@apollo/react-hooks";
+// import gql from "graphql-tag";
 
 import Dashboard from "./Dashboard";
 import Proposals from "./Proposals";
@@ -42,8 +22,8 @@ import Copyright from "./Copyright";
 import useStyles from "./Style";
 
 function Layout(props: any) {
+  console.log("Layout props", props);
   const classes = useStyles();
-  //  const client = useApolloClient();
 
   const [open, setOpen] = React.useState(false);
 
@@ -62,20 +42,7 @@ function Layout(props: any) {
   ) => {
     setSelectedIndex(i);
   };
-  /*  useEffect(() => {
-    client
-      .query({
-        query: gql`
-          {
-            username @client
-          }
-        `
-      })
-      .then(result => {
-        console.log(result);
-      });
-  });
-*/
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -149,10 +116,8 @@ function Layout(props: any) {
           </ListItem>
           <ListItem
             button
-            component={Link}
-            to="/EditProposal"
             selected={selectedIndex === 2}
-            onClick={(e: any) => handleListItemClick(e, 2)}
+            onClick={(e: any) => { handleListItemClick(e, 2); }}
           >
             <ListItemIcon>
               <AddCircleRounded />
@@ -165,20 +130,22 @@ function Layout(props: any) {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.rootcontainer}>
           <Grid container spacing={0}>
-            <Switch>
-              <Route exact path="/" component={Dashboard} />
-              <Route
-                exact
-                path="/EditProposal/:proposal_id"
-                component={GQLEditProposal}
-              />
-              <Route exact path="/EditProposal" component={GQLEditProposal} />
-              <Route exact path="/Profile" component={GQLVerifyICON} />
-              <Route exact path="/Proposals" component={Proposals} />
-              <Route exact path="/Proposal/:id" component={GQLGetProposal} />
-              <Route exact path="/SignIn" component={GQLSignIn} />
-              <Route exact path="/SignUp" component={GQLSignUp} />
-            </Switch>
+            <BrowserRouter>
+              <Switch>
+                <Route exact path="/" component={Dashboard} />
+                <Route
+                  exact
+                  path="/EditProposal/:proposal_id"
+                  component={GQLEditProposal}
+                />
+                <Route exact path="/EditProposal" component={GQLEditProposal} />
+                <Route exact path="/Profile" component={GQLVerifyICON} />
+                <Route exact path="/Proposals" component={Proposals} />
+                <Route exact path="/Proposal/:ID" component={GQLGetProposal} />
+                <Route exact path="/SignIn" component={GQLSignIn} />
+                <Route exact path="/SignUp" component={GQLSignUp} />
+              </Switch>
+            </BrowserRouter>
           </Grid>
         </Container>
         <Copyright />
@@ -187,4 +154,4 @@ function Layout(props: any) {
   );
 }
 
-export default Layout;
+export default withRouter(Layout);

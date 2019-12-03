@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { withRouter } from 'react-router-dom';
 
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL } from "./GQL";
@@ -46,4 +47,4 @@ function GQLGetProposal(props: any) {
   );
 }
 
-export default GQLGetProposal;
+export default withRouter(GQLGetProposal);

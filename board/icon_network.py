@@ -1,2 +1,2 @@
 NETWORK = "https://bicon.net.solidwallet.io/api/v3"
-SCORE_ADDRESS = "cx0c7201f0f3a5974613044cbb2d911efc852d73d9"
+SCORE_ADDRESS = "cx90cc523d941a25e5f2e704192f6b09655ccbc1ff"

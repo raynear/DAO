@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-// import { Redirect } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 import { GET_LOCAL_ME, SET_USER, TOKEN_AUTH } from "./GQL";
 
@@ -94,4 +94,4 @@ function GQLSignUp(props: any) {
   */
 }
 
-export default GQLSignUp;
+export default withRouter(GQLSignUp);

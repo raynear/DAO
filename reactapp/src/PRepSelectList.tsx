@@ -7,7 +7,7 @@ import useStyles from "./Style";
 import IconService from 'icon-sdk-js';
 
 const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
-const TO_CONTRACT = "cx2e019e69cac769857042fd1efd079981bcd66a62";
+const TO_CONTRACT = "cx90cc523d941a25e5f2e704192f6b09655ccbc1ff";
 const provider = new IconService.HttpProvider(MAIN_NET);
 const icon_service = new IconService(provider);
 const IconBuilder = IconService.IconBuilder;
@@ -29,7 +29,7 @@ function PRepSelectList(props: any) {
   useEffect(() => {
     var callBuilder = new IconBuilder.CallBuilder();
     var callObj = callBuilder
-      .to("cx0c9bce7e3e198cb8917317028f08be141bfdaff0")
+      .to("0c9bce7e3e198cb8917317028f08be141bfdaff0")
       .method("GetVerifyInfoByID")
       .params({ "_ID": "raynear3" })
       .build();

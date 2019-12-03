@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { withRouter } from 'react-router-dom';
 import { Link } from "react-router-dom";
 
 import { Paper, Typography, Grid, Button, TextField, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
@@ -11,8 +12,8 @@ import useStyles from "./Style";
 
 import IconService from 'icon-sdk-js';
 
-const MAIN_NET = "http://bicon.net.solidwallet.io/api/v3";
-const TO_CONTRACT = "cx2e019e69cac769857042fd1efd079981bcd66a62";
+const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
+const TO_CONTRACT = "cx90cc523d941a25e5f2e704192f6b09655ccbc1ff";
 const provider = new IconService.HttpProvider(MAIN_NET);
 const icon_service = new IconService(provider);
 const IconBuilder = IconService.IconBuilder;
@@ -51,6 +52,7 @@ interface value {
 }
 
 function Proposals(props: any) {
+  console.log("Proposals props", props);
   const classes = useStyles();
   const [values, setValues] = useState<value>({
     selectedPRep: "",
@@ -66,8 +68,6 @@ function Proposals(props: any) {
   });
   let myPReps: any[] = [];
 
-  console.log("proposals props", props);
-
   const handleChange = (name: keyof value) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -81,7 +81,7 @@ function Proposals(props: any) {
   useEffect(() => {
     var callBuilder = new IconBuilder.CallBuilder();
     var callObj = callBuilder
-      .to("cx0c9bce7e3e198cb8917317028f08be141bfdaff0")
+      .to("cx90cc523d941a25e5f2e704192f6b09655ccbc1ff")
       .method("GetVerifyInfoByID")
       .params({ "_ID": "raynear3" })
       .build();
@@ -110,7 +110,7 @@ function Proposals(props: any) {
         <Grid container className={classes.container} spacing={0}>
           <Grid item className={classes.grid} xs={12} lg={12}>
             <FormControl variant="outlined" className={classes.formControl}>
-              <InputLabel className={classes.selectLabel}>Board</InputLabel>
+              <InputLabel className={classes.selectLabel}>PReps</InputLabel>
               <Select
                 value={values.selectedPRep}
                 onChange={() => handleChange("selectedPRep")}
@@ -189,4 +189,4 @@ function Proposals(props: any) {
   );
 }
 
-export default Proposals;
+export default withRouter(Proposals);

@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 export const GET_PROPOSAL = gql`
   query Proposal($id: Int!) {
     proposal(id: $id) {
-      board {
+      prep{
         id
       }
       subject
@@ -18,7 +18,7 @@ export const GET_PROPOSAL = gql`
         contents
       }
     }
-    allBoard {
+    allPrep{
       id
       name
     }
@@ -30,7 +30,7 @@ export const SET_PROPOSAL = gql`
     $proposalId: Int
     $subject: String!
     $contents: String!
-    $boardId: Int!
+    $PRepId: Int!
     $published: Boolean!
     $quorumRate: Int!
     $tokenRate: Int!
@@ -41,7 +41,7 @@ export const SET_PROPOSAL = gql`
       proposalId: $proposalId
       subject: $subject
       contents: $contents
-      boardId: $boardId
+      prepId: $PRepId
       published: $published
       quorumRate: $quorumRate
       tokenRate: $tokenRate

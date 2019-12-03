@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { GET_PROPOSAL, SET_PROPOSAL } from "./GQL";
@@ -7,6 +7,7 @@ import { GET_PROPOSAL, SET_PROPOSAL } from "./GQL";
 import EditProposal from "./EditProposal";
 
 function GQLEditProposal(props: any) {
+  console.log("GQLEditProposal props", props);
   let proposal_id: any;
   if (
     props.match !== undefined &&
@@ -51,4 +52,4 @@ function GQLEditProposal(props: any) {
   );
 }
 
-export default GQLEditProposal;
+export default withRouter(GQLEditProposal);

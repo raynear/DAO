@@ -22,8 +22,8 @@ interface selectItem {
   contents: "";
 }
 
-const MAIN_NET = "http://bicon.net.solidwallet.io/api/v3";
-const to_contract = "cx2e019e69cac769857042fd1efd079981bcd66a62";
+const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
+const to_contract = "cx90cc523d941a25e5f2e704192f6b09655ccbc1ff";
 const provider = new IconService.HttpProvider(MAIN_NET);
 const icon_service = new IconService(provider);
 const iconBuilder = IconService.IconBuilder;

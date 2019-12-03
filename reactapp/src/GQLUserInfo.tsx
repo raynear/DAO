@@ -1,5 +1,5 @@
-import React, { Fragment } from "react";
-import { Link } from "react-router-dom";
+import React, { Fragment, useState } from "react";
+import { Link, Redirect } from "react-router-dom";
 
 import { Avatar, Typography, IconButton, Badge, Menu, MenuItem } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
@@ -31,6 +31,10 @@ function GQLUserInfo(props: any) {
     mutateLogout();
     setAnchorEl(null);
   };
+
+  const abc = () => {
+    props.history.push("/Signin");
+  }
 
   const { loading, error, data } = useQuery(GET_LOCAL_ME);
 
@@ -69,9 +73,9 @@ function GQLUserInfo(props: any) {
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleMenuClose}>
-            <Link to="/Profile">
+            <Redirect to="/Profile">
               <Typography component="h6">Profile</Typography>
-            </Link>
+            </Redirect>
           </MenuItem>
           <MenuItem onClick={handleMenuLogout}>
             <Link to="/">
@@ -108,9 +112,7 @@ function GQLUserInfo(props: any) {
           </MenuItem>
 
           <MenuItem onClick={handleMenuClose}>
-            <Link to="/Signin">
-              <Typography component="h6">Sign In</Typography>
-            </Link>
+            <Typography onClick={abc} component="h6">Sign In</Typography>
           </MenuItem>
         </Menu>
       </Fragment>

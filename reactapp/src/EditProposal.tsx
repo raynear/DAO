@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Paper, Grid, Typography, TextField, Button, FormControl, FormHelperText, InputLabel, Select, MenuItem, Slider } from "@material-ui/core";
+import { Paper, Grid, Typography, TextField, Button, Slider } from "@material-ui/core";
 import { AddRounded } from "@material-ui/icons";
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
@@ -43,7 +43,6 @@ function EditProposal(props: any) {
   const emptyProposal = {
     subject: "",
     contents: "",
-    board: { id: "" },
     expireAt: "2019-10-18T21:11:54",
     selectitemmodelSet: []
   };
@@ -57,7 +56,6 @@ function EditProposal(props: any) {
     tokenRate: proposal.tokenRate,
     subject: proposal.subject,
     contents: proposal.contents,
-    board: proposal.board.id,
     date: new Date(proposal.expireAt)
   });
 
@@ -145,7 +143,6 @@ function EditProposal(props: any) {
         proposalId: proposal_id,
         subject: values.subject,
         contents: values.contents,
-        boardId: values.board,
         published: false,
         quorumRate: values.quorumRate,
         tokenRate: values.tokenRate,
@@ -165,33 +162,6 @@ function EditProposal(props: any) {
       <Paper className={classes.paper}>
         <form>
           <Grid container className={classes.container} spacing={0}>
-            <Grid className={classes.grid} item xs={12} md={12} lg={12}>
-              <FormControl variant="outlined" className={classes.formControl}>
-                <InputLabel className={classes.selectLabel}>Board</InputLabel>
-                <Select
-                  value={values.board}
-                  onChange={handleProposalChange("board")}
-                  style={{ minWidth: 120 }}
-                >
-                  {props.boards.length > 0 &&
-                    props.boards.map((item: { id: string; name: string }) => {
-                      return (
-                        <MenuItem key={item.id} value={item.id}>
-                          {item.name}
-                        </MenuItem>
-                      );
-                    })}
-                </Select>
-                {validator.message("select", values.board, "required") && (
-                  <FormHelperText>
-                    <Typography variant="caption" color="error">
-                      {validator.message("select", values.board, "required")}
-                    </Typography>
-                  </FormHelperText>
-                )}
-              </FormControl>
-              <br />
-            </Grid>
             <Grid className={classes.grid} item xs={12} md={12} lg={12}>
               <TextField
                 id="subject"
