@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 //import { Redirect } from "react-router-dom";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
@@ -21,6 +22,29 @@ import {
 import ReactMarkdown from "react-markdown";
 
 import useStyles from "./Style";
+
+import IconService from 'icon-sdk-js';
+
+const MAIN_NET = "http://localhost:9000/api/v3";
+const TO_CONTRACT = "cx2e019e69cac769857042fd1efd079981bcd66a62";
+const provider = new IconService.HttpProvider(MAIN_NET);
+const icon_service = new IconService(provider);
+const IconBuilder = IconService.IconBuilder;
+const IconConverter = IconService.IconConverter;
+
+
+async function json_rpc_call(method_name: string, params: any) {
+  console.log("params", params);
+  var callBuilder = new IconBuilder.CallBuilder();
+  var callObj = callBuilder
+    .to(TO_CONTRACT)
+    .method(method_name)
+    .params(params)
+    .build();
+
+  console.log(callObj);
+  return await icon_service.call(callObj).execute();
+}
 
 const GET_PROPOSALS = gql`
   query Proposals($search: String, $first: Int, $skip: Int) {
@@ -58,20 +82,22 @@ interface value {
   skip: number;
 }
 
-function Proposals() {
+function Proposals(props: any) {
   const classes = useStyles();
-  const [values, setValues] = React.useState<value>({
+  const [values, setValues] = useState<value>({
     selectedPRep: "",
     search: "",
     first: 10,
     skip: 0
   });
-  const [queryValues, setQueryValues] = React.useState<value>({
+  const [queryValues, setQueryValues] = useState<value>({
     selectedPRep: "",
     search: "",
     first: 10,
     skip: 0
   });
+
+  let myPReps: any[] = [];
 
   const handleChange = (name: keyof value) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -82,6 +108,26 @@ function Proposals() {
   function queryFilters() {
     setValues(queryValues);
   }
+
+  useEffect(async () => {
+
+    var callBuilder = new IconBuilder.CallBuilder();
+    var callObj = callBuilder
+      .to("cx_DAO_SCORE")
+      .method("GetVerifyInfoByID")
+      .params({ "_ID": props.username })
+      .build();
+
+    let VerifyInfo = await icon_service.call(callObj).execute();
+
+    const response = await json_rpc_call("getDelegation", { "address": VerifyInfo.ID });
+    const delegateList = response.data;
+    for (const i in delegateList) {
+      myPReps.push(delegateList[i]);
+    }
+
+  }, [])
+
 
   const { loading, error, data } = useQuery(GET_PROPOSALS, {
     fetchPolicy: "network-only",
@@ -105,9 +151,11 @@ function Proposals() {
                 onChange={() => handleChange("selectedPRep")}
                 style={{ minWidth: 120 }}
               >
-                <MenuItem value={"test"/*item.id*/}>
-                  {"item.name"}
+                {myPReps.map((item, idx) => {
+                  <MenuItem value={item.id}>
+                    item.name
                 </MenuItem>
+                })}
               </Select>
             </FormControl>
           </Grid>

@@ -10,24 +10,79 @@ import {
   Grid
 } from "@material-ui/core";
 
-import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
+import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from "recharts";
 
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 
 import ReactMarkdown from "react-markdown";
+import IconService from 'icon-sdk-js';
 
 import useStyles from "./Style";
 
 let data = [
-  { name: 'Quorum', th: 0, voted: 0 },
-  { name: 'Token', th: 0, voted: 0 },
+  { name: 'quorum', th: 0, voted: 0 },
+  { name: 'token', th: 0, voted: 0 },
 ];
 
 interface selectItem {
   index: 0;
   contents: "";
 }
+
+const main_net = "http://localhost:9000/api/v3";
+const to_contract = "cx2e019e69cac769857042fd1efd079981bcd66a62";
+const provider = new IconService.HTTPProvider(main_net);
+const icon_service = new IconService(provider);
+const iconBuilder = IconService.IconBuilder;
+const iconConverter = IconService.IconConverter;
+
+
+async function json_rpc_call(method_name: string, params: any) {
+  console.log("params", params);
+  var callbuilder = new iconBuilder.callbuilder();
+  var callobj = callbuilder
+    .to(to_contract)
+    .method(method_name)
+    .params(params)
+    .build();
+
+  console.log(callobj);
+  return await icon_service.call(callobj).execute();
+}
+
+/*
+async function json_rpc_transaction_call(from_wallet: string, method_name: string, params: any) {
+  let timestamp = new Date();
+  var txBuilder = new IconBuilder.CallTransactionBuilder();
+  var txObj = txBuilder
+    .from(from_wallet)
+    .to(TO_CONTRACT)
+    .nid(IconConverter.toBigNumber("3"))
+    .version(IconConverter.toBigNumber("3"))
+    .stepLimit(IconConverter.toBigNumber("100000000"))
+    .timestamp(timestamp.valueOf() * 1000)
+    .method(method_name)
+    .params(params)
+    .build();
+  const scoreData = JSON.stringify({
+    "jsonrpc": "2.0",
+    "method": "icx_sendTransaction",
+    "params": IconConverter.toRawTransaction(txObj),
+    "id": 0
+  });
+
+  const parsed = JSON.parse(scoreData);
+  const customEvent = new CustomEvent("ICONEX_RELAY_REQUEST", {
+    detail: {
+      type: 'REQUEST_JSON-RPC',
+      payload: parsed
+    }
+  }
+  );
+  window.dispatchEvent(customEvent);
+}
+*/
 
 function Proposal(props: any) {
   const classes = useStyles();
@@ -121,16 +176,29 @@ function Proposal(props: any) {
     data[1].th = proposal.tokenRate;
   });
 
-  function SelectList() {
+  const eventHandler = (event: any) => {
+    const type = event.detail.type;
+    const payload = event.detail.payload;
+    if (type === "RESPONSE_SIGNING") {
+      console.log("response signing");
+      console.log(payload); // e.g., 'q/dVc3qj4En0GN+...'
+    } else if (type === "RESPONSE_JSON-RPC") {
+      console.log("response json rpc");
+      console.log(payload);
+    }
+  };
+  window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
+
+  async function SelectList() {
     let SelectList = proposal.selectitemmodelSet;
 
     let votedIdx = -1;
-    let flag = false;
+    let votedFlag = false;
     for (let i in SelectList) {
       for (let j in SelectList[i].votemodelSet) {
         if (username === SelectList[i].votemodelSet[j].voter.username) {
           votedIdx = parseInt(i);
-          flag = true;
+          votedFlag = true;
           break;
         }
       }
@@ -141,7 +209,23 @@ function Proposal(props: any) {
       data[1].voted = votedIdx;
     }
 
-    if (proposal.published === false || flag) {
+    var callBuilder = new iconBuilder.CallBuilder();
+    var callObj = callBuilder
+      .to("cx_DAO_SCORE")
+      .method("GetVerifyInfoByID")
+      .params({ "_ID": props.username })
+      .build();
+
+    let VerifyInfo = await icon_service.call(callObj).execute();
+
+    let myPRep = false;
+    const response = await json_rpc_call("getDelegation", { "address": VerifyInfo.ID });
+    const delegateList = response.data;
+    if (delegateList.include(proposal.author)) {
+      myPRep = true;
+    }
+
+    if (proposal.published === false || votedFlag || !myPRep) {
       return <SelectItemList voted={votedIdx} />;
     } else {
       return <RadioButtons />;
