@@ -6,7 +6,7 @@ import useStyles from "./Style";
 
 import IconService from 'icon-sdk-js';
 
-const MAIN_NET = "http://localhost:9000/api/v3";
+const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
 const TO_CONTRACT = "cx2e019e69cac769857042fd1efd079981bcd66a62";
 const provider = new IconService.HttpProvider(MAIN_NET);
 const icon_service = new IconService(provider);

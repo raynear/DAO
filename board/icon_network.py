@@ -1,2 +1,2 @@
-NETWORK = "http://localhost:9000"
-SCORE_ADDRESS = "cx0c9bce7e3e198cb8917317028f08be141bfdaff0"
+NETWORK = "https://bicon.net.solidwallet.io/api/v3"
+SCORE_ADDRESS = "cx0c7201f0f3a5974613044cbb2d911efc852d73d9"

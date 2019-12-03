@@ -20,9 +20,9 @@ function GQLVerifyICON(props: any) {
   let photo = "";
   //  const data = props.data;
 
-  //  const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
-  const MAIN_NET = "http://localhost:9000/api/v3";
-  const TO_CONTRACT = "cx0c9bce7e3e198cb8917317028f08be141bfdaff0";
+  const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
+  // const MAIN_NET = "http://localhost:9000/api/v3";
+  const TO_CONTRACT = "cx0c7201f0f3a5974613044cbb2d911efc852d73d9";
   const provider = new IconService.HttpProvider(MAIN_NET);
   const icon_service = new IconService(provider);
   const IconBuilder = IconService.IconBuilder;

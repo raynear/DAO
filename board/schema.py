@@ -15,14 +15,14 @@ from iconsdk.wallet.wallet import KeyWallet
 
 import json
 
-from .models import BoardModel, ProposalModel, SelectItemModel, VoteModel
+from .models import PRepModel, ProposalModel, SelectItemModel, VoteModel
 
 from .icon_network import NETWORK, SCORE_ADDRESS
 
 
-class BoardModelType(DjangoObjectType):
+class PRepModelType(DjangoObjectType):
     class Meta:
-        model = BoardModel
+        model = PRepModel
 
 
 class ProposalModelType(DjangoObjectType):
@@ -41,7 +41,7 @@ class VoteModelType(DjangoObjectType):
 
 
 class Query(object):
-    all_board = graphene.List(BoardModelType)
+    all_prep = graphene.List(PRepModelType)
     all_proposal = graphene.List(ProposalModelType)
     all_selectitem = graphene.List(SelectItemModelType)
     all_vote = graphene.List(VoteModelType)
@@ -94,11 +94,11 @@ class Query(object):
 
         return qs
 
-    def resolve_all_board(self, info, **kwargs):
-        return BoardModel.objects.all()
+    def resolve_all_prep(self, info, **kwargs):
+        return PRepModel.objects.all()
 
     def resolve_all_proposal(self, info, **kwargs):
-        return ProposalModel.objects.select_related("board").all()
+        return ProposalModel.objects.select_related("prep").all()
 
     def resolve_all_selectitem(self, info, **kwargs):
         return SelectItemModel.objects.select_related("proposal").all()
@@ -168,6 +168,23 @@ class PublishProposal(graphene.Mutation):
         return PublishProposal(proposal=proposal)
 
 
+class NewPRep(graphene.Mutation):
+    class Arguments:
+        PRep_address = graphene.String()
+        owner_id = graphene.String()
+        description = graphene.String()
+
+    prep = graphene.Field(ProposalModelType)
+
+    def mutate(self, info, PRep_address, owner_id, description):
+        prep = PRepModel.objects.create()
+        prep.prep_address = PRep_address
+        prep.name = owner_id
+        prep.description = description
+        prep.save()
+        return NewPRep(prep=prep)
+
+
 class VoteProposal(graphene.Mutation):
     class Arguments:
         select_item_index = graphene.Int()
@@ -193,7 +210,7 @@ class SetProposal(graphene.Mutation):
         proposal_id = graphene.Int()
         subject = graphene.String()
         contents = graphene.String(required=True)
-        board_id = graphene.Int()
+        prep_id = graphene.Int()
         published = graphene.Boolean()
         expire_at = graphene.DateTime()
         quorum_rate = graphene.Int()
@@ -211,11 +228,11 @@ class SetProposal(graphene.Mutation):
         published,
         quorum_rate,
         token_rate,
-        board_id,
+        prep_id,
         expire_at,
         select_item_list,
     ):
-        selectedBoard = BoardModel.objects.get(id=board_id)
+        selectedPRep = PRepModel.objects.get(id=prep_id)
         try:
             proposal = ProposalModel.objects.get(pk=proposal_id)
         except ProposalModel.DoesNotExist:
@@ -226,7 +243,7 @@ class SetProposal(graphene.Mutation):
                 published=published,
                 quorum_rate=quorum_rate,
                 token_rate=token_rate,
-                board=selectedBoard,
+                prep=selectedPRep,
                 expire_at=expire_at,
             )
             proposal.save()
@@ -242,7 +259,7 @@ class SetProposal(graphene.Mutation):
             proposal.published = False
             proposal.quorum_rate = quorum_rate
             proposal.token_rate = token_rate
-            proposal.board = selectedBoard
+            proposal.prep = selectedPRep
             proposal.expire_at = expire_at
             proposal.save()
 

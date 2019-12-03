@@ -8,8 +8,9 @@ user = User
 # Create your models here.
 
 
-class BoardModel(models.Model):
+class PRepModel(models.Model):
     name = models.CharField(max_length=20, blank=True)
+    prep_address = models.CharField(max_length=60, blank=True)
     description = models.CharField(max_length=200, blank=False, default="디폴트")
 
     def __str__(self):
@@ -25,7 +26,7 @@ class ProposalModel(models.Model):
         blank=True,
         default=user,
     )
-    board = models.ForeignKey(BoardModel, on_delete=models.CASCADE)
+    prep = models.ForeignKey(PRepModel, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
     subject = models.CharField(max_length=50, blank=True)
     proposal_id = models.IntegerField(default=0, blank=True)

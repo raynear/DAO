@@ -22,7 +22,7 @@ interface selectItem {
   contents: "";
 }
 
-const MAIN_NET = "http://localhost:9000/api/v3";
+const MAIN_NET = "http://bicon.net.solidwallet.io/api/v3";
 const to_contract = "cx2e019e69cac769857042fd1efd079981bcd66a62";
 const provider = new IconService.HttpProvider(MAIN_NET);
 const icon_service = new IconService(provider);
@@ -204,7 +204,7 @@ function Proposal(props: any) {
 
     var callBuilder = new iconBuilder.CallBuilder();
     var callObj = callBuilder
-      .to("cx_DAO_SCORE")
+      .to("cx0c7201f0f3a5974613044cbb2d911efc852d73d9")
       .method("GetVerifyInfoByID")
       .params({ "_ID": props.username })
       .build();
