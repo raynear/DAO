@@ -30,12 +30,12 @@ interface selectItem {
   contents: "";
 }
 
-const main_net = "http://localhost:9000/api/v3";
+const MAIN_NET = "http://localhost:9000/api/v3";
 const to_contract = "cx2e019e69cac769857042fd1efd079981bcd66a62";
-const provider = new IconService.HTTPProvider(main_net);
+const provider = new IconService.HttpProvider(MAIN_NET);
 const icon_service = new IconService(provider);
 const iconBuilder = IconService.IconBuilder;
-const iconConverter = IconService.IconConverter;
+// const iconConverter = IconService.IconConverter;
 
 
 async function json_rpc_call(method_name: string, params: any) {
@@ -189,7 +189,7 @@ function Proposal(props: any) {
   };
   window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
 
-  async function SelectList() {
+  function SelectList() {
     let SelectList = proposal.selectitemmodelSet;
 
     let votedIdx = -1;
@@ -216,20 +216,25 @@ function Proposal(props: any) {
       .params({ "_ID": props.username })
       .build();
 
-    let VerifyInfo = await icon_service.call(callObj).execute();
+    icon_service.call(callObj).execute().then((result: any) => {
+      console.log("verify2", result);
+      let VerifyInfo = result.data
+      let myPRep = false;
+      json_rpc_call("getDelegation", { "address": VerifyInfo.ID }).then((result2: any) => {
+        console.log("verify2", result2);
+        const delegateList = result2;
+        if (delegateList.include(proposal.author)) {
+          myPRep = true;
+        }
+      });
+      if (proposal.published === false || votedFlag || !myPRep) {
+        return <SelectItemList voted={votedIdx} />;
+      } else {
+        return <RadioButtons />;
+      }
+    });
 
-    let myPRep = false;
-    const response = await json_rpc_call("getDelegation", { "address": VerifyInfo.ID });
-    const delegateList = response.data;
-    if (delegateList.include(proposal.author)) {
-      myPRep = true;
-    }
-
-    if (proposal.published === false || votedFlag || !myPRep) {
-      return <SelectItemList voted={votedIdx} />;
-    } else {
-      return <RadioButtons />;
-    }
+    return <div>{" "}</div>
   }
 
   function VoteButton() {

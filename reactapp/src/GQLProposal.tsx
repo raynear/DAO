@@ -1,93 +1,12 @@
 import React, { useState, useMemo } from "react";
-import gql from "graphql-tag";
+
 import { useQuery, useMutation } from "@apollo/react-hooks";
-//import useForceUpdate from "./useForceUpdate";
+import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL } from "./GQL";
+
 import Proposal from "./Proposal";
 
-const GET_PROPOSAL = gql`
-  query Proposal($id: Int!) {
-    proposal(id: $id) {
-      author {
-        username
-      }
-      subject
-      contents
-      published
-      quorumRate
-      tokenRate
-      expireAt
-      selectitemmodelSet {
-        index
-        contents
-        votemodelSet {
-          voter {
-            username
-          }
-        }
-      }
-    }
-    me {
-      username
-    }
-  }
-`;
-
-const SET_PUBLISH = gql`
-  mutation PublishProposal($proposalId: Int!) {
-    publishProposal(proposalId: $proposalId) {
-      proposal {
-        author {
-          username
-        }
-        subject
-        contents
-        published
-        quorumRate
-        tokenRate
-        expireAt
-        selectitemmodelSet {
-          index
-          contents
-          votemodelSet {
-            voter {
-              username
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-const SET_VOTE = gql`
-  mutation VoteProposal($proposalId: Int!, $selectItemIndex: Int!) {
-    voteProposal(proposalId: $proposalId, selectItemIndex: $selectItemIndex) {
-      proposal {
-        author {
-          username
-        }
-        subject
-        contents
-        published
-        quorumRate
-        tokenRate
-        expireAt
-        selectitemmodelSet {
-          index
-          contents
-          votemodelSet {
-            voter {
-              username
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-function GQLGetProposal({ match }: any) {
-  const id = match.params.id;
+function GQLGetProposal(props: any) {
+  const id = props.match.params.id;
   //const forceUpdate = useForceUpdate;
   const [values, setValues] = useState();
 
@@ -123,7 +42,7 @@ function GQLGetProposal({ match }: any) {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
   return (
-    <Proposal proposal={values} match={match} Publish={Publish} Vote={Vote} />
+    <Proposal proposal={values} props={props} Publish={Publish} Vote={Vote} />
   );
 }
 

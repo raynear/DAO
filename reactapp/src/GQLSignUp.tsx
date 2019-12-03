@@ -1,62 +1,28 @@
-import React, { Fragment, useState } from "react";
-import { Redirect } from "react-router-dom";
-import gql from "graphql-tag";
+import React, { Fragment } from "react";
+// import { Redirect } from "react-router-dom";
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
+import { GET_LOCAL_ME, SET_USER, TOKEN_AUTH } from "./GQL";
+
+import Cookies from "js-cookie";
 
 import SignUp from "./SignUp";
-//import { Typography } from "@material-ui/core";
 
-const GET_ME = gql`
-  query {
-    me {
-      username
-      email
-      socialAuth {
-        edges {
-          node {
-            extraData
-          }
-        }
-      }
-    }
-  }
-`;
-
-const TOKEN_AUTH = gql`
-  mutation TokenAuth($username: String!, $password: String!) {
-    tokenAuth(username: $username, password: $password) {
-      token
-    }
-  }
-`;
-
-const SET_USER = gql`
-  mutation SetUser($username: String!, $password: String!) {
-    setUser(username: $username, password: $password) {
-      user {
-        username
-        email
-      }
-    }
-  }
-`;
-
-function GQLSignUp({ match }: any) {
+function GQLSignUp(props: any) {
   const client = useApolloClient();
 
-  const [redirect, setRedirect] = useState();
+  //  const [redirect, setRedirect] = useState();
   const [mutateSignup] = useMutation(SET_USER);
   const [mutateTokenAuth] = useMutation(TOKEN_AUTH);
 
-  function renderRedirect() {
-    if (redirect) {
-      return <Redirect to={redirect} />;
-    }
-  }
+  // function renderRedirect() {
+  //   if (redirect) {
+  //     return <Redirect to={redirect} />;
+  //   }
+  // }
 
   async function NewUser(username: string, password: string) {
     try {
-      let result = await mutateSignup({
+      await mutateSignup({
         variables: { username: username, password: password }
       })
     }
@@ -84,29 +50,48 @@ function GQLSignUp({ match }: any) {
       variables: { username: username, password: password }
     }).then(result => {
       console.log(result);
+      client.writeData({
+        data: {
+          username: username
+        }
+      });
+      Cookies.set("JWT", result.data.tokenAuth.token);
     });
   }
 
-  const { loading, data } = useQuery(GET_ME);
+  const { loading, error, data } = useQuery(GET_LOCAL_ME);
 
   if (loading) return <p>Loading...</p>;
-  //  if (error) return <p>Error!:</p>;
-  if (data && data.me) {
-    client.writeData({
-      data: {
-        username: data.me.username,
-        email: data.me.email
-        //photo:data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
-      }
-    });
-  }
+  if (error) return <p>Error!:</p>;
   console.log("GQLSign2", data);
   return (
     <Fragment>
-      {renderRedirect()}
-      <SignUp match={match} NewUser={NewUser} LogIn={LogIn} />
+      {/* {renderRedirect()} */}
+      <SignUp props={props} NewUser={NewUser} LogIn={LogIn} />
     </Fragment>
   );
+  /*
+    const { loading, data } = useQuery(GET_ME);
+  
+    if (loading) return <p>Loading...</p>;
+    //  if (error) return <p>Error!:</p>;
+    if (data && data.me) {
+      client.writeData({
+        data: {
+          username: data.me.username,
+          email: data.me.email
+          //photo:data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
+        }
+      });
+    }
+    console.log("GQLSign2", data);
+    return (
+      <Fragment>
+        {renderRedirect()}
+        <SignUp match={match} NewUser={NewUser} LogIn={LogIn} />
+      </Fragment>
+    );
+  */
 }
 
 export default GQLSignUp;

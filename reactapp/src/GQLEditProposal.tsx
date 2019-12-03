@@ -1,75 +1,19 @@
 import React, { Fragment, useState } from "react";
 import { Redirect } from "react-router-dom";
-import gql from "graphql-tag";
+
 import { useQuery, useMutation } from "@apollo/react-hooks";
+import { GET_PROPOSAL, SET_PROPOSAL } from "./GQL";
+
 import EditProposal from "./EditProposal";
 
-const GET_PROPOSAL = gql`
-  query Proposal($id: Int!) {
-    proposal(id: $id) {
-      board {
-        id
-      }
-      subject
-      contents
-      published
-      expireAt
-      quorumRate
-      tokenRate
-      selectitemmodelSet {
-        id
-        index
-        contents
-      }
-    }
-    allBoard {
-      id
-      name
-    }
-  }
-`;
-
-const SET_PROPOSAL = gql`
-  mutation SetProposal(
-    $proposalId: Int
-    $subject: String!
-    $contents: String!
-    $boardId: Int!
-    $published: Boolean!
-    $quorumRate: Int!
-    $tokenRate: Int!
-    $expireAt: DateTime!
-    $selectItemList: [SelectItemInput]
-  ) {
-    setProposal(
-      proposalId: $proposalId
-      subject: $subject
-      contents: $contents
-      boardId: $boardId
-      published: $published
-      quorumRate: $quorumRate
-      tokenRate: $tokenRate
-      expireAt: $expireAt
-      selectItemList: $selectItemList
-    ) {
-      proposal {
-        id
-        selectitemmodelSet {
-          id
-        }
-      }
-    }
-  }
-`;
-
-function GQLEditProposal({ match }: any) {
+function GQLEditProposal(props: any) {
   let proposal_id: any;
   if (
-    match !== undefined &&
-    match.hasOwnProperty("params") &&
-    match.params.hasOwnProperty("proposal_id")
+    props.match !== undefined &&
+    props.match.hasOwnProperty("params") &&
+    props.match.params.hasOwnProperty("proposal_id")
   ) {
-    proposal_id = match.params.proposal_id;
+    proposal_id = props.match.params.proposal_id;
   } else {
     proposal_id = -1;
   }
@@ -99,7 +43,7 @@ function GQLEditProposal({ match }: any) {
     <Fragment>
       {renderRedirect()}
       <EditProposal
-        match={match}
+        props={props}
         boards={data.allBoard}
         proposal={data.proposal}
         submitProposal={submitProposal}

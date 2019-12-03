@@ -1,24 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Paper,
-  Grid,
-  Typography,
-  TextField,
-  Button,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  Select,
-  MenuItem,
-  Slider
-} from "@material-ui/core";
+import { Paper, Grid, Typography, TextField, Button, FormControl, FormHelperText, InputLabel, Select, MenuItem, Slider } from "@material-ui/core";
 import { AddRounded } from "@material-ui/icons";
 import DateFnsUtils from "@date-io/date-fns";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker
-} from "@material-ui/pickers";
+import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
 import SimpleReactValidator from "simple-react-validator";
 
 import "codemirror/lib/codemirror.css";
@@ -42,6 +26,8 @@ const validator = new SimpleReactValidator({
 function EditProposal(props: any) {
   const classes = useStyles();
   const forceUpdate = useForceUpdate();
+
+  console.log("EditProposal props:", props);
 
   let proposal_id: any;
   if (
