@@ -4,7 +4,7 @@ import Proposals from "./Proposals";
 //import EditProposal from "./EditProposal";
 import GQLEditProposal from "./GQLEditProposal";
 
-function Dashboard() {
+function Dashboard(props: any) {
   return (
     <Fragment>
       <Proposals />

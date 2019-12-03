@@ -67,7 +67,7 @@ function GQLSignUp(props: any) {
   return (
     <Fragment>
       {/* {renderRedirect()} */}
-      <SignUp props={props} NewUser={NewUser} LogIn={LogIn} />
+      <SignUp NewUser={NewUser} LogIn={LogIn} />
     </Fragment>
   );
   /*

@@ -43,7 +43,6 @@ function GQLEditProposal(props: any) {
     <Fragment>
       {renderRedirect()}
       <EditProposal
-        props={props}
         boards={data.allBoard}
         proposal={data.proposal}
         submitProposal={submitProposal}

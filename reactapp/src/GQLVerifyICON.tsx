@@ -10,10 +10,9 @@ import clsx from "clsx";
 
 import useStyles from "./Style";
 
-function GQLVerifyICON() {
+function GQLVerifyICON(props: any) {
   const classes = useStyles();
 
-  const [username, setUsername] = useState("");
   const [fromAddress, setFromAddress] = useState("");
   const [isPRep, setIsPRep] = useState(false);
   const [verifiedAddress, setVerifiedAddress] = useState("");
@@ -86,7 +85,7 @@ function GQLVerifyICON() {
     }
   */
   async function callVerify() {
-    let result = await json_rpc_call("GetVerifyInfoByID", { "_ID": username });
+    let result = await json_rpc_call("GetVerifyInfoByID", { "_ID": data.username });
     console.log(result);
     let result_json = JSON.parse(result);
     setVerifiedAddress(result_json.address);
@@ -141,9 +140,11 @@ function GQLVerifyICON() {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
-  console.log("VerifyICON", data);
-  if (data != undefined) {
-    setUsername(data.username);
+  let username;
+  if (data === undefined) {
+    username = "";
+  } else {
+    username = data.username;
   }
   return (
     <>

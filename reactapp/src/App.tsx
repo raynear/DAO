@@ -44,7 +44,7 @@ const client = new ApolloClient({
   }
 });
 
-function App() {
+function App(props: any) {
   return (
     <BrowserRouter>
       <ApolloProvider client={client}>

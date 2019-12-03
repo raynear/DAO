@@ -1,14 +1,6 @@
 import React, { useEffect, useState, Fragment } from "react";
-import {
-  Paper,
-  Typography,
-  FormControlLabel,
-  FormControl,
-  RadioGroup,
-  Radio,
-  Button,
-  Grid
-} from "@material-ui/core";
+import { Link } from "react-router-dom";
+import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid } from "@material-ui/core";
 
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from "recharts";
 
@@ -85,6 +77,7 @@ async function json_rpc_transaction_call(from_wallet: string, method_name: strin
 */
 
 function Proposal(props: any) {
+  console.log("Proposal props", props);
   const classes = useStyles();
 
   const client = useApolloClient();
@@ -92,7 +85,7 @@ function Proposal(props: any) {
   const [voteSelect, setVoteSelect] = useState();
   const [username, setUsername] = useState("");
 
-  const id = props.match.params.id;
+  const id = props.match.params.ID;
   const proposal = props.proposal;
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -253,8 +246,10 @@ function Proposal(props: any) {
   function PublishButton() {
     return (
       <Fragment>
-        <Button variant="outlined" color="primary" href={"/EditProposal/" + id}>
-          Edit
+        <Button variant="outlined" color="primary">
+          <Link to={"/EditProposal/" + id}>
+            Edit
+</Link>
         </Button>
         <Button
           variant="contained"

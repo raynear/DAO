@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
+import { Link } from "react-router-dom";
 
-import { Avatar, Typography, IconButton, Badge, Link, Menu, MenuItem } from "@material-ui/core";
+import { Avatar, Typography, IconButton, Badge, Menu, MenuItem } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
@@ -8,7 +9,7 @@ import { LOG_OUT, GET_LOCAL_ME } from "./GQL";
 
 import useStyles from "./Style";
 
-function GQLUserInfo() {
+function GQLUserInfo(props: any) {
   const client = useApolloClient();
 
   const [mutateLogout] = useMutation(LOG_OUT);
@@ -68,12 +69,12 @@ function GQLUserInfo() {
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleMenuClose}>
-            <Link href="/Profile" style={{ textDecoration: "none" }}>
+            <Link to="/Profile">
               <Typography component="h6">Profile</Typography>
             </Link>
           </MenuItem>
           <MenuItem onClick={handleMenuLogout}>
-            <Link href="/" style={{ textDecoration: "none" }}>
+            <Link to="/">
               <Typography component="h6">Logout</Typography>
             </Link>
           </MenuItem>
@@ -101,14 +102,14 @@ function GQLUserInfo() {
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleMenuClose}>
-            <Link href="/Signup" style={{ textDecoration: "none" }}>
+            <Link to="/Signup">
               <Typography component="h6">Sign Up</Typography>
             </Link>
           </MenuItem>
 
           <MenuItem onClick={handleMenuClose}>
-            <Link href="/Signin" style={{ textDecoration: "none" }}>
-              <Typography component="h6">Login</Typography>
+            <Link to="/Signin">
+              <Typography component="h6">Sign In</Typography>
             </Link>
           </MenuItem>
         </Menu>

@@ -6,7 +6,7 @@ import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL } from "./GQL";
 import Proposal from "./Proposal";
 
 function GQLGetProposal(props: any) {
-  const id = props.match.params.id;
+  const id = props.match.params.ID;
   //const forceUpdate = useForceUpdate;
   const [values, setValues] = useState();
 
@@ -42,7 +42,7 @@ function GQLGetProposal(props: any) {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:{error}</p>;
   return (
-    <Proposal proposal={values} props={props} Publish={Publish} Vote={Vote} />
+    <Proposal proposal={values} Publish={Publish} Vote={Vote} />
   );
 }
 

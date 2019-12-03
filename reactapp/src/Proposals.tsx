@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-// import { Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-import { Paper, Typography, Link, Grid, Button, TextField, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import { Paper, Typography, Grid, Button, TextField, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 import ReactMarkdown from "react-markdown";
 
 import { useQuery } from "@apollo/react-hooks";
@@ -166,7 +166,7 @@ function Proposals(props: any) {
                   Type Of Proposal
                 </Typography>
                 <Typography variant="h5" color="textPrimary" gutterBottom>
-                  <Link href={"/Proposal/" + item.id} color="textPrimary">
+                  <Link to={"/Proposal/" + item.id} color="textPrimary">
                     {item.subject}
                   </Link>
                 </Typography>

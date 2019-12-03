@@ -41,7 +41,7 @@ import Copyright from "./Copyright";
 
 import useStyles from "./Style";
 
-function Layout() {
+function Layout(props: any) {
   const classes = useStyles();
   //  const client = useApolloClient();
 
