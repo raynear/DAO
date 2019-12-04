@@ -163,6 +163,17 @@ export const LOG_OUT = gql`
   }
 `;
 
+export const GET_PREPS = gql`
+  query {
+    allPrep{
+      id
+      name
+      prepAddress
+      description
+    }
+  }
+`;
+
 export const GET_PROPOSALS = gql`
   query Proposals($search: String, $first: Int, $skip: Int) {
     proposals(search: $search, first: $first, skip: $skip) {
@@ -179,4 +190,3 @@ export const GET_PROPOSALS = gql`
     }
   }
 `;
-

@@ -24,7 +24,12 @@ const validator = new SimpleReactValidator({
   )
 });
 
-function EditProposal({ match, history, location, prop_proposal, prop_submitProposal }: any) {
+function EditProposal(props: any) {
+  const match = props.match;
+  const history = props.history;
+  const location = props.location;
+  const prop_proposal = props.proposal;
+  const prop_submitProposal = props.submitProposal;
   console.log("EditProposal match:", match);
   console.log("EditProposal history:", history);
   console.log("EditProposal location:", location);
@@ -33,6 +38,8 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
 
   const classes = useStyles();
   const forceUpdate = useForceUpdate();
+
+  let editorRef = React.createRef<any>();
 
   let proposal_id: any;
   if (
@@ -48,19 +55,20 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
   const emptyProposal = {
     quorumRate: 50,
     tokenRate: 50,
+    prep: { id: 0 },
     subject: "",
     contents: "",
-    expireAt: "2019-10-18T21:11:54",
+    expireAt: "2019-12-18T21:11:54",
     selectitemmodelSet: []
   };
 
   const proposal = prop_proposal ? prop_proposal : emptyProposal;
 
-
   const [selectItems, setSelectItems] = useState(["", "", "", ""]);
   const [values, setValues] = useState({
     quorumRate: proposal.quorumRate,
     tokenRate: proposal.tokenRate,
+    prepId: proposal.prep.id,
     subject: proposal.subject,
     contents: proposal.contents,
     date: new Date(proposal.expireAt)
@@ -77,8 +85,6 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
     }
     editorRef.current.getInstance().setValue(values.contents);
   }, []);
-
-  let editorRef = React.createRef<any>();
 
   const addSelectItem = () => {
     setSelectItems([...selectItems, ""]);

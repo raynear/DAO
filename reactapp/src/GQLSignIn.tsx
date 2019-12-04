@@ -8,37 +8,23 @@ import SimpleReactValidator from "simple-react-validator";
 import useForceUpdate from "./useForceUpdate";
 import useStyles from "./Style";
 
+import clsx from "clsx";
 import Cookies from "js-cookie";
 
 function GQLSignIn(props: any) {
-  const client = useApolloClient();
-  const [mutateTokenAuth] = useMutation(TOKEN_AUTH);
-
-  //  const [redirect, setRedirect] = useState();
-  // function renderRedirect() {
-  //   if (redirect) {
-  //     return <Redirect to={redirect} />;
-  //   }
-  // }
-
   const classes = useStyles();
   const forceUpdate = useForceUpdate();
+  const client = useApolloClient();
 
-  const [signInfo, setSignInfo] = useState({
-    username: "",
-    password: "",
-    password2: ""
-  });
+  const [signInfo, setSignInfo] = useState({ username: "", password: "", password2: "" });
+
+  const [mutateTokenAuth] = useMutation(TOKEN_AUTH);
 
   function LogIn(username: string, password: string) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(result => {
-      client.writeData({
-        data: {
-          username: username
-        }
-      });
+      client.writeData({ data: { username: username } });
 
       Cookies.set("JWT", result.data.tokenAuth.token);
       props.history.push("/");
@@ -82,7 +68,7 @@ function GQLSignIn(props: any) {
       <Grid item className={classes.grid} xs={12} md={12} lg={12}>
         <Paper className={classes.paper}>
           <Grid container className={classes.container}>
-            <Grid item className={classes.item} xs={12} md={12} lg={12}>
+            <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
               <TextField
                 id="username"
                 label="User Name"
@@ -97,7 +83,7 @@ function GQLSignIn(props: any) {
                 )}
               />
             </Grid>
-            <Grid item className={classes.item} xs={12} md={12} lg={12}>
+            <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
               <TextField
                 id="password"
                 label="Password"
@@ -117,12 +103,12 @@ function GQLSignIn(props: any) {
                 )}
               />
             </Grid>
-            <Grid item className={classes.item} xs={12} md={12} lg={12}>
+            <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
               <Button variant="contained" color="primary" onClick={SignIn}>
                 Sign in
                 </Button>
             </Grid>
-            <Grid item className={classes.item} xs={12} md={12} lg={6}>
+            <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={6}>
               <Button
                 variant="contained"
                 color="secondary"

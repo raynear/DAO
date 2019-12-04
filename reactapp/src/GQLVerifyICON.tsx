@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_LOCAL_ME } from "./GQL";
 
-import { json_rpc_call, json_rpc_send_tx, governance_call, selected_icon_service, IconBuilder } from "./IconConnect";
+import { json_rpc_call, json_rpc_send_tx, governance_call, selected_icon_service } from "./IconConnect";
 
 import useStyles from "./Style";
 
@@ -15,9 +15,6 @@ function GQLVerifyICON(props: any) {
   const [fromAddress, setFromAddress] = useState("");
   const [isPRep, setIsPRep] = useState(false);
   const [verifiedAddress, setVerifiedAddress] = useState("");
-
-  let photo = "";
-  //  const data = props.data;
 
   function selectWallet() {
     window.dispatchEvent(new CustomEvent('ICONEX_RELAY_REQUEST', {

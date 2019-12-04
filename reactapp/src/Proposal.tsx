@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid } from "@material-ui/core";
 
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from "recharts";
@@ -252,4 +252,4 @@ function Proposal(props: any) {
   );
 }
 
-export default Proposal;
+export default withRouter(Proposal);

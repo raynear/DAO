@@ -1,13 +1,6 @@
 import React from "react";
 import { withRouter, Link, Switch, Route } from "react-router-dom";
-import clsx from "clsx";
-import { CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, Container, Grid, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import { ChevronLeft, ListAltRounded, AddCircleRounded, Menu as MenuIcon, Dashboard as DashboardIcon } from "@material-ui/icons";
-
-import useForceUpdate from "./useForceUpdate";
-
-// import { useApolloClient } from "@apollo/react-hooks";
-// import gql from "graphql-tag";
+import { CssBaseline, AppBar, Toolbar, Typography, Container, Grid } from "@material-ui/core";
 
 import Dashboard from "./Dashboard";
 import Proposals from "./Proposals";
@@ -25,109 +18,39 @@ function Layout(props: any) {
   console.log("Layout props", props);
   const classes = useStyles();
 
-  const [open, setOpen] = React.useState(false);
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
-
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
-
-  const handleListItemClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    i: number
-  ) => {
-    setSelectedIndex(i);
-  };
-
   return (
     <div className={classes.root}>
       <CssBaseline />
       <AppBar
         position="absolute"
-        className={clsx(classes.appBar, open && classes.appBarShift)}
+        className={classes.appBar}
       >
         <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(
-              classes.menuButton,
-              open && classes.menuButtonHidden
-            )}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            component="h6"
-            variant="h6"
-            color="inherit"
-            noWrap
-            style={{ flexGrow: 1 }}
-          >
-            Muljom-DAO
+          <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
+            <Link to="/" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+              <b>
+                ICON-DAO
+              </b>
+            </Link>
           </Typography>
-
+          <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
+            <Link to="/" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+              How-To
+            </Link>
+          </Typography>
+          <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
+            <Link to="/Proposals" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+              Explorer
+            </Link>
+          </Typography>
+          <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
+            <Link to="/EditProposal" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+              Build
+            </Link>
+          </Typography>
           <GQLUserInfo />
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose)
-        }}
-        open={open}
-      >
-        <div className={classes.toolbarIcon}>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeft />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>
-          <ListItem
-            button
-            component={Link}
-            to="/"
-            selected={selectedIndex === 0}
-            onClick={(e: any) => handleListItemClick(e, 0)}
-          >
-            <ListItemIcon>
-              <DashboardIcon />
-            </ListItemIcon>
-            <ListItemText primary="Dashboard" />
-          </ListItem>
-          <ListItem
-            button
-            component={Link}
-            to="/Proposals"
-            selected={selectedIndex === 1}
-            onClick={(e: any) => handleListItemClick(e, 1)}
-          >
-            <ListItemIcon>
-              <ListAltRounded />
-            </ListItemIcon>
-            <ListItemText primary="Proposal List" />
-          </ListItem>
-          <ListItem
-            button
-            component={Link}
-            to="/EditProposal"
-            selected={selectedIndex === 2}
-            onClick={(e: any) => { handleListItemClick(e, 2); }}
-          >
-            <ListItemIcon>
-              <AddCircleRounded />
-            </ListItemIcon>
-            <ListItemText primary="New Proposal" />
-          </ListItem>
-        </List>
-      </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.rootcontainer}>

@@ -1,17 +1,15 @@
-import React, { Fragment, useState } from "react";
-import { Link, Redirect } from "react-router-dom";
+import React, { Fragment } from "react";
+import { Link } from "react-router-dom";
 
 import { Avatar, Typography, IconButton, Badge, Menu, MenuItem } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 
-import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import { LOG_OUT, GET_LOCAL_ME } from "./GQL";
 
 import useStyles from "./Style";
 
 function GQLUserInfo(props: any) {
-  const client = useApolloClient();
-
   const [mutateLogout] = useMutation(LOG_OUT);
 
   const classes = useStyles();

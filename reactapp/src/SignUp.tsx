@@ -94,6 +94,7 @@ function SignUp(props: any) {
                   label="User Name"
                   name="username"
                   type="text"
+                  variant="outlined"
                   value={signInfo.username}
                   onChange={handleSignInfo}
                   helperText={validator.message(
@@ -109,6 +110,7 @@ function SignUp(props: any) {
                   label="Password"
                   name="password"
                   type="password"
+                  variant="outlined"
                   value={signInfo.password}
                   onChange={handleSignInfo}
                   helperText={
@@ -124,6 +126,7 @@ function SignUp(props: any) {
                   label="Password(again)"
                   name="password2"
                   type="password"
+                  variant="outlined"
                   value={signInfo.password2}
                   onChange={handleSignInfo}
                   onKeyPress={e => {

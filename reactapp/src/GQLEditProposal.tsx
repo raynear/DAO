@@ -7,6 +7,7 @@ import { GET_PROPOSAL, SET_PROPOSAL } from "./GQL";
 import EditProposal from "./EditProposal";
 
 function GQLEditProposal(props: any) {
+  console.log("GQLEditProposal props", props);
   let proposal_id: any;
   if (
     props.match !== undefined &&
@@ -26,6 +27,7 @@ function GQLEditProposal(props: any) {
   });
 
   function submitProposal(mutate_var: any) {
+    console.log("submitProposal mutate_var:", mutate_var);
     mutateProposal(mutate_var).then(result => {
       setRedirect(result.data.setProposal.proposal.id);
     });

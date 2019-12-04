@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { Paper, Typography, Grid, Button, TextField, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
+import { Paper, Typography, Grid, Button, TextField } from "@material-ui/core";
 import ReactMarkdown from "react-markdown";
+import clsx from "clsx";
 
 import { useQuery } from "@apollo/react-hooks";
 import { GET_PROPOSALS } from "./GQL";
 import { json_rpc_call } from "./IconConnect";
+import PRepSelectList from "./PRepSelectList";
 
 import useStyles from "./Style";
 
@@ -44,7 +46,6 @@ function Proposals(props: any) {
     first: 10,
     skip: 0
   });
-  let myPReps: any[] = [];
 
   const handleChange = (name: keyof value) => (
     event: React.ChangeEvent<HTMLInputElement>
@@ -80,20 +81,7 @@ function Proposals(props: any) {
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
           <Grid item className={classes.item} xs={12} lg={12}>
-            <FormControl variant="outlined" className={classes.formControl}>
-              <InputLabel className={classes.selectLabel}>PReps</InputLabel>
-              <Select
-                value={values.selectedPRep}
-                onChange={() => handleChange("selectedPRep")}
-                style={{ minWidth: 120 }}
-              >
-                {myPReps.map((item: any) => (
-                  <MenuItem value={item.id}>
-                    item.name
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <PRepSelectList />
           </Grid>
           <Grid item className={classes.item} xs={12} lg={12}>
             <Grid container className={classes.container} spacing={0}>
@@ -124,7 +112,7 @@ function Proposals(props: any) {
                   onChange={handleChange("skip")}
                 />
               </Grid>
-              <Grid item className={classes.item} xs={3} lg={3}>
+              <Grid item className={clsx(classes.item, classes.center)} xs={3} lg={3}>
                 <Button
                   variant="contained"
                   color="primary"

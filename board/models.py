@@ -9,8 +9,8 @@ user = User
 
 
 class PRepModel(models.Model):
-    name = models.CharField(max_length=20, blank=True)
-    prep_address = models.CharField(max_length=60, blank=True)
+    name = models.CharField(max_length=30, blank=True, unique=True)
+    prep_address = models.CharField(max_length=60, blank=True, unique=True)
     description = models.CharField(max_length=200, blank=False, default="디폴트")
 
     def __str__(self):
