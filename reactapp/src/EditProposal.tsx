@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { withRouter } from "react-router-dom";
 import { Paper, Grid, Typography, TextField, Button, Slider } from "@material-ui/core";
 import { AddRounded } from "@material-ui/icons";
 import DateFnsUtils from "@date-io/date-fns";
@@ -23,19 +24,23 @@ const validator = new SimpleReactValidator({
   )
 });
 
-function EditProposal(props: any) {
+function EditProposal({ match, history, location, prop_proposal, prop_submitProposal }: any) {
+  console.log("EditProposal match:", match);
+  console.log("EditProposal history:", history);
+  console.log("EditProposal location:", location);
+  console.log("proposal", prop_proposal);
+  console.log("submitProposal", prop_submitProposal);
+
   const classes = useStyles();
   const forceUpdate = useForceUpdate();
 
-  console.log("EditProposal props:", props);
-
   let proposal_id: any;
   if (
-    props.match !== undefined &&
-    props.match.hasOwnProperty("params") &&
-    props.match.params.hasOwnProperty("proposal_id")
+    match !== undefined &&
+    match.hasOwnProperty("params") &&
+    match.params.hasOwnProperty("proposal_id")
   ) {
-    proposal_id = props.match.params.proposal_id;
+    proposal_id = match.params.proposal_id;
   } else {
     proposal_id = -1;
   }
@@ -47,7 +52,7 @@ function EditProposal(props: any) {
     selectitemmodelSet: []
   };
 
-  const proposal = props.proposal ? props.proposal : emptyProposal;
+  const proposal = prop_proposal ? prop_proposal : emptyProposal;
 
 
   const [selectItems, setSelectItems] = useState(["", "", "", ""]);
@@ -121,7 +126,7 @@ function EditProposal(props: any) {
     setValues({ ...values, contents: value });
   };
 
-  function submitProposal() {
+  function handlesubmitProposal() {
     if (!validator.allValid()) {
       validator.showMessages();
       forceUpdate();
@@ -154,7 +159,7 @@ function EditProposal(props: any) {
       }
     };
 
-    props.submitProposal(mutate_var);
+    prop_submitProposal(mutate_var);
   }
 
   return (
@@ -348,7 +353,7 @@ function EditProposal(props: any) {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={submitProposal}
+                onClick={handlesubmitProposal}
                 fullWidth
               >
                 Submit
@@ -361,4 +366,4 @@ function EditProposal(props: any) {
   );
 }
 
-export default EditProposal;
+export default withRouter(EditProposal);

@@ -1,5 +1,5 @@
 import React from "react";
-import { withRouter, Link, BrowserRouter, Switch, Route } from "react-router-dom";
+import { withRouter, Link, Switch, Route } from "react-router-dom";
 import clsx from "clsx";
 import { CssBaseline, Drawer, AppBar, Toolbar, List, Typography, Divider, IconButton, Container, Grid, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { ChevronLeft, ListAltRounded, AddCircleRounded, Menu as MenuIcon, Dashboard as DashboardIcon } from "@material-ui/icons";
@@ -116,6 +116,8 @@ function Layout(props: any) {
           </ListItem>
           <ListItem
             button
+            component={Link}
+            to="/EditProposal"
             selected={selectedIndex === 2}
             onClick={(e: any) => { handleListItemClick(e, 2); }}
           >
@@ -130,22 +132,20 @@ function Layout(props: any) {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.rootcontainer}>
           <Grid container spacing={0}>
-            <BrowserRouter>
-              <Switch>
-                <Route exact path="/" component={Dashboard} />
-                <Route
-                  exact
-                  path="/EditProposal/:proposal_id"
-                  component={GQLEditProposal}
-                />
-                <Route exact path="/EditProposal" component={GQLEditProposal} />
-                <Route exact path="/Profile" component={GQLVerifyICON} />
-                <Route exact path="/Proposals" component={Proposals} />
-                <Route exact path="/Proposal/:ID" component={GQLGetProposal} />
-                <Route exact path="/SignIn" component={GQLSignIn} />
-                <Route exact path="/SignUp" component={GQLSignUp} />
-              </Switch>
-            </BrowserRouter>
+            <Switch>
+              <Route exact path="/" component={Dashboard} />
+              <Route
+                exact
+                path="/EditProposal/:proposal_id"
+                component={GQLEditProposal}
+              />
+              <Route exact path="/EditProposal" component={GQLEditProposal} />
+              <Route exact path="/Profile" component={GQLVerifyICON} />
+              <Route exact path="/Proposals" component={Proposals} />
+              <Route exact path="/Proposal/:ID" component={GQLGetProposal} />
+              <Route exact path="/SignIn" component={GQLSignIn} />
+              <Route exact path="/SignUp" component={GQLSignUp} />
+            </Switch>
           </Grid>
         </Container>
         <Copyright />

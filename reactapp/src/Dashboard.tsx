@@ -1,5 +1,4 @@
 import React, { Fragment /*, useEffect */ } from "react";
-import { withRouter } from 'react-router-dom';
 
 import Proposals from "./Proposals";
 //import EditProposal from "./EditProposal";
@@ -15,4 +14,4 @@ function Dashboard(props: any) {
   );
 }
 
-export default withRouter(Dashboard);
+export default Dashboard;

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { withRouter } from 'react-router-dom';
 import { Link } from "react-router-dom";
 
 import { Paper, Typography, Grid, Button, TextField, FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
@@ -189,4 +188,4 @@ function Proposals(props: any) {
   );
 }
 
-export default withRouter(Proposals);
+export default Proposals;

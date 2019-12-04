@@ -32,10 +32,6 @@ function GQLUserInfo(props: any) {
     setAnchorEl(null);
   };
 
-  const abc = () => {
-    props.history.push("/Signin");
-  }
-
   const { loading, error, data } = useQuery(GET_LOCAL_ME);
 
   if (loading) return <p>Loading...</p>;
@@ -112,7 +108,9 @@ function GQLUserInfo(props: any) {
           </MenuItem>
 
           <MenuItem onClick={handleMenuClose}>
-            <Typography onClick={abc} component="h6">Sign In</Typography>
+            <Link to="/Signin">
+              <Typography component="h6">Sign In</Typography>
+            </Link>
           </MenuItem>
         </Menu>
       </Fragment>

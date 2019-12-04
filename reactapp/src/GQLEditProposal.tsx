@@ -7,7 +7,10 @@ import { GET_PROPOSAL, SET_PROPOSAL } from "./GQL";
 import EditProposal from "./EditProposal";
 
 function GQLEditProposal(props: any) {
-  console.log("GQLEditProposal props", props);
+  console.log("GQLEditProposal match", props.match);
+  console.log("GQLEditProposal history", props.history);
+  console.log("GQLEditProposal location", props.location);
+
   let proposal_id: any;
   if (
     props.match !== undefined &&

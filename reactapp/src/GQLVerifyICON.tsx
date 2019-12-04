@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { withRouter } from 'react-router-dom';
 import { Grid, Typography, Divider, Button } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 
@@ -185,4 +184,4 @@ function GQLVerifyICON(props: any) {
   );
 }
 
-export default withRouter(GQLVerifyICON);
+export default GQLVerifyICON;

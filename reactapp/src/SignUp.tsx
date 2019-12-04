@@ -141,6 +141,20 @@ function SignUp(props: any) {
                   Sign up
                 </Button>
               </Grid>
+              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+                <Grid container className={classes.container}>
+                  <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+                    <Button variant="contained" color="primary" onClick={}>
+                      Back
+                    </Button>
+                  </Grid>
+                  <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+                    <Button variant="contained" color="primary" onClick={}>
+                      Forward
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Grid>
             </Grid>
           }
           {activeStep === 1 &&
