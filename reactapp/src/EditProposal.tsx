@@ -46,6 +46,8 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
   }
 
   const emptyProposal = {
+    quorumRate: 50,
+    tokenRate: 50,
     subject: "",
     contents: "",
     expireAt: "2019-10-18T21:11:54",
@@ -167,7 +169,7 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
       <Paper className={classes.paper}>
         <form>
           <Grid container className={classes.container} spacing={0}>
-            <Grid className={classes.grid} item xs={12} md={12} lg={12}>
+            <Grid className={classes.item} item xs={12} md={12} lg={12}>
               <TextField
                 id="subject"
                 label="Subject"
@@ -184,7 +186,7 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
               <br />
             </Grid>
             <Grid
-              className={classes.grid}
+              className={classes.item}
               item
               xs={12}
               md={12}
@@ -199,7 +201,7 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
             {selectItems.map((item: any, idx: any) => {
               return (
                 <Grid
-                  className={classes.grid}
+                  className={classes.item}
                   key={idx}
                   item
                   xs={12}
@@ -231,7 +233,7 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
               );
             })}
 
-            <Grid className={classes.grid} item xs={12} md={12} lg={12}>
+            <Grid className={classes.item} item xs={12} md={12} lg={12}>
               <Editor
                 usageStatistics={false}
                 height="600px"
@@ -256,7 +258,7 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
               />
             </Grid>
 
-            <Grid className={classes.grid} item xs={12} md={12} lg={12}>
+            <Grid className={classes.item} item xs={12} md={12} lg={12}>
               <br />
               <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <Grid
@@ -299,7 +301,7 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
               <br />
             </Grid>
             <Grid
-              className={classes.grid}
+              className={classes.item}
               item
               style={{ textAlign: "center" }}
               xs={12}
@@ -321,7 +323,7 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
               />
             </Grid>
             <Grid
-              className={classes.grid}
+              className={classes.item}
               item
               style={{ textAlign: "center" }}
               xs={12}
@@ -343,7 +345,7 @@ function EditProposal({ match, history, location, prop_proposal, prop_submitProp
               />
             </Grid>
             <Grid
-              className={classes.grid}
+              className={classes.item}
               item
               style={{ textAlign: "center" }}
               xs={12}

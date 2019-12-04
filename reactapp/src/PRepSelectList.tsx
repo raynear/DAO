@@ -1,19 +1,8 @@
 import React, { useState, useEffect } from "react";
 // import { Redirect } from "react-router-dom";
 import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
-
+import { json_rpc_call } from "./IconConnect";
 import useStyles from "./Style";
-
-import IconService from 'icon-sdk-js';
-
-const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
-const TO_CONTRACT = "cx90cc523d941a25e5f2e704192f6b09655ccbc1ff";
-const provider = new IconService.HttpProvider(MAIN_NET);
-const icon_service = new IconService(provider);
-const IconBuilder = IconService.IconBuilder;
-// const IconConverter = IconService.IconConverter;
-
-
 
 function PRepSelectList(props: any) {
   console.log("proposals props", props);
@@ -27,17 +16,11 @@ function PRepSelectList(props: any) {
   };
 
   useEffect(() => {
-    var callBuilder = new IconBuilder.CallBuilder();
-    var callObj = callBuilder
-      .to("0c9bce7e3e198cb8917317028f08be141bfdaff0")
-      .method("GetVerifyInfoByID")
-      .params({ "_ID": "raynear3" })
-      .build();
-
-    const result = icon_service.call(callObj).execute();
+    const result = json_rpc_call("GetVerifyInfoByID", { "_ID": "raynear3" });
     console.log("result", result);
-    //    const result2 = json_rpc_call("getDelegation", { "address": result.data.ID });
-    //    console.log("result2", result2);
+    // const result2 = json_rpc_call("getDelegation", { "address": result.data.ID });
+    // console.log("result2", result2);
+    // myPReps list 상위로 배치하기
   }, [])
 
   return (

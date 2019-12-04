@@ -69,9 +69,9 @@ function GQLUserInfo(props: any) {
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleMenuClose}>
-            <Redirect to="/Profile">
+            <Link to="/Profile">
               <Typography component="h6">Profile</Typography>
-            </Redirect>
+            </Link>
           </MenuItem>
           <MenuItem onClick={handleMenuLogout}>
             <Link to="/">

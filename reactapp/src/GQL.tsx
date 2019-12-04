@@ -140,6 +140,7 @@ export const TOKEN_AUTH = gql`
 export const GET_LOCAL_ME = gql`
   query {
     username @client
+    icon_address @client
   }
 `;
 

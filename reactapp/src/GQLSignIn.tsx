@@ -82,7 +82,7 @@ function GQLSignIn(props: any) {
       <Grid item className={classes.grid} xs={12} md={12} lg={12}>
         <Paper className={classes.paper}>
           <Grid container className={classes.container}>
-            <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+            <Grid item className={classes.item} xs={12} md={12} lg={12}>
               <TextField
                 id="username"
                 label="User Name"
@@ -97,7 +97,7 @@ function GQLSignIn(props: any) {
                 )}
               />
             </Grid>
-            <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+            <Grid item className={classes.item} xs={12} md={12} lg={12}>
               <TextField
                 id="password"
                 label="Password"
@@ -117,12 +117,12 @@ function GQLSignIn(props: any) {
                 )}
               />
             </Grid>
-            <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+            <Grid item className={classes.item} xs={12} md={12} lg={12}>
               <Button variant="contained" color="primary" onClick={SignIn}>
                 Sign in
                 </Button>
             </Grid>
-            <Grid item className={classes.grid} xs={12} md={12} lg={6}>
+            <Grid item className={classes.item} xs={12} md={12} lg={6}>
               <Button
                 variant="contained"
                 color="secondary"

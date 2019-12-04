@@ -8,7 +8,7 @@ import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 
 import ReactMarkdown from "react-markdown";
-import IconService from 'icon-sdk-js';
+import { json_rpc_call } from "./IconConnect";
 
 import useStyles from "./Style";
 
@@ -21,60 +21,6 @@ interface selectItem {
   index: 0;
   contents: "";
 }
-
-const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
-const to_contract = "cx90cc523d941a25e5f2e704192f6b09655ccbc1ff";
-const provider = new IconService.HttpProvider(MAIN_NET);
-const icon_service = new IconService(provider);
-const iconBuilder = IconService.IconBuilder;
-// const iconConverter = IconService.IconConverter;
-
-
-async function json_rpc_call(method_name: string, params: any) {
-  console.log("params", params);
-  var callbuilder = new iconBuilder.callbuilder();
-  var callobj = callbuilder
-    .to(to_contract)
-    .method(method_name)
-    .params(params)
-    .build();
-
-  console.log(callobj);
-  return await icon_service.call(callobj).execute();
-}
-
-/*
-async function json_rpc_transaction_call(from_wallet: string, method_name: string, params: any) {
-  let timestamp = new Date();
-  var txBuilder = new IconBuilder.CallTransactionBuilder();
-  var txObj = txBuilder
-    .from(from_wallet)
-    .to(TO_CONTRACT)
-    .nid(IconConverter.toBigNumber("3"))
-    .version(IconConverter.toBigNumber("3"))
-    .stepLimit(IconConverter.toBigNumber("100000000"))
-    .timestamp(timestamp.valueOf() * 1000)
-    .method(method_name)
-    .params(params)
-    .build();
-  const scoreData = JSON.stringify({
-    "jsonrpc": "2.0",
-    "method": "icx_sendTransaction",
-    "params": IconConverter.toRawTransaction(txObj),
-    "id": 0
-  });
-
-  const parsed = JSON.parse(scoreData);
-  const customEvent = new CustomEvent("ICONEX_RELAY_REQUEST", {
-    detail: {
-      type: 'REQUEST_JSON-RPC',
-      payload: parsed
-    }
-  }
-  );
-  window.dispatchEvent(customEvent);
-}
-*/
 
 function Proposal(props: any) {
   console.log("Proposal props", props);
@@ -152,13 +98,7 @@ function Proposal(props: any) {
 
   useEffect(() => {
     client
-      .query({
-        query: gql`
-          {
-            username @client
-          }
-        `
-      })
+      .query({ query: gql`{username @client}` })
       .then(result => {
         if (username === "" && result.data !== null) {
           setUsername(result.data.username);
@@ -168,19 +108,6 @@ function Proposal(props: any) {
     data[0].th = proposal.quorumRate;
     data[1].th = proposal.tokenRate;
   });
-
-  const eventHandler = (event: any) => {
-    const type = event.detail.type;
-    const payload = event.detail.payload;
-    if (type === "RESPONSE_SIGNING") {
-      console.log("response signing");
-      console.log(payload); // e.g., 'q/dVc3qj4En0GN+...'
-    } else if (type === "RESPONSE_JSON-RPC") {
-      console.log("response json rpc");
-      console.log(payload);
-    }
-  };
-  window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
 
   function SelectList() {
     let SelectList = proposal.selectitemmodelSet;
@@ -202,14 +129,7 @@ function Proposal(props: any) {
       data[1].voted = votedIdx;
     }
 
-    var callBuilder = new iconBuilder.CallBuilder();
-    var callObj = callBuilder
-      .to("cx0c7201f0f3a5974613044cbb2d911efc852d73d9")
-      .method("GetVerifyInfoByID")
-      .params({ "_ID": props.username })
-      .build();
-
-    icon_service.call(callObj).execute().then((result: any) => {
+    json_rpc_call("GetVerifyInfoByID", { "_ID": props.username }).then((result: any) => {
       console.log("verify2", result);
       let VerifyInfo = result.data
       let myPRep = false;
@@ -249,7 +169,7 @@ function Proposal(props: any) {
         <Button variant="outlined" color="primary">
           <Link to={"/EditProposal/" + id}>
             Edit
-</Link>
+          </Link>
         </Button>
         <Button
           variant="contained"

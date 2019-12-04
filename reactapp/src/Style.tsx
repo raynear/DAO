@@ -38,8 +38,8 @@ const useStyles = makeStyles((theme: Theme) =>
       overflow: "auto"
     },
     paper: {
-      margin: theme.spacing(2),
-      padding: theme.spacing(2),
+      margin: theme.spacing(1),
+      padding: theme.spacing(1),
       display: "flex",
       overflow: "auto",
       flexDirection: "column"
@@ -60,10 +60,20 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     grid: {
       margin: theme.spacing(0),
+      padding: theme.spacing(0)
+    },
+    item: {
+      margin: theme.spacing(0),
       padding: theme.spacing(1)
     },
     center: {
       textAlign: "center"
+    },
+    left: {
+      textAlign: "left"
+    },
+    right: {
+      textAlign: "right"
     },
     selectLabel: {
       margin: theme.spacing(0),

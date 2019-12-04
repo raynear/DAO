@@ -45,6 +45,22 @@ const client = new ApolloClient({
 });
 
 function App(props: any) {
+
+  const eventHandler = (event: any) => {
+    const type = event.detail.type;
+    const payload = event.detail.payload;
+    if (type === "RESPONSE_SIGNING") {
+      console.log("response signing");
+      console.log(payload); // e.g., 'q/dVc3qj4En0GN+...'
+    } else if (type === "RESPONSE_JSON-RPC") {
+      console.log("response json rpc");
+      console.log(payload);
+    } else if (type === "RESPONSE_ADDRESS") {
+      client.writeData({ data: { icon_address: payload } });
+    }
+  };
+  window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
+
   return (
     <BrowserRouter>
       <ApolloProvider client={client}>

@@ -1,6 +1,5 @@
 from django.db.models import Q
 from django.contrib.auth.models import User
-
 import graphene
 from graphql import GraphQLError
 from graphene_django.types import DjangoObjectType
@@ -17,8 +16,9 @@ import json
 
 from .models import PRepModel, ProposalModel, SelectItemModel, VoteModel
 
-from .icon_network import NETWORK, SCORE_ADDRESS
+from .icon_network import LOCAL_NET, SCORE_ADDRESS
 
+NETWORK = LOCAL_NET
 
 class PRepModelType(DjangoObjectType):
     class Meta:
@@ -174,7 +174,7 @@ class NewPRep(graphene.Mutation):
         owner_id = graphene.String()
         description = graphene.String()
 
-    prep = graphene.Field(ProposalModelType)
+    prep = graphene.Field(PRepModelType)
 
     def mutate(self, info, PRep_address, owner_id, description):
         prep = PRepModel.objects.create()
@@ -279,3 +279,4 @@ class MyMutation(graphene.ObjectType):
     set_proposal = SetProposal.Field()
     publish_proposal = PublishProposal.Field()
     vote_proposal = VoteProposal.Field()
+    new_prep = NewPRep.Field()

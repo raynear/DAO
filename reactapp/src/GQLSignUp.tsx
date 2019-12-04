@@ -69,28 +69,6 @@ function GQLSignUp(props: any) {
       <SignUp NewUser={NewUser} LogIn={LogIn} />
     </Fragment>
   );
-  /*
-    const { loading, data } = useQuery(GET_ME);
-  
-    if (loading) return <p>Loading...</p>;
-    //  if (error) return <p>Error!:</p>;
-    if (data && data.me) {
-      client.writeData({
-        data: {
-          username: data.me.username,
-          email: data.me.email
-          //photo:data.me.socialAuth.edges[0].node.extraData.properties.thumbnailImage
-        }
-      });
-    }
-    console.log("GQLSign2", data);
-    return (
-      <Fragment>
-        {renderRedirect()}
-        <SignUp match={match} NewUser={NewUser} LogIn={LogIn} />
-      </Fragment>
-    );
-  */
 }
 
 export default GQLSignUp;

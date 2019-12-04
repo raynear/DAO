@@ -2,6 +2,7 @@ import React, { Fragment, useState } from "react";
 
 import { Stepper, Step, StepLabel, Grid, Paper, TextField, Button, Typography } from "@material-ui/core";
 import SimpleReactValidator from "simple-react-validator";
+import clsx from "clsx";
 
 import useForceUpdate from "./useForceUpdate";
 import useStyles from "./Style";
@@ -72,10 +73,10 @@ function SignUp(props: any) {
 
   return (
     <Fragment>
-      <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-        <Paper className={classes.paper}>
-          <Grid container className={classes.container}>
-            <Grid item>
+      <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
+        <Paper className={clsx(classes.paper, classes.center)}>
+          <Grid container className={clsx(classes.container, classes.center)}>
+            <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
               <Stepper activeStep={activeStep} alternativeLabel>
                 {steps.map(label => (
                   <Step key={label}>
@@ -87,7 +88,7 @@ function SignUp(props: any) {
           </Grid>
           {activeStep === 0 &&
             <Grid container className={classes.container}>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+              <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
                 <TextField
                   id="username"
                   label="User Name"
@@ -102,7 +103,7 @@ function SignUp(props: any) {
                   )}
                 />
               </Grid>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+              <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
                 <TextField
                   id="password"
                   label="Password"
@@ -117,7 +118,7 @@ function SignUp(props: any) {
                     ])}
                 />
               </Grid>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+              <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
                 <TextField
                   id="password2"
                   label="Password(again)"
@@ -136,20 +137,20 @@ function SignUp(props: any) {
                   ])}
                 />
               </Grid>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+              <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
                 <Button variant="contained" color="primary" onClick={SignUp}>
                   Sign up
                 </Button>
               </Grid>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+              <Grid item className={classes.item} xs={12} md={12} lg={12}>
                 <Grid container className={classes.container}>
-                  <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                    <Button variant="contained" color="primary" onClick={}>
+                  <Grid item className={clsx(classes.item, classes.left)} xs={6} md={6} lg={6}>
+                    <Button variant="contained" color="primary" disabled={true}>
                       Back
                     </Button>
                   </Grid>
-                  <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                    <Button variant="contained" color="primary" onClick={}>
+                  <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
+                    <Button variant="contained" color="primary" disabled={false} onClick={() => { setActiveStep(activeStep + 1) }}>
                       Forward
                     </Button>
                   </Grid>
@@ -159,15 +160,45 @@ function SignUp(props: any) {
           }
           {activeStep === 1 &&
             <Grid container className={classes.container}>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                <GQLVerifyICON />
+              <Grid item className={classes.item} xs={12} md={12} lg={12}>
+                <Grid container className={classes.container}>
+                  <GQLVerifyICON />
+                </Grid>
+              </Grid>
+              <Grid item className={classes.item} xs={12} md={12} lg={12}>
+                <Grid container className={classes.container}>
+                  <Grid item className={clsx(classes.item, classes.left)} xs={6} md={6} lg={6}>
+                    <Button variant="contained" color="primary" onClick={() => { setActiveStep(activeStep - 1) }}>
+                      Back
+                    </Button>
+                  </Grid>
+                  <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
+                    <Button variant="contained" color="primary" onClick={() => { setActiveStep(activeStep + 1) }}>
+                      Forward
+                    </Button>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           }
           {activeStep === 2 &&
             <Grid container className={classes.container}>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+              <Grid item className={classes.item} xs={12} md={12} lg={12}>
                 <Typography>Good Job</Typography>
+              </Grid>
+              <Grid item className={classes.item} xs={12} md={12} lg={12}>
+                <Grid container className={classes.container}>
+                  <Grid item className={clsx(classes.item, classes.left)} xs={6} md={6} lg={6}>
+                    <Button variant="contained" color="primary" disabled={false} onClick={() => { setActiveStep(activeStep - 1) }}>
+                      Back
+                    </Button>
+                  </Grid>
+                  <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
+                    <Button variant="contained" color="primary" disabled={true} >
+                      Forward
+                    </Button>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           }

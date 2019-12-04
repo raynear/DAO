@@ -26,7 +26,7 @@ class ProposalModel(models.Model):
         blank=True,
         default=user,
     )
-    prep = models.ForeignKey(PRepModel, on_delete=models.CASCADE)
+    prep = models.ForeignKey(PRepModel, on_delete=models.CASCADE, default=None)
     published = models.BooleanField(default=False)
     subject = models.CharField(max_length=50, blank=True)
     proposal_id = models.IntegerField(default=0, blank=True)

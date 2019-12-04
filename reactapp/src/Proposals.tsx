@@ -6,31 +6,10 @@ import ReactMarkdown from "react-markdown";
 
 import { useQuery } from "@apollo/react-hooks";
 import { GET_PROPOSALS } from "./GQL";
+import { json_rpc_call } from "./IconConnect";
 
 import useStyles from "./Style";
 
-import IconService from 'icon-sdk-js';
-
-const MAIN_NET = "https://bicon.net.solidwallet.io/api/v3";
-const TO_CONTRACT = "cx90cc523d941a25e5f2e704192f6b09655ccbc1ff";
-const provider = new IconService.HttpProvider(MAIN_NET);
-const icon_service = new IconService(provider);
-const IconBuilder = IconService.IconBuilder;
-// const IconConverter = IconService.IconConverter;
-
-
-async function json_rpc_call(method_name: string, params: any) {
-  console.log("params", params);
-  var callBuilder = new IconBuilder.CallBuilder();
-  var callObj = callBuilder
-    .to(TO_CONTRACT)
-    .method(method_name)
-    .params(params)
-    .build();
-
-  console.log(callObj);
-  return await icon_service.call(callObj).execute();
-}
 interface selectItem {
   id: "";
   contents: "";
@@ -78,14 +57,7 @@ function Proposals(props: any) {
   }
 
   useEffect(() => {
-    var callBuilder = new IconBuilder.CallBuilder();
-    var callObj = callBuilder
-      .to("cx90cc523d941a25e5f2e704192f6b09655ccbc1ff")
-      .method("GetVerifyInfoByID")
-      .params({ "_ID": "raynear3" })
-      .build();
-
-    const result = icon_service.call(callObj).execute();
+    const result = json_rpc_call("GetVerifyInfoByID", { "_ID": "raynear3" });
     console.log("result", result);
     //    const result2 = json_rpc_call("getDelegation", { "address": result.data.ID });
     //    console.log("result2", result2);
@@ -105,9 +77,9 @@ function Proposals(props: any) {
   if (error) return <p>Error!</p>;
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-      <Paper className={classes.papercontainer}>
+      <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
-          <Grid item className={classes.grid} xs={12} lg={12}>
+          <Grid item className={classes.item} xs={12} lg={12}>
             <FormControl variant="outlined" className={classes.formControl}>
               <InputLabel className={classes.selectLabel}>PReps</InputLabel>
               <Select
@@ -123,38 +95,48 @@ function Proposals(props: any) {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item className={classes.grid} xs={12} lg={12}>
-            <TextField
-              className={classes.textField}
-              label="search"
-              type="text"
-              value={queryValues.search}
-              onChange={handleChange("search")}
-            />
-            <TextField
-              className={classes.textField}
-              label="first"
-              type="number"
-              value={queryValues.first}
-              onChange={handleChange("first")}
-            />
-            <TextField
-              className={classes.textField}
-              label="skip"
-              type="number"
-              value={queryValues.skip}
-              onChange={handleChange("skip")}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => queryFilters()}
-            >
-              fetch!
-            </Button>
+          <Grid item className={classes.item} xs={12} lg={12}>
+            <Grid container className={classes.container} spacing={0}>
+              <Grid item className={classes.item} xs={3} lg={3}>
+                <TextField
+                  className={classes.textField}
+                  label="search"
+                  type="text"
+                  value={queryValues.search}
+                  onChange={handleChange("search")}
+                />
+              </Grid>
+              <Grid item className={classes.item} xs={3} lg={3}>
+                <TextField
+                  className={classes.textField}
+                  label="first"
+                  type="number"
+                  value={queryValues.first}
+                  onChange={handleChange("first")}
+                />
+              </Grid>
+              <Grid item className={classes.item} xs={3} lg={3}>
+                <TextField
+                  className={classes.textField}
+                  label="skip"
+                  type="number"
+                  value={queryValues.skip}
+                  onChange={handleChange("skip")}
+                />
+              </Grid>
+              <Grid item className={classes.item} xs={3} lg={3}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => queryFilters()}
+                >
+                  fetch!
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
           {data.proposals.map((item: proposal, idx: number) => (
-            <Grid item className={classes.grid} key={idx} xs={12} lg={6}>
+            <Grid item className={classes.item} key={idx} xs={12} lg={6}>
               <Paper className={classes.paper}>
                 <Typography
                   className={classes.title}
