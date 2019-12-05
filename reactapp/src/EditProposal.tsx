@@ -157,6 +157,8 @@ function EditProposal(props: any) {
         subject: values.subject,
         contents: values.contents,
         published: false,
+        prepId: 1, // TODO : have to change1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+        // bring prepId from account id and put it here
         quorumRate: values.quorumRate,
         tokenRate: values.tokenRate,
         expireAt:
@@ -167,7 +169,9 @@ function EditProposal(props: any) {
       }
     };
 
+    console.log("send mutate_var", mutate_var);
     prop_submitProposal(mutate_var);
+    console.log("aAAAAAAAAAAAAAAAAAAAAAAA");
   }
 
   return (
@@ -374,4 +378,4 @@ function EditProposal(props: any) {
   );
 }
 
-export default withRouter(EditProposal);
+export default EditProposal;

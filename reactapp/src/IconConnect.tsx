@@ -3,9 +3,9 @@ import IconService from 'icon-sdk-js';
 // const MAIN_NET = "https://ctz.solidwallet.io/api/v3";
 // const MAIN_CONTRACT = "cx_main_net_contract";
 const TEST_NET = "https://bicon.net.solidwallet.io/api/v3"
-// const TEST_CONTRACT = "cx90cc523d941a25e5f2e704192f6b09655ccbc1ff";
+const TEST_CONTRACT = "cx90cc523d941a25e5f2e704192f6b09655ccbc1ff";
 const LOCAL_NET = "http://localhost:9000/api/v3";
-const LOCAL_CONTRACT = "cxe84690d77ca118d4f74c14de6c7e17c784db1079";
+// const LOCAL_CONTRACT = "cxe84690d77ca118d4f74c14de6c7e17c784db1079";
 const local_provider = new IconService.HttpProvider(LOCAL_NET);
 export const local_icon_service = new IconService(local_provider);
 const test_provider = new IconService.HttpProvider(TEST_NET);
@@ -13,8 +13,8 @@ export const test_icon_service = new IconService(test_provider);
 export const IconBuilder = IconService.IconBuilder;
 export const IconConverter = IconService.IconConverter;
 
-const SELECTED_CONTRACT = LOCAL_CONTRACT;
-export const selected_icon_service = local_icon_service
+const SELECTED_CONTRACT = TEST_CONTRACT;
+export const selected_icon_service = test_icon_service
 
 export async function json_rpc_call(method_name: string, params: any) {
   console.log("params", params);

@@ -129,8 +129,8 @@ function Proposal(props: any) {
       data[1].voted = votedIdx;
     }
 
-    json_rpc_call("GetVerifyInfoByID", { "_ID": props.username }).then((result: any) => {
-      console.log("verify2", result);
+    json_rpc_call("GetVerifyInfoByID", { "_ID": username }).then((result: any) => {
+      console.log("verify", result);
       let VerifyInfo = result.data
       let myPRep = false;
       json_rpc_call("getDelegation", { "address": VerifyInfo.ID }).then((result2: any) => {
@@ -147,7 +147,7 @@ function Proposal(props: any) {
       }
     });
 
-    return <div>{" "}</div>
+    return <div>{username}</div>
   }
 
   function VoteButton() {
