@@ -37,9 +37,10 @@ function GQLUserInfo(props: any) {
     setAnchorEl(null);
   };
 
-  client.query({ query: GET_LOCAL_ME }).then(({ loading, data }) => {
+  client.query({ query: GET_LOCAL_ME }).then(({ loading, errors, data }) => {
     console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
     console.log(loading);
+    console.log(errors);
     console.log(data);
 
     try {

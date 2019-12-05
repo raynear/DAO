@@ -143,6 +143,12 @@ export const GET_LOCAL_ME = gql`
   }
 `;
 
+export const GET_LOCAL_ADDRESS = gql`
+  query {
+    icon_address @client
+  }
+`;
+
 export const SET_USER = gql`
   mutation SetUser($username: String!, $password: String!) {
     setUser(username: $username, password: $password) {
@@ -209,3 +215,10 @@ export const VERIFY_TOKEN = gql`
   }
 `;
 
+export function selectWallet() {
+  window.dispatchEvent(new CustomEvent('ICONEX_RELAY_REQUEST', {
+    detail: {
+      type: 'REQUEST_ADDRESS'
+    }
+  }));
+}
