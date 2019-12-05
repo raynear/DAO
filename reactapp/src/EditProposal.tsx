@@ -30,11 +30,11 @@ function EditProposal(props: any) {
   const location = props.location;
   const prop_proposal = props.proposal;
   const prop_submitProposal = props.submitProposal;
-  console.log("EditProposal match:", match);
-  console.log("EditProposal history:", history);
-  console.log("EditProposal location:", location);
-  console.log("proposal", prop_proposal);
-  console.log("submitProposal", prop_submitProposal);
+  //  console.log("EditProposal match:", match);
+  //  console.log("EditProposal history:", history);
+  //  console.log("EditProposal location:", location);
+  //  console.log("proposal", prop_proposal);
+  //  console.log("submitProposal", prop_submitProposal);
 
   const classes = useStyles();
   const forceUpdate = useForceUpdate();
@@ -63,6 +63,8 @@ function EditProposal(props: any) {
   };
 
   const proposal = prop_proposal ? prop_proposal : emptyProposal;
+  console.log("!!!!!!!!!!!!!!!!!!!!check!!!!!!!!!!!!!!!!!")
+  console.log(proposal);
 
   const [selectItems, setSelectItems] = useState(["", "", "", ""]);
   const [values, setValues] = useState({

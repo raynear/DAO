@@ -1,8 +1,9 @@
 import React from "react";
-import { withRouter, Link, Switch, Route } from "react-router-dom";
+import { Link, Switch, Route } from "react-router-dom";
 import { CssBaseline, AppBar, Toolbar, Typography, Container, Grid } from "@material-ui/core";
 
-import Dashboard from "./Dashboard";
+import LandingPage from "./LandingPage";
+import HowTo from "./HowTo";
 import Proposals from "./Proposals";
 import GQLVerifyICON from "./GQLVerifyICON";
 import GQLGetProposal from "./GQLProposal";
@@ -34,7 +35,7 @@ function Layout(props: any) {
             </Link>
           </Typography>
           <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
-            <Link to="/" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+            <Link to="/HowTo" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
               How-To
             </Link>
           </Typography>
@@ -56,12 +57,9 @@ function Layout(props: any) {
         <Container maxWidth="lg" className={classes.rootcontainer}>
           <Grid container spacing={0}>
             <Switch>
-              <Route exact path="/" component={Dashboard} />
-              <Route
-                exact
-                path="/EditProposal/:proposal_id"
-                component={GQLEditProposal}
-              />
+              <Route exact path="/" component={LandingPage} />
+              <Route exact path="/HowTo" component={HowTo} />
+              <Route exact path="/EditProposal/:proposal_id" component={GQLEditProposal} />
               <Route exact path="/EditProposal" component={GQLEditProposal} />
               <Route exact path="/Profile" component={GQLVerifyICON} />
               <Route exact path="/Proposals" component={Proposals} />
@@ -77,4 +75,4 @@ function Layout(props: any) {
   );
 }
 
-export default withRouter(Layout);
+export default Layout;

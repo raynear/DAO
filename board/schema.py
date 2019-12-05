@@ -20,6 +20,7 @@ from .icon_network import LOCAL_NET, SCORE_ADDRESS
 
 NETWORK = LOCAL_NET
 
+
 class PRepModelType(DjangoObjectType):
     class Meta:
         model = PRepModel
@@ -48,10 +49,13 @@ class Query(object):
 
     is_voted = graphene.Field(ProposalModelType, proposal_id=graphene.Int())
 
+    prep = graphene.Field(PRepModelType, user_id=graphene.String())
+
     proposal = graphene.Field(ProposalModelType, id=graphene.Int())
 
     proposals = graphene.List(
         ProposalModelType,
+        prep=graphene.String(),
         search=graphene.String(),
         first=graphene.Int(),
         skip=graphene.Int(),
@@ -72,6 +76,9 @@ class Query(object):
 
         return None
 
+    def resolve_prep(self, info, user_id=None, **kwargs):
+        return PRepModel.objects.get(name=user_id)
+
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
             return None
@@ -79,14 +86,20 @@ class Query(object):
 
         return ProposalModel.objects.get(pk=id)
 
-    def resolve_proposals(self, info, search=None, first=None, skip=None, **kwargs):
+    def resolve_proposals(self, info, prep=None, search=None, first=None, skip=None, **kwargs):
         qs = ProposalModel.objects.all()
+        if (prep != None) & (prep != ""):
+            aPRep = PRepModel.objects.get(name=prep)
 
         if search:
             filter = (Q(subject__icontains=search) | Q(contents__icontains=search)) & (
-                Q(author__exact=info.context.user) | Q(publish__exact=True)
-            )
+                Q(author__exact=info.context.user) | Q(publish__exact=True))
             qs = qs.filter(filter)
+
+        if (prep != None) & (prep != "All") & (prep != ""):
+            filter = Q(prep__exact=aPRep.id)
+            qs = qs.filter(filter)
+
         if skip:
             qs = qs[skip:]
         if first:

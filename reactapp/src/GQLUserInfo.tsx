@@ -1,16 +1,22 @@
-import React, { Fragment } from "react";
+import React, { useState, Fragment } from "react";
 import { Link } from "react-router-dom";
 
 import { Avatar, Typography, IconButton, Badge, Menu, MenuItem } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import gql from "graphql-tag";
+import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 import { LOG_OUT, GET_LOCAL_ME } from "./GQL";
+
+import Cookies from "js-cookie";
 
 import useStyles from "./Style";
 
 function GQLUserInfo(props: any) {
+  const client = useApolloClient();
   const [mutateLogout] = useMutation(LOG_OUT);
+
+  const [username, setUsername] = useState("");
 
   const classes = useStyles();
   //const [badgeCnt, setBadgeCnt] = React.useState(0);
@@ -27,18 +33,27 @@ function GQLUserInfo(props: any) {
 
   const handleMenuLogout = () => {
     mutateLogout();
+    Cookies.remove("DAOToken");
     setAnchorEl(null);
   };
 
-  const { loading, error, data } = useQuery(GET_LOCAL_ME);
+  client.query({ query: GET_LOCAL_ME }).then(({ loading, data }) => {
+    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+    console.log(loading);
+    console.log(data);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error!</p>;
-  console.log("GQLUserInfo", data);
-  if (data !== undefined &&
-    data.hasOwnProperty("username") &&
-    data.username !== null) {
-    console.log("userinfo1", data);
+    try {
+      if (data.username !== undefined) {
+        setUsername(data.username);
+      }
+    }
+    catch{
+      console.log("no username");
+    }
+  });
+
+  console.log("username", username);
+  if (username !== "") {
     return (
       <Fragment>
         <IconButton
@@ -53,7 +68,7 @@ function GQLUserInfo(props: any) {
             className={classes.noMarginPadding}
           >
             <Avatar
-              alt={data.username}
+              alt={username}
               src={""}
               className={classes.noMarginPadding}
             />
@@ -80,7 +95,6 @@ function GQLUserInfo(props: any) {
       </Fragment>
     );
   } else {
-    console.log("userinfo2", data);
     return (
       <Fragment>
         <IconButton

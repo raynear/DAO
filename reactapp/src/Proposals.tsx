@@ -64,10 +64,15 @@ function Proposals(props: any) {
     //    console.log("result2", result2);
   }, [])
 
+  function ChangeSelection(select: string) {
+    setValues({ ...values, selectedPRep: select });
+  }
 
+  console.log("what we send?", values);
   const { loading, error, data } = useQuery(GET_PROPOSALS, {
     fetchPolicy: "network-only",
     variables: {
+      selectedPRep: values.selectedPRep,
       search: values.search,
       first: values.first,
       skip: values.skip
@@ -81,7 +86,7 @@ function Proposals(props: any) {
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
           <Grid item className={classes.item} xs={12} lg={12}>
-            <PRepSelectList />
+            <PRepSelectList SelectedPRep={values.selectedPRep} ChangeSelection={ChangeSelection} />
           </Grid>
           <Grid item className={classes.item} xs={12} lg={12}>
             <Grid container className={classes.container} spacing={0}>

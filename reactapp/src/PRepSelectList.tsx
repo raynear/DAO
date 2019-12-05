@@ -7,12 +7,13 @@ import { json_rpc_call } from "./IconConnect";
 import useStyles from "./Style";
 
 function PRepSelectList(props: any) {
-  console.log("proposals props", props);
+  console.log("prep select list props", props);
   const classes = useStyles();
-  const [selectedPRep, setSelectedPRep] = useState("All");
+  const [selectedPRep, setSelectedPRep] = useState(props.SelectedPRep);
 
   const handleChange = (event: any) => {
     setSelectedPRep(event.target.value);
+    props.ChangeSelection(event.target.value);
   };
 
   const { loading, error, data } = useQuery(GET_PREPS);

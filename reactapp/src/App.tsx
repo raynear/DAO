@@ -1,10 +1,11 @@
 import React from "react";
-
-import ApolloClient from "apollo-boost";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { ApolloProvider } from "react-apollo";
 import { BrowserRouter } from "react-router-dom";
 
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "react-apollo";
+import { InMemoryCache } from "apollo-cache-inmemory";
+
+import { VERIFY_TOKEN, GET_LOCAL_ME } from "./GQL";
 import Cookies from "js-cookie";
 
 import Layout from "./Layout";
@@ -60,6 +61,24 @@ function App(props: any) {
     }
   };
   window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
+
+  const jwt = Cookies.get("DAOToken");
+
+  if (jwt) {
+    client.mutate({ mutation: VERIFY_TOKEN, variables: { "token": jwt } }).then((result: any) => {
+      try {
+        console.log(result);
+        client.writeData({ data: { username: result.data.verifyToken.payload.username } });
+        //        console.log("Verify Token", result.data.verifyToken.payload.username);
+        client.query({ query: GET_LOCAL_ME }).then((result2) => {
+          console.log(result2);
+        })
+      }
+      catch{
+        console.log("not verified token")
+      }
+    });
+  }
 
   return (
     <BrowserRouter>

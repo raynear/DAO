@@ -140,7 +140,6 @@ export const TOKEN_AUTH = gql`
 export const GET_LOCAL_ME = gql`
   query {
     username @client
-    icon_address @client
   }
 `;
 
@@ -174,9 +173,20 @@ export const GET_PREPS = gql`
   }
 `;
 
+export const GET_PREP = gql`
+query PRep($UserID:String!){
+  prep(userId:$UserID){
+    id
+    name
+    prepAddress
+    description
+  }
+}
+`;
+
 export const GET_PROPOSALS = gql`
-  query Proposals($search: String, $first: Int, $skip: Int) {
-    proposals(search: $search, first: $first, skip: $skip) {
+  query Proposals($selectedPRep:String, $search: String, $first: Int, $skip: Int) {
+    proposals(prep:$selectedPRep, search: $search, first: $first, skip: $skip) {
       id
       author {
         id
@@ -190,3 +200,12 @@ export const GET_PROPOSALS = gql`
     }
   }
 `;
+
+export const VERIFY_TOKEN = gql`
+  mutation VerifyToken($token: String!) {
+    verifyToken(token:$token) {
+      payload
+    }
+  }
+`;
+

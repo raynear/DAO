@@ -1,6 +1,7 @@
 import React, { Fragment, useState } from "react";
 import { useMutation, useApolloClient } from "@apollo/react-hooks";
 import { TOKEN_AUTH } from "./GQL";
+import gql from "graphql-tag";
 
 import { Grid, Paper, TextField, Button, Typography } from "@material-ui/core";
 import SimpleReactValidator from "simple-react-validator";
@@ -16,7 +17,7 @@ function GQLSignIn(props: any) {
   const forceUpdate = useForceUpdate();
   const client = useApolloClient();
 
-  const [signInfo, setSignInfo] = useState({ username: "", password: "", password2: "" });
+  const [signInfo, setSignInfo] = useState({ username: "", password: "", password3: "" });
 
   const [mutateTokenAuth] = useMutation(TOKEN_AUTH);
 
@@ -26,7 +27,7 @@ function GQLSignIn(props: any) {
     }).then(result => {
       client.writeData({ data: { username: username } });
 
-      Cookies.set("JWT", result.data.tokenAuth.token);
+      Cookies.set("DAOToken", result.data.tokenAuth.token);
       props.history.push("/");
     });
   }
@@ -55,6 +56,7 @@ function GQLSignIn(props: any) {
       forceUpdate();
       return;
     } else {
+      console.log("go to login");
       LogIn(signInfo.username, signInfo.password);
     }
   }
@@ -65,7 +67,7 @@ function GQLSignIn(props: any) {
 
   return (
     <Fragment>
-      <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+      <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
         <Paper className={classes.paper}>
           <Grid container className={classes.container}>
             <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
@@ -108,7 +110,7 @@ function GQLSignIn(props: any) {
                 Sign in
                 </Button>
             </Grid>
-            <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={6}>
+            <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
               <Button
                 variant="contained"
                 color="secondary"

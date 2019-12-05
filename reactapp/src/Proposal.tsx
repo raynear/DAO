@@ -8,7 +8,7 @@ import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 
 import ReactMarkdown from "react-markdown";
-import { json_rpc_call } from "./IconConnect";
+import { json_rpc_call, governance_call } from "./IconConnect";
 
 import useStyles from "./Style";
 
@@ -43,6 +43,7 @@ function Proposal(props: any) {
   }
 
   function SelectItemList(props: any) {
+    console.log("print proposal", proposal);
     let VoteItem: number[] = [];
     for (let i in proposal.selectitemmodelSet) {
       let VotingPower = 0;
@@ -129,23 +130,68 @@ function Proposal(props: any) {
       data[1].voted = votedIdx;
     }
 
-    json_rpc_call("GetVerifyInfoByID", { "_ID": username }).then((result: any) => {
-      console.log("verify", result);
-      let VerifyInfo = result.data
-      let myPRep = false;
-      json_rpc_call("getDelegation", { "address": VerifyInfo.ID }).then((result2: any) => {
+    if (username) {
+      json_rpc_call("GetVerifyInfoByID", { "_ID": username }).then((result: any) => {
+        const verifyData = JSON.parse(result);
+        let user_address;
+        try {
+          user_address = verifyData.address;
+        }
+        catch{
+          user_address = ""
+        }
+        let myPRep = false;
+        let result2 = JSON.parse(`{
+          "result": {
+            "status": "0x1",
+            "totalDelegated": "0xa688906bd8b0000",
+            "totalFined": "0x1300",
+            "votingPower": "0x3782dace9d90000",
+            "delegations": [
+              {
+                "address": "hxd1a3147ac75edc40d1094b8ec4f6a2bbd77ffbd4",
+                "value": "0x3782dace9d90000",
+                "status": "0x0"
+              },
+              {
+                "address": "hx1d6463e4628ee52a7f751e9d500a79222a7f3935",
+                "value": "0x3782dace9d90000",
+                "status": "0x0"
+              },
+              {
+                "address": "hxb6bc0bf95d90cb3cd5b3abafd9682a62f36cc826",
+                "value": "0x6f05b59d3b20000",
+                "status": "0x2",
+                "fined": "0x1300"
+              }
+            ]
+          }
+        }`);
+        //        governance_call("getDelegation", { "address": user_address }).then((result2: any) => {
         console.log("verify2", result2);
-        const delegateList = result2;
-        if (delegateList.include(proposal.author)) {
-          myPRep = true;
+        let delegateList;
+        try {
+          delegateList = result2.result.delegations;
+        }
+        catch {
+          delegateList = [];
+        }
+        for (let i = 0; i < delegateList.length; i++) {
+          if (delegateList[i].address === user_address) {
+            myPRep = true;
+            break;
+          }
+        }
+        //       });
+        if (proposal.published === false || votedFlag || !myPRep) {
+          console.log("just list");
+          return <SelectItemList voted={votedIdx} />;
+        } else {
+          console.log("votable list");
+          return <RadioButtons />;
         }
       });
-      if (proposal.published === false || votedFlag || !myPRep) {
-        return <SelectItemList voted={votedIdx} />;
-      } else {
-        return <RadioButtons />;
-      }
-    });
+    }
 
     return <div>{username}</div>
   }
@@ -252,4 +298,4 @@ function Proposal(props: any) {
   );
 }
 
-export default withRouter(Proposal);
+export default Proposal;
