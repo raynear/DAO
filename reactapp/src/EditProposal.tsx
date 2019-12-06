@@ -159,8 +159,7 @@ function EditProposal(props: any) {
         subject: values.subject,
         contents: values.contents,
         published: false,
-        prepId: 1, // TODO : have to change1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-        // bring prepId from account id and put it here
+        prepId: values.prepId,
         quorumRate: values.quorumRate,
         tokenRate: values.tokenRate,
         expireAt:

@@ -7,6 +7,9 @@ export const GET_PROPOSAL = gql`
         id
       }
       subject
+      author{
+        id
+      }
       contents
       published
       expireAt

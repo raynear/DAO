@@ -1,8 +1,9 @@
 import React, { Fragment, useState } from "react";
 import { withRouter, Redirect } from "react-router-dom";
 
-import { useQuery, useMutation } from "@apollo/react-hooks";
-import { GET_PROPOSAL, SET_PROPOSAL } from "./GQL";
+import gql from "graphql-tag";
+import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
+import { GET_PROPOSAL, SET_PROPOSAL, GET_PREP, GET_LOCAL_ME } from "./GQL";
 
 import EditProposal from "./EditProposal";
 
@@ -19,11 +20,25 @@ function GQLEditProposal(props: any) {
     proposal_id = -1;
   }
 
+  const client = useApolloClient();
+
+  const [username, setUsername] = useState("");
   const [redirect, setRedirect] = useState();
   const [mutateProposal] = useMutation(SET_PROPOSAL);
 
-  const { loading, error, data } = useQuery(GET_PROPOSAL, {
-    variables: { id: proposal_id }
+  client.query({ query: GET_LOCAL_ME }).then((result) => {
+    console.log("get local me");
+    setUsername(result.data.username);
+  })
+
+  const oneQuery = gql(String.raw`
+  query ($id: Int!, $userId: String!) {
+    ${GET_PROPOSAL}
+    ${GET_PREP}
+  }
+`)
+  const { loading, error, data } = useQuery(oneQuery, {
+    variables: { id: proposal_id, userId: username }
   });
 
   function submitProposal(mutate_var: any) {

@@ -30,6 +30,7 @@ function GQLGetProposal(props: any) {
   //const forceUpdate = useForceUpdate;
 
   const [proposal, setProposal] = useState({
+    author: "",
     subject: "",
     contents: "",
     prepId: 1,
@@ -53,6 +54,7 @@ function GQLGetProposal(props: any) {
     }).then(publishResult => {
       setProposal(publishResult.data.publishProposal.proposal);
     });
+    console.log(proposal);
   }
 
   function Vote(voteSelect: number) {
@@ -61,6 +63,7 @@ function GQLGetProposal(props: any) {
     }).then(voteResult => {
       setProposal(voteResult.data.voteProposal.proposal);
     });
+    console.log(proposal);
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -271,7 +274,7 @@ function GQLGetProposal(props: any) {
 
     let flag = false;
     for (let i in SelectList) {
-      console.log(SelectList[i]);
+      console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA", SelectList[i]);
       /*
       for (let j in SelectList[i].votemodelSet) {
         if (username === SelectList[i].votemodelSet[j].voter.username) {
@@ -282,12 +285,12 @@ function GQLGetProposal(props: any) {
       */
     }
 
-    if (flag) {
-      return <div> </div>;
-    } else if (proposal.published) {
+    if (proposal.published) {
       return <VoteButton />;
-    } else {
+    } else if (proposal.author === username) {
       return <PublishButton />;
+    } else {
+      return <div>{" "}</div>
     }
   }
 

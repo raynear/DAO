@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 import graphene
 from graphql import GraphQLError
 from graphene_django.types import DjangoObjectType
-from graphql_jwt.decorators import superuser_required, staff_member_required
+from graphql_jwt.decorators import superuser_required, staff_member_required, login_required
 
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
@@ -131,6 +131,7 @@ class PublishProposal(graphene.Mutation):
 
     proposal = graphene.Field(ProposalModelType)
 
+    @login_required
     def mutate(self, info, proposal_id):
         proposal = ProposalModel.objects.get(pk=proposal_id)
         proposal.published = True
@@ -189,6 +190,7 @@ class NewPRep(graphene.Mutation):
 
     prep = graphene.Field(PRepModelType)
 
+    @login_required
     def mutate(self, info, PRep_address, owner_id, description):
         prep = PRepModel.objects.create()
         prep.prep_address = PRep_address
