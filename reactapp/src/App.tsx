@@ -65,18 +65,20 @@ function App(props: any) {
   const jwt = Cookies.get("DAOToken");
 
   if (jwt) {
+    // console.log("try verify haven token");
     client.mutate({ mutation: VERIFY_TOKEN, variables: { "token": jwt } }).then((result: any) => {
       try {
-        console.log(result);
+        // console.log("Found Token!!!!!!!!!!!!", result);
         client.writeData({ data: { username: result.data.verifyToken.payload.username } });
-        //        console.log("Verify Token", result.data.verifyToken.payload.username);
-        client.query({ query: GET_LOCAL_ME }).then((result2) => {
-          console.log(result2);
-        })
+        // console.log("Verify Token", result.data.verifyToken.payload.username);
+        client.query({ query: GET_LOCAL_ME })
       }
       catch{
         console.log("not verified token")
       }
+    }).catch((error: any) => {
+      console.log("maybe Verify Failed?", error);
+      Cookies.remove("DAOToken");
     });
   }
 

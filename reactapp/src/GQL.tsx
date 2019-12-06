@@ -193,6 +193,43 @@ query PRep($UserID:String!){
 }
 `;
 
+
+export const GET_PROPOSAL_N_PREP = gql`
+  query ProposalNPRep($id: Int!, $UserID:String!) {
+    proposal(id: $id) {
+      id
+      prep{
+        id
+      }
+      subject
+      author{
+        id
+      }
+      contents
+      published
+      expireAt
+      quorumRate
+      tokenRate
+      selectitemmodelSet {
+        id
+        index
+        contents
+      }
+    }
+    allPrep{
+      id
+      name
+    }
+  prep(userId:$UserID){
+    id
+    name
+    prepAddress
+    description
+  }
+
+  }
+`;
+
 export const GET_PROPOSALS = gql`
   query Proposals($selectedPRep:String, $search: String, $first: Int, $skip: Int) {
     proposals(prep:$selectedPRep, search: $search, first: $first, skip: $skip) {

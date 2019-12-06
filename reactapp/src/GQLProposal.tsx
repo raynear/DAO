@@ -77,21 +77,21 @@ function GQLGetProposal(props: any) {
   function SelectItemList(props: any) {
     console.log("print proposal", proposal);
     let VoteItem: number[] = [];
-    /*
-    for (let i in proposal.selectitemmodelSet) {
-      const a = proposal.selectitemmodelSet[i];
+
+    proposal.selectitemmodelSet.forEach((aSelectItem) => {
       let VotingPower = 0;
-      console.log("!!!!!!!!!!!!!!!!!!!!1")
-      //      if ('votemodelSet' in proposal.selectitemmodelSet) {
-      if (a && a.hasOwnProperty('votemodelSet')) {
-        for (let j in proposal.selectitemmodelSet[i].votemodelSet) {
-          VotingPower += GetVotersVotingPower(
-            proposal.selectitemmodelSet[i].votemodelSet[j].voter.username
-          );
-        }
+
+      let test: any[] = [];
+      if (aSelectItem['votemodelSet']) {
+        test = aSelectItem['votemodelSet'];
       }
+      test.forEach((aVote) => {
+        VotingPower += GetVotersVotingPower(aVote.voter.username);
+      });
+
       VoteItem.push(VotingPower);
-    }*/
+    })
+
     return (
       <Fragment>
         {proposal.selectitemmodelSet.map(
@@ -149,22 +149,26 @@ function GQLGetProposal(props: any) {
   });
 
   function SelectList() {
+
+    const [returnVal, setReturnVal] = useState(<div>Loading</div>);
     let SelectList = proposal.selectitemmodelSet;
 
     let votedIdx = -1;
     let votedFlag = false;
-    for (let i in SelectList) {
-      /*
-      for (let j in SelectList[i].votemodelSet) {
-        if (username === SelectList[i].votemodelSet[j].voter.username) {
-          votedIdx = parseInt(i);
-          votedFlag = true;
-          break;
-        }
+    SelectList.forEach((aVoteItem) => {
+      let test: any[] = [];
+      if (aVoteItem['votemodelSet']) {
+        test = aVoteItem['votemodelSet'];
       }
-      */
-      console.log(SelectList[i]);
-    }
+      test.forEach((aVote) => {
+        if (username === aVote.voter.username) {
+          console.log("aVote", aVote);
+          //          votedIdx = parseInt(i);
+          votedFlag = true;
+          return;
+        }
+      });
+    });
 
     if (votedIdx >= 0) {
       voteData[0].voted = votedIdx;
@@ -225,16 +229,18 @@ function GQLGetProposal(props: any) {
           }
         }
         //       });
+
+        console.log("Environment for SelectList", proposal.published, votedFlag, myPRep)
         if (proposal.published === false || votedFlag || !myPRep) {
           console.log("just list");
-          return <SelectItemList voted={votedIdx} />;
+          setReturnVal(<SelectItemList voted={votedIdx} />);
         } else {
           console.log("votable list");
-          return <RadioButtons />;
+          setReturnVal(<RadioButtons />);
         }
       });
     }
-    return <div>{username}</div>
+    return returnVal;
   }
 
   function VoteButton() {
@@ -273,17 +279,20 @@ function GQLGetProposal(props: any) {
     let SelectList = proposal.selectitemmodelSet;
 
     let flag = false;
-    for (let i in SelectList) {
-      console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAA", SelectList[i]);
-      /*
-      for (let j in SelectList[i].votemodelSet) {
-        if (username === SelectList[i].votemodelSet[j].voter.username) {
-          flag = true;
-          break;
-        }
+
+    SelectList.forEach(item => {
+      let test: any[] = [];
+      if (item['votemodelSet']) {
+        test = item['votemodelSet'];
       }
-      */
-    }
+      test.forEach(vote => {
+        console.log("vote!!!!!!!!!!", vote);
+        if (username === vote.voter.username) {
+          flag = true;
+          return;
+        }
+      })
+    })
 
     if (proposal.published) {
       return <VoteButton />;
@@ -301,6 +310,7 @@ function GQLGetProposal(props: any) {
   useMemo(() => {
     if (data) {
       setProposal(data.proposal);
+      console.log("888888888888888888888888888888", data.proposal);
     }
   }, [data]);
 

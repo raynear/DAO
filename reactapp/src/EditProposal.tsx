@@ -53,6 +53,8 @@ function EditProposal(props: any) {
   }
 
   const emptyProposal = {
+    id: -1,
+    author: "",
     quorumRate: 50,
     tokenRate: 50,
     prep: { id: 0 },
@@ -68,6 +70,8 @@ function EditProposal(props: any) {
 
   const [selectItems, setSelectItems] = useState(["", "", "", ""]);
   const [values, setValues] = useState({
+    id: proposal.id,
+    author: proposal.author.id,
     quorumRate: proposal.quorumRate,
     tokenRate: proposal.tokenRate,
     prepId: proposal.prep.id,
@@ -155,7 +159,7 @@ function EditProposal(props: any) {
 
     let mutate_var: { [index: string]: any } = {
       variables: {
-        proposalId: proposal_id,
+        proposalId: values.id,
         subject: values.subject,
         contents: values.contents,
         published: false,

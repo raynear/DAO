@@ -27,7 +27,9 @@ function GQLSignIn(props: any) {
     }).then(result => {
       client.writeData({ data: { username: username } });
 
-      Cookies.set("DAOToken", result.data.tokenAuth.token);
+      Cookies.set("DAOToken", result.data.tokenAuth.token, {
+        expires: 7
+      });
       props.history.push("/");
     });
   }
