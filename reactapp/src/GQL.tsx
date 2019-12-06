@@ -9,6 +9,7 @@ export const GET_PROPOSAL = gql`
       subject
       author{
         id
+        username
       }
       contents
       published
@@ -236,6 +237,7 @@ export const GET_PROPOSALS = gql`
       id
       author {
         id
+        username
         email
       }
       subject

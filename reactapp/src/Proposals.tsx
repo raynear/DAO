@@ -17,13 +17,6 @@ interface selectItem {
   contents: "";
 }
 
-interface proposal {
-  id: "";
-  subject: "";
-  contents: "";
-  selectitemmodelSet: Array<selectItem>;
-}
-
 interface value {
   selectedPRep: string;
   search: string;
@@ -81,6 +74,7 @@ function Proposals(props: any) {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!</p>;
+  console.log(data);
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
@@ -128,16 +122,11 @@ function Proposals(props: any) {
               </Grid>
             </Grid>
           </Grid>
-          {data.proposals.map((item: proposal, idx: number) => (
+          {data.proposals.map((item: any, idx: number) => (
             <Grid item className={classes.item} key={idx} xs={12} lg={6}>
               <Paper className={classes.paper}>
-                <Typography
-                  className={classes.title}
-                  color="textSecondary"
-                  gutterBottom
-                >
-                  {" "}
-                  Type Of Proposal
+                <Typography className={classes.title} color="textSecondary" gutterBottom>
+                  P-Rep {item.author.username}
                 </Typography>
                 <Typography variant="h5" color="textPrimary" gutterBottom>
                   <Link to={"/Proposal/" + item.id} color="textPrimary">
@@ -145,11 +134,11 @@ function Proposals(props: any) {
                   </Link>
                 </Typography>
                 <ReactMarkdown
-                  source={item.contents.split("\n").join("  \n")}
+                  source={item.contents.split("<br>").join("\n")}
                   skipHtml={false}
                   escapeHtml={false}
                 />
-                {item.selectitemmodelSet.map((selectItem, idx) => (
+                {item.selectitemmodelSet.map((selectItem: any, idx: number) => (
                   <Typography variant="body1" key={idx} color="textSecondary">
                     {selectItem.contents}
                   </Typography>

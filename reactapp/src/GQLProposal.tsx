@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useEffect, Fragment } from "react";
 import { Link, withRouter } from "react-router-dom";
 
-import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid } from "@material-ui/core";
-import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from "recharts";
+import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip } from "@material-ui/core";
+import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar } from "recharts";
 
 import { useApolloClient, useQuery, useMutation } from "@apollo/react-hooks";
 import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL } from "./GQL";
@@ -30,10 +30,10 @@ function GQLGetProposal(props: any) {
   //const forceUpdate = useForceUpdate;
 
   const [proposal, setProposal] = useState({
-    author: "",
+    author: { id: 0, username: "" },
     subject: "",
     contents: "",
-    prepId: 1,
+    prep: { id: 0 },
     published: false,
     expireAt: "2019-12-12T00:00:00.000Z",
     quorumRate: 50,
@@ -93,26 +93,32 @@ function GQLGetProposal(props: any) {
     })
 
     return (
-      <Fragment>
+      <ul>
         {proposal.selectitemmodelSet.map(
           (selectItem: selectItem, idx: number) => {
             if (props.voted === idx) {
               return (
-                <Typography key={idx}>
-                  {selectItem.contents}
-                  {"(" + VoteItem[idx] + ")"} {"<= You Voted"}
-                </Typography>
+                <li key={idx}>
+                  <Tooltip title="You Vote!">
+                    <Typography variant="body1" color="primary">
+                      {selectItem.contents}
+                      {"(" + VoteItem[idx] + ")"}
+                    </Typography>
+                  </Tooltip>
+                </li>
               );
             } else {
               return (
-                <Typography key={idx}>
-                  {selectItem.contents} {"(" + VoteItem[idx] + ")"}
-                </Typography>
+                <li key={idx}>
+                  <Typography variant="body1" color="textPrimary">
+                    {selectItem.contents} {"(" + VoteItem[idx] + ")"}
+                  </Typography>
+                </li>
               );
             }
           }
         )}
-      </Fragment>
+      </ul>
     );
   }
 
@@ -149,8 +155,7 @@ function GQLGetProposal(props: any) {
   });
 
   function SelectList() {
-
-    const [returnVal, setReturnVal] = useState(<div>Loading</div>);
+    const [myPRep, setMyPRep] = useState(false);
     let SelectList = proposal.selectitemmodelSet;
 
     let votedIdx = -1;
@@ -185,7 +190,6 @@ function GQLGetProposal(props: any) {
         catch{
           user_address = ""
         }
-        let myPRep = false;
 
         //        governance_call("getDelegation", { "address": user_address }).then((result2: any) => {
         let result2 = JSON.parse(`{
@@ -224,23 +228,22 @@ function GQLGetProposal(props: any) {
         }
         for (let i = 0; i < delegateList.length; i++) {
           if (delegateList[i].address === user_address) {
-            myPRep = true;
+            setMyPRep(true);
             break;
           }
         }
         //       });
-
-        console.log("Environment for SelectList", proposal.published, votedFlag, myPRep)
-        if (proposal.published === false || votedFlag || !myPRep) {
-          console.log("just list");
-          setReturnVal(<SelectItemList voted={votedIdx} />);
-        } else {
-          console.log("votable list");
-          setReturnVal(<RadioButtons />);
-        }
       });
     }
-    return returnVal;
+
+    console.log("Environment for SelectList", proposal.published, votedFlag, myPRep)
+    if (proposal.published === false || votedFlag || !myPRep) {
+      console.log("just list");
+      return (<SelectItemList voted={votedIdx} />);
+    } else {
+      console.log("votable list");
+      return (<RadioButtons />);
+    }
   }
 
   function VoteButton() {
@@ -296,7 +299,7 @@ function GQLGetProposal(props: any) {
 
     if (proposal.published) {
       return <VoteButton />;
-    } else if (proposal.author === username) {
+    } else if (proposal.author.username === username) {
       return <PublishButton />;
     } else {
       return <div>{" "}</div>
@@ -310,7 +313,6 @@ function GQLGetProposal(props: any) {
   useMemo(() => {
     if (data) {
       setProposal(data.proposal);
-      console.log("888888888888888888888888888888", data.proposal);
     }
   }, [data]);
 
@@ -320,27 +322,29 @@ function GQLGetProposal(props: any) {
   return (
     <Grid className={classes.grid} item xs={12} lg={12}>
       <Paper className={classes.paper}>
-        <Typography
-          className={classes.title}
-          color="textSecondary"
-          gutterBottom
-        >
-          {" "}
-          Type Of Proposal
+        <Typography className={classes.title} color="textSecondary" gutterBottom>
+          P-Rep {proposal.author.username}
         </Typography>
         <Typography variant="h5" color="textPrimary" gutterBottom>
           {proposal.subject}
         </Typography>
-        <ReactMarkdown
-          source={proposal.contents.split("\n").join("  \n")}
-          skipHtml={false}
-          escapeHtml={false}
-        />
         <Typography variant="caption" color="textPrimary">
-          expire at:
+          Published : {(proposal.published).toString()}
+        </Typography>
+        <Typography variant="caption" color="textPrimary">
+          expire at :
           {proposal.expireAt}
         </Typography>
         <br />
+        <Divider variant="fullWidth" />
+        <br />
+        <ReactMarkdown
+          source={proposal.contents.split("<br>").join("\n")}
+          skipHtml={true}
+          escapeHtml={false}
+        />
+        <br />
+        <Divider variant="fullWidth" />
         <br />
         <SelectList />
         <BarChart
@@ -354,7 +358,7 @@ function GQLGetProposal(props: any) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />
-          <Tooltip />
+          <ChartTooltip />
           <Bar dataKey="th" fill="#8884d8" background={{ fill: '#EEEEEE' }} />
           <Bar dataKey="voted" fill="#3377ff" background={{ fill: '#EEEEEE' }} />
         </BarChart>

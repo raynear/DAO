@@ -28,6 +28,14 @@ class UserType(DjangoObjectType):
 
 
 class Query(board.schema.Query, graphene.ObjectType):
+    viewer = graphene.Field(UserType)
+
+    def resolve_viewer(self, info, **kwargs):
+        user = info.context.user
+        if not user.is_authenticated:
+            raise Exception('Authentication credentials were not provided')
+        return user
+
     me = graphene.Field(UserType)
 
     def resolve_me(self, info, **kwargs):

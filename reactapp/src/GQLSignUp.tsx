@@ -54,9 +54,6 @@ function GQLSignUp(props: any) {
           username: username
         }
       });
-      Cookies.set("DAOToken", result.data.tokenAuth.token, {
-        expires: 7
-      });
     });
   }
 

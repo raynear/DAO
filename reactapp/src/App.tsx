@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
 
+import gql from "graphql-tag";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "react-apollo";
 import { InMemoryCache } from "apollo-cache-inmemory";
@@ -22,10 +23,7 @@ const client = new ApolloClient({
         .then(response => response.json())
         .then(data => data.csrfToken);
       // set the cookie 'csrftoken'
-      Cookies.set("csrftoken", csrftoken, {
-        expires: 7,
-        domain: "http://localhost:3000/"
-      });
+      Cookies.set("csrftoken", csrftoken);
       csrf = csrftoken;
     }
     operation.setContext({
@@ -62,25 +60,12 @@ function App(props: any) {
   };
   window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
 
-  const jwt = Cookies.get("DAOToken");
-
-  if (jwt) {
-    // console.log("try verify haven token");
-    client.mutate({ mutation: VERIFY_TOKEN, variables: { "token": jwt } }).then((result: any) => {
-      try {
-        // console.log("Found Token!!!!!!!!!!!!", result);
-        client.writeData({ data: { username: result.data.verifyToken.payload.username } });
-        // console.log("Verify Token", result.data.verifyToken.payload.username);
-        client.query({ query: GET_LOCAL_ME })
-      }
-      catch{
-        console.log("not verified token")
-      }
-    }).catch((error: any) => {
-      console.log("maybe Verify Failed?", error);
-      Cookies.remove("DAOToken");
-    });
-  }
+  client.query({ query: gql`{ viewer{ username }}` }).then((result: any) => {
+    client.writeData({ data: { username: result.data.viewer.username } });
+    client.query({ query: GET_LOCAL_ME }).then(result => {
+      console.log("reload OK");
+    })
+  })
 
   return (
     <BrowserRouter>

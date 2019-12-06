@@ -1,10 +1,9 @@
-import React, { useState, Fragment } from "react";
+import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 
 import { Avatar, Typography, IconButton, Badge, Menu, MenuItem } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 
-import gql from "graphql-tag";
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 import { LOG_OUT, GET_LOCAL_ME } from "./GQL";
 
@@ -13,10 +12,7 @@ import Cookies from "js-cookie";
 import useStyles from "./Style";
 
 function GQLUserInfo(props: any) {
-  const client = useApolloClient();
   const [mutateLogout] = useMutation(LOG_OUT);
-
-  const [username, setUsername] = useState("");
 
   const classes = useStyles();
   //const [badgeCnt, setBadgeCnt] = React.useState(0);
@@ -33,28 +29,16 @@ function GQLUserInfo(props: any) {
 
   const handleMenuLogout = () => {
     mutateLogout();
-    Cookies.remove("DAOToken");
+    //    Cookies.remove("JWT");
     setAnchorEl(null);
   };
 
-  client.query({ query: GET_LOCAL_ME }).then(({ loading, errors, data }) => {
-    console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-    console.log(loading);
-    console.log(errors);
-    console.log(data);
+  const { loading, error, data } = useQuery(GET_LOCAL_ME);
 
-    try {
-      if (data.username !== undefined) {
-        setUsername(data.username);
-      }
-    }
-    catch{
-      console.log("no username");
-    }
-  });
+  if (loading) return <p>Loading...</p>
+  if (error) return <p>Error...{error.message}</p>
 
-  console.log("username", username);
-  if (username !== "") {
+  if (data && data.username) {
     return (
       <Fragment>
         <IconButton
@@ -69,7 +53,7 @@ function GQLUserInfo(props: any) {
             className={classes.noMarginPadding}
           >
             <Avatar
-              alt={username}
+              alt={data.username}
               src={""}
               className={classes.noMarginPadding}
             />
