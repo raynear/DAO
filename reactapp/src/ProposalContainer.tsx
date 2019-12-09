@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, Fragment } from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip } from "@material-ui/core";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar } from "recharts";
@@ -9,7 +9,7 @@ import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL } from "./GQL";
 import gql from "graphql-tag";
 
 import ReactMarkdown from "react-markdown";
-import { json_rpc_call, governance_call } from "./IconConnect";
+import { json_rpc_call } from "./IconConnect";
 
 import useStyles from "./Style";
 
@@ -43,6 +43,7 @@ function GQLGetProposal(props: any) {
   });
   const [voteSelect, setVoteSelect] = useState();
   const [username, setUsername] = useState("");
+  const [votedFlag, setVotedFlag] = useState(false);
 
   const client = useApolloClient();
 
@@ -157,7 +158,6 @@ function GQLGetProposal(props: any) {
 
   function SelectList() {
     const [myPRep, setMyPRep] = useState(false);
-    const [votedFlag, setVotedFlag] = useState(false);
     let SelectList = proposal.selectitemmodelSet;
 
     let votedIdx = -1;
@@ -283,25 +283,26 @@ function GQLGetProposal(props: any) {
   }
 
   function ActionButton() {
+
+    /*
     let SelectList = proposal.selectitemmodelSet;
-
     let flag = false;
-
-    SelectList.forEach(item => {
-      let test: any[] = [];
-      if (item['votemodelSet']) {
-        test = item['votemodelSet'];
-      }
-      test.forEach(vote => {
-        console.log("vote!!!!!!!!!!", vote);
-        if (username === vote.voter.username) {
-          flag = true;
-          return;
-        }
-      })
-    })
-
-    if (proposal.published) {
+    
+        SelectList.forEach(item => {
+          let test: any[] = [];
+          if (item['votemodelSet']) {
+            test = item['votemodelSet'];
+          }
+          test.forEach(vote => {
+            console.log("vote!!!!!!!!!!", vote);
+            if (username === vote.voter.username) {
+              flag = true;
+              return;
+            }
+          })
+        })
+    */
+    if (proposal.published && votedFlag === false) {
       return <VoteButton />;
     } else if (proposal.author.username === username) {
       return <PublishButton />;

@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Typography, Divider, Button } from "@material-ui/core";
-import clsx from "clsx";
+// import clsx from "clsx";
 import useStyles from "./Style";
 
 import { selectWallet } from "./GQL";

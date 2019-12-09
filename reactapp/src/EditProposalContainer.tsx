@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState } from "react";
 import { Typography } from "@material-ui/core";
-import { withRouter, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 import { GET_PROPOSAL_N_PREP, SET_PROPOSAL, GET_LOCAL_ME } from "./GQL";
@@ -22,11 +22,10 @@ const validator = new SimpleReactValidator({
 function EditProposalContainer(props: any) {
   console.log("EditProposalContainer props", props);
 
-  const match = props.match;
-  const history = props.history;
-  const location = props.location;
-  const prop_proposal = props.proposal;
-  const prop_submitProposal = props.submitProposal;
+  //  const match = props.match;
+  //  const history = props.history;
+  //  const location = props.location;
+  //  const prop_proposal = props.proposal;
 
   let proposal_id: any;
   if (props && props.match && props.match.params && props.match.params.proposal_id) {
@@ -40,47 +39,20 @@ function EditProposalContainer(props: any) {
 
   const [username, setUsername] = useState("");
   const [redirect, setRedirect] = useState();
-  const [mutateProposal] = useMutation(SET_PROPOSAL);
-
-  const emptyProposal = {
-    id: -1,
-    quorumRate: 50,
-    tokenRate: 50,
-    prep: { id: 0 },
-    subject: "",
-    contents: "",
-    expireAt: "2019-12-18T21:11:54",
-    selectitemmodelSet: []
-  };
-
-  const proposal = prop_proposal ? prop_proposal : emptyProposal;
-  console.log("!!!!!!!!!!!!!!!!!!!!check!!!!!!!!!!!!!!!!!")
-  console.log(proposal);
 
   const [selectItems, setSelectItems] = useState(["", "", "", ""]);
   const [values, setValues] = useState({
-    id: proposal.id,
-    quorumRate: proposal.quorumRate,
-    tokenRate: proposal.tokenRate,
-    prepId: proposal.prep.id,
-    subject: proposal.subject,
-    contents: proposal.contents,
-    date: new Date(proposal.expireAt)
+    id: -1,
+    quorumRate: 50,
+    tokenRate: 50,
+    prepId: 0,
+    subject: "",
+    contents: "",
+    expireAt: new Date("2019-12-18T21:11:54"),
+    selectitemmodelSet: []
   });
 
-  let editorRef = React.createRef<any>();
-
-  useEffect(() => {
-    let tmpSelectItems: string[] = [];
-    proposal.selectitemmodelSet.map((item: any) => {
-      tmpSelectItems.push(item.contents);
-      return item;
-    });
-    if (tmpSelectItems.length > 0) {
-      setSelectItems(tmpSelectItems);
-    }
-    editorRef.current.getInstance().setValue(values.contents);
-  }, []);
+  const [mutateProposal] = useMutation(SET_PROPOSAL);
 
   const addSelectItem = () => {
     setSelectItems([...selectItems, ""]);
@@ -105,7 +77,7 @@ function EditProposalContainer(props: any) {
 
   const handleDateChange = (date: Date | null) => {
     if (date) {
-      setValues({ ...values, date: date });
+      setValues({ ...values, expireAt: date });
     }
   };
 
@@ -122,12 +94,6 @@ function EditProposalContainer(props: any) {
     else {
       setValues({ ...values, [name]: newValue });
     }
-  };
-
-  const handleEditorChange = () => {
-    const value = editorRef.current.getInstance().getValue();
-
-    setValues({ ...values, contents: value });
   };
 
   function handlesubmitProposal() {
@@ -156,16 +122,13 @@ function EditProposalContainer(props: any) {
         prepId: values.prepId,
         quorumRate: values.quorumRate,
         tokenRate: values.tokenRate,
-        expireAt:
-          values.date != null
-            ? values.date.toISOString()
-            : "2019-10-05T09:00:00",
+        expireAt: values.expireAt.toISOString(),
         selectItemList: tmpSelectItemList
       }
     };
 
     console.log("send mutate_var", mutate_var);
-    prop_submitProposal(mutate_var);
+    submitProposal(mutate_var);
     console.log("aAAAAAAAAAAAAAAAAAAAAAAA");
   }
 
@@ -191,16 +154,48 @@ function EditProposalContainer(props: any) {
     }
   }
 
+
   const queryVal = useQuery(GET_PROPOSAL_N_PREP, {
-    variables: { id: proposal_id, UserID: username }
-  });
+    variables: { id: proposal_id, PRepName: username }
+  })
+  if (queryVal.data && queryVal.data.proposal) {
+
+    let proposal = queryVal.data.proposal;
+    setValues({
+      id: -1,
+      quorumRate: 50,
+      tokenRate: 50,
+      prepId: 0,
+      subject: "",
+      contents: "",
+      expireAt: new Date("2019-12-18T21:11:54"),
+      selectitemmodelSet: []
+    });
+
+    let tmpSelectItems: string[] = [];
+    proposal.selectitemmodelSet.map((item: any) => {
+      tmpSelectItems.push(item.contents);
+      return item;
+    });
+    if (tmpSelectItems.length > 0) {
+      setSelectItems(tmpSelectItems);
+    }
+  }
 
   return (
     <Fragment>
       {renderRedirect()}
       <EditProposal
         {...queryVal}
-        submitProposal={submitProposal}
+        values={values}
+        setValues={setValues}
+        addSelectItem={addSelectItem}
+        handleSelectItemChange={handleSelectItemChange}
+        deleteSelectItem={deleteSelectItem}
+        handleDateChange={handleDateChange}
+        handleProposalChange={handleProposalChange}
+        handleSliderChange={handleSliderChange}
+        handlesubmitProposal={handlesubmitProposal}
       />
     </Fragment>
   );

@@ -31,7 +31,7 @@ export const GET_PROPOSAL = gql`
     }
     allPrep{
       id
-      name
+      username
     }
   }
 `;
@@ -163,27 +163,25 @@ export const GET_PREPS = gql`
   query {
     allPrep{
       id
-      name
-      prepAddress
-      description
+      username
+      iconAddress
     }
   }
 `;
 
 export const GET_PREP = gql`
-query PRep($UserID:String!){
-  prep(userId:$UserID){
+query PRep($PRepName:String!){
+  prep(prepName:$PRepName){
     id
-    name
-    prepAddress
-    description
+    username
+    iconAddress
   }
 }
 `;
 
 
 export const GET_PROPOSAL_N_PREP = gql`
-  query ProposalNPRep($id: Int!, $UserID:String!) {
+  query ProposalNPRep($id: Int!, $PRepName:String!) {
     proposal(id: $id) {
       id
       prep{
@@ -203,13 +201,12 @@ export const GET_PROPOSAL_N_PREP = gql`
     }
     allPrep{
       id
-      name
+      username
     }
-  prep(userId:$UserID){
+  prep(prepName:$PRepName){
     id
-    name
-    prepAddress
-    description
+    username
+    iconAddress
   }
 
   }

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { NEW_PREP, GET_LOCAL_ME, GET_LOCAL_ADDRESS } from "./GQL";
 
-import { json_rpc_call, json_rpc_send_tx, governance_call, selected_icon_service } from "./IconConnect";
+import { json_rpc_call, json_rpc_send_tx, selected_icon_service } from "./IconConnect";
 
 import VerifyIcon from "./VerifyIcon";
 

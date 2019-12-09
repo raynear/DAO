@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 // import { withRouter } from "react-router-dom";
 import { Paper, Grid, Typography, TextField, Button, Slider } from "@material-ui/core";
 import { AddRounded } from "@material-ui/icons";
@@ -17,6 +17,17 @@ function EditProposal(props: any) {
   console.log("EditProposal props", props);
 
   const classes = useStyles();
+
+  let editorRef = React.createRef<any>();
+
+  useEffect(() => {
+    editorRef.current.getInstance().setValue(props.values.contents);
+  });
+
+  const handleChange = () => {
+    const value = editorRef.current.getInstance().getValue();
+    props.setValues({ ...props.values, contents: value });
+  }
 
   if (props.loading) return <p>Loading...</p>;
   if (props.error) return <p>Error!:</p>;
@@ -109,8 +120,8 @@ function EditProposal(props: any) {
                   "mark",
                   "table"
                 ]}
-                ref={props.editorRef}
-                onChange={props.handleEditorChange}
+                ref={editorRef}
+                onChange={handleChange}
               />
             </Grid>
 

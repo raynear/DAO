@@ -49,7 +49,7 @@ class Query(object):
 
     is_voted = graphene.Field(ProposalModelType, proposal_id=graphene.Int())
 
-    prep = graphene.Field(CustomUserType, prep_id=graphene.Int())
+    prep = graphene.Field(CustomUserType, prep_name=graphene.String())
 
     proposal = graphene.Field(ProposalModelType, id=graphene.Int())
 
@@ -76,8 +76,8 @@ class Query(object):
 
         return None
 
-    def resolve_prep(self, info, prep_id=None, **kwargs):
-        return CustomUserType.objects.get(pk=prep_id)
+    def resolve_prep(self, info, prep_name=None, **kwargs):
+        return User.objects.get(username=prep_name)
 
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
@@ -91,13 +91,13 @@ class Query(object):
 
         print(prep)
         if (prep != None) & (prep != "All") & (prep != ""):
-            aPRep = CustomUserType.objects.get(username=prep)
+            aPRep = User.objects.get(username=prep)
             filter = Q(prep__exact=aPRep.id)
             qs = qs.filter(filter)
 
         if search:
             filter = (Q(subject__icontains=search) | Q(contents__icontains=search)) & (
-                Q(author__exact=info.context.user) | Q(publish__exact=True))
+                Q(prep__exact=info.context.user) | Q(publish__exact=True))
             qs = qs.filter(filter)
         if skip:
             qs = qs[skip:]
@@ -107,7 +107,7 @@ class Query(object):
         return qs
 
     def resolve_all_prep(self, info, **kwargs):
-        qs = CustomUserType.objects.all()
+        qs = User.objects.all()
         return qs.filter(Q(is_prep__exact=True))
 
     def resolve_all_proposal(self, info, **kwargs):
@@ -171,7 +171,7 @@ class PublishProposal(graphene.Mutation):
                 .step_limit(10000000000)\
                 .nid(3)\
                 .method("SetProposal")\
-                .params({"_Subject": proposal.subject, "_Contents": proposal.contents, "_Proposer": proposal.author.username, "_ExpireDate": proposal.expire_at.isoformat(), "_SelectItems": _select_item})\
+                .params({"_Subject": proposal.subject, "_Contents": proposal.contents, "_Proposer": proposal.prep.username, "_ExpireDate": proposal.expire_at.isoformat(), "_SelectItems": _select_item})\
                 .build()
 
             signed_transaction = SignedTransaction(transaction, wallet)
@@ -235,18 +235,17 @@ class SetProposal(graphene.Mutation):
         expire_at,
         select_item_list,
     ):
-        selectedPRep = CustomUserType.objects.get(id=prep_id)
+        selectedPRep = User.objects.get(id=prep_id)
         try:
             proposal = ProposalModel.objects.get(pk=proposal_id)
         except ProposalModel.DoesNotExist:
             proposal = ProposalModel.objects.create(
-                author=info.context.user,
+                prep=info.context.user,
                 subject=subject,
                 contents=contents,
                 published=published,
                 quorum_rate=quorum_rate,
                 token_rate=token_rate,
-                prep=selectedPRep,
                 expire_at=expire_at,
             )
             proposal.save()
@@ -256,7 +255,7 @@ class SetProposal(graphene.Mutation):
                 )
                 selectItem.save()
         else:
-            proposal.author = info.context.user
+            proposal.prep = info.context.user
             proposal.subject = subject
             proposal.contents = contents
             proposal.published = False
