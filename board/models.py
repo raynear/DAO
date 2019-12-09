@@ -2,31 +2,20 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from account.models import User
 
-user = get_user_model()
+#user = get_user_model()
 user = User
 
 # Create your models here.
 
 
-class PRepModel(models.Model):
-    name = models.CharField(max_length=30, blank=True, unique=True)
-    prep_address = models.CharField(max_length=60, blank=True, unique=True)
-    description = models.CharField(max_length=200, blank=False, default="디폴트")
-
-    def __str__(self):
-        return self.name
-
-
 class ProposalModel(models.Model):
-    author = models.ForeignKey(
+    prep = models.ForeignKey(
         user,
-        related_name="proposals",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True,
-        default=user,
+        blank=False,
+        default=user
     )
-    prep = models.ForeignKey(PRepModel, on_delete=models.CASCADE, default=None)
     published = models.BooleanField(default=False)
     subject = models.CharField(max_length=50, blank=True)
     txHash = models.CharField(max_length=300, blank=True)

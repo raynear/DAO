@@ -3,7 +3,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, username, password=None, email=None, icon_auth=None, icon_address=None):
+    def create_user(self, username, password=None, email=None, icon_address=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -23,12 +23,10 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser):
     username = models.CharField(max_length=50, unique=True, blank=False)
-    email = models.EmailField(
-        verbose_name="email address", max_length=255
-    )
-    icon_auth = models.BooleanField(default=False)
+    email = models.EmailField(verbose_name="email address", max_length=255)
     icon_address = models.CharField(max_length=255, default="")
     is_active = models.BooleanField(default=True)
+    is_prep = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 

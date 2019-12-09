@@ -1,25 +1,22 @@
 import React, { useState } from "react";
-import { Grid, Typography, Divider, Button } from "@material-ui/core";
-import clsx from "clsx";
 
-import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
-import { NEW_PREP, GET_LOCAL_ME, GET_LOCAL_ADDRESS, selectWallet } from "./GQL";
+import { useQuery, useMutation } from "@apollo/react-hooks";
+import { NEW_PREP, GET_LOCAL_ME, GET_LOCAL_ADDRESS } from "./GQL";
 
 import { json_rpc_call, json_rpc_send_tx, governance_call, selected_icon_service } from "./IconConnect";
 
-import useStyles from "./Style";
+import VerifyIcon from "./VerifyIcon";
 
-function GQLVerifyICON(props: any) {
+function VerifyIconContainer(props: any) {
   //  const client = useApolloClient();
   console.log("GQLVerifyICON", props);
-  const classes = useStyles();
   const [iconAddress, setIconAddress] = useState("");
   const [isPRep, setIsPRep] = useState(false);
   const [verifiedAddress, setVerifiedAddress] = useState("");
   const [mutateNewPRep] = useMutation(NEW_PREP);
 
   async function callVerify() {
-    let result = await json_rpc_call("GetVerifyInfoByID", { "_ID": data.username });
+    let result = await json_rpc_call("GetVerifyInfoByID", { "_ID": queryVal.data.username });
     console.log(result);
     let result_json = JSON.parse(result);
     setVerifiedAddress(result_json.address);
@@ -103,7 +100,7 @@ function GQLVerifyICON(props: any) {
 
   async function sendVerify() {
     let result = await selected_icon_service.getBlock('latest').execute();
-    let params = { "_BlockHash": result.blockHash, "_ID": data.username };
+    let params = { "_BlockHash": result.blockHash, "_ID": queryVal.data.username };
 
     json_rpc_send_tx(iconAddress, "Verify", params);
   }
@@ -120,53 +117,23 @@ function GQLVerifyICON(props: any) {
   }
 
   function newPRepPage() {
-    mutateNewPRep({ variables: { PRepAddress: verifiedAddress, OwnerId: data.username, Description: data.username } }).then(() => {
+    mutateNewPRep({ variables: { PRepAddress: verifiedAddress, OwnerId: queryVal.data.username, Description: queryVal.data.username } }).then(() => {
       props.setActiveStep(2);
     });
   }
 
-  const { loading, error, data } = useQuery(GET_LOCAL_ME);
+  const queryVal = useQuery(GET_LOCAL_ME);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error!:{error.message}</p>;
-  if (data && data.username) {
-    return (
-      <>
-        <Grid className={classes.item} item xs={12} md={12} lg={12}>
-          <Typography>Name: {data.username}</Typography>
-        </Grid>
-        <Grid className={classes.item} item xs={12} md={12} lg={12}>
-          <Typography>Verified Address: {verifiedAddress}</Typography>
-        </Grid>
-        <Grid className={classes.item} item xs={12} md={12} lg={12}>
-          {isPRep &&
-            <>
-              <Typography>You Are PRep</Typography>
-              <Button onClick={newPRepPage}>Make New P-Rep DAO Page</Button>
-            </>
-          }
-        </Grid>
-        <Grid className={classes.item} item xs={12} md={12} lg={12}>
-          <br />
-          <Divider />
-          <br />
-          <Typography variant="subtitle1">Connected Address: <SelectedAddress /></Typography>
-        </Grid>
-        <Grid className={clsx(classes.item, classes.center)} item xs={4} md={4} lg={4}>
-          <Button variant="contained" color="primary" onClick={selectWallet}>Select Wallet</Button>
-        </Grid>
-        <Grid className={clsx(classes.item, classes.center)} item xs={4} md={4} lg={4}>
-          <Button variant="contained" color="primary" disabled={iconAddress === ""} onClick={sendVerify}>send Verify</Button>
-        </Grid>
-        <Grid className={clsx(classes.item, classes.center)} item xs={4} md={4} lg={4}>
-          <Button variant="contained" color="primary" fullWidth onClick={callVerify}>get Verify Info</Button>
-        </Grid>
-      </>
-    );
-  } else {
-    props.history.push('/Signup');
-    return <p>redirect</p>
-  }
+  return (<VerifyIcon
+    {...queryVal}
+    SelectedAddress={SelectedAddress}
+    newPRepPage={newPRepPage}
+    callVerify={callVerify}
+    sendVerify={sendVerify}
+    iconAddress={iconAddress}
+    verifiedAddress={verifiedAddress}
+    isPRep={isPRep}
+  />);
 }
 
-export default GQLVerifyICON;
+export default VerifyIconContainer;

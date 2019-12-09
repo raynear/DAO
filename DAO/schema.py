@@ -22,6 +22,7 @@ from board.icon_network import LOCAL_NET, SCORE_ADDRESS
 
 NETWORK = LOCAL_NET
 
+
 class UserType(DjangoObjectType):
     class Meta:
         model = get_user_model()
@@ -34,14 +35,6 @@ class Query(board.schema.Query, graphene.ObjectType):
         user = info.context.user
         if not user.is_authenticated:
             raise Exception('Authentication credentials were not provided')
-        return user
-
-    me = graphene.Field(UserType)
-
-    def resolve_me(self, info, **kwargs):
-        user = info.context.user
-        if user.is_anonymous:
-            return None
         return user
 
 

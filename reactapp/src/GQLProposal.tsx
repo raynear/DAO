@@ -324,50 +324,72 @@ function GQLGetProposal(props: any) {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error!:</p>;
   return (
-    <Grid className={classes.grid} item xs={12} lg={12}>
+    <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
-        <Typography className={classes.title} color="textSecondary" gutterBottom>
-          <b>{proposal.id}.</b> P-Rep {proposal.author.username}
-        </Typography>
-        <Typography variant="h5" color="textPrimary" gutterBottom>
-          {proposal.subject}
-        </Typography>
-        <Typography variant="caption" color="textPrimary">
-          Published : {(proposal.published).toString()}
-        </Typography>
-        <Typography variant="caption" color="textPrimary">
-          expire at :
+        <Grid container className={classes.container}>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Typography className={classes.title} color="textSecondary" gutterBottom>
+              <b>{proposal.id}.</b> P-Rep {proposal.author.username}
+            </Typography>
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Typography variant="h5" color="textPrimary" gutterBottom>
+              {proposal.subject}
+            </Typography>
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Typography variant="caption" color="textPrimary">
+              Published : {(proposal.published).toString()}
+            </Typography>
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Typography variant="caption" color="textPrimary">
+              expire at :
           {proposal.expireAt}
-        </Typography>
-        <br />
-        <Divider variant="fullWidth" />
-        <br />
-        <ReactMarkdown
-          source={proposal.contents.split("<br>").join("\n")}
-          skipHtml={true}
-          escapeHtml={false}
-        />
-        <br />
-        <Divider variant="fullWidth" />
-        <br />
-        <SelectList />
-        <BarChart
-          width={200}
-          height={200}
-          data={voteData}
-          margin={{
-            top: 20, right: 20, left: 20, bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <ChartTooltip />
-          <Bar dataKey="th" fill="#8884d8" background={{ fill: '#EEEEEE' }} />
-          <Bar dataKey="voted" fill="#3377ff" background={{ fill: '#EEEEEE' }} />
-        </BarChart>
-        <br />
-        <ActionButton />
+            </Typography>
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <br />
+            <Divider variant="fullWidth" />
+            <br />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <ReactMarkdown
+              source={proposal.contents.split("<br>").join("\n")}
+              skipHtml={true}
+              escapeHtml={false}
+            />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <br />
+            <Divider variant="fullWidth" />
+            <br />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <SelectList />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <BarChart
+              width={200}
+              height={200}
+              data={voteData}
+              margin={{
+                top: 20, right: 20, left: 20, bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <ChartTooltip />
+              <Bar dataKey="th" fill="#8884d8" background={{ fill: '#EEEEEE' }} />
+              <Bar dataKey="voted" fill="#3377ff" background={{ fill: '#EEEEEE' }} />
+            </BarChart>
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <br />
+            <ActionButton />
+          </Grid>
+        </Grid>
       </Paper>
     </Grid>
   );

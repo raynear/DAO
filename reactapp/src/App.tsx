@@ -6,7 +6,7 @@ import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "react-apollo";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
-import { VERIFY_TOKEN, GET_LOCAL_ME } from "./GQL";
+import { GET_LOCAL_ME } from "./GQL";
 import Cookies from "js-cookie";
 
 import Layout from "./Layout";

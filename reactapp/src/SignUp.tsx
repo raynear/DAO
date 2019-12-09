@@ -1,214 +1,59 @@
-import React, { Fragment, useState } from "react";
-
-import { Stepper, Step, StepLabel, Grid, Paper, TextField, Button, Typography } from "@material-ui/core";
-import SimpleReactValidator from "simple-react-validator";
+import React from "react";
+import { withRouter } from "react-router-dom";
+import { Stepper, Step, StepLabel, Grid, Paper, Button, Typography } from "@material-ui/core";
 import clsx from "clsx";
 
-import useForceUpdate from "./useForceUpdate";
 import useStyles from "./Style";
 
-import GQLVerifyICON from "./GQLVerifyICON";
+import VerifyIconContainer from "./VerifyIconContainer";
+import NewAccountContainer from "./NewAccountContainer";
 
 function SignUp(props: any) {
+  console.log("SingUp props", props);
   const classes = useStyles();
-  const forceUpdate = useForceUpdate();
-
-  const [activeStep, setActiveStep] = React.useState(0);
-  const steps = ['Sign Up', 'Verify ICON address', 'Confirm'];
-
-  const [signInfo, setSignInfo] = useState({
-    username: "",
-    password: "",
-    password2: ""
-  });
-
-  const validator = new SimpleReactValidator({
-    validators: {
-      same: {
-        message: "input two password same.",
-        rule: (val: any, params: any) => {
-          return val[0] === val[1];
-        }
-      }
-    },
-    locale: "en",
-    className: "text-danger",
-    element: (message: any, className: any) => (
-      <Typography variant="caption" color="error" className={className}>
-        {message}
-      </Typography>
-    )
-  });
-
-  function SameValidate(val: any) {
-    if (val[0] === val[1]) {
-      return;
-    } else {
-      return (
-        <Typography variant="caption" color="error">
-          Have to be same.
-        </Typography>
-      );
-    }
-  }
-
-  async function SignUp() {
-    if (!validator.allValid()) {
-      validator.showMessages();
-      forceUpdate();
-      return;
-    } else {
-      let result = await props.NewUser(signInfo.username, signInfo.password);
-      if (result) {
-        console.log(result);
-        props.LogIn(signInfo.username, signInfo.password);
-        setActiveStep(activeStep + 1);
-      }
-    }
-  }
-
-  function handleSignInfo(e: React.ChangeEvent<HTMLInputElement>) {
-    setSignInfo({ ...signInfo, [e.target.name]: e.target.value });
-  }
 
   return (
-    <Fragment>
-      <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
-        <Paper className={clsx(classes.paper, classes.center)}>
-          <Grid container className={clsx(classes.container, classes.center)}>
-            <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
-              <Stepper activeStep={activeStep} alternativeLabel>
-                {steps.map(label => (
-                  <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
+    <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
+      <Paper className={clsx(classes.paper, classes.center)}>
+        <Grid container className={clsx(classes.container, classes.center)}>
+          <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
+            <Stepper activeStep={props.activeStep} alternativeLabel>
+              {props.steps.map((label: any) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Grid>
+        </Grid>
+        {props.activeStep === 0 &&
+          <NewAccountContainer activeStep={props.activeStep} setActiveStep={props.setActiveStep} />
+        }
+        {props.activeStep === 1 &&
+          <VerifyIconContainer activeStep={props.activeStep} setActiveStep={props.setActiveStep} />
+        }
+        {props.activeStep === 2 &&
+          <Grid container className={classes.container}>
+            <Grid item className={classes.item} xs={12} md={12} lg={12}>
+              <Typography>Good Job</Typography>
             </Grid>
           </Grid>
-          {activeStep === 0 &&
-            <Grid container className={classes.container}>
-              <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
-                <TextField
-                  id="username"
-                  label="User Name"
-                  name="username"
-                  type="text"
-                  variant="outlined"
-                  value={signInfo.username}
-                  onChange={handleSignInfo}
-                  helperText={validator.message(
-                    "username",
-                    signInfo.username,
-                    "required|min:3"
-                  )}
-                />
-              </Grid>
-              <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
-                <TextField
-                  id="password"
-                  label="Password"
-                  name="password"
-                  type="password"
-                  variant="outlined"
-                  value={signInfo.password}
-                  onChange={handleSignInfo}
-                  helperText={
-                    SameValidate([
-                      signInfo.password,
-                      signInfo.password2
-                    ])}
-                />
-              </Grid>
-              <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
-                <TextField
-                  id="password2"
-                  label="Password(again)"
-                  name="password2"
-                  type="password"
-                  variant="outlined"
-                  value={signInfo.password2}
-                  onChange={handleSignInfo}
-                  onKeyPress={e => {
-                    if (e.key === "Enter") {
-                      SignUp();
-                    }
-                  }}
-                  helperText={SameValidate([
-                    signInfo.password,
-                    signInfo.password2
-                  ])}
-                />
-              </Grid>
-              <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
-                <Button variant="contained" color="primary" onClick={SignUp}>
-                  Sign up
-                </Button>
-              </Grid>
-              <Grid item className={classes.item} xs={12} md={12} lg={12}>
-                <Grid container className={classes.container}>
-                  <Grid item className={clsx(classes.item, classes.left)} xs={6} md={6} lg={6}>
-                    <Button variant="contained" color="primary" disabled={true}>
-                      Back
-                    </Button>
-                  </Grid>
-                  <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
-                    <Button variant="contained" color="primary" disabled={false} onClick={() => { setActiveStep(activeStep + 1) }}>
-                      Forward
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          }
-          {activeStep === 1 &&
-            <Grid container className={classes.container}>
-              <Grid item className={classes.item} xs={12} md={12} lg={12}>
-                <Grid container className={classes.container}>
-                  <GQLVerifyICON setActiveStep={setActiveStep} />
-                </Grid>
-              </Grid>
-              <Grid item className={classes.item} xs={12} md={12} lg={12}>
-                <Grid container className={classes.container}>
-                  <Grid item className={clsx(classes.item, classes.left)} xs={6} md={6} lg={6}>
-                    <Button variant="contained" color="primary" onClick={() => { setActiveStep(activeStep - 1) }}>
-                      Back
-                    </Button>
-                  </Grid>
-                  <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
-                    <Button variant="contained" color="primary" onClick={() => { setActiveStep(activeStep + 1) }}>
-                      Forward
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          }
-          {activeStep === 2 &&
-            <Grid container className={classes.container}>
-              <Grid item className={classes.item} xs={12} md={12} lg={12}>
-                <Typography>Good Job</Typography>
-              </Grid>
-              <Grid item className={classes.item} xs={12} md={12} lg={12}>
-                <Grid container className={classes.container}>
-                  <Grid item className={clsx(classes.item, classes.left)} xs={6} md={6} lg={6}>
-                    <Button variant="contained" color="primary" disabled={false} onClick={() => { setActiveStep(activeStep - 1) }}>
-                      Back
-                    </Button>
-                  </Grid>
-                  <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
-                    <Button variant="contained" color="primary" disabled={true} >
-                      Forward
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </Grid>
-          }
-        </Paper>
-      </Grid>
-    </Fragment >
+        }
+        <Grid container className={classes.container}>
+          <Grid item className={clsx(classes.item, classes.left)} xs={6} md={6} lg={6}>
+            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep - 1) }}>
+              Back
+            </Button>
+          </Grid>
+          <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
+            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep + 1) }}>
+              Forward
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+    </Grid>
   );
 }
 
-export default SignUp;
+export default withRouter(SignUp);

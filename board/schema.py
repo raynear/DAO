@@ -1,5 +1,4 @@
 from django.db.models import Q
-from django.contrib.auth.models import User
 import graphene
 from graphql import GraphQLError
 from graphene_django.types import DjangoObjectType
@@ -14,16 +13,17 @@ from iconsdk.wallet.wallet import KeyWallet
 
 import json
 
-from .models import PRepModel, ProposalModel, SelectItemModel, VoteModel
+from account.models import User
+
+from .models import ProposalModel, SelectItemModel, VoteModel
 
 from .icon_network import TEST_NET, LOCAL_NET, SCORE_ADDRESS
-
 NETWORK = TEST_NET
 
 
-class PRepModelType(DjangoObjectType):
+class CustomUserType(DjangoObjectType):
     class Meta:
-        model = PRepModel
+        model = User
 
 
 class ProposalModelType(DjangoObjectType):
@@ -42,14 +42,14 @@ class VoteModelType(DjangoObjectType):
 
 
 class Query(object):
-    all_prep = graphene.List(PRepModelType)
+    all_prep = graphene.List(CustomUserType)
     all_proposal = graphene.List(ProposalModelType)
     all_selectitem = graphene.List(SelectItemModelType)
     all_vote = graphene.List(VoteModelType)
 
     is_voted = graphene.Field(ProposalModelType, proposal_id=graphene.Int())
 
-    prep = graphene.Field(PRepModelType, user_id=graphene.String())
+    prep = graphene.Field(CustomUserType, prep_id=graphene.Int())
 
     proposal = graphene.Field(ProposalModelType, id=graphene.Int())
 
@@ -76,8 +76,8 @@ class Query(object):
 
         return None
 
-    def resolve_prep(self, info, user_id=None, **kwargs):
-        return PRepModel.objects.get(name=user_id)
+    def resolve_prep(self, info, prep_id=None, **kwargs):
+        return CustomUserType.objects.get(pk=prep_id)
 
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
@@ -88,18 +88,17 @@ class Query(object):
 
     def resolve_proposals(self, info, prep=None, search=None, first=None, skip=None, **kwargs):
         qs = ProposalModel.objects.all()
-        if (prep != None) & (prep != ""):
-            aPRep = PRepModel.objects.get(name=prep)
+
+        print(prep)
+        if (prep != None) & (prep != "All") & (prep != ""):
+            aPRep = CustomUserType.objects.get(username=prep)
+            filter = Q(prep__exact=aPRep.id)
+            qs = qs.filter(filter)
 
         if search:
             filter = (Q(subject__icontains=search) | Q(contents__icontains=search)) & (
                 Q(author__exact=info.context.user) | Q(publish__exact=True))
             qs = qs.filter(filter)
-
-        if (prep != None) & (prep != "All") & (prep != ""):
-            filter = Q(prep__exact=aPRep.id)
-            qs = qs.filter(filter)
-
         if skip:
             qs = qs[skip:]
         if first:
@@ -108,7 +107,8 @@ class Query(object):
         return qs
 
     def resolve_all_prep(self, info, **kwargs):
-        return PRepModel.objects.all()
+        qs = CustomUserType.objects.all()
+        return qs.filter(Q(is_prep__exact=True))
 
     def resolve_all_proposal(self, info, **kwargs):
         return ProposalModel.objects.select_related("prep").all()
@@ -188,24 +188,6 @@ class PublishProposal(graphene.Mutation):
         return PublishProposal(proposal=proposal)
 
 
-class NewPRep(graphene.Mutation):
-    class Arguments:
-        PRep_address = graphene.String()
-        owner_id = graphene.String()
-        description = graphene.String()
-
-    prep = graphene.Field(PRepModelType)
-
-    @login_required
-    def mutate(self, info, PRep_address, owner_id, description):
-        prep = PRepModel.objects.create()
-        prep.prep_address = PRep_address
-        prep.name = owner_id
-        prep.description = description
-        prep.save()
-        return NewPRep(prep=prep)
-
-
 class VoteProposal(graphene.Mutation):
     class Arguments:
         select_item_index = graphene.Int()
@@ -253,7 +235,7 @@ class SetProposal(graphene.Mutation):
         expire_at,
         select_item_list,
     ):
-        selectedPRep = PRepModel.objects.get(id=prep_id)
+        selectedPRep = CustomUserType.objects.get(id=prep_id)
         try:
             proposal = ProposalModel.objects.get(pk=proposal_id)
         except ProposalModel.DoesNotExist:
@@ -300,4 +282,3 @@ class MyMutation(graphene.ObjectType):
     set_proposal = SetProposal.Field()
     publish_proposal = PublishProposal.Field()
     vote_proposal = VoteProposal.Field()
-    new_prep = NewPRep.Field()

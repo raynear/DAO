@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     rootcontainer: {
       spacing: theme.spacing(0),
-      margin: theme.spacing(0),
+      margin: "auto",
       padding: theme.spacing(1),
       display: "flex",
       flexwrap: "wrap"
@@ -65,6 +65,12 @@ const useStyles = makeStyles((theme: Theme) =>
     item: {
       margin: theme.spacing(0),
       padding: theme.spacing(1)
+    },
+    paddingSide: {
+      margin: theme.spacing(0),
+      padding: theme.spacing(0),
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
     },
     center: {
       textAlign: "center"

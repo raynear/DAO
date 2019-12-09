@@ -8,10 +8,6 @@ export const GET_PROPOSAL = gql`
         id
       }
       subject
-      author{
-        id
-        username
-      }
       contents
       published
       expireAt
@@ -78,9 +74,6 @@ export const SET_PUBLISH = gql`
     publishProposal(proposalId: $proposalId) {
       proposal {
         id
-        author {
-          username
-        }
         subject
         contents
         published
@@ -106,9 +99,6 @@ export const SET_VOTE = gql`
     voteProposal(proposalId: $proposalId, selectItemIndex: $selectItemIndex) {
       proposal {
         id
-        author {
-          username
-        }
         subject
         contents
         published
@@ -129,22 +119,6 @@ export const SET_VOTE = gql`
   }
 `;
 
-
-export const GET_ME = gql`
-  query {
-    me {
-      username
-      email
-      socialAuth {
-        edges {
-          node {
-            extraData
-          }
-        }
-      }
-    }
-  }
-`;
 
 export const TOKEN_AUTH = gql`
   mutation TokenAuth($username: String!, $password: String!) {
@@ -216,9 +190,6 @@ export const GET_PROPOSAL_N_PREP = gql`
         id
       }
       subject
-      author{
-        id
-      }
       contents
       published
       expireAt
@@ -248,11 +219,6 @@ export const GET_PROPOSALS = gql`
   query Proposals($selectedPRep:String, $search: String, $first: Int, $skip: Int) {
     proposals(prep:$selectedPRep, search: $search, first: $first, skip: $skip) {
       id
-      author {
-        id
-        username
-        email
-      }
       subject
       contents
       selectitemmodelSet {
