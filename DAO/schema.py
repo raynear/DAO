@@ -70,46 +70,6 @@ class Logout(graphene.Mutation):
         pass
 
 
-class AskVerify(graphene.Mutation):
-    noop = graphene.Field(graphene.Boolean)
-
-    class Arguments:
-        target_address = graphene.String()
-
-    @login_required
-    def mutate(self, info, target_address):
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
-        wallet = KeyWallet.load(
-            "./key_store_raynear", "ekdrms1!")
-
-        call = CallBuilder()\
-            .to(SCORE_ADDRESS)\
-            .method("GetVerifyInfoByAddress")\
-            .params({"_Address": target_address})\
-            .build()
-
-        result = icon_service.call(call)
-        result_json = json.loads(result)
-
-        a_block = icon_service.get_block(result_json['blockheight'])
-        if result_json['blockhash'] == '0x'+a_block['block_hash']:
-            transaction = CallTransactionBuilder()\
-                .from_(wallet.get_address())\
-                .to(SCORE_ADDRESS)\
-                .step_limit(10000000)\
-                .nid(3)\
-                .method("ConfirmVerify")\
-                .params({"_TargetAddress": target_address})\
-                .build()
-
-            signed_transaction = SignedTransaction(transaction, wallet)
-            tx_hash = icon_service.send_transaction(signed_transaction)
-
-            info.context.user.icon_auth = True
-            info.context.user.icon_address = target_address
-            info.context.user.save()
-
-
 class Mutation(board.schema.MyMutation, graphene.ObjectType):
     # social_auth = graphql_social_auth.SocialAuthJWT.Field()
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
@@ -118,8 +78,6 @@ class Mutation(board.schema.MyMutation, graphene.ObjectType):
     social_auth = graphql_social_auth.SocialAuth.Field()
     set_user = SetUser.Field()
     logout = Logout.Field()
-
-    ask_verify = AskVerify.Field()
     pass
 
 

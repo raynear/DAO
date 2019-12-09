@@ -16,7 +16,6 @@ import Copyright from "./Copyright";
 import useStyles from "./Style";
 
 function Layout(props: any) {
-  console.log("Layout props", props);
   const classes = useStyles();
 
   return (

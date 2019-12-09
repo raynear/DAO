@@ -30,6 +30,7 @@ function GQLGetProposal(props: any) {
   //const forceUpdate = useForceUpdate;
 
   const [proposal, setProposal] = useState({
+    id: 0,
     author: { id: 0, username: "" },
     subject: "",
     contents: "",
@@ -54,7 +55,7 @@ function GQLGetProposal(props: any) {
     }).then(publishResult => {
       setProposal(publishResult.data.publishProposal.proposal);
     });
-    console.log(proposal);
+    console.log("Publish!!!!!!!!!!!!!!", proposal);
   }
 
   function Vote(voteSelect: number) {
@@ -63,7 +64,7 @@ function GQLGetProposal(props: any) {
     }).then(voteResult => {
       setProposal(voteResult.data.voteProposal.proposal);
     });
-    console.log(proposal);
+    console.log("Vote!!!!!!!!!!!!!!!!!", proposal);
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,23 +157,26 @@ function GQLGetProposal(props: any) {
 
   function SelectList() {
     const [myPRep, setMyPRep] = useState(false);
+    const [votedFlag, setVotedFlag] = useState(false);
     let SelectList = proposal.selectitemmodelSet;
 
     let votedIdx = -1;
-    let votedFlag = false;
     SelectList.forEach((aVoteItem) => {
+      console.log("aVoteItem", aVoteItem);
       let test: any[] = [];
       if (aVoteItem['votemodelSet']) {
         test = aVoteItem['votemodelSet'];
       }
-      test.forEach((aVote) => {
-        if (username === aVote.voter.username) {
+      if (aVoteItem)
+        test.forEach((aVote) => {
           console.log("aVote", aVote);
-          //          votedIdx = parseInt(i);
-          votedFlag = true;
-          return;
-        }
-      });
+          if (username === aVote.voter.username) {
+            console.log("aVote", aVote);
+            //          votedIdx = parseInt(aVote.);
+            setVotedFlag(true);
+            return;
+          }
+        });
     });
 
     if (votedIdx >= 0) {
@@ -270,7 +274,7 @@ function GQLGetProposal(props: any) {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => Publish()}
+          onClick={Publish}
         >
           Publish
         </Button>
@@ -323,7 +327,7 @@ function GQLGetProposal(props: any) {
     <Grid className={classes.grid} item xs={12} lg={12}>
       <Paper className={classes.paper}>
         <Typography className={classes.title} color="textSecondary" gutterBottom>
-          P-Rep {proposal.author.username}
+          <b>{proposal.id}.</b> P-Rep {proposal.author.username}
         </Typography>
         <Typography variant="h5" color="textPrimary" gutterBottom>
           {proposal.subject}

@@ -126,7 +126,7 @@ function Proposals(props: any) {
             <Grid item className={classes.item} key={idx} xs={12} lg={6}>
               <Paper className={classes.paper}>
                 <Typography className={classes.title} color="textSecondary" gutterBottom>
-                  P-Rep {item.author.username}
+                  <b>{item.id}.</b> P-Rep {item.author.username}
                 </Typography>
                 <Typography variant="h5" color="textPrimary" gutterBottom>
                   <Link to={"/Proposal/" + item.id} color="textPrimary">
@@ -134,15 +134,19 @@ function Proposals(props: any) {
                   </Link>
                 </Typography>
                 <ReactMarkdown
-                  source={item.contents.split("<br>").join("\n")}
+                  source={item.contents.split("<br>").join("\n").split("\n")[0]}
                   skipHtml={false}
                   escapeHtml={false}
                 />
-                {item.selectitemmodelSet.map((selectItem: any, idx: number) => (
-                  <Typography variant="body1" key={idx} color="textSecondary">
-                    {selectItem.contents}
-                  </Typography>
-                ))}
+                <ul>
+                  {item.selectitemmodelSet.map((selectItem: any, idx: number) => (
+                    <Typography variant="body1" key={idx} color="textSecondary">
+                      <li>
+                        {selectItem.contents}
+                      </li>
+                    </Typography>
+                  ))}
+                </ul>
               </Paper>
             </Grid>
           ))}

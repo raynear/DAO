@@ -2,22 +2,21 @@ import React, { useState } from "react";
 import { Grid, Typography, Divider, Button } from "@material-ui/core";
 import clsx from "clsx";
 
-import { useQuery, useApolloClient } from "@apollo/react-hooks";
-import { GET_LOCAL_ME, GET_LOCAL_ADDRESS, selectWallet } from "./GQL";
+import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
+import { NEW_PREP, GET_LOCAL_ME, GET_LOCAL_ADDRESS, selectWallet } from "./GQL";
 
 import { json_rpc_call, json_rpc_send_tx, governance_call, selected_icon_service } from "./IconConnect";
 
 import useStyles from "./Style";
 
 function GQLVerifyICON(props: any) {
-  const client = useApolloClient();
+  //  const client = useApolloClient();
+  console.log("GQLVerifyICON", props);
   const classes = useStyles();
-  let username = "";
-
-  //  const [fromAddress, setFromAddress] = useState("");
   const [iconAddress, setIconAddress] = useState("");
   const [isPRep, setIsPRep] = useState(false);
   const [verifiedAddress, setVerifiedAddress] = useState("");
+  const [mutateNewPRep] = useMutation(NEW_PREP);
 
   async function callVerify() {
     let result = await json_rpc_call("GetVerifyInfoByID", { "_ID": data.username });
@@ -74,28 +73,33 @@ function GQLVerifyICON(props: any) {
             "delegated": "0x9ed194db19b238c000000",
             "totalBlocks": "0x2720",
             "validatedBlocks": "0x2348"
+          },
+          {
+            "name": "NewPRepTest",
+            "country": "KOR",
+            "city": "Seoul",
+            "grade": "0x0",
+            "address": "hxe7af5fcfd8dfc67530a01a0e403882687528dfcb",
+            "irep": "0xc350",
+            "irepUpdateBlockHeight": "0x1100",
+            "lastGenerateBlockHeight": "0x1200",
+            "stake": "0x28a857425466f800000",
+            "delegated": "0x9ed194db19b238c000000",
+            "totalBlocks": "0x2720",
+            "validatedBlocks": "0x2348"
           }
+
         ]
       }
     }`)
 
     result2.result.preps.forEach((item: any, idx: number, array: any) => {
-      console.log(item);
       if (item.address === result_json.address) {
-        console.log("YOU ARE P-REP!!!!!");
-
         setIsPRep(true);
+        return;
       }
     });
   }
-
-  client.query({ query: GET_LOCAL_ADDRESS }).then((result) => {
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    if (result.data) {
-      console.log(result.data);
-      setIconAddress(result.data.icon_address);
-    }
-  })
 
   async function sendVerify() {
     let result = await selected_icon_service.getBlock('latest').execute();
@@ -104,44 +108,65 @@ function GQLVerifyICON(props: any) {
     json_rpc_send_tx(iconAddress, "Verify", params);
   }
 
+  function SelectedAddress() {
+    const { loading, error, data } = useQuery(GET_LOCAL_ADDRESS);
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error!:{error.message}</p>;
+    if (data && data.icon_address) {
+      setIconAddress(data.icon_address);
+      return <p>{data.icon_address}</p>
+    }
+    return <p>{" "}</p>
+  }
+
+  function newPRepPage() {
+    mutateNewPRep({ variables: { PRepAddress: verifiedAddress, OwnerId: data.username, Description: data.username } }).then(() => {
+      props.setActiveStep(2);
+    });
+  }
+
   const { loading, error, data } = useQuery(GET_LOCAL_ME);
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error!:</p>;
-  if (data === undefined) {
-    username = "";
+  if (error) return <p>Error!:{error.message}</p>;
+  if (data && data.username) {
+    return (
+      <>
+        <Grid className={classes.item} item xs={12} md={12} lg={12}>
+          <Typography>Name: {data.username}</Typography>
+        </Grid>
+        <Grid className={classes.item} item xs={12} md={12} lg={12}>
+          <Typography>Verified Address: {verifiedAddress}</Typography>
+        </Grid>
+        <Grid className={classes.item} item xs={12} md={12} lg={12}>
+          {isPRep &&
+            <>
+              <Typography>You Are PRep</Typography>
+              <Button onClick={newPRepPage}>Make New P-Rep DAO Page</Button>
+            </>
+          }
+        </Grid>
+        <Grid className={classes.item} item xs={12} md={12} lg={12}>
+          <br />
+          <Divider />
+          <br />
+          <Typography variant="subtitle1">Connected Address: <SelectedAddress /></Typography>
+        </Grid>
+        <Grid className={clsx(classes.item, classes.center)} item xs={4} md={4} lg={4}>
+          <Button variant="contained" color="primary" onClick={selectWallet}>Select Wallet</Button>
+        </Grid>
+        <Grid className={clsx(classes.item, classes.center)} item xs={4} md={4} lg={4}>
+          <Button variant="contained" color="primary" disabled={iconAddress === ""} onClick={sendVerify}>send Verify</Button>
+        </Grid>
+        <Grid className={clsx(classes.item, classes.center)} item xs={4} md={4} lg={4}>
+          <Button variant="contained" color="primary" fullWidth onClick={callVerify}>get Verify Info</Button>
+        </Grid>
+      </>
+    );
   } else {
-    console.log(data);
-    username = data.username;
+    props.history.push('/Signup');
+    return <p>redirect</p>
   }
-  return (
-    <>
-      <Grid className={classes.item} item xs={12} md={12} lg={12}>
-        <Typography>Name: {username}</Typography>
-      </Grid>
-      <Grid className={classes.item} item xs={12} md={12} lg={12}>
-        <Typography>Verified Address: {verifiedAddress}</Typography>
-      </Grid>
-      <Grid className={classes.item} item xs={12} md={12} lg={12}>
-        <Typography>{isPRep && "You Are PRep"}</Typography>
-      </Grid>
-      <Grid className={classes.item} item xs={12} md={12} lg={12}>
-        <br />
-        <Divider />
-        <br />
-        <Typography variant="subtitle1">Connected Address: {iconAddress}</Typography>
-      </Grid>
-      <Grid className={clsx(classes.item, classes.center)} item xs={4} md={4} lg={4}>
-        <Button variant="contained" color="primary" onClick={selectWallet}>Select Wallet</Button>
-      </Grid>
-      <Grid className={clsx(classes.item, classes.center)} item xs={4} md={4} lg={4}>
-        <Button variant="contained" color="primary" disabled={iconAddress === ""} onClick={sendVerify}>send Verify</Button>
-      </Grid>
-      <Grid className={clsx(classes.item, classes.center)} item xs={4} md={4} lg={4}>
-        <Button variant="contained" color="primary" fullWidth onClick={callVerify}>get Verify Info</Button>
-      </Grid>
-    </>
-  );
 }
 
 export default GQLVerifyICON;

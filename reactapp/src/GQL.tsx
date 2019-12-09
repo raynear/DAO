@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 export const GET_PROPOSAL = gql`
   query Proposal($id: Int!) {
     proposal(id: $id) {
+      id
       prep{
         id
       }
@@ -20,6 +21,16 @@ export const GET_PROPOSAL = gql`
         id
         index
         contents
+        votemodelSet{
+          id
+          select {
+            id
+          }
+          voter {
+            id
+            username
+          }
+        }
       }
     }
     allPrep{
@@ -66,6 +77,7 @@ export const SET_PUBLISH = gql`
   mutation PublishProposal($proposalId: Int!) {
     publishProposal(proposalId: $proposalId) {
       proposal {
+        id
         author {
           username
         }
@@ -93,6 +105,7 @@ export const SET_VOTE = gql`
   mutation VoteProposal($proposalId: Int!, $selectItemIndex: Int!) {
     voteProposal(proposalId: $proposalId, selectItemIndex: $selectItemIndex) {
       proposal {
+        id
         author {
           username
         }
@@ -253,6 +266,19 @@ export const VERIFY_TOKEN = gql`
   mutation VerifyToken($token: String!) {
     verifyToken(token:$token) {
       payload
+    }
+  }
+`;
+
+export const NEW_PREP = gql`
+  mutation NewPRep($PRepAddress: String!, $OwnerId:String!, $Description:String!) {
+    newPrep(PRepAddress:$PRepAddress, ownerId:$OwnerId, description:$Description) {
+      prep{
+        id
+        name
+        prepAddress
+        description
+      }
     }
   }
 `;

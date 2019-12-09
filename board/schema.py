@@ -16,9 +16,9 @@ import json
 
 from .models import PRepModel, ProposalModel, SelectItemModel, VoteModel
 
-from .icon_network import LOCAL_NET, SCORE_ADDRESS
+from .icon_network import TEST_NET, LOCAL_NET, SCORE_ADDRESS
 
-NETWORK = LOCAL_NET
+NETWORK = TEST_NET
 
 
 class PRepModelType(DjangoObjectType):
@@ -137,6 +137,8 @@ class PublishProposal(graphene.Mutation):
         proposal.published = True
 
         icon_service = IconService(HTTPProvider(NETWORK, 3))
+        print(SCORE_ADDRESS)
+        print(info.context.user.username)
 
         call = CallBuilder()\
             .to(SCORE_ADDRESS)\
@@ -145,7 +147,9 @@ class PublishProposal(graphene.Mutation):
             .build()
 
         result = icon_service.call(call)
+        console.log(result)
         result_json = json.loads(result)
+        console.log(result_json)
 
         if result_json['confirmed']:
             selectItems = SelectItemModel.objects.filter(proposal=proposal)
@@ -156,8 +160,10 @@ class PublishProposal(graphene.Mutation):
                     _select_item += ','
             _select_item += ']'
 
+            f = open("key.pw", 'r')
+            line = f.readline()
             wallet = KeyWallet.load(
-                "./key_store_raynear", "ekdrms1!")
+                "./key_store_raynear", line)
 
             transaction = CallTransactionBuilder()\
                 .from_(wallet.get_address())\

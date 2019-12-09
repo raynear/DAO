@@ -29,7 +29,6 @@ class ProposalModel(models.Model):
     prep = models.ForeignKey(PRepModel, on_delete=models.CASCADE, default=None)
     published = models.BooleanField(default=False)
     subject = models.CharField(max_length=50, blank=True)
-    proposal_id = models.IntegerField(default=0, blank=True)
     txHash = models.CharField(max_length=300, blank=True)
     contents = models.TextField(default="")
     quorum_rate = models.IntegerField(default=0)

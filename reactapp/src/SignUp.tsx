@@ -165,7 +165,7 @@ function SignUp(props: any) {
             <Grid container className={classes.container}>
               <Grid item className={classes.item} xs={12} md={12} lg={12}>
                 <Grid container className={classes.container}>
-                  <GQLVerifyICON />
+                  <GQLVerifyICON setActiveStep={setActiveStep} />
                 </Grid>
               </Grid>
               <Grid item className={classes.item} xs={12} md={12} lg={12}>

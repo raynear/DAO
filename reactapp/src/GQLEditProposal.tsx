@@ -9,11 +9,7 @@ import EditProposal from "./EditProposal";
 function GQLEditProposal(props: any) {
   console.log("GQLEditProposal props", props);
   let proposal_id: any;
-  if (
-    props.match !== undefined &&
-    props.match.hasOwnProperty("params") &&
-    props.match.params.hasOwnProperty("proposal_id")
-  ) {
+  if (props && props.match && props.match.params && props.match.params.proposal_id) {
     proposal_id = props.match.params.proposal_id;
   } else {
     proposal_id = -1;

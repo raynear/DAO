@@ -41,12 +41,8 @@ function EditProposal(props: any) {
 
   let editorRef = React.createRef<any>();
 
-  let proposal_id: any;
-  if (
-    match !== undefined &&
-    match.hasOwnProperty("params") &&
-    match.params.hasOwnProperty("proposal_id")
-  ) {
+  let proposal_id: number;
+  if (match && match.params && match.params.proposal_id) {
     proposal_id = match.params.proposal_id;
   } else {
     proposal_id = -1;
