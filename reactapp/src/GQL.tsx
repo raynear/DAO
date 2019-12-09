@@ -237,13 +237,13 @@ export const VERIFY_TOKEN = gql`
 `;
 
 export const NEW_PREP = gql`
-  mutation NewPRep($PRepAddress: String!, $OwnerId:String!, $Description:String!) {
-    newPrep(PRepAddress:$PRepAddress, ownerId:$OwnerId, description:$Description) {
+  mutation setPRep($Address: String!) {
+    setPrep(iconAddress:$Address) {
       prep{
         id
-        name
-        prepAddress
-        description
+        username
+        iconAddress
+        isPrep
       }
     }
   }

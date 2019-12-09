@@ -5,11 +5,11 @@ import { CssBaseline, AppBar, Toolbar, Typography, Container, Grid } from "@mate
 import LandingPage from "./LandingPage";
 import HowTo from "./HowTo";
 import ProposalsContainer from "./ProposalsContainer";
-import GQLVerifyICON from "./VerifyIcon";
-import GQLGetProposal from "./GQLProposal";
-import GQLEditProposal from "./GQLEditProposal";
-import GQLUserInfo from "./GQLUserInfo";
-import GQLSignIn from "./GQLSignIn";
+import VerifyIconContainer from "./VerifyIconContainer";
+import ProposalContainer from "./ProposalContainer";
+import EditProposalContainer from "./EditProposalContainer";
+import UserInfoContainer from "./UserInfoContainer";
+import SignInContainer from "./SignInContainer";
 import SignUpContainer from "./SignUpContainer";
 import Copyright from "./Copyright";
 
@@ -48,7 +48,7 @@ function Layout(props: any) {
               Build
             </Link>
           </Typography>
-          <GQLUserInfo />
+          <UserInfoContainer />
         </Toolbar>
       </AppBar>
       <div className={classes.content}>
@@ -58,12 +58,12 @@ function Layout(props: any) {
             <Switch>
               <Route exact path="/" component={LandingPage} />
               <Route exact path="/HowTo" component={HowTo} />
-              <Route exact path="/EditProposal/:proposal_id" component={GQLEditProposal} />
-              <Route exact path="/EditProposal" component={GQLEditProposal} />
-              <Route exact path="/Profile" component={GQLVerifyICON} />
+              <Route exact path="/EditProposal/:proposal_id" component={EditProposalContainer} />
+              <Route exact path="/EditProposal" component={EditProposalContainer} />
+              <Route exact path="/Profile" component={VerifyIconContainer} />
               <Route exact path="/Proposals" component={ProposalsContainer} />
-              <Route exact path="/Proposal/:ID" component={GQLGetProposal} />
-              <Route exact path="/SignIn" component={GQLSignIn} />
+              <Route exact path="/Proposal/:ID" component={ProposalContainer} />
+              <Route exact path="/SignIn" component={SignInContainer} />
               <Route exact path="/SignUp" component={SignUpContainer} />
             </Switch>
           </Grid>

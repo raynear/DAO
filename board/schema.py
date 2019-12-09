@@ -147,9 +147,9 @@ class PublishProposal(graphene.Mutation):
             .build()
 
         result = icon_service.call(call)
-        console.log(result)
+        print(result)
         result_json = json.loads(result)
-        console.log(result_json)
+        print(result_json)
 
         if result_json['confirmed']:
             selectItems = SelectItemModel.objects.filter(proposal=proposal)
@@ -278,7 +278,49 @@ class SetProposal(graphene.Mutation):
         return SetProposal(proposal=proposal)
 
 
+class SetPRep(graphene.Mutation):
+    class Arguments:
+        icon_address = graphene.String()
+
+    #    vote = graphene.Field(VoteModelType)
+    prep = graphene.Field(CustomUserType)
+
+    def mutate(self, info, icon_address):
+        user = info.context.user
+        user.icon_address = icon_address
+
+        call = CallBuilder()\
+            .to("cx0000000000000000000000000000000000000000")\
+            .method("getPRep")\
+            .params({"address": icon_address})\
+            .build()
+
+        result = icon_service.call(call)
+        print(result)
+        result_json = json.loads(result)
+        print(result_json)
+
+        call = CallBuilder()\
+            .to(SCORE_ADDRESS)\
+            .method("GetVerifyInfoByID")\
+            .params({"_ID": info.context.user.username})\
+            .build()
+
+        result = icon_service.call(call)
+        print(result)
+        result_json = json.loads(result)
+        print(result_json)
+
+        # TODO!!!!!!!!!!
+        # prep이고 본인 id로 verify 됐으면 셋팅하라
+
+        user.is_prep = True
+        user.save()
+        return VoteProposal(proposal=proposal)
+
+
 class MyMutation(graphene.ObjectType):
     set_proposal = SetProposal.Field()
     publish_proposal = PublishProposal.Field()
     vote_proposal = VoteProposal.Field()
+    set_prep = SetPRep.Field()

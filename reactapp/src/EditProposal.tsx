@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { withRouter } from "react-router-dom";
+import React from "react";
+// import { withRouter } from "react-router-dom";
 import { Paper, Grid, Typography, TextField, Button, Slider } from "@material-ui/core";
 import { AddRounded } from "@material-ui/icons";
+
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
-import SimpleReactValidator from "simple-react-validator";
 
 import "codemirror/lib/codemirror.css";
 import "tui-editor/dist/tui-editor.min.css";
@@ -12,169 +12,14 @@ import "tui-editor/dist/tui-editor-contents.min.css";
 import { Editor } from "@toast-ui/react-editor";
 
 import useStyles from "./Style";
-import useForceUpdate from "./useForceUpdate";
-
-const validator = new SimpleReactValidator({
-  locale: "en",
-  className: "text-danger",
-  element: (message: any, className: any) => (
-    <Typography variant="caption" color="error" className={className}>
-      {message}
-    </Typography>
-  )
-});
 
 function EditProposal(props: any) {
-  const match = props.match;
-  const history = props.history;
-  const location = props.location;
-  const prop_proposal = props.proposal;
-  const prop_submitProposal = props.submitProposal;
-  //  console.log("EditProposal match:", match);
-  //  console.log("EditProposal history:", history);
-  //  console.log("EditProposal location:", location);
-  //  console.log("proposal", prop_proposal);
-  //  console.log("submitProposal", prop_submitProposal);
+  console.log("EditProposal props", props);
 
   const classes = useStyles();
-  const forceUpdate = useForceUpdate();
 
-  let editorRef = React.createRef<any>();
-
-  let proposal_id: number;
-  if (match && match.params && match.params.proposal_id) {
-    proposal_id = match.params.proposal_id;
-  } else {
-    proposal_id = -1;
-  }
-
-  const emptyProposal = {
-    id: -1,
-    author: "",
-    quorumRate: 50,
-    tokenRate: 50,
-    prep: { id: 0 },
-    subject: "",
-    contents: "",
-    expireAt: "2019-12-18T21:11:54",
-    selectitemmodelSet: []
-  };
-
-  const proposal = prop_proposal ? prop_proposal : emptyProposal;
-  console.log("!!!!!!!!!!!!!!!!!!!!check!!!!!!!!!!!!!!!!!")
-  console.log(proposal);
-
-  const [selectItems, setSelectItems] = useState(["", "", "", ""]);
-  const [values, setValues] = useState({
-    id: proposal.id,
-    author: proposal.author.id,
-    quorumRate: proposal.quorumRate,
-    tokenRate: proposal.tokenRate,
-    prepId: proposal.prep.id,
-    subject: proposal.subject,
-    contents: proposal.contents,
-    date: new Date(proposal.expireAt)
-  });
-
-  useEffect(() => {
-    let tmpSelectItems: string[] = [];
-    proposal.selectitemmodelSet.map((item: any) => {
-      tmpSelectItems.push(item.contents);
-      return item;
-    });
-    if (tmpSelectItems.length > 0) {
-      setSelectItems(tmpSelectItems);
-    }
-    editorRef.current.getInstance().setValue(values.contents);
-  }, []);
-
-  const addSelectItem = () => {
-    setSelectItems([...selectItems, ""]);
-  };
-
-  const handleSelectItemChange = (index: number) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSelectItems([
-      ...selectItems.slice(0, index),
-      event.target.value,
-      ...selectItems.slice(index + 1)
-    ]);
-  };
-
-  function deleteSelectItem(index: number) {
-    let tmp = selectItems;
-    tmp.splice(index, 1);
-    setSelectItems(tmp);
-    forceUpdate();
-  }
-
-  const handleDateChange = (date: Date | null) => {
-    if (date) {
-      setValues({ ...values, date: date });
-    }
-  };
-
-  const handleProposalChange = (name: string) => (
-    event: React.ChangeEvent<any>
-  ) => {
-    setValues({ ...values, [name]: event.target.value });
-  };
-
-  const handleSliderChange = (name: string) => (event: any, newValue: number | number[]) => {
-    if (Array.isArray(newValue)) {
-      setValues({ ...values, [name]: newValue[0] });
-    }
-    else {
-      setValues({ ...values, [name]: newValue });
-    }
-  };
-
-  const handleEditorChange = () => {
-    const value = editorRef.current.getInstance().getValue();
-
-    setValues({ ...values, contents: value });
-  };
-
-  function handlesubmitProposal() {
-    if (!validator.allValid()) {
-      validator.showMessages();
-      forceUpdate();
-      return;
-    }
-
-    let tmpSelectItemList: { index: Number; contents: String }[] = [];
-    selectItems.map((item: any, idx: any) => {
-      tmpSelectItemList.push({
-        index: idx,
-        contents: item
-      });
-      //await mutateSelectItem({ variables: { proposalID: newProposalID, contents: item.value } });
-      return item;
-    });
-
-    let mutate_var: { [index: string]: any } = {
-      variables: {
-        proposalId: values.id,
-        subject: values.subject,
-        contents: values.contents,
-        published: false,
-        prepId: values.prepId,
-        quorumRate: values.quorumRate,
-        tokenRate: values.tokenRate,
-        expireAt:
-          values.date != null
-            ? values.date.toISOString()
-            : "2019-10-05T09:00:00",
-        selectItemList: tmpSelectItemList
-      }
-    };
-
-    console.log("send mutate_var", mutate_var);
-    prop_submitProposal(mutate_var);
-    console.log("aAAAAAAAAAAAAAAAAAAAAAAA");
-  }
-
+  if (props.loading) return <p>Loading...</p>;
+  if (props.error) return <p>Error!:</p>;
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
@@ -184,13 +29,13 @@ function EditProposal(props: any) {
               <TextField
                 id="subject"
                 label="Subject"
-                value={values.subject}
-                onChange={handleProposalChange("subject")}
+                value={props.values.subject}
+                onChange={props.handleProposalChange("subject")}
                 className={classes.textField}
                 variant="outlined"
-                helperText={validator.message(
+                helperText={props.validator.message(
                   "subject",
-                  values.subject,
+                  props.values.subject,
                   "required|min:10"
                 )}
               />
@@ -204,12 +49,12 @@ function EditProposal(props: any) {
               lg={12}
               style={{ textAlign: "right" }}
             >
-              <Button color="primary" onClick={addSelectItem}>
+              <Button color="primary" onClick={props.addSelectItem}>
                 <AddRounded />
                 Add select item
               </Button>
             </Grid>
-            {selectItems.map((item: any, idx: any) => {
+            {props.selectItems.map((item: any, idx: any) => {
               return (
                 <Grid
                   className={classes.item}
@@ -224,15 +69,15 @@ function EditProposal(props: any) {
                     label={String(idx + 1)}
                     name={String(idx + 1)}
                     value={item}
-                    onChange={handleSelectItemChange(idx)}
+                    onChange={props.handleSelectItemChange(idx)}
                     className={classes.textField}
-                    helperText={validator.message("item", item, "required")}
+                    helperText={props.validator.message("item", item, "required")}
                     variant="outlined"
                     InputProps={{
                       endAdornment: (
                         <Button
                           color="secondary"
-                          onClick={() => deleteSelectItem(idx)}
+                          onClick={() => props.deleteSelectItem(idx)}
                         >
                           Delete
                         </Button>
@@ -264,8 +109,8 @@ function EditProposal(props: any) {
                   "mark",
                   "table"
                 ]}
-                ref={editorRef}
-                onChange={handleEditorChange}
+                ref={props.editorRef}
+                onChange={props.handleEditorChange}
               />
             </Grid>
 
@@ -286,8 +131,8 @@ function EditProposal(props: any) {
                       id="date-picker-inline"
                       label="Date picker inline"
                       className={classes.textField}
-                      value={values.date}
-                      onChange={handleDateChange}
+                      value={props.values.date}
+                      onChange={props.handleDateChange}
                       KeyboardButtonProps={{
                         "aria-label": "change date"
                       }}
@@ -300,8 +145,8 @@ function EditProposal(props: any) {
                       id="time-picker"
                       label="Time picker"
                       className={classes.textField}
-                      value={values.date}
-                      onChange={handleDateChange}
+                      value={props.values.date}
+                      onChange={props.handleDateChange}
                       KeyboardButtonProps={{
                         "aria-label": "change time"
                       }}
@@ -319,10 +164,10 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
-              <Typography><b>Quorum : {values.quorumRate}</b></Typography>
+              <Typography><b>Quorum : {props.values.quorumRate}</b></Typography>
               <Slider
-                value={values.quorumRate}
-                onChange={handleSliderChange("quorumRate")}
+                value={props.values.quorumRate}
+                onChange={props.handleSliderChange("quorumRate")}
                 defaultValue={50}
                 getAriaValueText={(val) => val + "%"}
                 aria-labelledby="discrete-slider"
@@ -341,10 +186,10 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
-              <Typography><b>Token : {values.tokenRate}</b></Typography>
+              <Typography><b>Token : {props.values.tokenRate}</b></Typography>
               <Slider
-                value={values.tokenRate}
-                onChange={handleSliderChange("tokenRate")}
+                value={props.values.tokenRate}
+                onChange={props.handleSliderChange("tokenRate")}
                 defaultValue={50}
                 getAriaValueText={(val) => val + "%"}
                 aria-labelledby="discrete-slider"
@@ -366,7 +211,7 @@ function EditProposal(props: any) {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handlesubmitProposal}
+                onClick={props.handlesubmitProposal}
                 fullWidth
               >
                 Submit
