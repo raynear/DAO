@@ -6,6 +6,7 @@ export const GET_PROPOSAL = gql`
       id
       prep{
         id
+        username
       }
       subject
       contents
@@ -28,10 +29,6 @@ export const GET_PROPOSAL = gql`
           }
         }
       }
-    }
-    allPrep{
-      id
-      username
     }
   }
 `;

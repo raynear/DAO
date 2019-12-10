@@ -1,61 +1,33 @@
-import React, { useMemo, useEffect, Fragment } from "react";
+import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip } from "@material-ui/core";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar } from "recharts";
 
-import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL } from "./GQL";
-import gql from "graphql-tag";
-
 import ReactMarkdown from "react-markdown";
 
 import useStyles from "./Style";
 
-let voteData = [
-  { name: 'quorum', th: 0, voted: 0 },
-  { name: 'token', th: 0, voted: 0 },
-];
 
-interface selectItem {
-  index: 0;
-  contents: "";
-}
-
-function GQLGetProposal(props: any) {
+function Proposal(props: any) {
   console.log("Proposal props", props);
-  const classes = useStyles();
-  const id = props.match.params.ID;
+  //  const id = props.match.params.ID;
   //const forceUpdate = useForceUpdate;
 
-  function SelectItemList(props: any) {
-    console.log("print proposal", proposal);
-    let VoteItem: number[] = [];
+  const classes = useStyles();
 
-    proposal.selectitemmodelSet.forEach((aSelectItem) => {
-      let VotingPower = 0;
-
-      let test: any[] = [];
-      if (aSelectItem['votemodelSet']) {
-        test = aSelectItem['votemodelSet'];
-      }
-      test.forEach((aVote) => {
-        VotingPower += GetVotersVotingPower(aVote.voter.username);
-      });
-
-      VoteItem.push(VotingPower);
-    })
-
+  function SelectItemList() {
     return (
       <ul>
-        {proposal.selectitemmodelSet.map(
-          (selectItem: selectItem, idx: number) => {
+        {props.data.proposal.selectitemmodelSet.map(
+          (selectItem: any, idx: number) => {
             if (props.voted === idx) {
               return (
                 <li key={idx}>
                   <Tooltip title="You Vote!">
                     <Typography variant="body1" color="primary">
                       {selectItem.contents}
-                      {"(" + VoteItem[idx] + ")"}
+                      {"(" + props.VoteItem[idx] + ")"}
                     </Typography>
                   </Tooltip>
                 </li>
@@ -64,7 +36,7 @@ function GQLGetProposal(props: any) {
               return (
                 <li key={idx}>
                   <Typography variant="body1" color="textPrimary">
-                    {selectItem.contents} {"(" + VoteItem[idx] + ")"}
+                    {selectItem.contents} {"(" + props.VoteItem[idx] + ")"}
                   </Typography>
                 </li>
               );
@@ -78,9 +50,9 @@ function GQLGetProposal(props: any) {
   function RadioButtons() {
     return (
       <FormControl>
-        <RadioGroup value={voteSelect} onChange={handleChange}>
-          {proposal.selectitemmodelSet.map(
-            (selectItem: selectItem, idx: number) => (
+        <RadioGroup value={props.voteSelect} onChange={props.handleChange}>
+          {props.data.proposal.selectitemmodelSet.map(
+            (selectItem: any, idx: number) => (
               <FormControlLabel
                 key={idx}
                 control={<Radio />}
@@ -95,92 +67,10 @@ function GQLGetProposal(props: any) {
   }
 
   function SelectList() {
-    let SelectList = proposal.selectitemmodelSet;
-
-    let votedIdx = -1;
-    SelectList.forEach((aVoteItem) => {
-      console.log("aVoteItem", aVoteItem);
-      let test: any[] = [];
-      if (aVoteItem['votemodelSet']) {
-        test = aVoteItem['votemodelSet'];
-      }
-      if (aVoteItem)
-        test.forEach((aVote) => {
-          console.log("aVote", aVote);
-          if (username === aVote.voter.username) {
-            console.log("aVote", aVote);
-            //          votedIdx = parseInt(aVote.);
-            setVotedFlag(true);
-            return;
-          }
-        });
-    });
-
-    if (votedIdx >= 0) {
-      voteData[0].voted = votedIdx;
-      voteData[1].voted = votedIdx;
-    }
-
-    if (username) {
-      json_rpc_call("GetVerifyInfoByID", { "_ID": username }).then((result: any) => {
-        const verifyData = JSON.parse(result);
-        let user_address;
-        try {
-          user_address = verifyData.address;
-        }
-        catch{
-          user_address = ""
-        }
-
-        //        governance_call("getDelegation", { "address": user_address }).then((result2: any) => {
-        let result2 = JSON.parse(`{
-          "result": {
-            "status": "0x1",
-            "totalDelegated": "0xa688906bd8b0000",
-            "totalFined": "0x1300",
-            "votingPower": "0x3782dace9d90000",
-            "delegations": [
-              {
-                "address": "hxd1a3147ac75edc40d1094b8ec4f6a2bbd77ffbd4",
-                "value": "0x3782dace9d90000",
-                "status": "0x0"
-              },
-              {
-                "address": "hx1d6463e4628ee52a7f751e9d500a79222a7f3935",
-                "value": "0x3782dace9d90000",
-                "status": "0x0"
-              },
-              {
-                "address": "hxb6bc0bf95d90cb3cd5b3abafd9682a62f36cc826",
-                "value": "0x6f05b59d3b20000",
-                "status": "0x2",
-                "fined": "0x1300"
-              }
-            ]
-          }
-        }`);
-        console.log("verify2", result2);
-        let delegateList;
-        try {
-          delegateList = result2.result.delegations;
-        }
-        catch {
-          delegateList = [];
-        }
-        for (let i = 0; i < delegateList.length; i++) {
-          if (delegateList[i].address === user_address) {
-            setMyPRep(true);
-            break;
-          }
-        }
-        //       });
-      });
-    }
-
-    console.log("Environment for SelectList", proposal.published, votedFlag, myPRep)
-    if (proposal.published === false || votedFlag || !myPRep) {
+    console.log("Environment for SelectList", props.data.proposal.published, props.voted, props.myPRep)
+    if (props.data.proposal.published === false || props.voted || !props.myPRep) {
       console.log("just list");
-      return (<SelectItemList voted={votedIdx} />);
+      return (<SelectItemList />);
     } else {
       console.log("votable list");
       return (<RadioButtons />);
@@ -192,8 +82,8 @@ function GQLGetProposal(props: any) {
       <Button
         variant="contained"
         color="primary"
-        disabled={voteSelect === -1}
-        onClick={() => Vote(voteSelect)}
+        disabled={props.voteSelect === -1}
+        onClick={props.Vote}
       >
         Vote
       </Button>
@@ -204,14 +94,14 @@ function GQLGetProposal(props: any) {
     return (
       <Fragment>
         <Button variant="outlined" color="primary">
-          <Link to={"/EditProposal/" + id}>
+          <Link to={"/EditProposal/" + props.id}>
             Edit
           </Link>
         </Button>
         <Button
           variant="contained"
           color="primary"
-          onClick={Publish}
+          onClick={props.Publish}
         >
           Publish
         </Button>
@@ -220,69 +110,39 @@ function GQLGetProposal(props: any) {
   }
 
   function ActionButton() {
-    let SelectList = proposal.selectitemmodelSet;
-
-    let flag = false;
-
-    SelectList.forEach(item => {
-      let test: any[] = [];
-      if (item['votemodelSet']) {
-        test = item['votemodelSet'];
-      }
-      test.forEach(vote => {
-        console.log("vote!!!!!!!!!!", vote);
-        if (username === vote.voter.username) {
-          flag = true;
-          return;
-        }
-      })
-    })
-
-    if (proposal.published) {
+    if (props.data.proposal.published && props.myPRep) {
       return <VoteButton />;
-    } else if (proposal.prep.username === username) {
+    } else if (props.owner) {
       return <PublishButton />;
     } else {
       return <div>{" "}</div>
     }
   }
 
-  const { loading, error, data } = useQuery(GET_PROPOSAL, {
-    variables: { id: id }
-  });
-
-  useMemo(() => {
-    if (data) {
-      setProposal(data.proposal);
-    }
-  }, [data]);
-
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error!:</p>;
+  if (props.loading) return <p>Loading...</p>;
+  if (props.error) return <p>Error!:</p>;
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
         <Grid container className={classes.container}>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography className={classes.title} color="textSecondary" gutterBottom>
-              <b>{proposal.id}.</b> P-Rep {proposal.prep.username}
+              <b>{props.data.proposal.id}.</b> P-Rep {props.data.proposal.prep.username}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="h5" color="textPrimary" gutterBottom>
-              {proposal.subject}
+              {props.data.proposal.subject}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="caption" color="textPrimary">
-              Published : {(proposal.published).toString()}
+              Published : {(props.data.proposal.published).toString()}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="caption" color="textPrimary">
-              expire at :
-          {proposal.expireAt}
+              expire at : {props.data.proposal.expireAt}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
@@ -292,7 +152,7 @@ function GQLGetProposal(props: any) {
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <ReactMarkdown
-              source={proposal.contents.split("<br>").join("\n")}
+              source={props.data.proposal.contents.split("<br>").join("\n")}
               skipHtml={true}
               escapeHtml={false}
             />
@@ -309,7 +169,7 @@ function GQLGetProposal(props: any) {
             <BarChart
               width={200}
               height={200}
-              data={voteData}
+              data={props.voteData}
               margin={{
                 top: 20, right: 20, left: 20, bottom: 5,
               }}
@@ -332,4 +192,4 @@ function GQLGetProposal(props: any) {
   );
 }
 
-export default GQLGetProposal;
+export default Proposal;
