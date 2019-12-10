@@ -21,7 +21,7 @@ function Proposals(props: any) {
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
           <Grid item className={classes.item} xs={12} lg={12}>
-            <PRepSelectListContainer SelectedPRep={props.values.selectedPRep} ChangeSelection={props.ChangeSelection} />
+            <PRepSelectListContainer SelectedPRep={props.values.selectedPRep} handleChange={props.handleChange} />
           </Grid>
           <Grid item className={classes.item} xs={12} lg={12}>
             <Grid container className={classes.container} spacing={0}>

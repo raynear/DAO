@@ -41,7 +41,6 @@ export const SET_PROPOSAL = gql`
     $proposalId: Int
     $subject: String!
     $contents: String!
-    $prepId: Int!
     $published: Boolean!
     $quorumRate: Int!
     $tokenRate: Int!
@@ -52,7 +51,6 @@ export const SET_PROPOSAL = gql`
       proposalId: $proposalId
       subject: $subject
       contents: $contents
-      prepId: $prepId
       published: $published
       quorumRate: $quorumRate
       tokenRate: $tokenRate
@@ -229,16 +227,8 @@ export const GET_PROPOSALS = gql`
   }
 `;
 
-export const VERIFY_TOKEN = gql`
-  mutation VerifyToken($token: String!) {
-    verifyToken(token:$token) {
-      payload
-    }
-  }
-`;
-
 export const NEW_PREP = gql`
-  mutation setPRep($Address: String!) {
+  mutation SetPRep($Address: String!) {
     setPrep(iconAddress:$Address) {
       prep{
         id

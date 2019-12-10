@@ -7,7 +7,7 @@ import { json_rpc_call } from "./IconConnect";
 import Proposals from "./Proposals";
 
 function ProposalsContainer(props: any) {
-  console.log("Proposals props", props);
+  console.log("ProposalsContainer props", props);
   const [values, setValues] = useState({
     selectedPRep: "",
     search: "",

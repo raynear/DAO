@@ -1,15 +1,13 @@
-import React, { useState, useMemo, useEffect, Fragment } from "react";
-import { Link, withRouter } from "react-router-dom";
+import React, { useMemo, useEffect, Fragment } from "react";
+import { Link } from "react-router-dom";
 
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip } from "@material-ui/core";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar } from "recharts";
 
-import { useApolloClient, useQuery, useMutation } from "@apollo/react-hooks";
 import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL } from "./GQL";
 import gql from "graphql-tag";
 
 import ReactMarkdown from "react-markdown";
-import { json_rpc_call, governance_call } from "./IconConnect";
 
 import useStyles from "./Style";
 
@@ -28,52 +26,6 @@ function GQLGetProposal(props: any) {
   const classes = useStyles();
   const id = props.match.params.ID;
   //const forceUpdate = useForceUpdate;
-
-  const [proposal, setProposal] = useState({
-    id: 0,
-    prep: { id: 0, username: "" },
-    subject: "",
-    contents: "",
-
-    published: false,
-    expireAt: "2019-12-12T00:00:00.000Z",
-    quorumRate: 50,
-    tokenRate: 50,
-    selectitemmodelSet: []
-  });
-  const [voteSelect, setVoteSelect] = useState();
-  const [username, setUsername] = useState("");
-
-  const client = useApolloClient();
-
-  const [mutatePublish] = useMutation(SET_PUBLISH);
-  const [mutateVote] = useMutation(SET_VOTE);
-
-  function Publish() {
-    mutatePublish({
-      variables: { proposalId: id }
-    }).then(publishResult => {
-      setProposal(publishResult.data.publishProposal.proposal);
-    });
-    console.log("Publish!!!!!!!!!!!!!!", proposal);
-  }
-
-  function Vote(voteSelect: number) {
-    mutateVote({
-      variables: { proposalId: id, selectItemIndex: voteSelect }
-    }).then(voteResult => {
-      setProposal(voteResult.data.voteProposal.proposal);
-    });
-    console.log("Vote!!!!!!!!!!!!!!!!!", proposal);
-  }
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setVoteSelect(parseInt((event.target as HTMLInputElement).value));
-  };
-
-  function GetVotersVotingPower(voter: string) {
-    return 100;
-  }
 
   function SelectItemList(props: any) {
     console.log("print proposal", proposal);
@@ -142,22 +94,7 @@ function GQLGetProposal(props: any) {
     );
   }
 
-  useEffect(() => {
-    client
-      .query({ query: gql`{username @client}` })
-      .then(result => {
-        if (username === "" && result.data !== null) {
-          setUsername(result.data.username);
-        }
-      });
-
-    voteData[0].th = proposal.quorumRate;
-    voteData[1].th = proposal.tokenRate;
-  });
-
   function SelectList() {
-    const [myPRep, setMyPRep] = useState(false);
-    const [votedFlag, setVotedFlag] = useState(false);
     let SelectList = proposal.selectitemmodelSet;
 
     let votedIdx = -1;

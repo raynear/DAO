@@ -35,7 +35,6 @@ function EditProposalContainer(props: any) {
     id: -1,
     quorumRate: 50,
     tokenRate: 50,
-    prepId: 0,
     subject: "",
     contents: "",
     expireAt: new Date("2019-12-18T21:11:54"),
@@ -96,6 +95,10 @@ function EditProposalContainer(props: any) {
     }
   };
 
+  function handleEditorChange(content: string) {
+    setValues({ ...values, contents: content });
+  }
+
   function handlesubmitProposal() {
     if (!validator.allValid()) {
       validator.showMessages();
@@ -119,7 +122,6 @@ function EditProposalContainer(props: any) {
         subject: values.subject,
         contents: values.contents,
         published: false,
-        prepId: values.prepId,
         quorumRate: values.quorumRate,
         tokenRate: values.tokenRate,
         expireAt: values.expireAt.toISOString(),
@@ -127,9 +129,7 @@ function EditProposalContainer(props: any) {
       }
     };
 
-    console.log("send mutate_var", mutate_var);
     submitProposal(mutate_var);
-    console.log("aAAAAAAAAAAAAAAAAAAAAAAA");
   }
 
   client.query({ query: GET_LOCAL_ME }).then((result) => {
@@ -164,7 +164,6 @@ function EditProposalContainer(props: any) {
       id: proposal.id,
       quorumRate: proposal.quorumRate,
       tokenRate: proposal.tokenRate,
-      prepId: proposal.prep.id,
       subject: proposal.subject,
       contents: proposal.contents,
       expireAt: new Date(proposal.expireAt),
@@ -196,6 +195,7 @@ function EditProposalContainer(props: any) {
         handleDateChange={handleDateChange}
         handleProposalChange={handleProposalChange}
         handleSliderChange={handleSliderChange}
+        handleEditorChange={handleEditorChange}
         handlesubmitProposal={handlesubmitProposal}
       />
     </Fragment>

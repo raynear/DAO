@@ -75,12 +75,11 @@ class MulJomDaO(IconScoreBase):
 
     @external(readonly=False)
     def Verify(self, _BlockHash: str, _ID: str):
-        if (self._averify_id[_ID][self.ADDRESS] and self._averify_id[_ID][self.ADDRESS] == self.msg.sender) or not self._averify_id[_ID][self.ADDRESS]:
-            self._averify_id[_ID][self.ADDRESS] = self.msg.sender
-            self._verify_id[str(self.msg.sender)][self.ID] = _ID
-            self._verify_id[str(self.msg.sender)][self.BLOCKHASH] = _BlockHash
-            self._verify_id[str(self.msg.sender)
-                            ][self.BLOCKHEIGHT] = self.block_height
+        self._averify_id[_ID][self.ADDRESS] = self.msg.sender
+        self._verify_id[str(self.msg.sender)][self.ID] = _ID
+        self._verify_id[str(self.msg.sender)][self.BLOCKHASH] = _BlockHash
+        self._verify_id[str(self.msg.sender)
+                        ][self.BLOCKHEIGHT] = self.block_height
 
     @external(readonly=True)
     def GetVerifyInfoByAddress(self, _Address: Address) -> str:
@@ -111,9 +110,10 @@ class MulJomDaO(IconScoreBase):
     def Vote(self, _ProposalID: str, _UserID: str, _VoteItem: int):
         if self._owner.get() == self.msg.sender:
             voter_address = self._averify_id[_UserID][self.ADDRESS]
-            vote_idx = self._ivote[_ProposalID][self.COUNT][self.COUNT]+1
+            vote_idx = self._ivote[_ProposalID][self.COUNT][self.COUNT] + 1
             self._vote[_ProposalID][str(vote_idx)][self.VOTER] = _UserID
-            self._ivote[_ProposalID][str(vote_idx)][self.SELECTITEM] = _VoteItem
+            self._ivote[_ProposalID][str(
+                vote_idx)][self.SELECTITEM] = _VoteItem
             self._ivote[_ProposalID][self.COUNT][self.COUNT] = vote_idx
 
     @external(readonly=True)
@@ -122,7 +122,7 @@ class MulJomDaO(IconScoreBase):
 
         return_json = dict()
         return_json['vote'] = []
-        for i in range(total_vote_cnt+1):
+        for i in range(total_vote_cnt + 1):
             return_json['vote'].append({
                 "voter": self._vote[_ProposalID][str(i)][self.VOTER],
                 "selectItem": self._vote[_ProposalID][str(i)][self.SELECTITEM]})
@@ -130,9 +130,9 @@ class MulJomDaO(IconScoreBase):
         return json_dumps(return_json)
 
     @external(readonly=False)
-    def SetProposal(self, _Subject: str, _Contents: str, _Proposer: str, _ExpireDate: str, _SelectItems: str, _QuorumTH:int, _TokenTH:int) -> str:
+    def SetProposal(self, _Subject: str, _Contents: str, _Proposer: str, _ExpireDate: str, _SelectItems: str, _QuorumTH: int, _TokenTH: int) -> str:
         if self._owner.get() == self.msg.sender:
-            pid = str(self._iproposal[_Proposer][self.ID][self.ID]+1)
+            pid = str(self._iproposal[_Proposer][self.ID][self.ID] + 1)
             self._proposal[_Proposer][pid][self.SUBJECT] = _Subject
             self._proposal[_Proposer][pid][self.CONTENTS] = _Contents
             self._proposal[_Proposer][_ProposalID][self.QUORUMTH] = _QuorumTH

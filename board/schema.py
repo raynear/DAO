@@ -2,7 +2,7 @@ from django.db.models import Q
 import graphene
 from graphql import GraphQLError
 from graphene_django.types import DjangoObjectType
-from graphql_jwt.decorators import superuser_required, staff_member_required, login_required
+from graphql_jwt.decorators import superuser_required, staff_member_required, login_required, user_passes_test
 
 from iconsdk.icon_service import IconService
 from iconsdk.providers.http_provider import HTTPProvider
@@ -17,8 +17,10 @@ from account.models import User
 
 from .models import ProposalModel, SelectItemModel, VoteModel
 
-from .icon_network import TEST_NET, LOCAL_NET, SCORE_ADDRESS
-NETWORK = TEST_NET
+from .icon_network import TEST_NET, TEST_NET3, LOCAL_NET, SCORE_ADDRESS
+NETWORK = TEST_NET3
+
+prep_required = user_passes_test(lambda u: u.is_prep)
 
 
 class CustomUserType(DjangoObjectType):
@@ -90,7 +92,7 @@ class Query(object):
         qs = ProposalModel.objects.all()
 
         print(prep)
-        if (prep != None) & (prep != "All") & (prep != ""):
+        if (prep is not None) & (prep != "All") & (prep != ""):
             aPRep = User.objects.get(username=prep)
             filter = Q(prep__exact=aPRep.id)
             qs = qs.filter(filter)
@@ -132,6 +134,7 @@ class PublishProposal(graphene.Mutation):
     proposal = graphene.Field(ProposalModelType)
 
     @login_required
+    @prep_required
     def mutate(self, info, proposal_id):
         proposal = ProposalModel.objects.get(pk=proposal_id)
         proposal.published = True
@@ -155,8 +158,8 @@ class PublishProposal(graphene.Mutation):
             selectItems = SelectItemModel.objects.filter(proposal=proposal)
             _select_item = '['
             for idx, item in enumerate(selectItems):
-                _select_item += "\""+item.contents+"\""
-                if idx < len(selectItems)-1:
+                _select_item += "\"" + item.contents + "\""
+                if idx < len(selectItems) - 1:
                     _select_item += ','
             _select_item += ']'
 
@@ -196,6 +199,7 @@ class VoteProposal(graphene.Mutation):
     #    vote = graphene.Field(VoteModelType)
     proposal = graphene.Field(ProposalModelType)
 
+    @login_required
     def mutate(self, info, proposal_id, select_item_index):
         proposal = ProposalModel.objects.get(pk=proposal_id)
         qs = SelectItemModel.objects.all()
@@ -213,7 +217,6 @@ class SetProposal(graphene.Mutation):
         proposal_id = graphene.Int()
         subject = graphene.String()
         contents = graphene.String(required=True)
-        prep_id = graphene.Int()
         published = graphene.Boolean()
         expire_at = graphene.DateTime()
         quorum_rate = graphene.Int()
@@ -222,6 +225,8 @@ class SetProposal(graphene.Mutation):
 
     proposal = graphene.Field(ProposalModelType)
 
+    @login_required
+    @prep_required
     def mutate(
         self,
         info,
@@ -231,11 +236,9 @@ class SetProposal(graphene.Mutation):
         published,
         quorum_rate,
         token_rate,
-        prep_id,
         expire_at,
         select_item_list,
     ):
-        selectedPRep = User.objects.get(id=prep_id)
         try:
             proposal = ProposalModel.objects.get(pk=proposal_id)
         except ProposalModel.DoesNotExist:
@@ -261,7 +264,7 @@ class SetProposal(graphene.Mutation):
             proposal.published = False
             proposal.quorum_rate = quorum_rate
             proposal.token_rate = token_rate
-            proposal.prep = selectedPRep
+            proposal.prep = info.context.user
             proposal.expire_at = expire_at
             proposal.save()
 
@@ -284,38 +287,40 @@ class SetPRep(graphene.Mutation):
     #    vote = graphene.Field(VoteModelType)
     prep = graphene.Field(CustomUserType)
 
+    @login_required
     def mutate(self, info, icon_address):
         user = info.context.user
-        user.icon_address = icon_address
 
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
         call = CallBuilder()\
             .to("cx0000000000000000000000000000000000000000")\
-            .method("getPRep")\
+            .method("getPReps")\
             .params({"address": icon_address})\
             .build()
 
         result = icon_service.call(call)
-        print(result)
-        result_json = json.loads(result)
-        print(result_json)
+#        result_json = json.loads(result)
+#        print("d", result_json)
 
+        icon_service = IconService(HTTPProvider(TEST_NET, 3))
         call = CallBuilder()\
             .to(SCORE_ADDRESS)\
             .method("GetVerifyInfoByID")\
-            .params({"_ID": info.context.user.username})\
+            .params({"_ID": user.username})\
             .build()
 
         result = icon_service.call(call)
-        print(result)
         result_json = json.loads(result)
-        print(result_json)
 
         # TODO!!!!!!!!!!
         # prep이고 본인 id로 verify 됐으면 셋팅하라
 
-        user.is_prep = True
-        user.save()
-        return VoteProposal(proposal=proposal)
+        if result_json['address'] == icon_address:
+            user.icon_address = icon_address
+            user.is_prep = True
+            user.save()
+
+        return SetPRep(prep=user)
 
 
 class MyMutation(graphene.ObjectType):

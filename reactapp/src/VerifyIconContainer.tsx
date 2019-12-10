@@ -9,7 +9,7 @@ import VerifyIcon from "./VerifyIcon";
 
 function VerifyIconContainer(props: any) {
   //  const client = useApolloClient();
-  console.log("GQLVerifyICON", props);
+  console.log("VerifyIconContainer props", props);
   const [iconAddress, setIconAddress] = useState("");
   const [isPRep, setIsPRep] = useState(false);
   const [verifiedAddress, setVerifiedAddress] = useState("");
@@ -117,8 +117,13 @@ function VerifyIconContainer(props: any) {
   }
 
   function newPRepPage() {
-    mutateNewPRep({ variables: { PRepAddress: verifiedAddress, OwnerId: queryVal.data.username, Description: queryVal.data.username } }).then(() => {
-      props.setActiveStep(2);
+    mutateNewPRep({ variables: { Address: verifiedAddress } }).then(() => {
+      if (props.setActiveStep) {
+        props.setActiveStep(2);
+      }
+      else {
+        console.log("working on profile page. no redirect")
+      }
     });
   }
 

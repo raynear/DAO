@@ -1,5 +1,4 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
 import { Stepper, Step, StepLabel, Grid, Paper, Button, Typography } from "@material-ui/core";
 import clsx from "clsx";
 
@@ -56,4 +55,4 @@ function SignUp(props: any) {
   );
 }
 
-export default withRouter(SignUp);
+export default SignUp;

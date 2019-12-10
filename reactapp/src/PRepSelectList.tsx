@@ -23,12 +23,9 @@ function PRepSelectList(props: any) {
         onChange={props.handleChange}
         style={{ minWidth: 120 }}
       >
-        <MenuItem value={"All"}>
-          All PReps
-        </MenuItem>
         {allPRep.map((item: any) => (
-          <MenuItem key={item.id} value={item.name}>
-            {item.name}
+          <MenuItem key={item.id} value={item.username}>
+            {item.username}
           </MenuItem>
         ))}
       </Select>

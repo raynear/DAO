@@ -1,9 +1,7 @@
 import React, { useState } from "react";
-import { withRouter } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks"
 import { GET_PREPS } from "./GQL";
 import { json_rpc_call } from "./IconConnect";
-
 import PRepSelectList from "./PRepSelectList";
 
 function PRepSelectListContainer(props: any) {
@@ -12,7 +10,7 @@ function PRepSelectListContainer(props: any) {
 
   const handleChange = (event: any) => {
     setSelectedPRep(event.target.value);
-    props.ChangeSelection(event.target.value);
+    props.handleChange(event.target.value);
   };
 
   const queryVal = useQuery(GET_PREPS);
@@ -32,4 +30,4 @@ function PRepSelectListContainer(props: any) {
   return <PRepSelectList {...queryVal} selectedPRep={selectedPRep} handleChange={handleChange} />
 }
 
-export default withRouter(PRepSelectListContainer);
+export default PRepSelectListContainer;
