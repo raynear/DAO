@@ -11,32 +11,31 @@ import useStyles from "./Style";
 
 function Proposal(props: any) {
   console.log("Proposal props", props);
-  //  const id = props.match.params.ID;
-  //const forceUpdate = useForceUpdate;
+  // const forceUpdate = useForceUpdate;
 
   const classes = useStyles();
 
   function SelectItemList() {
+    console.log("SelectItemList", props.data.proposal.selectitemmodelSet);
     return (
       <ul>
         {props.data.proposal.selectitemmodelSet.map(
-          (selectItem: any, idx: number) => {
-            if (props.voted === idx) {
+          (selectItem: any) => {
+            if (props.votedIdx === selectItem.index) {
               return (
-                <li key={idx}>
+                <li key={selectItem.index}>
                   <Tooltip title="You Vote!">
                     <Typography variant="body1" color="primary">
-                      {selectItem.contents}
-                      {"(" + props.VoteItem[idx] + ")"}
+                      {selectItem.contents} {"(" + props.voteItem[selectItem.index].toString() + ")"}
                     </Typography>
                   </Tooltip>
                 </li>
               );
             } else {
               return (
-                <li key={idx}>
+                <li key={selectItem.index}>
                   <Typography variant="body1" color="textPrimary">
-                    {selectItem.contents} {"(" + props.VoteItem[idx] + ")"}
+                    {selectItem.contents} {"(" + props.voteItem[selectItem.index].toString() + ")"}
                   </Typography>
                 </li>
               );
@@ -52,9 +51,9 @@ function Proposal(props: any) {
       <FormControl>
         <RadioGroup value={props.voteSelect} onChange={props.handleChange}>
           {props.data.proposal.selectitemmodelSet.map(
-            (selectItem: any, idx: number) => (
+            (selectItem: any) => (
               <FormControlLabel
-                key={idx}
+                key={selectItem.index}
                 control={<Radio />}
                 value={selectItem.index}
                 label={selectItem.contents}
@@ -67,8 +66,8 @@ function Proposal(props: any) {
   }
 
   function SelectList() {
-    console.log("Environment for SelectList", props.data.proposal.published, props.voted, props.myPRep)
-    if (props.data.proposal.published === false || props.voted || !props.myPRep) {
+    console.log("Environment for SelectList", props.data.proposal.published, props.votedIdx, props.myPRep)
+    if (props.data.proposal.published === false || props.votedIdx > 0 || !props.myPRep) {
       console.log("just list");
       return (<SelectItemList />);
     } else {

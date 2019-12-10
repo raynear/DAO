@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useApolloClient, useQuery, useMutation } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL, GET_LOCAL_ME, GET_LOCAL_ADDRESS } from "./GQL";
 import gql from "graphql-tag";
 
@@ -11,11 +11,6 @@ let voteData = [
   { name: 'quorum', th: 0, voted: 0 },
   { name: 'token', th: 0, voted: 0 },
 ];
-
-interface selectItem {
-  index: 0;
-  contents: "";
-}
 
 function ProposalContainer(props: any) {
   console.log("ProposalContainer props", props);
@@ -55,6 +50,7 @@ function ProposalContainer(props: any) {
 
   function isMyPRep() {
     // governance_call("getDelegation", { "address": user_address }).then((result2: any) => {
+    console.log(queryAddress);
     let result2 = JSON.parse(`{
       "result": {
       "status": "0x1",
@@ -94,11 +90,13 @@ function ProposalContainer(props: any) {
         return true;
       }
     }
+    return false;
   }
 
   function getVotedIdx() {
     let votedIdx = -1;
-    queryVal.data.proposal.seletitemmodelSet.forEach((aVoteItem: any) => {
+    console.log(queryVal);
+    queryVal.data.proposal.selectitemmodelSet.forEach((aVoteItem: any) => {
       console.log("aVoteItem", aVoteItem);
       let test: any[] = [];
       if (aVoteItem['votemodelSet']) {
@@ -109,7 +107,7 @@ function ProposalContainer(props: any) {
           console.log("aVote", aVote);
           if (queryMe.data.username === aVote.voter.username) {
             console.log("aVote", aVote);
-            return aVote;
+            return aVote.id;
           }
         });
     });
@@ -118,6 +116,8 @@ function ProposalContainer(props: any) {
       voteData[0].voted = votedIdx;
       voteData[1].voted = votedIdx;
     }
+
+    return -1;
   }
 
   function amIOwner() {
@@ -127,7 +127,7 @@ function ProposalContainer(props: any) {
     return false;
   }
 
-  function getVoteItem() {
+  function getVotedPowers() {
     let VoteItem: number[] = [];
 
     queryVal.data.proposal.selectitemmodelSet.forEach((aSelectItem: any) => {
@@ -147,20 +147,31 @@ function ProposalContainer(props: any) {
     return VoteItem;
   }
 
+  let myPRep = false;
+  let votedIdx = -1;
+  let owner = false;
+  let voteItem: any[] = [];
+
   const queryMe = useQuery(GET_LOCAL_ME);
-  console.log(queryMe);
-  const queryAddress = useQuery(GET_LOCAL_ME);
-  console.log(queryAddress);
+  console.log("queryMe", queryMe);
+  const queryAddress = useQuery(GET_LOCAL_ADDRESS);
+  console.log("queryAddress", queryAddress);
 
   const queryVal = useQuery(GET_PROPOSAL, {
     variables: { id: id }
   });
 
-  if (!queryVal.loading && !queryVal.error) {
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~", queryVal.data);
-
+  if (queryVal && queryVal.data && queryMe.data) {
     voteData[0].th = queryVal.data.proposal.quorumRate;
     voteData[1].th = queryVal.data.proposal.tokenRate;
+    console.log("!@#!@#!@#!@#!@!#!@#!@#");
+    myPRep = isMyPRep();
+    votedIdx = getVotedIdx();
+    owner = amIOwner();
+  }
+  if (queryVal && queryVal.data) {
+    voteItem = getVotedPowers();
+    console.log("hahahaha", voteItem);
   }
 
   // voted item 0, 1, 2, 3     ... -1
@@ -172,9 +183,16 @@ function ProposalContainer(props: any) {
 
   return (
     <Proposal
+      id={id}
+      myPRep={myPRep}
+      votedIdx={votedIdx}
+      owner={owner}
+      voteItem={voteItem}
       voteSelect={voteSelect}
-      setVoteSelect={setVoteSelect}
       voteData={voteData}
+      Publish={Publish}
+      Vote={Vote}
+      handleChange={handleChange}
       {...queryVal}
     />
   );

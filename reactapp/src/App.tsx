@@ -60,8 +60,8 @@ function App(props: any) {
   };
   window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
 
-  client.query({ query: gql`{ viewer{ username }}` }).then((result: any) => {
-    client.writeData({ data: { username: result.data.viewer.username } });
+  client.query({ query: gql`{ viewer{ username iconAddress }}` }).then((result: any) => {
+    client.writeData({ data: { username: result.data.viewer.username, icon_address: result.data.viewer.iconAddress } });
     client.query({ query: GET_LOCAL_ME }).then(result => {
       console.log("reload OK");
     })
