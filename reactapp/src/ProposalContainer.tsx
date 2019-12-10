@@ -31,10 +31,9 @@ function GQLGetProposal(props: any) {
 
   const [proposal, setProposal] = useState({
     id: 0,
-    author: { id: 0, username: "" },
+    prep: { id: 0, username: "" },
     subject: "",
     contents: "",
-    prep: { id: 0 },
     published: false,
     expireAt: "2019-12-12T00:00:00.000Z",
     quorumRate: 50,
@@ -304,7 +303,7 @@ function GQLGetProposal(props: any) {
     */
     if (proposal.published && votedFlag === false) {
       return <VoteButton />;
-    } else if (proposal.author.username === username) {
+    } else if (proposal.prep.username === username) {
       return <PublishButton />;
     } else {
       return <div>{" "}</div>
@@ -330,7 +329,7 @@ function GQLGetProposal(props: any) {
         <Grid container className={classes.container}>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography className={classes.title} color="textSecondary" gutterBottom>
-              <b>{proposal.id}.</b> P-Rep {proposal.author.username}
+              <b>{proposal.id}.</b> P-Rep {proposal.prep.username}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>

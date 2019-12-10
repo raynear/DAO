@@ -20,9 +20,9 @@ function EditProposal(props: any) {
 
   let editorRef = React.createRef<any>();
 
-  useEffect(() => {
-    editorRef.current.getInstance().setValue(props.values.contents);
-  });
+  //  useEffect(() => {
+  //    editorRef.current.getInstance().setValue(props.values.contents);
+  //  });
 
   const handleChange = () => {
     const value = editorRef.current.getInstance().getValue();
@@ -105,6 +105,7 @@ function EditProposal(props: any) {
                 usageStatistics={false}
                 height="600px"
                 initialEditType="wysiwyg"
+                initialValue={props.values.contents}
                 useCommandShortcut={true}
                 exts={[
                   {

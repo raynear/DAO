@@ -217,6 +217,10 @@ export const GET_PROPOSALS = gql`
     proposals(prep:$selectedPRep, search: $search, first: $first, skip: $skip) {
       id
       subject
+      prep{
+        id
+        username
+      }
       contents
       selectitemmodelSet {
         contents

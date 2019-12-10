@@ -9,16 +9,6 @@ import SimpleReactValidator from "simple-react-validator";
 import useForceUpdate from "./useForceUpdate";
 import EditProposal from "./EditProposal";
 
-const validator = new SimpleReactValidator({
-  locale: "en",
-  className: "text-danger",
-  element: (message: any, className: any) => (
-    <Typography variant="caption" color="error" className={className}>
-      {message}
-    </Typography>
-  )
-});
-
 function EditProposalContainer(props: any) {
   console.log("EditProposalContainer props", props);
 
@@ -53,6 +43,16 @@ function EditProposalContainer(props: any) {
   });
 
   const [mutateProposal] = useMutation(SET_PROPOSAL);
+
+  const validator = new SimpleReactValidator({
+    locale: "en",
+    className: "text-danger",
+    element: (message: any, className: any) => (
+      <Typography variant="caption" color="error" className={className}>
+        {message}
+      </Typography>
+    )
+  });
 
   const addSelectItem = () => {
     setSelectItems([...selectItems, ""]);
@@ -154,21 +154,20 @@ function EditProposalContainer(props: any) {
     }
   }
 
-
   const queryVal = useQuery(GET_PROPOSAL_N_PREP, {
     variables: { id: proposal_id, PRepName: username }
   })
-  if (queryVal.data && queryVal.data.proposal) {
 
+  if (queryVal.data && queryVal.data.proposal && values.id === -1) {
     let proposal = queryVal.data.proposal;
     setValues({
-      id: -1,
-      quorumRate: 50,
-      tokenRate: 50,
-      prepId: 0,
-      subject: "",
-      contents: "",
-      expireAt: new Date("2019-12-18T21:11:54"),
+      id: proposal.id,
+      quorumRate: proposal.quorumRate,
+      tokenRate: proposal.tokenRate,
+      prepId: proposal.prep.id,
+      subject: proposal.subject,
+      contents: proposal.contents,
+      expireAt: new Date(proposal.expireAt),
       selectitemmodelSet: []
     });
 
@@ -187,8 +186,10 @@ function EditProposalContainer(props: any) {
       {renderRedirect()}
       <EditProposal
         {...queryVal}
+        validator={validator}
         values={values}
         setValues={setValues}
+        selectItems={selectItems}
         addSelectItem={addSelectItem}
         handleSelectItemChange={handleSelectItemChange}
         deleteSelectItem={deleteSelectItem}
