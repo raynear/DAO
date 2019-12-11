@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, Switch, Route } from "react-router-dom";
-import { CssBaseline, AppBar, Toolbar, Typography, Container, Grid } from "@material-ui/core";
+import { CssBaseline, AppBar, Toolbar, Typography, Container, Grid, Snackbar } from "@material-ui/core";
 
 import LandingPage from "./LandingPage";
 import HowTo from "./HowTo";
@@ -74,6 +74,16 @@ function Layout(props: any) {
           </Grid>
         </Container>
         <Copyright />
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          key={"test"}
+          open={props.open}
+          ContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">{props.message}</span>}
+        />
+
       </div>
     </div>
   );

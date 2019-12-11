@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { useQuery, useMutation } from "@apollo/react-hooks";
+import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 import { NEW_PREP, GET_LOCAL_ME, GET_LOCAL_ADDRESS } from "./GQL";
 
 import { json_rpc_call } from "./IconConnect";
@@ -8,8 +8,9 @@ import { json_rpc_call } from "./IconConnect";
 import VerifyIcon from "./VerifyIcon";
 
 function VerifyIconContainer(props: any) {
-  //  const client = useApolloClient();
   console.log("VerifyIconContainer props", props);
+  const client = useApolloClient();
+
   const [iconAddress, setIconAddress] = useState("");
   const [isPRep, setIsPRep] = useState(false);
   const [verifiedAddress, setVerifiedAddress] = useState("");
@@ -122,10 +123,12 @@ function VerifyIconContainer(props: any) {
         props.setActiveStep(2);
       }
       else {
-        console.log("working on profile page. no redirect")
+        client.writeData({ data: { snack: { open: true, message: "You Make PRep Page" } } })
+        props.history.push("/");
       }
     });
   }
+
 
   const queryVal = useQuery(GET_LOCAL_ME);
 

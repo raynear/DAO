@@ -130,6 +130,15 @@ export const GET_LOCAL_ME = gql`
   }
 `;
 
+export const GET_LOCAL_SNACK = gql`
+  query {
+    snack @client {
+      message
+      open
+    }
+  }
+`;
+
 export const GET_LOCAL_ADDRESS = gql`
   query {
     icon_address @client

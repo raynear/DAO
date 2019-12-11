@@ -1,13 +1,13 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
-
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip } from "@material-ui/core";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar } from "recharts";
-
 import ReactMarkdown from "react-markdown";
 
 import useStyles from "./Style";
 
+import facebookImg from "./img/facebook.png";
+import twitterImg from "./img/twitter.png";
 
 function Proposal(props: any) {
   console.log("Proposal props", props);
@@ -24,7 +24,7 @@ function Proposal(props: any) {
             if (props.votedIdx === selectItem.index) {
               return (
                 <li key={selectItem.index}>
-                  <Tooltip title="You Vote!">
+                  <Tooltip title="You Vote!" placement="right">
                     <Typography variant="body1" color="primary">
                       {selectItem.contents} {"(" + props.votedPower[selectItem.index].toString() + ")"}
                     </Typography>
@@ -116,6 +116,14 @@ function Proposal(props: any) {
     return <div>{" "}</div>
   }
 
+  function FacebookShare() {
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(document.URL) + '&t=' + encodeURIComponent(document.title), 'facebooksharedialog', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');
+  }
+
+  function TwitterShare() {
+    window.open('https://twitter.com/intent/tweet?text=[%EA%B3%B5%EC%9C%A0]%20' + encodeURIComponent(document.URL) + '%20-%20' + encodeURIComponent(document.title), 'twittersharedialog', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');
+  }
+
   if (props.loading) return <p>Loading...</p>;
   if (props.error) return <p>Error!:</p>;
   return (
@@ -182,6 +190,14 @@ function Proposal(props: any) {
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <br />
             <ActionButton />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Grid container className={classes.container}>
+              <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+                <a href="#" onClick={FacebookShare} ><img src={facebookImg} width="40" alt="페이스북 공유하기" /></a>
+                <a href="#" onClick={TwitterShare} ><img src={twitterImg} width="40" alt="트위터 공유하기" /></a>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Paper>

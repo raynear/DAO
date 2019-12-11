@@ -91,15 +91,22 @@ class Query(object):
     def resolve_proposals(self, info, prep=None, search=None, first=None, skip=None, **kwargs):
         qs = ProposalModel.objects.all()
 
-        print(prep)
-        if (prep is not None) & (prep != "All") & (prep != ""):
+        if info.context.user.is_authenticated:
+            filter = Q(prep__exact=info.context.user) | Q(
+                published__exact=True)
+            qs = qs.filter(filter)
+        else:
+            filter = Q(published__exact=True)
+            qs = qs.filter(filter)
+
+        if (prep is not None) and (prep != ""):
             aPRep = User.objects.get(username=prep)
-            filter = Q(prep__exact=aPRep.id)
+            filter = Q(prep__exact=aPRep)
             qs = qs.filter(filter)
 
         if search:
-            filter = (Q(subject__icontains=search) | Q(contents__icontains=search)) & (
-                Q(prep__exact=info.context.user) | Q(publish__exact=True))
+            filter = (Q(subject__icontains=search) |
+                      Q(contents__icontains=search))
             qs = qs.filter(filter)
         if skip:
             qs = qs[skip:]

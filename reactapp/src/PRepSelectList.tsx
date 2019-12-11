@@ -20,7 +20,7 @@ function PRepSelectList(props: any) {
       <InputLabel className={classes.selectLabel}>PReps</InputLabel>
       <Select
         value={props.selectedPRep}
-        onChange={props.handleChange}
+        onChange={props.handleChange("selectedPRep")}
         style={{ minWidth: 120 }}
       >
         {allPRep.map((item: any) => (

@@ -6,12 +6,6 @@ import PRepSelectList from "./PRepSelectList";
 
 function PRepSelectListContainer(props: any) {
   console.log("prep select list props", props);
-  const [selectedPRep, setSelectedPRep] = useState(props.SelectedPRep);
-
-  const handleChange = (event: any) => {
-    setSelectedPRep(event.target.value);
-    props.handleChange(event.target.value);
-  };
 
   const queryVal = useQuery(GET_PREPS);
 
@@ -27,7 +21,7 @@ function PRepSelectListContainer(props: any) {
   }
   // myPReps list 상위로 배치하기
 
-  return <PRepSelectList {...queryVal} selectedPRep={selectedPRep} handleChange={handleChange} />
+  return <PRepSelectList {...queryVal} selectedPRep={props.selectedPRep} handleChange={props.handleChange} />
 }
 
 export default PRepSelectListContainer;

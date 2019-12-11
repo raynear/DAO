@@ -24,7 +24,12 @@ function ProposalsContainer(props: any) {
   const handleChange = (name: any) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setFilterValues({ ...values, [name]: event.target.value });
+    console.log("(((((((((((((((((((((((((((((((((((((");
+    console.log(name, event.target.value);
+    setFilterValues({ ...filterValues, [name]: event.target.value });
+    if (name === "selectedPRep") {
+      setValues({ ...values, selectedPRep: event.target.value });
+    }
   };
 
   function queryFilters() {
@@ -49,7 +54,15 @@ function ProposalsContainer(props: any) {
     }
   });
 
-  return <Proposals {...queryVal} values={values} filterValues={filterValues} queryFilters={queryFilters} handleChange={handleChange} />
+  return (
+    <Proposals
+      {...queryVal}
+      values={values}
+      filterValues={filterValues}
+      queryFilters={queryFilters}
+      handleChange={handleChange}
+    />
+  );
 }
 
 export default ProposalsContainer;
