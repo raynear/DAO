@@ -16,10 +16,18 @@ function LayoutContainer(props: any) {
     snack = querySnack.data.snack;
   }
 
+  const handleClose = (event: React.SyntheticEvent | React.MouseEvent, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    client.writeData({ data: { snack: { open: false, message: "", __typename: "snack" } } });
+  };
+
   const queryVal = useQuery(VIEWER);
 
   return (
-    <Layout {...queryVal} {...snack} />
+    <Layout {...queryVal} {...snack} handleClose={handleClose} />
   );
 }
 

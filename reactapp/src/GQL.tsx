@@ -229,6 +229,17 @@ export const GET_PROPOSALS = gql`
       contents
       selectitemmodelSet {
         contents
+        votemodelSet{
+          id
+          select {
+            id
+          }
+          voter {
+            id
+            username
+          }
+        }
+
       }
     }
   }

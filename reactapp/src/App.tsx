@@ -37,7 +37,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
   clientState: {
     defaults: {
-      data: { username: "", email: "", photo: "", icon_address: "", __typename: "user" }
+      data: { username: "", email: "", photo: "", icon_address: "", snack: { open: false, message: "", __typename: "snack" }, __typename: "user" }
     },
     resolvers: {},
     typeDefs: ``

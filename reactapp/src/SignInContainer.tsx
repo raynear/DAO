@@ -22,6 +22,7 @@ function SignInContainer(props: any) {
     }).then(() => {
       client.writeData({ data: { username: username } });
       props.history.push("/");
+      window.location.reload();
     });
   }
 

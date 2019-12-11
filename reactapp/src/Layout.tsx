@@ -76,8 +76,9 @@ function Layout(props: any) {
         <Copyright />
         <Snackbar
           anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          key={"test"}
+          autoHideDuration={5000}
           open={props.open}
+          onClose={props.handleClose}
           ContentProps={{
             'aria-describedby': 'message-id',
           }}

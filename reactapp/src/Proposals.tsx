@@ -63,34 +63,37 @@ function Proposals(props: any) {
               </Grid>
             </Grid>
           </Grid>
-          {props.data.proposals.map((item: any, idx: number) => (
-            <Grid item className={classes.item} key={idx} xs={12} lg={6}>
-              <Paper className={classes.paper}>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                  <b>{item.id}.</b> P-Rep {item.prep.username}
-                </Typography>
-                <Typography variant="h5" color="textPrimary" gutterBottom>
-                  <Link className={classes.link} to={"/Proposal/" + item.id} color="textPrimary">
-                    {item.subject}
-                  </Link>
-                </Typography>
-                <ReactMarkdown
-                  source={item.contents.split("<br>").join("\n").split("\n")[0]}
-                  skipHtml={false}
-                  escapeHtml={false}
-                />
-                <ul>
-                  {item.selectitemmodelSet.map((selectItem: any, idx: number) => (
-                    <Typography variant="body1" key={idx} color="textSecondary">
-                      <li>
-                        {selectItem.contents}
-                      </li>
-                    </Typography>
-                  ))}
-                </ul>
-              </Paper>
-            </Grid>
-          ))}
+          {props.data.proposals.map((item: any, idx: number) => {
+            const votedPowers = props.getVotedPowers(item.selectitemmodelSet)
+            return (
+              <Grid item className={classes.item} key={idx} xs={12} lg={6}>
+                <Paper className={classes.paper}>
+                  <Typography className={classes.title} color="textSecondary" gutterBottom>
+                    <b>{item.id}.</b> P-Rep {item.prep.username}
+                  </Typography>
+                  <Typography variant="h5" color="textPrimary" gutterBottom>
+                    <Link className={classes.link} to={"/Proposal/" + item.id} color="textPrimary">
+                      {item.subject}
+                    </Link>
+                  </Typography>
+                  <ReactMarkdown
+                    source={item.contents.split("<br>").join("\n").split("\n")[0]}
+                    skipHtml={false}
+                    escapeHtml={false}
+                  />
+                  <ul>
+                    {item.selectitemmodelSet.map((selectItem: any, idx: number) => (
+                      <Typography variant="body1" key={idx} color="textSecondary">
+                        <li>
+                          {selectItem.contents} {"(" + votedPowers[idx] + ")"}
+                        </li>
+                      </Typography>
+                    ))}
+                  </ul>
+                </Paper>
+              </Grid>
+            );
+          })}
         </Grid>
       </Paper>
     </Grid>

@@ -42,7 +42,7 @@ function UserInfo(props: any) {
           open={Boolean(props.anchorEl)}
           onClose={props.handleMenuClose}
         >
-          <MenuItem>
+          <MenuItem onClick={props.nyamnyam}>
             <Typography component="h6">{props.data.username}</Typography>
           </MenuItem>
           <MenuItem onClick={props.handleMenuClose}>

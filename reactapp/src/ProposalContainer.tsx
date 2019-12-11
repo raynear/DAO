@@ -28,6 +28,7 @@ function ProposalContainer(props: any) {
     });
     console.log("Publish!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
+    window.location.reload();
   }
 
   function Vote() {
@@ -38,6 +39,7 @@ function ProposalContainer(props: any) {
     });
     console.log("Vote!!!!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
+    window.location.reload();
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

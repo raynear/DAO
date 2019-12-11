@@ -25,7 +25,12 @@ function UserInfoContainer(props: any) {
     mutateLogout();
     setAnchorEl(null);
     client.writeData({ data: { username: "" } });
+    window.location.reload();
   };
+
+  function nyamnyam() {
+    client.writeData({ data: { snack: { open: true, message: "chitos", __typename: "snack" } } });
+  }
 
   const queryVal = useQuery(GET_LOCAL_ME);
 
@@ -37,6 +42,7 @@ function UserInfoContainer(props: any) {
     handleMenu={handleMenu}
     handleMenuClose={handleMenuClose}
     handleMenuLogout={handleMenuLogout}
+    nyamnyam={nyamnyam}
   />);
 
 }
