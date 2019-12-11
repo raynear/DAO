@@ -91,7 +91,7 @@ function Proposal(props: any) {
     return (
       <Fragment>
         <Button variant="outlined" color="primary">
-          <Link to={"/EditProposal/" + props.id}>
+          <Link to={"/EditProposal/" + props.id} className={classes.link}>
             Edit
           </Link>
         </Button>

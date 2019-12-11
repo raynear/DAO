@@ -70,7 +70,7 @@ function Proposals(props: any) {
                   <b>{item.id}.</b> P-Rep {item.prep.username}
                 </Typography>
                 <Typography variant="h5" color="textPrimary" gutterBottom>
-                  <Link to={"/Proposal/" + item.id} color="textPrimary">
+                  <Link className={classes.link} to={"/Proposal/" + item.id} color="textPrimary">
                     {item.subject}
                   </Link>
                 </Typography>

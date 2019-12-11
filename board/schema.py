@@ -17,7 +17,7 @@ from account.models import User
 
 from .models import ProposalModel, SelectItemModel, VoteModel
 
-from .icon_network import TEST_NET, TEST_NET3, LOCAL_NET, SCORE_ADDRESS
+from .icon_network import MAIN_NET, TEST_NET, TEST_NET3, LOCAL_NET, SCORE_ADDRESS
 NETWORK = TEST_NET3
 
 prep_required = user_passes_test(lambda u: u.is_prep)
@@ -325,7 +325,7 @@ class SetPRep(graphene.Mutation):
     def mutate(self, info, icon_address):
         user = info.context.user
 
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
+        icon_service = IconService(HTTPProvider(MAIN_NET, 3))
         call = CallBuilder()\
             .to("cx0000000000000000000000000000000000000000")\
             .method("getPReps")\

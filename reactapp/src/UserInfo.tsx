@@ -46,12 +46,12 @@ function UserInfo(props: any) {
             <Typography component="h6">{props.data.username}</Typography>
           </MenuItem>
           <MenuItem onClick={props.handleMenuClose}>
-            <Link to="/Profile">
+            <Link to="/Profile" className={classes.link}>
               <Typography component="h6">Profile</Typography>
             </Link>
           </MenuItem>
           <MenuItem onClick={props.handleMenuLogout}>
-            <Link to="/">
+            <Link to="/" className={classes.link}>
               <Typography component="h6">Logout</Typography>
             </Link>
           </MenuItem>
@@ -78,13 +78,13 @@ function UserInfo(props: any) {
           onClose={props.handleMenuClose}
         >
           <MenuItem onClick={props.handleMenuClose}>
-            <Link to="/Signup">
+            <Link to="/Signup" className={classes.link}>
               <Typography component="h6">Sign Up</Typography>
             </Link>
           </MenuItem>
 
           <MenuItem onClick={props.handleMenuClose}>
-            <Link to="/Signin">
+            <Link to="/Signin" className={classes.link}>
               <Typography component="h6">Sign In</Typography>
             </Link>
           </MenuItem>

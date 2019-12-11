@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: 14,
       flexGrow: 1
     },
+    link: {
+      textDecoration: "none"
+    },
     pos: {
       marginBottom: 12
     },

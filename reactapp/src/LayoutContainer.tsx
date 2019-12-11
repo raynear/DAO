@@ -9,14 +9,14 @@ function LayoutContainer(props: any) {
   console.log("LayoutContainer props", props);
   const client = useApolloClient();
   const noSnack = { open: false, message: "" };
-  const querySnack = client.query({ query: GET_LOCAL_SNACK });
-
-  const queryVal = useQuery(VIEWER);
+  const querySnack = useQuery(GET_LOCAL_SNACK);
 
   let snack = noSnack;
   if (querySnack && querySnack.data) {
     snack = querySnack.data.snack;
   }
+
+  const queryVal = useQuery(VIEWER);
 
   return (
     <Layout {...queryVal} {...snack} />
