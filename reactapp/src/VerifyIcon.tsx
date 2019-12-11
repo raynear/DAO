@@ -34,14 +34,11 @@ function VerifyIcon(props: any) {
           <br />
           <Typography variant="subtitle1">Connected Address: <props.SelectedAddress /></Typography>
         </Grid>
-        <Grid className={classes.item} item xs={4} md={4} lg={4}>
-          <Button variant="contained" color="primary" fullWidth onClick={selectWallet}>Select Wallet</Button>
+        <Grid className={classes.item} item xs={6} md={6} lg={6}>
+          <Button variant="contained" color="primary" fullWidth onClick={selectWallet}>Verify ICON Address</Button>
         </Grid>
-        <Grid className={classes.item} item xs={4} md={4} lg={4}>
-          <Button variant="contained" color="primary" fullWidth disabled={props.iconAddress === ""} onClick={props.sendVerify}>send Verify</Button>
-        </Grid>
-        <Grid className={classes.item} item xs={4} md={4} lg={4}>
-          <Button variant="contained" color="primary" fullWidth onClick={props.callVerify}>get Verify Info</Button>
+        <Grid className={classes.item} item xs={6} md={6} lg={6}>
+          <Button variant="contained" color="primary" fullWidth onClick={props.callVerify}>Check Your Verify Info</Button>
         </Grid>
       </>
     );

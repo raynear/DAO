@@ -16,8 +16,11 @@ import Copyright from "./Copyright";
 import useStyles from "./Style";
 
 function Layout(props: any) {
+  console.log("Layout props", props);
   const classes = useStyles();
 
+  if (props.loading) return <p>Loading...</p>
+  //  if (props.error) return <p>Error...</p>
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -43,11 +46,13 @@ function Layout(props: any) {
               Explorer
             </Link>
           </Typography>
-          <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
-            <Link to="/EditProposal" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
-              Build
+          {!props.error && props.data.viewer.isPrep &&
+            <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
+              <Link to="/EditProposal" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+                Build
             </Link>
-          </Typography>
+            </Typography>
+          }
           <UserInfoContainer />
         </Toolbar>
       </AppBar>

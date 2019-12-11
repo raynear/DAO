@@ -3,7 +3,7 @@ import IconService from 'icon-sdk-js';
 // const MAIN_NET = "https://ctz.solidwallet.io/api/v3";
 // const MAIN_CONTRACT = "cx_main_net_contract";
 const TEST_NET = "https://bicon.net.solidwallet.io/api/v3"
-const TEST_CONTRACT = "cx5a3a11a97b9a48beed5563273a9d450bfcc5975b";
+const TEST_CONTRACT = "cx7b2ce19fc7e18aad7df3ff72a0328a4af2f06360";
 const LOCAL_NET = "http://localhost:9000/api/v3";
 // const LOCAL_CONTRACT = "cxe84690d77ca118d4f74c14de6c7e17c784db1079";
 const local_provider = new IconService.HttpProvider(LOCAL_NET);

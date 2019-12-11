@@ -137,9 +137,8 @@ class PublishProposal(graphene.Mutation):
     @prep_required
     def mutate(self, info, proposal_id):
         proposal = ProposalModel.objects.get(pk=proposal_id)
-        proposal.published = True
 
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
+        icon_service = IconService(HTTPProvider(TEST_NET, 3))
         print(SCORE_ADDRESS)
         print(info.context.user.username)
 
@@ -154,40 +153,45 @@ class PublishProposal(graphene.Mutation):
         result_json = json.loads(result)
         print(result_json)
 
-        if result_json['confirmed']:
-            selectItems = SelectItemModel.objects.filter(proposal=proposal)
-            _select_item = '['
-            for idx, item in enumerate(selectItems):
-                _select_item += "\"" + item.contents + "\""
-                if idx < len(selectItems) - 1:
-                    _select_item += ','
-            _select_item += ']'
+        selectItems = SelectItemModel.objects.filter(proposal=proposal)
+        _select_item = '['
+        for idx, item in enumerate(selectItems):
+            _select_item += "\"" + item.contents + "\""
+            if idx < len(selectItems) - 1:
+                _select_item += ','
+        _select_item += ']'
 
-            f = open("key.pw", 'r')
-            line = f.readline()
-            wallet = KeyWallet.load(
-                "./key_store_raynear", line)
+        print("selectitem", _select_item)
 
-            transaction = CallTransactionBuilder()\
-                .from_(wallet.get_address())\
-                .to(SCORE_ADDRESS)\
-                .step_limit(10000000000)\
-                .nid(3)\
-                .method("SetProposal")\
-                .params({"_Subject": proposal.subject, "_Contents": proposal.contents, "_Proposer": proposal.prep.username, "_ExpireDate": proposal.expire_at.isoformat(), "_SelectItems": _select_item})\
-                .build()
+        f = open("./key.pw", 'r')
+        line = f.readline()
+        wallet = KeyWallet.load(
+            "./key_store_raynear", line)
 
-            signed_transaction = SignedTransaction(transaction, wallet)
-            tx_hash = icon_service.send_transaction(signed_transaction)
+        transaction = CallTransactionBuilder()\
+            .from_(wallet.get_address())\
+            .to(SCORE_ADDRESS)\
+            .step_limit(10000000000)\
+            .nid(3)\
+            .method("SetProposal")\
+            .params({"_Subject": proposal.subject, "_Contents": proposal.contents, "_Proposer": proposal.prep.username, "_ExpireDate": proposal.expire_at.isoformat(), "_SelectItems": _select_item, "_ElectoralTH": proposal.electoral_th, "_WinningTH": proposal.winning_th})\
+            .build()
 
-            print(tx_hash)
-            tx_result = icon_service.get_transaction_result(tx_hash)
-            print(tx_result['status'])
-            tx_result_json = json.loads(tx_result)
-            print(tx_result_json)
+        print("transaction", transaction)
 
-            proposal.txHash = tx_hash
-            proposal.save()
+        signed_transaction = SignedTransaction(transaction, wallet)
+        print("signed tx", signed_transaction)
+        tx_hash = icon_service.send_transaction(signed_transaction)
+
+        print(tx_hash)
+#        tx_result = icon_service.get_transaction_result(tx_hash)
+#        print(tx_result)
+#        tx_result_json = json.loads(tx_result)
+#        print(tx_result_json)
+
+        proposal.published = True
+        proposal.txHash = tx_hash
+        proposal.save()
         return PublishProposal(proposal=proposal)
 
 
@@ -207,6 +211,29 @@ class VoteProposal(graphene.Mutation):
             index__exact=select_item_index)
         qs = qs.filter(filter)
 
+        icon_service = IconService(HTTPProvider(TEST_NET, 3))
+
+        f = open("./key.pw", 'r')
+        line = f.readline()
+        wallet = KeyWallet.load("./key_store_raynear", line)
+
+        transaction = CallTransactionBuilder()\
+            .from_(wallet.get_address())\
+            .to(SCORE_ADDRESS)\
+            .step_limit(10000000000)\
+            .nid(3)\
+            .method("Vote")\
+            .params({"_ProposalID": proposal.id, "_UserID": proposal.prep.username, "_VoteItem": select_item_index})\
+            .build()
+
+        print("transaction", transaction)
+
+        signed_transaction = SignedTransaction(transaction, wallet)
+        print("signed tx", signed_transaction)
+        tx_hash = icon_service.send_transaction(signed_transaction)
+
+        print(tx_hash)
+
         vote = VoteModel.objects.create(voter=info.context.user, select=qs[0])
         vote.save()
         return VoteProposal(proposal=proposal)
@@ -219,8 +246,8 @@ class SetProposal(graphene.Mutation):
         contents = graphene.String(required=True)
         published = graphene.Boolean()
         expire_at = graphene.DateTime()
-        quorum_rate = graphene.Int()
-        token_rate = graphene.Int()
+        electoral_th = graphene.Int()
+        winning_th = graphene.Int()
         select_item_list = graphene.List(SelectItemInput)
 
     proposal = graphene.Field(ProposalModelType)
@@ -234,8 +261,8 @@ class SetProposal(graphene.Mutation):
         subject,
         contents,
         published,
-        quorum_rate,
-        token_rate,
+        electoral_th,
+        winning_th,
         expire_at,
         select_item_list,
     ):
@@ -247,8 +274,8 @@ class SetProposal(graphene.Mutation):
                 subject=subject,
                 contents=contents,
                 published=published,
-                quorum_rate=quorum_rate,
-                token_rate=token_rate,
+                electoral_th=electoral_th,
+                winning_th=winning_th,
                 expire_at=expire_at,
             )
             proposal.save()
@@ -262,8 +289,8 @@ class SetProposal(graphene.Mutation):
             proposal.subject = subject
             proposal.contents = contents
             proposal.published = False
-            proposal.quorum_rate = quorum_rate
-            proposal.token_rate = token_rate
+            proposal.electoral_th = electoral_th
+            proposal.winning_th = winning_th
             proposal.prep = info.context.user
             proposal.expire_at = expire_at
             proposal.save()

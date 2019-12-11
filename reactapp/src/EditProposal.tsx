@@ -161,10 +161,10 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
-              <Typography><b>Quorum : {props.values.quorumRate}</b></Typography>
+              <Typography><b>Electoral TH : {props.values.electoralTh}</b></Typography>
               <Slider
-                value={props.values.quorumRate}
-                onChange={props.handleSliderChange("quorumRate")}
+                value={props.values.electoralTh}
+                onChange={props.handleSliderChange("electoralTh")}
                 defaultValue={50}
                 getAriaValueText={(val) => val + "%"}
                 aria-labelledby="discrete-slider"
@@ -183,10 +183,10 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
-              <Typography><b>Token : {props.values.tokenRate}</b></Typography>
+              <Typography><b>Winning TH : {props.values.winningTh}</b></Typography>
               <Slider
-                value={props.values.tokenRate}
-                onChange={props.handleSliderChange("tokenRate")}
+                value={props.values.winningTh}
+                onChange={props.handleSliderChange("winningTh")}
                 defaultValue={50}
                 getAriaValueText={(val) => val + "%"}
                 aria-labelledby="discrete-slider"

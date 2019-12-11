@@ -7,13 +7,14 @@ export const GET_PROPOSAL = gql`
       prep{
         id
         username
+        iconAddress
       }
       subject
       contents
       published
       expireAt
-      quorumRate
-      tokenRate
+      electoralTh
+      winningTh
       selectitemmodelSet {
         id
         index
@@ -39,8 +40,8 @@ export const SET_PROPOSAL = gql`
     $subject: String!
     $contents: String!
     $published: Boolean!
-    $quorumRate: Int!
-    $tokenRate: Int!
+    $electoralTh: Int!
+    $winningTh: Int!
     $expireAt: DateTime!
     $selectItemList: [SelectItemInput]
   ) {
@@ -49,8 +50,8 @@ export const SET_PROPOSAL = gql`
       subject: $subject
       contents: $contents
       published: $published
-      quorumRate: $quorumRate
-      tokenRate: $tokenRate
+      electoralTh:$electoralTh
+      winningTh:$winningTh
       expireAt: $expireAt
       selectItemList: $selectItemList
     ) {
@@ -72,8 +73,8 @@ export const SET_PUBLISH = gql`
         subject
         contents
         published
-        quorumRate
-        tokenRate
+        electoralTh
+        winningTh
         expireAt
         selectitemmodelSet {
           index
@@ -97,8 +98,8 @@ export const SET_VOTE = gql`
         subject
         contents
         published
-        quorumRate
-        tokenRate
+        electoralTh
+        winningTh
         expireAt
         selectitemmodelSet {
           index
@@ -186,8 +187,8 @@ export const GET_PROPOSAL_N_PREP = gql`
       contents
       published
       expireAt
-      quorumRate
-      tokenRate
+      electoralTh
+      winningTh
       selectitemmodelSet {
         id
         index
@@ -233,6 +234,16 @@ export const NEW_PREP = gql`
         iconAddress
         isPrep
       }
+    }
+  }
+`;
+
+export const VIEWER = gql`
+  query {
+    viewer{
+      username
+      iconAddress
+      isPrep
     }
   }
 `;

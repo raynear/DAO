@@ -12,12 +12,13 @@ class MulJomDaO(IconScoreBase):
     SUBJECT = "subject"
     CONTENTS = "contents"
     PROPOSER = "proposer"
-    QUORUMTH = "quorum_threshold"
-    TOKENTH = "token_threshold"
+    ELECTORALTH = "electoral_threshold"
+    WINNINGTH = "winning_threshold"
     EXPIREDATE = "expire_date"
     SELECTITEM = "select_item"
     COUNT = "count"
     VOTE = "vote"
+    VOTER = "voter"
 
     _OWNER = "owner"
     _READYTOOWNER = "ready_to_owner"
@@ -130,13 +131,13 @@ class MulJomDaO(IconScoreBase):
         return json_dumps(return_json)
 
     @external(readonly=False)
-    def SetProposal(self, _Subject: str, _Contents: str, _Proposer: str, _ExpireDate: str, _SelectItems: str, _QuorumTH: int, _TokenTH: int) -> str:
+    def SetProposal(self, _Subject: str, _Contents: str, _Proposer: str, _ExpireDate: str, _SelectItems: str, _ElectoralTH: int, _WinningTH: int) -> str:
         if self._owner.get() == self.msg.sender:
             pid = str(self._iproposal[_Proposer][self.ID][self.ID] + 1)
             self._proposal[_Proposer][pid][self.SUBJECT] = _Subject
             self._proposal[_Proposer][pid][self.CONTENTS] = _Contents
-            self._proposal[_Proposer][_ProposalID][self.QUORUMTH] = _QuorumTH
-            self._proposal[_Proposer][_ProposalID][self.TOKENTH] = _TokenTH
+            self._proposal[_Proposer][pid][self.ELECTORALTH] = _ElectoralTH
+            self._proposal[_Proposer][pid][self.WINNINGTH] = _WinningTH
             self._proposal[_Proposer][pid][self.EXPIREDATE] = _ExpireDate
             self._ivote[_Proposer][pid][self.COUNT] = 0
 
@@ -152,8 +153,8 @@ class MulJomDaO(IconScoreBase):
         return_json = dict()
         return_json[self.SUBJECT] = self._proposal[_Proposer][_ProposalID][self.SUBJECT]
         return_json[self.CONTENTS] = self._proposal[_Proposer][_ProposalID][self.CONTENTS]
-        return_json[self.QUORUMTH] = self._proposal[_Proposer][_ProposalID][self.QUORUMTH]
-        return_json[self.TOKENTH] = self._proposal[_Proposer][_ProposalID][self.TOKENTH]
+        return_json[self.ELECTORALTH] = self._proposal[_Proposer][_ProposalID][self.ELECTORALTH]
+        return_json[self.WINNINGTH] = self._proposal[_Proposer][_ProposalID][self.WINNINGTH]
 
         return_json[self.SELECTITEM] = []
         for i in range(self._iselect_item[_Proposer][_ProposalID][self.COUNT]):

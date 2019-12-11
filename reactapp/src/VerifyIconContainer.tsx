@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { NEW_PREP, GET_LOCAL_ME, GET_LOCAL_ADDRESS } from "./GQL";
 
-import { json_rpc_call, json_rpc_send_tx, selected_icon_service } from "./IconConnect";
+import { json_rpc_call } from "./IconConnect";
 
 import VerifyIcon from "./VerifyIcon";
 
@@ -98,12 +98,12 @@ function VerifyIconContainer(props: any) {
     });
   }
 
-  async function sendVerify() {
-    let result = await selected_icon_service.getBlock('latest').execute();
-    let params = { "_BlockHash": result.blockHash, "_ID": queryVal.data.username };
+  // async function sendVerify() {
+  //   let result = await selected_icon_service.getBlock('latest').execute();
+  //   let params = { "_BlockHash": result.blockHash, "_ID": queryVal.data.username };
 
-    json_rpc_send_tx(iconAddress, "Verify", params);
-  }
+  //   json_rpc_send_tx(iconAddress, "Verify", params);
+  // }
 
   function SelectedAddress() {
     const { loading, error, data } = useQuery(GET_LOCAL_ADDRESS);
@@ -134,7 +134,6 @@ function VerifyIconContainer(props: any) {
     SelectedAddress={SelectedAddress}
     newPRepPage={newPRepPage}
     callVerify={callVerify}
-    sendVerify={sendVerify}
     iconAddress={iconAddress}
     verifiedAddress={verifiedAddress}
     isPRep={isPRep}

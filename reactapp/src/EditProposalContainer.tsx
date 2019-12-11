@@ -33,8 +33,8 @@ function EditProposalContainer(props: any) {
   const [selectItems, setSelectItems] = useState(["", "", "", ""]);
   const [values, setValues] = useState({
     id: -1,
-    quorumRate: 50,
-    tokenRate: 50,
+    electoralTh: 50,
+    winningTh: 50,
     subject: "",
     contents: "",
     expireAt: new Date("2019-12-18T21:11:54"),
@@ -122,8 +122,8 @@ function EditProposalContainer(props: any) {
         subject: values.subject,
         contents: values.contents,
         published: false,
-        quorumRate: values.quorumRate,
-        tokenRate: values.tokenRate,
+        electoralTh: values.electoralTh,
+        winningTh: values.winningTh,
         expireAt: values.expireAt.toISOString(),
         selectItemList: tmpSelectItemList
       }
@@ -162,8 +162,8 @@ function EditProposalContainer(props: any) {
     let proposal = queryVal.data.proposal;
     setValues({
       id: proposal.id,
-      quorumRate: proposal.quorumRate,
-      tokenRate: proposal.tokenRate,
+      electoralTh: proposal.electoralTh,
+      winningTh: proposal.winningTh,
       subject: proposal.subject,
       contents: proposal.contents,
       expireAt: new Date(proposal.expireAt),

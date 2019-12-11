@@ -1,23 +1,19 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL, GET_LOCAL_ME, GET_LOCAL_ADDRESS } from "./GQL";
-import gql from "graphql-tag";
 
-import useForceUpdate from "./useForceUpdate";
-
-import { json_rpc_call } from "./IconConnect";
+// import { json_rpc_call } from "./IconConnect";
 
 import Proposal from "./Proposal";
 
 let voteData = [
-  { name: 'quorum', th: 0, voted: 0 },
-  { name: 'token', th: 0, voted: 0 },
+  { name: 'electoralTH', th: 0, voted: 0 },
+  { name: 'winningTH', th: 0, voted: 0 },
 ];
 
 function ProposalContainer(props: any) {
   console.log("ProposalContainer props", props);
   const id = props.match.params.ID;
-  const forceUpdate = useForceUpdate;
 
   const [voteSelect, setVoteSelect] = useState();
 
@@ -31,7 +27,7 @@ function ProposalContainer(props: any) {
       console.log("vote", publishResult);
     });
     console.log("Publish!!!!!!!!!!!!!!", queryVal.data.proposal);
-    forceUpdate();
+    setVoteSelect(-1);
   }
 
   function Vote() {
@@ -41,7 +37,7 @@ function ProposalContainer(props: any) {
       console.log("vote", voteResult);
     });
     console.log("Vote!!!!!!!!!!!!!!!!!", queryVal.data.proposal);
-    forceUpdate();
+    setVoteSelect(-1);
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,7 +50,7 @@ function ProposalContainer(props: any) {
   }
 
   function isMyPRep() {
-    // governance_call("getDelegation", { "address": user_address }).then((result2: any) => {
+    // governance_call("getDelegation", { "address": queryAddress.data.icon_address}).then((result2: any) => {
     console.log(queryAddress);
     let result2 = JSON.parse(`{
       "result": {
@@ -91,7 +87,7 @@ function ProposalContainer(props: any) {
       delegateList = [];
     }
     for (let i = 0; i < delegateList.length; i++) {
-      if (delegateList[i].address === queryAddress.data.icon_address) {
+      if (delegateList[i].address === queryVal.data.proposal.prep.iconAddress) {
         return true;
       }
     }
@@ -131,8 +127,6 @@ function ProposalContainer(props: any) {
     let VoteItem: number[] = [];
 
     queryVal.data.proposal.selectitemmodelSet.forEach((aSelectItem: any) => {
-      console.log("*******************************************");
-      console.log(aSelectItem);
       let VotingPower = 0;
 
       let test: any[] = [];
@@ -143,7 +137,6 @@ function ProposalContainer(props: any) {
         VotingPower += GetVotersVotingPower(aVote.voter.username);
       });
 
-      console.log(VotingPower);
       VoteItem.push(VotingPower);
     })
 
@@ -164,9 +157,9 @@ function ProposalContainer(props: any) {
     variables: { id: id }
   });
 
-  if (queryVal && queryVal.data && queryMe.data) {
-    voteData[0].th = queryVal.data.proposal.quorumRate;
-    voteData[1].th = queryVal.data.proposal.tokenRate;
+  if (queryVal && queryVal.data && queryMe.data && queryAddress.data) {
+    voteData[0].th = queryVal.data.proposal.electoralTh;
+    voteData[1].th = queryVal.data.proposal.winningTh;
     console.log("!@#!@#!@#!@#!@!#!@#!@#");
     myPRep = isMyPRep();
     votedIdx = getVotedIdx();
@@ -178,27 +171,23 @@ function ProposalContainer(props: any) {
     console.log("hahahaha", votedPower);
   }
 
-  // voted item 0, 1, 2, 3     ... -1
-  // owner
-  // myPRep
-
-  // id
-  // Publish
-
   return (
-    <Proposal
-      id={id}
-      myPRep={myPRep}
-      votedIdx={votedIdx}
-      owner={owner}
-      votedPower={votedPower}
-      voteSelect={voteSelect}
-      voteData={voteData}
-      Publish={Publish}
-      Vote={Vote}
-      handleChange={handleChange}
-      {...queryVal}
-    />
+    <>
+      <Proposal
+        id={id}
+        myPRep={myPRep}
+        votedIdx={votedIdx}
+        owner={owner}
+        votedPower={votedPower}
+        voteSelect={voteSelect}
+        voteData={voteData}
+        Publish={Publish}
+        Vote={Vote}
+        handleChange={handleChange}
+        {...queryVal}
+      />
+      {voteSelect}
+    </>
   );
 }
 

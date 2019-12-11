@@ -30,7 +30,9 @@ function UserInfo(props: any) {
               alt={props.data.username}
               src={""}
               className={classes.noMarginPadding}
-            />
+            >
+              <AccountCircle fontSize="large" />
+            </Avatar>
           </Badge>
         </IconButton>
         <Menu
@@ -65,7 +67,7 @@ function UserInfo(props: any) {
           onClick={props.handleMenu}
         >
           <Avatar className={classes.noMarginPadding}>
-            <AccountCircle fontSize="large" />
+            <AccountCircle color="action" fontSize="large" />
           </Avatar>
         </IconButton>
         <Menu

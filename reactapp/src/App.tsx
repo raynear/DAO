@@ -7,9 +7,10 @@ import { ApolloProvider } from "react-apollo";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 import { GET_LOCAL_ME } from "./GQL";
+import { selected_icon_service, json_rpc_send_tx } from "./IconConnect";
 import Cookies from "js-cookie";
 
-import Layout from "./Layout";
+import LayoutContainer from "./LayoutContainer";
 
 const client = new ApolloClient({
   uri: "https://localhost:8080/graphql/",
@@ -45,7 +46,7 @@ const client = new ApolloClient({
 
 function App(props: any) {
 
-  const eventHandler = (event: any) => {
+  const eventHandler = async (event: any) => {
     const type = event.detail.type;
     const payload = event.detail.payload;
     if (type === "RESPONSE_SIGNING") {
@@ -56,9 +57,21 @@ function App(props: any) {
       console.log(payload);
     } else if (type === "RESPONSE_ADDRESS") {
       client.writeData({ data: { icon_address: payload } });
+      console.log(client);
+      sendVerify(payload);
     }
   };
   window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
+
+  function sendVerify(address: string) {
+    client.query({ query: GET_LOCAL_ME }).then(async (result) => {
+      console.log("reload OK");
+      let lastBlock = await selected_icon_service.getBlock('latest').execute();
+      let params = { "_BlockHash": lastBlock.blockHash, "_ID": result.data.username };
+
+      json_rpc_send_tx(address, "Verify", params);
+    })
+  }
 
   client.query({ query: gql`{ viewer{ username iconAddress }}` }).then((result: any) => {
     client.writeData({ data: { username: result.data.viewer.username, icon_address: result.data.viewer.iconAddress } });
@@ -70,7 +83,7 @@ function App(props: any) {
   return (
     <BrowserRouter>
       <ApolloProvider client={client}>
-        <Layout />
+        <LayoutContainer />
       </ApolloProvider>
     </BrowserRouter>
   );

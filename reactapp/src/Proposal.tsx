@@ -67,13 +67,11 @@ function Proposal(props: any) {
 
   function SelectList() {
     console.log("Environment for SelectList", props.data.proposal.published, props.votedIdx, props.myPRep)
-    if (props.data.proposal.published === false || props.votedIdx > 0 || !props.myPRep) {
-      console.log("just list");
-      return (<SelectItemList />);
-    } else {
-      console.log("votable list");
+
+    if (props.data.proposal.published && (props.myPRep || props.owner) && props.votedIdx === -1) {
       return (<RadioButtons />);
     }
+    return (<SelectItemList />);
   }
 
   function VoteButton() {
@@ -109,13 +107,12 @@ function Proposal(props: any) {
   }
 
   function ActionButton() {
-    if (props.data.proposal.published && props.myPRep && props.votedIdx === -1) {
+    if (props.data.proposal.published && (props.myPRep || props.owner) && props.votedIdx === -1) {
       return <VoteButton />;
     }
     if (!props.data.proposal.published && props.owner) {
       return <PublishButton />;
     }
-
     return <div>{" "}</div>
   }
 
