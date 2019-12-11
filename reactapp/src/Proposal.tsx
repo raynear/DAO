@@ -2,7 +2,8 @@ import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip } from "@material-ui/core";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar } from "recharts";
-import ReactMarkdown from "react-markdown";
+
+import { TUIViewer } from "./TUIEditor";
 
 import useStyles from "./Style";
 
@@ -156,10 +157,8 @@ function Proposal(props: any) {
             <br />
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <ReactMarkdown
-              source={props.data.proposal.contents.split("<br>").join("\n")}
-              skipHtml={true}
-              escapeHtml={false}
+            <TUIViewer
+              initialValue={props.data.proposal.contents}
             />
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>

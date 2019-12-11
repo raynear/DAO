@@ -188,7 +188,6 @@ function ProposalContainer(props: any) {
         handleChange={handleChange}
         {...queryVal}
       />
-      {voteSelect}
     </>
   );
 }

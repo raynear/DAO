@@ -2,14 +2,17 @@ import React from "react";
 import "codemirror/lib/codemirror.css";
 import "tui-editor/dist/tui-editor.min.css";
 import "tui-editor/dist/tui-editor-contents.min.css";
-import { Editor } from "@toast-ui/react-editor";
+import { Editor, Viewer } from "@toast-ui/react-editor";
 
-function TUIEditor(props: any) {
+export function TUIEditor(props: any) {
   let editorRef = React.createRef<any>();
 
-  const handleChange = () => {
+  let handleChange = () => {
     const value = editorRef.current.getInstance().getValue();
     props.onChange(value);
+  }
+  if (!props.onChange) {
+    handleChange = () => { return }
   }
 
   return (
@@ -26,4 +29,11 @@ function TUIEditor(props: any) {
   );
 }
 
-export default TUIEditor;
+export function TUIViewer(props: any) {
+  return (
+    <Viewer
+      initialValue={props.initialValue}
+      height={props.height}
+    />
+  );
+}

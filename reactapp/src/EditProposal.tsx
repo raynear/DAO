@@ -6,7 +6,7 @@ import { AddRounded } from "@material-ui/icons";
 import DateFnsUtils from "@date-io/date-fns";
 import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
 
-import TUIEditor from "./TUIEditor";
+import { TUIEditor } from "./TUIEditor";
 
 import useStyles from "./Style";
 
