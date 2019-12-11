@@ -26,7 +26,7 @@ function Proposal(props: any) {
                 <li key={selectItem.index}>
                   <Tooltip title="You Vote!">
                     <Typography variant="body1" color="primary">
-                      {selectItem.contents} {"(" + props.voteItem[selectItem.index].toString() + ")"}
+                      {selectItem.contents} {"(" + props.votedPower[selectItem.index].toString() + ")"}
                     </Typography>
                   </Tooltip>
                 </li>
@@ -35,7 +35,7 @@ function Proposal(props: any) {
               return (
                 <li key={selectItem.index}>
                   <Typography variant="body1" color="textPrimary">
-                    {selectItem.contents} {"(" + props.voteItem[selectItem.index].toString() + ")"}
+                    {selectItem.contents} {"(" + props.votedPower[selectItem.index].toString() + ")"}
                   </Typography>
                 </li>
               );
@@ -109,13 +109,14 @@ function Proposal(props: any) {
   }
 
   function ActionButton() {
-    if (props.data.proposal.published && props.myPRep) {
+    if (props.data.proposal.published && props.myPRep && props.votedIdx === -1) {
       return <VoteButton />;
-    } else if (props.owner) {
-      return <PublishButton />;
-    } else {
-      return <div>{" "}</div>
     }
+    if (!props.data.proposal.published && props.owner) {
+      return <PublishButton />;
+    }
+
+    return <div>{" "}</div>
   }
 
   if (props.loading) return <p>Loading...</p>;

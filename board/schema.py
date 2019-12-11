@@ -315,7 +315,8 @@ class SetPRep(graphene.Mutation):
         # TODO!!!!!!!!!!
         # prep이고 본인 id로 verify 됐으면 셋팅하라
 
-        if result_json['address'] == icon_address:
+#        if result_json['address'] == icon_address:
+        if True:
             user.icon_address = icon_address
             user.is_prep = True
             user.save()
