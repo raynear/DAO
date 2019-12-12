@@ -3,11 +3,16 @@ import React from "react";
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
 import { VIEWER, GET_LOCAL_SNACK } from "./GQL";
 
+// import useForceUpdate from "./useForceUpdate";
+
 import Layout from "./Layout";
 
 function LayoutContainer(props: any) {
   console.log("LayoutContainer props", props);
   const client = useApolloClient();
+
+  //  const forceUpdate = useForceUpdate();
+
   const noSnack = { open: false, message: "" };
   const querySnack = useQuery(GET_LOCAL_SNACK);
 
@@ -21,6 +26,7 @@ function LayoutContainer(props: any) {
       return;
     }
 
+    //    forceUpdate();
     client.writeData({ data: { snack: { open: false, message: "", __typename: "snack" } } });
   };
 

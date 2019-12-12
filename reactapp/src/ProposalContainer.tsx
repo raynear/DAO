@@ -159,9 +159,11 @@ function ProposalContainer(props: any) {
     variables: { id: id }
   });
 
-  if (queryVal && queryVal.data && queryMe.data && queryAddress.data) {
+  if (queryVal && queryVal.data) {
     voteData[0].th = queryVal.data.proposal.electoralTh;
     voteData[1].th = queryVal.data.proposal.winningTh;
+  }
+  if (queryVal && queryVal.data && queryMe.data && queryAddress.data) {
     console.log("!@#!@#!@#!@#!@!#!@#!@#");
     myPRep = isMyPRep();
     votedIdx = getVotedIdx();

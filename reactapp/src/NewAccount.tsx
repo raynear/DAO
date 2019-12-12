@@ -47,7 +47,7 @@ function NewAccount(props: any) {
       <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
         <TextField
           id="password2"
-          label="Password(again)"
+          label="Confirm Password"
           name="password2"
           type="password"
           variant="outlined"

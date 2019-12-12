@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip } from "@material-ui/core";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar } from "recharts";
+// import clsx from "clsx";
 
 import { TUIViewer } from "./TUIEditor";
 
@@ -25,7 +26,7 @@ function Proposal(props: any) {
             if (props.votedIdx === selectItem.index) {
               return (
                 <li key={selectItem.index}>
-                  <Tooltip title="You Vote!" placement="right">
+                  <Tooltip title="Voted" placement="left">
                     <Typography variant="body1" color="primary">
                       {selectItem.contents} {"(" + props.votedPower[selectItem.index].toString() + ")"}
                     </Typography>
@@ -150,6 +151,10 @@ function Proposal(props: any) {
             <Typography variant="caption" color="textPrimary">
               expire at : {props.data.proposal.expireAt}
             </Typography>
+            <div className={classes.right}>
+              <a href="#" onClick={FacebookShare} ><img src={facebookImg} width="40" alt="페이스북 공유하기" /></a>
+              <a href="#" onClick={TwitterShare} ><img src={twitterImg} width="40" alt="트위터 공유하기" /></a>
+            </div>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <br />
@@ -189,14 +194,6 @@ function Proposal(props: any) {
           <Grid item className={classes.grid} xs={12} md={12} lg={12}>
             <br />
             <ActionButton />
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Grid container className={classes.container}>
-              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                <a href="#" onClick={FacebookShare} ><img src={facebookImg} width="40" alt="페이스북 공유하기" /></a>
-                <a href="#" onClick={TwitterShare} ><img src={twitterImg} width="40" alt="트위터 공유하기" /></a>
-              </Grid>
-            </Grid>
           </Grid>
         </Grid>
       </Paper>
