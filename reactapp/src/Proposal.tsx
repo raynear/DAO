@@ -186,13 +186,13 @@ function Proposal(props: any) {
               <Bar dataKey="voted" fill="#3377ff" background={{ fill: '#EEEEEE' }} />
             </BarChart>
           </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+          <Grid item className={classes.grid} xs={12} md={12} lg={12}>
             <br />
             <ActionButton />
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Grid container className={classes.container}>
-              <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <Grid item className={classes.grid} xs={12} md={12} lg={12}>
                 <a href="#" onClick={FacebookShare} ><img src={facebookImg} width="40" alt="페이스북 공유하기" /></a>
                 <a href="#" onClick={TwitterShare} ><img src={twitterImg} width="40" alt="트위터 공유하기" /></a>
               </Grid>

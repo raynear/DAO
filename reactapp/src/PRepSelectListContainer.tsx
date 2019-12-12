@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "@apollo/react-hooks"
 import { GET_PREPS } from "./GQL";
 import { json_rpc_call } from "./IconConnect";
