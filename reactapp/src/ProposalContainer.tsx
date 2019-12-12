@@ -150,7 +150,7 @@ function ProposalContainer(props: any) {
     setVoteSelect(parseInt((event.target as HTMLInputElement).value));
   };
 
-  async function GetVotersVotingPower(voterAddress: string) {
+  async function GetVotersVotingPower(prepAddress: string, voterAddress: string) {
     //    const delegateResp = await governance_call("getDelegate", { address: voterAddress });
     let result2 = JSON.parse(`{
       "result": {
@@ -179,9 +179,14 @@ function ProposalContainer(props: any) {
       }
     }`);
 
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     console.log(result2);
-    return 100;
+    for (const aPRepKey in result2.result.delegations) {
+      const aPRep = result2.result.delegations[aPRepKey];
+      if (aPRep.address === prepAddress) {
+        return aPRep.value;
+      }
+    }
+    return 1;
   }
 
   function isMyPRep() {
