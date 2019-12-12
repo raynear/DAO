@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL, GET_LOCAL_ME, GET_LOCAL_ADDRESS } from "./GQL";
+import axios from "axios";
 
-// import { json_rpc_call } from "./IconConnect";
+import { selected_icon_service, governance_call } from "./IconConnect";
 
 import Proposal from "./Proposal";
 
@@ -42,12 +43,144 @@ function ProposalContainer(props: any) {
     window.location.reload();
   }
 
+  async function FindBlockHeightFromDatetime(datetime: string) {
+    // 주어진 datetime 바로 전에 생성된 block height
+    const givenDate = new Date(datetime);
+    const delegateStartBlockHeight = 9000000;
+    const lastBlock = await selected_icon_service.getBlock('latest').execute();
+
+    let min = delegateStartBlockHeight;
+    let max = lastBlock.height;
+    let findFlag = false;
+    while (!findFlag) {
+      let curr = Math.floor((min + max) / 2);
+      if (curr === min || curr === max) {
+        findFlag = true;
+      }
+      const respBlock = await axios.get("https://tracker.icon.foundation/v3/block/info", { params: { height: curr } });
+      const currDate = new Date(respBlock.data.data.createDate);
+      if (currDate < givenDate) {
+        min = curr;
+      } else {
+        max = curr;
+      }
+    }
+
+    const maxBlock = await axios.get("https://tracker.icon.foundation/v3/block/info", { params: { height: max } });
+    const maxDate = new Date(maxBlock.data.data.createDate);
+    const minBlock = await axios.get("https://tracker.icon.foundation/v3/block/info", { params: { height: min } });
+    const minDate = new Date(minBlock.data.data.createDate);
+    if (givenDate < maxDate) {
+      if (givenDate < minDate) {
+        return min - 1;
+      }
+      else {
+        return min;
+      }
+    } else {
+      return max;
+    }
+  }
+
+  async function FindBlockHeightFromDatetime_testnet(datetime: string) {
+    // 주어진 datetime 바로 전에 생성된 block height
+    const givenDate = new Date(datetime);
+    const delegateStartBlockHeight = 4000000;
+    const lastBlock = await selected_icon_service.getBlock('latest').execute();
+
+    let min = delegateStartBlockHeight;
+    let max = lastBlock.height;
+    let findFlag = false;
+    while (!findFlag) {
+      let curr = Math.floor((min + max) / 2);
+      if (curr === min || curr === max) {
+        findFlag = true;
+      }
+      const respBlock = await axios.get("https://bicon.tracker.solidwallet.io/v3/block/info", { params: { height: curr } });
+      const currDate = new Date(respBlock.data.data.createDate);
+      if (currDate < givenDate) {
+        min = curr;
+      } else {
+        max = curr;
+      }
+    }
+
+    const maxBlock = await axios.get("https://bicon.tracker.solidwallet.io/v3/block/info", { params: { height: max } });
+    const maxDate = new Date(maxBlock.data.data.createDate);
+    const minBlock = await axios.get("https://bicon.tracker.solidwallet.io/v3/block/info", { params: { height: min } });
+    const minDate = new Date(minBlock.data.data.createDate);
+    if (givenDate < maxDate) {
+      if (givenDate < minDate) {
+        return min - 1;
+      }
+      else {
+        return min;
+      }
+    } else {
+      return max;
+    }
+  }
+
+  async function CalculateFinalVoteRate(address: string, blockHeight: number) {
+    let latestTx: any = false;
+
+    const respTxList = await axios.get("https://tracker.icon.foundation/v3/address/txList", { params: { address: address, page: 1, count: 1000 } })
+    const txList = respTxList.data.data;
+    const txCnt = respTxList.data.listSize;
+    const txTotalCnt = respTxList.data.totalSize;
+
+    for (let aTxKey in txList) {
+      const aTx = txList[aTxKey];
+      if (aTx.height < blockHeight && aTx.toAddr === "cx0000000000000000000000000000000000000000") {
+        const respTxDetail = await axios.get("https://tracker.icon.foundation/v3/transaction/txDetail", { params: { txHash: aTx.txHash } });
+        const txDetail = respTxDetail.data.data;
+        const txData = JSON.parse(txDetail.dataString);
+        if (txData.method === "setDelegation") {
+          if (latestTx.height < aTx.height || latestTx === false) {
+            latestTx = aTx;
+          }
+        }
+      }
+    }
+    return latestTx;
+  }
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log("Selected", (event.target as HTMLInputElement).value);
     setVoteSelect(parseInt((event.target as HTMLInputElement).value));
   };
 
-  function GetVotersVotingPower(voter: string) {
+  async function GetVotersVotingPower(voterAddress: string) {
+    //    const delegateResp = await governance_call("getDelegate", { address: voterAddress });
+    let result2 = JSON.parse(`{
+      "result": {
+      "status": "0x1",
+      "totalDelegated": "0xa688906bd8b0000",
+      "totalFined": "0x1300",
+      "votingPower": "0x3782dace9d90000",
+      "delegations": [
+          {
+            "address": "hxd1a3147ac75edc40d1094b8ec4f6a2bbd77ffbd4",
+            "value": "0x3782dace9d90000",
+            "status": "0x0"
+          },
+          {
+            "address": "hx1d6463e4628ee52a7f751e9d500a79222a7f3935",
+            "value": "0x3782dace9d90000",
+            "status": "0x0"
+          },
+          {
+            "address": "hxb6bc0bf95d90cb3cd5b3abafd9682a62f36cc826",
+            "value": "0x6f05b59d3b20000",
+            "status": "0x2",
+            "fined": "0x1300"
+          }
+        ]
+      }
+    }`);
+
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    console.log(result2);
     return 100;
   }
 
@@ -135,8 +268,8 @@ function ProposalContainer(props: any) {
       if (aSelectItem['votemodelSet']) {
         test = aSelectItem['votemodelSet'];
       }
-      test.forEach((aVote) => {
-        VotingPower += GetVotersVotingPower(aVote.voter.username);
+      test.forEach(async (aVote) => {
+        VotingPower += await GetVotersVotingPower(aVote.voter.iconAddress);
       });
 
       VoteItem.push(VotingPower);
@@ -174,6 +307,14 @@ function ProposalContainer(props: any) {
     votedPower = getVotedPowers();
     console.log("hahahaha", votedPower);
   }
+
+
+  FindBlockHeightFromDatetime("2019-10-15T03:05:03").then((result) => {
+    console.log(result);
+    CalculateFinalVoteRate("hx9f4d9755a8c6e65a502bda11a8931641f934c837", result).then((result2) => {
+      console.log(result2);
+    });
+  });
 
   return (
     <>

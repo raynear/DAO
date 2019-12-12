@@ -27,6 +27,7 @@ export const GET_PROPOSAL = gql`
           voter {
             id
             username
+            iconAddress
           }
         }
       }
