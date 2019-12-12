@@ -274,7 +274,7 @@ function ProposalContainer(props: any) {
         test = aSelectItem['votemodelSet'];
       }
       test.forEach(async (aVote) => {
-        VotingPower += await GetVotersVotingPower(aVote.voter.iconAddress);
+        VotingPower += await GetVotersVotingPower(queryVal.data.proposal.prep.iconAddress, aVote.voter.iconAddress);
       });
 
       VoteItem.push(VotingPower);
