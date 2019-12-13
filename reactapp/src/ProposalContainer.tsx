@@ -12,11 +12,12 @@ let voteData = [
   { name: 'winningTH', th: 0, voted: 0 },
 ];
 
-async function ProposalContainer(props: any) {
+function ProposalContainer(props: any) {
   console.log("ProposalContainer props", props);
   const id = props.match.params.ID;
 
   const [voteSelect, setVoteSelect] = useState();
+  const [votedPower, setVotedPower] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
   const [mutatePublish] = useMutation(SET_PUBLISH);
   const [mutateVote] = useMutation(SET_VOTE);
@@ -25,7 +26,7 @@ async function ProposalContainer(props: any) {
     mutatePublish({
       variables: { proposalId: id }
     }).then(publishResult => {
-      console.log("vote", publishResult);
+      console.log("publish", publishResult);
     });
     console.log("Publish!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
@@ -192,7 +193,7 @@ async function ProposalContainer(props: any) {
 
   function isMyPRep() {
     // governance_call("getDelegation", { "address": queryAddress.data.icon_address}).then((result2: any) => {
-    console.log(queryAddress);
+    //    console.log(queryAddress);
     let result2 = JSON.parse(`{
       "result": {
       "status": "0x1",
@@ -283,51 +284,54 @@ async function ProposalContainer(props: any) {
         console.log("!@#!@#", VotingPower);
       }
 
-      VoteItem.push(VotingPower);
+      VoteItem.push((VotingPower / 1000000000000000000));
     }
 
     console.log("VoteItem!!!!!!!!!!!!!!!!!", VoteItem);
     return VoteItem;
   }
 
+  const queryMe = useQuery(GET_LOCAL_ME);
+  //  console.log("queryMe", queryMe);
+  const queryAddress = useQuery(GET_LOCAL_ADDRESS);
+  //  console.log("queryAddress", queryAddress);
+  const queryVal = useQuery(GET_PROPOSAL, { variables: { id: id } });
+
+  if (queryMe.loading || queryAddress.loading || queryVal.loading) {
+    return <p>loading</p>
+  }
+
   let myPRep = false;
   let votedIdx = -1;
   let owner = false;
-  let votedPower: any[] = [];
 
-  const queryMe = useQuery(GET_LOCAL_ME);
-  console.log("queryMe", queryMe);
-  const queryAddress = useQuery(GET_LOCAL_ADDRESS);
-  console.log("queryAddress", queryAddress);
-
-  const queryVal = useQuery(GET_PROPOSAL, {
-    variables: { id: id }
-  });
-
-  if (queryVal && queryVal.data) {
-    voteData[0].th = queryVal.data.proposal.electoralTh;
-    voteData[1].th = queryVal.data.proposal.winningTh;
-  }
   if (queryVal && queryVal.data && queryMe.data && queryAddress.data) {
-    console.log("!@#!@#!@#!@#!@!#!@#!@#");
+    //    console.log("!@#!@#!@#!@#!@!#!@#!@#");
     myPRep = isMyPRep();
     votedIdx = getVotedIdx();
     owner = amIOwner();
-    console.log("condition value", myPRep, votedIdx, owner);
+    //    console.log("condition value", myPRep, votedIdx, owner);
   }
   if (queryVal && queryVal.data) {
-    votedPower = await getVotedPowers();
-    console.log("hahahaha", votedPower);
+    voteData[0].th = queryVal.data.proposal.electoralTh;
+    voteData[1].th = queryVal.data.proposal.winningTh;
+
+    getVotedPowers().then((result) => {
+      if (votedPower[0] === 0 && votedPower[1] === 0 && votedPower[2] === 0 && votedPower[3] === 0 && votedPower[4] === 0 && votedPower[5] === 0 && votedPower[6] === 0 && votedPower[7] === 0 && votedPower[8] === 0 && votedPower[9] === 0) {
+        setVotedPower(result);
+        //        console.log("hahahaha", votedPower);
+      }
+    });
   }
 
-
-  FindBlockHeightFromDatetime("2019-10-15T03:05:03").then((result) => {
-    console.log(result);
-    CalculateFinalVoteRate("hx9f4d9755a8c6e65a502bda11a8931641f934c837", result).then((result2) => {
-      console.log(result2);
+  /*
+    FindBlockHeightFromDatetime("2019-10-15T03:05:03").then((result) => {
+  //    console.log(result);
+      CalculateFinalVoteRate("hx9f4d9755a8c6e65a502bda11a8931641f934c837", result).then((result2) => {
+  //      console.log(result2);
+      });
     });
-  });
-
+  */
   return (
     <>
       <Proposal

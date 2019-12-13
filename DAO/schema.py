@@ -64,11 +64,10 @@ class Logout(graphene.Mutation):
 
 
 class Mutation(board.schema.MyMutation, graphene.ObjectType):
-    # social_auth = graphql_social_auth.SocialAuthJWT.Field()
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
-    social_auth = graphql_social_auth.SocialAuth.Field()
+    social_auth = graphql_social_auth.SocialAuthJWT.Field()
     set_user = SetUser.Field()
     logout = Logout.Field()
     pass

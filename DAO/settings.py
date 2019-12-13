@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "graphene_django",
+    #    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "social_django",
     "corsheaders",
     "sslserver",
@@ -64,7 +65,7 @@ GRAPHENE = {
 GRAPHQL_JWT = {
     'JWT_ALLOW_ARGUMENT': True,
     'JWT_VERIFY_EXPIRATION': True,
-    'JWT_EXPIRATION_DELTA': timedelta(minutes=5),
+    'JWT_EXPIRATION_DELTA': timedelta(minutes=30),
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
 }
 

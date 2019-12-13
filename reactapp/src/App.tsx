@@ -78,6 +78,8 @@ function App(props: any) {
     client.query({ query: GET_LOCAL_ME }).then(result => {
       console.log("reload OK");
     })
+  }).catch((error: any) => {
+    console.log("Not Logined");
   })
 
   return (

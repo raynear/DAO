@@ -52,20 +52,22 @@ function SignIn(props: any) {
                 Sign in
               </Button>
             </Grid>
-            <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
-              <Button
-                variant="contained"
-                color="secondary"
-                href="https://localhost:8080/oauth/login/kakao"
-              >
-                Kakao Login
-              </Button>
-            </Grid>
           </Grid>
         </Paper>
       </Grid>
     </Fragment>
   );
 }
+/*
+          <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
+            <Button
+              variant="contained"
+              color="secondary"
+              href="https://localhost:8080/oauth/login/kakao"
+            >
+              Kakao Login
+            </Button>
+          </Grid>
+*/
 
 export default SignIn;

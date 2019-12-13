@@ -18,7 +18,7 @@ function Proposal(props: any) {
   const classes = useStyles();
 
   function SelectItemList() {
-    console.log("SelectItemList", props.data.proposal.selectitemmodelSet);
+    //    console.log("SelectItemList", props.data.proposal.selectitemmodelSet);
     return (
       <ul>
         {props.data.proposal.selectitemmodelSet.map(
@@ -68,7 +68,7 @@ function Proposal(props: any) {
   }
 
   function SelectList() {
-    console.log("Environment for SelectList", props.data.proposal.published, props.votedIdx, props.myPRep)
+    //    console.log("Environment for SelectList", props.data.proposal.published, props.votedIdx, props.myPRep)
 
     if (props.data.proposal.published && (props.myPRep || props.owner) && props.votedIdx === -1) {
       return (<RadioButtons />);
