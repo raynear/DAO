@@ -12,7 +12,7 @@ let voteData = [
   { name: 'winningTH', th: 0, voted: 0 },
 ];
 
-function ProposalContainer(props: any) {
+async function ProposalContainer(props: any) {
   console.log("ProposalContainer props", props);
   const id = props.match.params.ID;
 
@@ -183,7 +183,8 @@ function ProposalContainer(props: any) {
     for (const aPRepKey in result2.result.delegations) {
       const aPRep = result2.result.delegations[aPRepKey];
       if (aPRep.address === prepAddress) {
-        return aPRep.value;
+        console.log(")()(())())()()(", aPRep.value);
+        return parseInt(aPRep.value, 16);
       }
     }
     return 1;
@@ -263,23 +264,29 @@ function ProposalContainer(props: any) {
     return false;
   }
 
-  function getVotedPowers() {
+  async function getVotedPowers() {
     let VoteItem: number[] = [];
 
-    queryVal.data.proposal.selectitemmodelSet.forEach((aSelectItem: any) => {
+    for (const selectItemKey in queryVal.data.proposal.selectitemmodelSet) {
+      const aSelectItem = queryVal.data.proposal.selectitemmodelSet[selectItemKey];
+      //    .forEach((aSelectItem: any) => {
       let VotingPower = 0;
 
       let test: any[] = [];
       if (aSelectItem['votemodelSet']) {
         test = aSelectItem['votemodelSet'];
       }
-      test.forEach(async (aVote) => {
+      //      test.forEach(async (aVote) => 
+      for (const VoteKey in test) {
+        const aVote = test[VoteKey];
         VotingPower += await GetVotersVotingPower(queryVal.data.proposal.prep.iconAddress, aVote.voter.iconAddress);
-      });
+        console.log("!@#!@#", VotingPower);
+      }
 
       VoteItem.push(VotingPower);
-    })
+    }
 
+    console.log("VoteItem!!!!!!!!!!!!!!!!!", VoteItem);
     return VoteItem;
   }
 
@@ -309,7 +316,7 @@ function ProposalContainer(props: any) {
     console.log("condition value", myPRep, votedIdx, owner);
   }
   if (queryVal && queryVal.data) {
-    votedPower = getVotedPowers();
+    votedPower = await getVotedPowers();
     console.log("hahahaha", votedPower);
   }
 
