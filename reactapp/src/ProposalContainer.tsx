@@ -17,7 +17,7 @@ function ProposalContainer(props: any) {
   const id = props.match.params.ID;
 
   const [voteSelect, setVoteSelect] = useState();
-  const [votedPower, setVotedPower] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  const [votedPower, setVotedPower] = useState<any>(false);
 
   const [mutatePublish] = useMutation(SET_PUBLISH);
   const [mutateVote] = useMutation(SET_VOTE);
@@ -42,6 +42,10 @@ function ProposalContainer(props: any) {
     console.log("Vote!!!!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
     window.location.reload();
+  }
+
+  function FinalizeVote() {
+    console.log("Finalize Vote");
   }
 
   async function FindBlockHeightFromDatetime(datetime: string) {
@@ -317,7 +321,7 @@ function ProposalContainer(props: any) {
     voteData[1].th = queryVal.data.proposal.winningTh;
 
     getVotedPowers().then((result) => {
-      if (votedPower[0] === 0 && votedPower[1] === 0 && votedPower[2] === 0 && votedPower[3] === 0 && votedPower[4] === 0 && votedPower[5] === 0 && votedPower[6] === 0 && votedPower[7] === 0 && votedPower[8] === 0 && votedPower[9] === 0) {
+      if (!votedPower) {
         setVotedPower(result);
         //        console.log("hahahaha", votedPower);
       }

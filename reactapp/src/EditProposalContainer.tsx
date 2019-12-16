@@ -76,6 +76,8 @@ function EditProposalContainer(props: any) {
 
   const handleDateChange = (date: Date | null) => {
     if (date) {
+      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      console.log(date);
       setValues({ ...values, expireAt: date });
     }
   };
@@ -93,6 +95,7 @@ function EditProposalContainer(props: any) {
     else {
       setValues({ ...values, [name]: newValue });
     }
+    console.log(values);
   };
 
   function handleEditorChange(content: string) {
@@ -160,13 +163,14 @@ function EditProposalContainer(props: any) {
 
   if (queryVal.data && queryVal.data.proposal && values.id === -1) {
     let proposal = queryVal.data.proposal;
+    let date = new Date(proposal.expireAt);
     setValues({
       id: proposal.id,
       electoralTh: proposal.electoralTh,
       winningTh: proposal.winningTh,
       subject: proposal.subject,
       contents: proposal.contents,
-      expireAt: new Date(proposal.expireAt),
+      expireAt: date,
       selectitemmodelSet: []
     });
 

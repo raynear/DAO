@@ -64,7 +64,6 @@ function Proposals(props: any) {
             </Grid>
           </Grid>
           {props.data.proposals.map((item: any, idx: number) => {
-            const votedPowers = props.getVotedPowers(item.selectitemmodelSet)
             return (
               <Grid item className={classes.item} key={idx} xs={12} lg={6}>
                 <Paper className={classes.paper}>
@@ -76,16 +75,11 @@ function Proposals(props: any) {
                       {item.subject}
                     </Link>
                   </Typography>
-                  <ReactMarkdown
-                    source={item.contents.split("<br>").join("\n").split("\n")[0]}
-                    skipHtml={false}
-                    escapeHtml={false}
-                  />
                   <ul>
                     {item.selectitemmodelSet.map((selectItem: any, idx: number) => (
                       <Typography variant="body1" key={idx} color="textSecondary">
                         <li>
-                          {selectItem.contents} {"(" + votedPowers[idx] + ")"}
+                          {selectItem.contents}
                         </li>
                       </Typography>
                     ))}

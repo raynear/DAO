@@ -28,7 +28,7 @@ function Proposal(props: any) {
                 <li key={selectItem.index}>
                   <Tooltip title="Voted" placement="left">
                     <Typography variant="body1" color="primary">
-                      {selectItem.contents} {"(" + props.votedPower[selectItem.index].toString() + ")"}
+                      {selectItem.contents} {props.votedPower && "(" + props.votedPower[selectItem.index].toString() + ")"}
                     </Typography>
                   </Tooltip>
                 </li>
@@ -37,7 +37,7 @@ function Proposal(props: any) {
               return (
                 <li key={selectItem.index}>
                   <Typography variant="body1" color="textPrimary">
-                    {selectItem.contents} {"(" + props.votedPower[selectItem.index].toString() + ")"}
+                    {selectItem.contents} {props.votedPower && "(" + props.votedPower[selectItem.index].toString() + ")"}
                   </Typography>
                 </li>
               );
@@ -89,6 +89,18 @@ function Proposal(props: any) {
     );
   }
 
+  function FinalizeVoteButton() {
+    return (
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={props.FinalizeVote}
+      >
+        Finalize Vote
+      </Button>
+    );
+  }
+
   function PublishButton() {
     return (
       <Fragment>
@@ -109,6 +121,10 @@ function Proposal(props: any) {
   }
 
   function ActionButton() {
+    const expireAt = new Date(props.data.proposal.expireAt);
+    if (expireAt.getTime() < Date.now() && props.owner) {
+      return <FinalizeVoteButton />;
+    }
     if (props.data.proposal.published && (props.myPRep || props.owner) && props.votedIdx === -1) {
       return <VoteButton />;
     }
