@@ -36,5 +36,9 @@ SCORE/muljomDAO/.DS_Store
 SCORE/.DS_Store
 account/.DS_Store
 .DS_Store
+.score
+.statedb
+rc.log
+tbears.log
 
 key.pw

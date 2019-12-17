@@ -17,8 +17,9 @@ from account.models import User
 
 from .models import ProposalModel, SelectItemModel, VoteModel
 
-from .icon_network import MAIN_NET, TEST_NET, TEST_NET3, LOCAL_NET, SCORE_ADDRESS
-NETWORK = TEST_NET3
+from .icon_network import MAIN_NET, TEST_NET, TEST_NET3, LOCAL_NET, SCORE_ADDRESS, LOCAL_SCORE_ADDRESS
+NETWORK = LOCAL_NET
+SCORE = LOCAL_SCORE_ADDRESS
 
 prep_required = user_passes_test(lambda u: u.is_prep)
 
@@ -145,12 +146,12 @@ class PublishProposal(graphene.Mutation):
     def mutate(self, info, proposal_id):
         proposal = ProposalModel.objects.get(pk=proposal_id)
 
-        icon_service = IconService(HTTPProvider(TEST_NET, 3))
-        print(SCORE_ADDRESS)
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
+        print(SCORE)
         print(info.context.user.username)
 
         call = CallBuilder()\
-            .to(SCORE_ADDRESS)\
+            .to(SCORE)\
             .method("GetVerifyInfoByID")\
             .params({"_ID": info.context.user.username})\
             .build()
@@ -177,7 +178,7 @@ class PublishProposal(graphene.Mutation):
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
-            .to(SCORE_ADDRESS)\
+            .to(SCORE)\
             .step_limit(10000000000)\
             .nid(3)\
             .method("SetProposal")\
@@ -218,7 +219,7 @@ class VoteProposal(graphene.Mutation):
             index__exact=select_item_index)
         qs = qs.filter(filter)
 
-        icon_service = IconService(HTTPProvider(TEST_NET, 3))
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
 
         f = open("./key.pw", 'r')
         line = f.readline()
@@ -226,7 +227,7 @@ class VoteProposal(graphene.Mutation):
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
-            .to(SCORE_ADDRESS)\
+            .to(SCORE)\
             .step_limit(10000000000)\
             .nid(3)\
             .method("Vote")\
@@ -325,10 +326,10 @@ class SetPRep(graphene.Mutation):
     def mutate(self, info, icon_address):
         user = info.context.user
 
-        icon_service = IconService(HTTPProvider(MAIN_NET, 3))
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
         call = CallBuilder()\
             .to("cx0000000000000000000000000000000000000000")\
-            .method("getPReps")\
+            .method("getPRep")\
             .params({"address": icon_address})\
             .build()
 
@@ -336,15 +337,16 @@ class SetPRep(graphene.Mutation):
 #        result_json = json.loads(result)
 #        print("d", result_json)
 
-        icon_service = IconService(HTTPProvider(TEST_NET, 3))
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
         call = CallBuilder()\
-            .to(SCORE_ADDRESS)\
+            .to(SCORE)\
             .method("GetVerifyInfoByID")\
             .params({"_ID": user.username})\
             .build()
 
         result = icon_service.call(call)
-        result_json = json.loads(result)
+        print("result2", result)
+#        result_json = json.loads(result)
 
         # TODO!!!!!!!!!!
         # prep이고 본인 id로 verify 됐으면 셋팅하라

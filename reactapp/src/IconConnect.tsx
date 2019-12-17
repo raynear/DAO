@@ -5,7 +5,7 @@ const MAIN_NET = "https://ctz.solidwallet.io/api/v3";
 const TEST_NET = "https://bicon.net.solidwallet.io/api/v3"
 const TEST_CONTRACT = "cx7b2ce19fc7e18aad7df3ff72a0328a4af2f06360";
 const LOCAL_NET = "http://localhost:9000/api/v3";
-// const LOCAL_CONTRACT = "cxe84690d77ca118d4f74c14de6c7e17c784db1079";
+const LOCAL_CONTRACT = "cx21392744c7331bac9288e9c2b03e9344dfaf1fd9";
 const main_provider = new IconService.HttpProvider(MAIN_NET);
 export const main_icon_service = new IconService(main_provider);
 const local_provider = new IconService.HttpProvider(LOCAL_NET);
@@ -15,8 +15,8 @@ export const test_icon_service = new IconService(test_provider);
 export const IconBuilder = IconService.IconBuilder;
 export const IconConverter = IconService.IconConverter;
 
-const SELECTED_CONTRACT = TEST_CONTRACT;
-export const selected_icon_service = test_icon_service
+const SELECTED_CONTRACT = LOCAL_CONTRACT;
+export const selected_icon_service = local_icon_service
 
 export async function json_rpc_call(method_name: string, params: any) {
   console.log("params", params);
