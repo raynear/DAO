@@ -34,31 +34,6 @@ function ProposalsContainer(props: any) {
     setValues(filterValues);
   }
 
-  function GetVotersVotingPower(voter: string) {
-    return 100;
-  }
-
-  function getVotedPowers(selectList: any) {
-    let VoteItem: number[] = [];
-
-    selectList.forEach((aSelectItem: any) => {
-      let VotingPower = 0;
-
-      let test: any[] = [];
-      if (aSelectItem['votemodelSet']) {
-        test = aSelectItem['votemodelSet'];
-      }
-      test.forEach((aVote) => {
-        VotingPower += GetVotersVotingPower(aVote.voter.username);
-      });
-
-      VoteItem.push(VotingPower);
-    })
-
-    return VoteItem;
-  }
-
-
   useEffect(() => {
     const result = json_rpc_call("GetVerifyInfoByID", { "_ID": "raynear3" });
     console.log("result", result);
@@ -84,7 +59,6 @@ function ProposalsContainer(props: any) {
       filterValues={filterValues}
       queryFilters={queryFilters}
       handleChange={handleChange}
-      getVotedPowers={getVotedPowers}
     />
   );
 }
