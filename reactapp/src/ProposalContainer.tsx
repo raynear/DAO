@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL, GET_LOCAL_ME, GET_LOCAL_ADDRESS } from "./GQL";
 import axios from "axios";
 
-import { selected_icon_service, governance_call } from "./IconConnect";
+import { selected_icon_service, governance_call, json_rpc_call } from "./IconConnect";
 
 import Proposal from "./Proposal";
 
@@ -49,110 +49,8 @@ function ProposalContainer(props: any) {
     window.location.reload();
   }
 
-  function FinalizeVote() {
-    console.log("Finalize Vote");
-  }
-
-  async function FindBlockHeightFromDatetime(datetime: string) {
-    // 주어진 datetime 바로 전에 생성된 block height
-    const givenDate = new Date(datetime);
-    const delegateStartBlockHeight = 9000000;
-    const lastBlock = await selected_icon_service.getBlock('latest').execute();
-
-    let min = delegateStartBlockHeight;
-    let max = lastBlock.height;
-    let findFlag = false;
-    while (!findFlag) {
-      let curr = Math.floor((min + max) / 2);
-      if (curr === min || curr === max) {
-        findFlag = true;
-      }
-      const respBlock = await axios.get("https://tracker.icon.foundation/v3/block/info", { params: { height: curr } });
-      const currDate = new Date(respBlock.data.data.createDate);
-      if (currDate < givenDate) {
-        min = curr;
-      } else {
-        max = curr;
-      }
-    }
-
-    const maxBlock = await axios.get("https://tracker.icon.foundation/v3/block/info", { params: { height: max } });
-    const maxDate = new Date(maxBlock.data.data.createDate);
-    const minBlock = await axios.get("https://tracker.icon.foundation/v3/block/info", { params: { height: min } });
-    const minDate = new Date(minBlock.data.data.createDate);
-    if (givenDate < maxDate) {
-      if (givenDate < minDate) {
-        return min - 1;
-      }
-      else {
-        return min;
-      }
-    } else {
-      return max;
-    }
-  }
-
-  async function FindBlockHeightFromDatetime_testnet(datetime: string) {
-    // 주어진 datetime 바로 전에 생성된 block height
-    const givenDate = new Date(datetime);
-    const delegateStartBlockHeight = 4000000;
-    const lastBlock = await selected_icon_service.getBlock('latest').execute();
-
-    let min = delegateStartBlockHeight;
-    let max = lastBlock.height;
-    let findFlag = false;
-    while (!findFlag) {
-      let curr = Math.floor((min + max) / 2);
-      if (curr === min || curr === max) {
-        findFlag = true;
-      }
-      const respBlock = await axios.get("https://bicon.tracker.solidwallet.io/v3/block/info", { params: { height: curr } });
-      const currDate = new Date(respBlock.data.data.createDate);
-      if (currDate < givenDate) {
-        min = curr;
-      } else {
-        max = curr;
-      }
-    }
-
-    const maxBlock = await axios.get("https://bicon.tracker.solidwallet.io/v3/block/info", { params: { height: max } });
-    const maxDate = new Date(maxBlock.data.data.createDate);
-    const minBlock = await axios.get("https://bicon.tracker.solidwallet.io/v3/block/info", { params: { height: min } });
-    const minDate = new Date(minBlock.data.data.createDate);
-    if (givenDate < maxDate) {
-      if (givenDate < minDate) {
-        return min - 1;
-      }
-      else {
-        return min;
-      }
-    } else {
-      return max;
-    }
-  }
-
-  async function CalculateFinalVoteRate(address: string, blockHeight: number) {
-    let latestTx: any = false;
-
-    const respTxList = await axios.get("https://tracker.icon.foundation/v3/address/txList", { params: { address: address, page: 1, count: 1000 } })
-    const txList = respTxList.data.data;
-    const txCnt = respTxList.data.listSize;
-    const txTotalCnt = respTxList.data.totalSize;
-
-    for (let aTxKey in txList) {
-      const aTx = txList[aTxKey];
-      if (aTx.height < blockHeight && aTx.toAddr === "cx0000000000000000000000000000000000000000") {
-        const respTxDetail = await axios.get("https://tracker.icon.foundation/v3/transaction/txDetail", { params: { txHash: aTx.txHash } });
-        const txDetail = respTxDetail.data.data;
-        const txData = JSON.parse(txDetail.dataString);
-        if (txData.method === "setDelegation") {
-          if (latestTx.height < aTx.height || latestTx === false) {
-            latestTx = aTx;
-          }
-        }
-      }
-    }
-    return latestTx;
+  function FinalizeVote(proposalId: string) {
+    console.log("Finalize", proposalId);
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -316,6 +214,9 @@ function ProposalContainer(props: any) {
       tmpVoteData[0].th = queryVal.data.proposal.electoralTh;
       setFlag(true);
       setVoteData(tmpVoteData);
+
+
+
     }
     //    voteData[0].th = queryVal.data.proposal.electoralTh;
     //    voteData[1].th = queryVal.data.proposal.winningTh;
@@ -335,14 +236,7 @@ function ProposalContainer(props: any) {
     });
   }
 
-  /*
-    FindBlockHeightFromDatetime("2019-10-15T03:05:03").then((result) => {
-  //    console.log(result);
-      CalculateFinalVoteRate("hx9f4d9755a8c6e65a502bda11a8931641f934c837", result).then((result2) => {
-  //      console.log(result2);
-      });
-    });
-  */
+
 
   return (
     <>

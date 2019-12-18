@@ -12,6 +12,9 @@ from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.wallet.wallet import KeyWallet
 
 import json
+import datetime
+import dateutil.parser
+import math
 
 from account.models import User
 
@@ -243,6 +246,7 @@ class VoteProposal(graphene.Mutation):
         print(tx_hash)
 
         vote = VoteModel.objects.create(voter=info.context.user, select=qs[0])
+        vote.txHash = tx_hash
         vote.save()
         return VoteProposal(proposal=proposal)
 
@@ -386,6 +390,111 @@ class AddIconAddress(graphene.Mutation):
             user.save()
 
         return AddIconAddress(user=user)
+
+
+def FindBlockHeightFromDatetime(expire_datetime):
+    given_date = dateutil.parser.parse(expire_datetime)
+    delegate_start_blockheight = 0
+    icon_service = IconService(HTTPProvider(NETWORK, 3))
+    result = icon_service.get_block("latest")
+    result_json = json.loads(result)
+
+    min = delegate_start_blockheight
+    max = result_json['height']
+    findFlag = False
+    while not findFlag:
+        curr = math.floor((min+max)/2)
+        if curr == min or curr == max:
+            findFlag = True
+
+        block_info = icon_service.get_block(curr)
+        curr_date = datetime.datetime.fromtimestamp(block_info.timestamp/1000)
+
+    print(result_json)
+
+#    last_block =
+
+
+'''
+  async function (datetime: string) {
+    // 주어진 datetime 바로 전에 생성된 block height
+    const givenDate = new Date(datetime);
+    const delegateStartBlockHeight = 9000000;
+    const lastBlock = { height: 12245388 };//await selected_icon_service.getBlock('latest').execute();
+
+    let min = delegateStartBlockHeight;
+    let max = lastBlock.height;
+    let findFlag = false;
+    while (!findFlag) {
+      let curr = Math.floor((min + max) / 2);
+      if (curr === min || curr === max) {
+        findFlag = true;
+      }
+      const respBlock = await axios.get("https://tracker.icon.foundation/v3/block/info", { params: { height: curr } });
+      const currDate = new Date(respBlock.data.data.createDate);
+      if (currDate < givenDate) {
+        min = curr;
+      } else {
+        max = curr;
+      }
+    }
+
+    const maxBlock = await axios.get("https://tracker.icon.foundation/v3/block/info", { params: { height: max } });
+    const maxDate = new Date(maxBlock.data.data.createDate);
+    const minBlock = await axios.get("https://tracker.icon.foundation/v3/block/info", { params: { height: min } });
+    const minDate = new Date(minBlock.data.data.createDate);
+    if (givenDate < maxDate) {
+      if (givenDate < minDate) {
+        return min - 1;
+      }
+      else {
+        return min;
+      }
+    } else {
+      return max;
+    }
+  }
+'''
+
+'''
+  async function FinalizeVote(proposalId:string, expireDatetime:string) {
+      const expireBlockHeight = await FindBlockHeightFromDatetime(expireDatetime);
+      console.log("find blockheight from datetime", expireDatetime, expireBlockHeight);
+        
+      const votes = await json_rpc_call("GetVotes", {_ProposalID:proposalId});
+      const result_json = JSON.parse(votes);
+      for(let i=0 ; i<result_json.length ; i++){
+        const finalDelegateTx= await CalculateFinalVoteRate(result_json[i].voter, expireBlockHeight);
+        console.log("FinalDelegateTx", finalDelegateTx);
+      }
+  }
+'''
+
+'''
+  async function CalculateFinalVoteRate(address: string, blockHeight: number) {
+    let latestTx: any = false;
+
+    const respTxList = await axios.get("https://tracker.icon.foundation/v3/address/txList", { params: { address: address, page: 1, count: 1000 } })
+    const txList = respTxList.data.data;
+    const txCnt = respTxList.data.listSize;
+    const txTotalCnt = respTxList.data.totalSize;
+
+    for (let aTxKey in txList) {
+      const aTx = txList[aTxKey];
+      if (aTx.height < blockHeight && aTx.toAddr === "cx0000000000000000000000000000000000000000") {
+        const respTxDetail = await axios.get("https://tracker.icon.foundation/v3/transaction/txDetail", { params: { txHash: aTx.txHash } });
+        const txDetail = respTxDetail.data.data;
+        const txData = JSON.parse(txDetail.dataString);
+        if (txData.method === "setDelegation") {
+          if (latestTx.height < aTx.height || latestTx === false) {
+            latestTx = aTx;
+          }
+        }
+      }
+    }
+    return latestTx;
+  }
+'''
 
 
 class MyMutation(graphene.ObjectType):

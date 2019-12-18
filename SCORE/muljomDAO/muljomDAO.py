@@ -111,11 +111,17 @@ class MulJomDaO(IconScoreBase):
     def Vote(self, _ProposalID: str, _UserID: str, _VoteItem: int):
         if self._owner.get() == self.msg.sender:
             voter_address = self._averify_id[_UserID][self.ADDRESS]
-            vote_idx = self._ivote[_ProposalID][self.COUNT][self.COUNT] + 1
-            self._vote[_ProposalID][str(vote_idx)][self.VOTER] = _UserID
-            self._ivote[_ProposalID][str(
-                vote_idx)][self.SELECTITEM] = _VoteItem
-            self._ivote[_ProposalID][self.COUNT][self.COUNT] = vote_idx
+            UserVoteIdx = self._ivote[_ProposalID][_UserID][self.COUNT]
+            if self._vote[_ProposalID][str(UserVoteIdx)][self.VOTER]:
+                self._ivote[_ProposalID][str(
+                    vote_idx)][self.SELECTITEM] = _VoteItem
+            else:
+                vote_idx = self._ivote[_ProposalID][self.COUNT][self.COUNT] + 1
+                self._vote[_ProposalID][str(vote_idx)][self.VOTER] = _UserID
+                self._ivote[_ProposalID][str(
+                    vote_idx)][self.SELECTITEM] = _VoteItem
+                self._ivote[_ProposalID][self.COUNT][self.COUNT] = vote_idx
+                self._ivote[_ProposalID][_UserID][self.COUNT] = vote_idx
 
     @external(readonly=True)
     def GetVotes(self, _ProposalID: str) -> str:

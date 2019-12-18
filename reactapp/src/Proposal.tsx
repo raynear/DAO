@@ -190,6 +190,10 @@ function Proposal(props: any) {
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <SelectList />
           </Grid>
+          <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+            <br />
+            <ActionButton />
+          </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <BarChart
               width={200}
@@ -222,10 +226,6 @@ function Proposal(props: any) {
               <Bar dataKey="left" stackId="a" fill="#AAAAAA" />
             </BarChart>
 
-          </Grid>
-          <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-            <br />
-            <ActionButton />
           </Grid>
         </Grid>
       </Paper>
