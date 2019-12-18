@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip } from "@material-ui/core";
-import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar } from "recharts";
+import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar, LabelList } from "recharts";
 // import clsx from "clsx";
 
 import { TUIViewer } from "./TUIEditor";
@@ -193,7 +193,7 @@ function Proposal(props: any) {
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <BarChart
               width={200}
-              height={200}
+              height={400}
               data={props.voteData}
               margin={{
                 top: 20, right: 20, left: 20, bottom: 5,
@@ -206,6 +206,22 @@ function Proposal(props: any) {
               <Bar dataKey="th" fill="#8884d8" background={{ fill: '#EEEEEE' }} />
               <Bar dataKey="voted" fill="#3377ff" background={{ fill: '#EEEEEE' }} />
             </BarChart>
+            <BarChart
+              width={400}
+              height={400}
+              data={props.votedPowerRate}
+              margin={{
+                top: 5, right: 5, left: 5, bottom: 5,
+              }}
+            >
+              <XAxis dataKey="name" />
+              <ChartTooltip />
+              <Bar dataKey="voted" stackId="a" fill="#8884d8">
+                <LabelList dataKey="name" position="center" />
+              </Bar>
+              <Bar dataKey="left" stackId="a" fill="#AAAAAA" />
+            </BarChart>
+
           </Grid>
           <Grid item className={classes.grid} xs={12} md={12} lg={12}>
             <br />

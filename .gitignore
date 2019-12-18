@@ -38,7 +38,7 @@ account/.DS_Store
 .DS_Store
 .score
 .statedb
-rc.log
-tbears.log
+*.log
+test.py
 
 key.pw

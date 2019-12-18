@@ -37,6 +37,7 @@
     "draftjs-to-markdown": "^0.5.1",
     "eslint-plugin-flowtype": "^4.3.0",
     "graphql": "^14.5.8",
+    "graphql-query-merge": "^1.0.2",
     "graphql-tag": "^2.10.1",
     "icon-sdk-js": "^0.0.18",
     "is-hotkey": "^0.1.6",

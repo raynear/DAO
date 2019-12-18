@@ -27,6 +27,12 @@ function VerifyIcon(props: any) {
               <Button variant="contained" color="primary" onClick={props.newPRepPage}>Make New P-Rep DAO Page</Button>
             </>
           }
+          {!props.isPRep && props.verifiedAddress !== "" && props.verifiedAddress !== "None" &&
+            <>
+              <Typography>You Are Verified</Typography>
+              <Button variant="contained" color="primary" onClick={props.addIconAddress}>Verify Icon Address</Button>
+            </>
+          }
         </Grid>
         <Grid className={classes.item} item xs={12} md={12} lg={12}>
           <br />

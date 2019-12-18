@@ -335,7 +335,7 @@ class SetPRep(graphene.Mutation):
 
         result = icon_service.call(call)
 #        result_json = json.loads(result)
-#        print("d", result_json)
+        print("d", result)
 
         icon_service = IconService(HTTPProvider(NETWORK, 3))
         call = CallBuilder()\
@@ -351,8 +351,8 @@ class SetPRep(graphene.Mutation):
         # TODO!!!!!!!!!!
         # prep이고 본인 id로 verify 됐으면 셋팅하라
 
-#        if result_json['address'] == icon_address:
-        if True:
+        if result['address'] == icon_address:
+            #        if True:
             user.icon_address = icon_address
             user.is_prep = True
             user.save()
@@ -360,8 +360,37 @@ class SetPRep(graphene.Mutation):
         return SetPRep(prep=user)
 
 
+class AddIconAddress(graphene.Mutation):
+    class Arguments:
+        icon_address = graphene.String()
+
+    #    vote = graphene.Field(VoteModelType)
+    user = graphene.Field(CustomUserType)
+
+    @login_required
+    def mutate(self, info, icon_address):
+        user = info.context.user
+
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
+        call = CallBuilder()\
+            .to(SCORE)\
+            .method("GetVerifyInfoByID")\
+            .params({"_ID": user.username})\
+            .build()
+
+        result = icon_service.call(call)
+        result_json = json.loads(result)
+
+        if result_json['address'] == icon_address:
+            user.icon_address = icon_address
+            user.save()
+
+        return AddIconAddress(user=user)
+
+
 class MyMutation(graphene.ObjectType):
     set_proposal = SetProposal.Field()
     publish_proposal = PublishProposal.Field()
     vote_proposal = VoteProposal.Field()
     set_prep = SetPRep.Field()
+    add_icon_address = AddIconAddress.Field()

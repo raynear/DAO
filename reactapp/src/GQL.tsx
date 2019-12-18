@@ -259,6 +259,17 @@ export const NEW_PREP = gql`
   }
 `;
 
+export const ADD_ICON_ADDRESS = gql`
+mutation AddIconAddress($IconAddress:String!){
+  addIconAddress(iconAddress:$IconAddress){
+    user{
+      username
+      iconAddress
+    }
+  }
+}
+`;
+
 export const VIEWER = gql`
   query {
     viewer{
