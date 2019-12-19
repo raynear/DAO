@@ -11,10 +11,13 @@ from iconsdk.builder.call_builder import CallBuilder
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.wallet.wallet import KeyWallet
 
+import time
 import json
 import datetime
 import dateutil.parser
 import math
+import requests
+from django.shortcuts import get_object_or_404
 
 from account.models import User
 
@@ -121,6 +124,7 @@ class Query(object):
 
     def resolve_all_prep(self, info, **kwargs):
         qs = User.objects.all()
+#        finalize_vote(1, "2019:12:19T00:00:00")
         return qs.filter(Q(is_prep__exact=True))
 
     def resolve_all_proposal(self, info, **kwargs):
@@ -234,7 +238,7 @@ class VoteProposal(graphene.Mutation):
             .step_limit(10000000000)\
             .nid(3)\
             .method("Vote")\
-            .params({"_ProposalID": proposal.id, "_UserID": proposal.prep.username, "_VoteItem": select_item_index})\
+            .params({"_ProposalID": proposal.id, "_UserID": info.context.user.username, "_VoteItem": select_item_index})\
             .build()
 
         print("transaction", transaction)
@@ -337,9 +341,9 @@ class SetPRep(graphene.Mutation):
             .params({"address": icon_address})\
             .build()
 
-        result = icon_service.call(call)
-#        result_json = json.loads(result)
-        print("d", result)
+        prep_result = icon_service.call(call)
+#        result_json = json.loads(prep_result)
+#        print("d", prep_result, result_json)
 
         icon_service = IconService(HTTPProvider(NETWORK, 3))
         call = CallBuilder()\
@@ -349,14 +353,13 @@ class SetPRep(graphene.Mutation):
             .build()
 
         result = icon_service.call(call)
-        print("result2", result)
-#        result_json = json.loads(result)
+#        print("result2", result)
+        result_json = json.loads(result)
 
         # TODO!!!!!!!!!!
         # prep이고 본인 id로 verify 됐으면 셋팅하라
 
-        if result['address'] == icon_address:
-            #        if True:
+        if prep_result and result_json['address'] == icon_address:
             user.icon_address = icon_address
             user.is_prep = True
             user.save()
@@ -392,27 +395,43 @@ class AddIconAddress(graphene.Mutation):
         return AddIconAddress(user=user)
 
 
-def FindBlockHeightFromDatetime(expire_datetime):
+def find_blockheight_from_datetime(expire_datetime):
     given_date = dateutil.parser.parse(expire_datetime)
+    given_timestamp = time.mktime(given_date.timetuple())*1000000
     delegate_start_blockheight = 0
     icon_service = IconService(HTTPProvider(NETWORK, 3))
     result = icon_service.get_block("latest")
-    result_json = json.loads(result)
+#    result_json = json.loads(result)
 
-    min = delegate_start_blockheight
-    max = result_json['height']
+    _min = delegate_start_blockheight
+    _max = result['height']
     findFlag = False
     while not findFlag:
-        curr = math.floor((min+max)/2)
-        if curr == min or curr == max:
+        curr = math.floor((_min+_max)/2)
+
+        if curr == _min or curr == _max:
             findFlag = True
 
         block_info = icon_service.get_block(curr)
-        curr_date = datetime.datetime.fromtimestamp(block_info.timestamp/1000)
+        curr_timestamp = block_info['time_stamp']
 
-    print(result_json)
+        if curr_timestamp < given_timestamp:
+            _min = curr
+        else:
+            _max = curr
 
-#    last_block =
+    max_block_info = icon_service.get_block(_max)
+    max_timestamp = max_block_info['time_stamp']
+    min_block_info = icon_service.get_block(_min)
+    min_timestamp = min_block_info['time_stamp']
+
+    if given_timestamp < max_timestamp:
+        if given_timestamp < min_timestamp:
+            return _min - 1
+        else:
+            return _min
+    else:
+        return _max
 
 
 '''
@@ -456,19 +475,38 @@ def FindBlockHeightFromDatetime(expire_datetime):
   }
 '''
 
-'''
-  async function FinalizeVote(proposalId:string, expireDatetime:string) {
-      const expireBlockHeight = await FindBlockHeightFromDatetime(expireDatetime);
-      console.log("find blockheight from datetime", expireDatetime, expireBlockHeight);
-        
-      const votes = await json_rpc_call("GetVotes", {_ProposalID:proposalId});
-      const result_json = JSON.parse(votes);
-      for(let i=0 ; i<result_json.length ; i++){
-        const finalDelegateTx= await CalculateFinalVoteRate(result_json[i].voter, expireBlockHeight);
-        console.log("FinalDelegateTx", finalDelegateTx);
-      }
-  }
-'''
+
+def get_final_delegate_tx(address, block_height):
+    resp = requests.get("https://tracker.icon.foundation/v3/address/txList",
+                        {'address': address, 'page': 1, 'count': 1000})
+    latest_tx = False
+    print("1")
+
+    if resp.status_code == 200:
+        print("2")
+        resp_json = json.loads(resp.text)
+        print("3")
+        tx_list = resp_json['data']
+        print("4")
+
+        for a_tx in tx_list:
+            print("5", a_tx)
+            if a_tx['height'] < block_height and a_tx['toAddr'] == "cx0000000000000000000000000000000000000000":
+                print("6")
+                resp_tx_detail = requests.get(
+                    "https://tracker.icon.foundation/v3/transaction/txDetail", {'txHash': a_tx['txHash']})
+
+                print("7")
+                resp_tx_json = json.loads(resp_tx_detail.text)
+                print("8")
+                tx_detail = resp_tx_json['data']
+                print("9")
+                if tx_detail['method'] == "setDelegation":
+                    if latest_tx['height'] < tx_detail['height'] or latest_tx == False:
+                        # 1 번만 나오면 순서대로 동작하는거니 처음껄로 리턴하면 됨
+                        print("!!!!!!!!!!!!!!!!!!!!!!")
+                        latest_tx = tx_detail
+
 
 '''
   async function CalculateFinalVoteRate(address: string, blockHeight: number) {
@@ -493,6 +531,51 @@ def FindBlockHeightFromDatetime(expire_datetime):
       }
     }
     return latestTx;
+  }
+'''
+
+
+def json_rpc_call(method, params):
+    print("!", NETWORK, SCORE, method, params)
+    icon_service = IconService(HTTPProvider(NETWORK, 3))
+    print("@")
+    call = CallBuilder()\
+        .to(SCORE)\
+        .method(method)\
+        .params(params)\
+        .build()
+    print("$", call)
+    result = icon_service.call(call)
+    print("%", result)
+    return result
+
+
+def finalize_vote(proposal_id, expire_datetime):
+    final_blockheight = find_blockheight_from_datetime(expire_datetime)
+    print(final_blockheight)
+
+    print("a")
+    resp_vote = json_rpc_call("GetVotes", {"_ProposalID": proposal_id})
+    print("b", resp_vote)
+    vote_json = json.loads(resp_vote)
+    print("c", vote_json)
+    for a_vote in vote_json['votes']:
+        final_delegate_tx = get_final_delegate_tx(
+            a_vote.voter, expire_blockheight)
+        print("FinalDelegateTx", final_delegate_tx)
+
+
+'''
+  async function FinalizeVote(proposalId:string, expireDatetime:string) {
+      const expireBlockHeight = await FindBlockHeightFromDatetime(expireDatetime);
+      console.log("find blockheight from datetime", expireDatetime, expireBlockHeight);
+        
+      const votes = await json_rpc_call("GetVotes", {_ProposalID:proposalId});
+      const result_json = JSON.parse(votes);
+      for(let i=0 ; i<result_json.length ; i++){
+        const finalDelegateTx= await CalculateFinalVoteRate(result_json[i].voter, expireBlockHeight);
+        console.log("FinalDelegateTx", finalDelegateTx);
+      }
   }
 '''
 

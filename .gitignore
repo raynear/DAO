@@ -42,3 +42,7 @@ account/.DS_Store
 test.py
 
 key.pw
+.test.py.swp
+test/tbears_cli_config.json
+test/keystore_test1
+test/tbears_server_config.json

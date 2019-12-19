@@ -111,17 +111,16 @@ class MulJomDaO(IconScoreBase):
     def Vote(self, _ProposalID: str, _UserID: str, _VoteItem: int):
         if self._owner.get() == self.msg.sender:
             voter_address = self._averify_id[_UserID][self.ADDRESS]
-            UserVoteIdx = self._ivote[_ProposalID][_UserID][self.COUNT]
-            if self._vote[_ProposalID][str(UserVoteIdx)][self.VOTER]:
-                self._ivote[_ProposalID][str(
-                    vote_idx)][self.SELECTITEM] = _VoteItem
-            else:
-                vote_idx = self._ivote[_ProposalID][self.COUNT][self.COUNT] + 1
-                self._vote[_ProposalID][str(vote_idx)][self.VOTER] = _UserID
-                self._ivote[_ProposalID][str(
-                    vote_idx)][self.SELECTITEM] = _VoteItem
-                self._ivote[_ProposalID][self.COUNT][self.COUNT] = vote_idx
-                self._ivote[_ProposalID][_UserID][self.COUNT] = vote_idx
+#            UserVoteIdx = self._ivote[_ProposalID][_UserID][self.COUNT]
+#            if self._vote[_ProposalID][str(UserVoteIdx)][self.VOTER] != "":
+#                self._ivote[_ProposalID][str(UserVoteIdx)][self.SELECTITEM] = _VoteItem
+#            else:
+            vote_idx = self._ivote[_ProposalID][self.COUNT][self.COUNT] + 1
+            self._vote[_ProposalID][str(vote_idx)][self.VOTER] = _UserID
+            self._ivote[_ProposalID][str(
+                vote_idx)][self.SELECTITEM] = _VoteItem
+            self._ivote[_ProposalID][self.COUNT][self.COUNT] = vote_idx
+            self._ivote[_ProposalID][_UserID][self.COUNT] = vote_idx
 
     @external(readonly=True)
     def GetVotes(self, _ProposalID: str) -> str:
@@ -139,7 +138,11 @@ class MulJomDaO(IconScoreBase):
     @external(readonly=False)
     def SetProposal(self, _Subject: str, _Contents: str, _Proposer: str, _ExpireDate: str, _SelectItems: str, _ElectoralTH: int, _WinningTH: int) -> str:
         if self._owner.get() == self.msg.sender:
-            pid = str(self._iproposal[_Proposer][self.ID][self.ID] + 1)
+            if self._iproposal[_Proposer][self.ID][self.ID] > 0:
+                pid = str(self._iproposal[_Proposer][self.ID][self.ID] + 1)
+            else:
+                pid = str(1)
+            self._iproposal[_Proposer][self.ID][self.ID] = int(pid)
             self._proposal[_Proposer][pid][self.SUBJECT] = _Subject
             self._proposal[_Proposer][pid][self.CONTENTS] = _Contents
             self._proposal[_Proposer][pid][self.ELECTORALTH] = _ElectoralTH
@@ -148,11 +151,15 @@ class MulJomDaO(IconScoreBase):
             self._ivote[_Proposer][pid][self.COUNT] = 0
 
             select_items = json_loads(_SelectItems)
-            # json_load 하면 dict나 array로 type이 결정되는데 어떤 타입인지 확인하는 부분이 없다.
+        # json_load 하면 dict나 array로 type이 결정되는데 어떤 타입인지 확인하는 부분이 없다.
             self._iselect_item[_Proposer][pid][self.COUNT] = len(select_items)
             for idx, val in enumerate(select_items):
                 self._select_item[_Proposer][pid][str(idx)] = val
-            return str(self._proposal[_Proposer][self.ID][self.ID])
+#        return str(self._proposal[_Proposer][self.ID][self.ID])
+
+    @external(readonly=True)
+    def GetLastProposalID(self, _Proposer: str) -> str:
+        return str(self._iproposal[_Proposer][self.ID][self.ID])
 
     @external(readonly=True)
     def GetProposal(self, _Proposer: str, _ProposalID: str) -> str:

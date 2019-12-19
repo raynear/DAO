@@ -21,7 +21,7 @@ function ProposalContainer(props: any) {
   const [votedPower, setVotedPower] = useState<any>(false);
   const [value, setValue] = useState({ load: false, myPRep: false, votedIdx: -1, owner: false });
   const [voteData, setVoteData] = useState<vote[]>([{ name: 'electoralTH', th: 0, voted: 0 }])
-  const [votedPowerRate, setVotedPowerRate] = useState<any>(false)
+  const [votedPowerRate, setVotedPowerRate] = useState<any[]>([{ name: "", left: 0, voted: 0 }])
   const [flag, setFlag] = useState(false);
 
   const [mutatePublish] = useMutation(SET_PUBLISH);
@@ -206,7 +206,7 @@ function ProposalContainer(props: any) {
       isMyPRep(queryAddress.data.icon_address).then((result) => { setValue({ load: true, myPRep: result, votedIdx: getVotedIdx(), owner: amIOwner() }); });
       console.log("voteData", voteData);
     }
-    //    console.log("condition value", myPRep, votedIdx, owner);
+    // console.log("condition value", myPRep, votedIdx, owner);
   }
   if (queryVal && queryVal.data) {
     if (!flag) {
@@ -218,20 +218,20 @@ function ProposalContainer(props: any) {
 
 
     }
-    //    voteData[0].th = queryVal.data.proposal.electoralTh;
-    //    voteData[1].th = queryVal.data.proposal.winningTh;
+    // voteData[0].th = queryVal.data.proposal.electoralTh;
+    // voteData[1].th = queryVal.data.proposal.winningTh;
 
     getVotedPowerList().then((result) => {
       if (!votedPower) {
         setVotedPower(result);
-        //        console.log("hahahaha", votedPower);
+        // console.log("hahahaha", votedPower);
       }
     });
 
     getVotedPowerRate(queryVal.data.proposal.winningTh).then((result) => {
-      if (!votedPowerRate) {
+      if (votedPowerRate[0].name === "" && votedPowerRate[0].left === 0 && votedPowerRate[0].voted === 0) {
         setVotedPowerRate(result);
-        //        console.log("hahahaha", votedPower);
+        // console.log("hahahaha", votedPower);
       }
     });
   }
