@@ -15,6 +15,7 @@ export const GET_PROPOSAL = gql`
       expireAt
       electoralTh
       winningTh
+      prepPid
       selectitemmodelSet {
         id
         index
@@ -227,6 +228,7 @@ export const GET_PROPOSALS = gql`
         id
         username
       }
+      prepPid
       contents
       selectitemmodelSet {
         contents

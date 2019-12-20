@@ -166,7 +166,18 @@ class PublishProposal(graphene.Mutation):
         result = icon_service.call(call)
         print(result)
         result_json = json.loads(result)
-        print(result_json)
+        print("have to check not verified return", result_json)
+
+        call = CallBuilder()\
+            .to(SCORE)\
+            .method("GetLastProposalID")\
+            .params({"_Proposer": info.context.user.username})\
+            .build()
+
+        result = icon_service.call(call)
+        print(result)
+
+        pid = int(result) + 1
 
         selectItems = SelectItemModel.objects.filter(proposal=proposal)
         _select_item = '['
@@ -192,6 +203,8 @@ class PublishProposal(graphene.Mutation):
             .params({"_Subject": proposal.subject, "_Contents": proposal.contents, "_Proposer": proposal.prep.username, "_ExpireDate": proposal.expire_at.isoformat(), "_SelectItems": _select_item, "_ElectoralTH": proposal.electoral_th, "_WinningTH": proposal.winning_th})\
             .build()
 
+        print({"_Subject": proposal.subject, "_Contents": proposal.contents, "_Proposer": proposal.prep.username, "_ExpireDate": proposal.expire_at.isoformat(
+        ), "_SelectItems": _select_item, "_ElectoralTH": proposal.electoral_th, "_WinningTH": proposal.winning_th})
         print("transaction", transaction)
 
         signed_transaction = SignedTransaction(transaction, wallet)
@@ -205,6 +218,7 @@ class PublishProposal(graphene.Mutation):
 #        print(tx_result_json)
 
         proposal.published = True
+        proposal.prep_pid = pid
         proposal.txHash = tx_hash
         proposal.save()
         return PublishProposal(proposal=proposal)
@@ -238,7 +252,7 @@ class VoteProposal(graphene.Mutation):
             .step_limit(10000000000)\
             .nid(3)\
             .method("Vote")\
-            .params({"_ProposalID": proposal.id, "_UserID": info.context.user.username, "_VoteItem": select_item_index})\
+            .params({"_Proposer": proposal.prep.username, "_ProposalID": proposal.prep_pid, "_UserID": info.context.user.username, "_VoteItem": select_item_index})\
             .build()
 
         print("transaction", transaction)
@@ -550,12 +564,12 @@ def json_rpc_call(method, params):
     return result
 
 
-def finalize_vote(proposal_id, expire_datetime):
+def finalize_vote(proposer, proposal_id, expire_datetime):
     final_blockheight = find_blockheight_from_datetime(expire_datetime)
     print(final_blockheight)
 
     print("a")
-    resp_vote = json_rpc_call("GetVotes", {"_ProposalID": proposal_id})
+    resp_vote = json_rpc_call("GetVotes", {"_Proposer":proposer, "_ProposalID": proposal_id})
     print("b", resp_vote)
     vote_json = json.loads(resp_vote)
     print("c", vote_json)
