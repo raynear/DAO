@@ -490,7 +490,7 @@ def find_blockheight_from_datetime(expire_datetime):
 '''
 
 
-def get_final_delegate_tx(address, block_height):
+def get_final_delegate_tx(prep_address, address, block_height):
     resp = requests.get("https://tracker.icon.foundation/v3/address/txList",
                         {'address': address, 'page': 1, 'count': 1000})
     latest_tx = False
@@ -520,6 +520,8 @@ def get_final_delegate_tx(address, block_height):
                         # 1 번만 나오면 순서대로 동작하는거니 처음껄로 리턴하면 됨
                         print("!!!!!!!!!!!!!!!!!!!!!!")
                         latest_tx = tx_detail
+
+        return lastest_tx
 
 
 '''
@@ -569,14 +571,28 @@ def finalize_vote(proposer, proposal_id, expire_datetime):
     print(final_blockheight)
 
     print("a")
-    resp_vote = json_rpc_call("GetVotes", {"_Proposer":proposer, "_ProposalID": proposal_id})
+    resp_vote = json_rpc_call(
+        "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal_id})
     print("b", resp_vote)
     vote_json = json.loads(resp_vote)
     print("c", vote_json)
+    final_delegate_tx_list = []
+    select_list = {}
     for a_vote in vote_json['votes']:
-        final_delegate_tx = get_final_delegate_tx(
-            a_vote.voter, expire_blockheight)
-        print("FinalDelegateTx", final_delegate_tx)
+        final_delegate_tx = get_final_delegate_tx(proposer,
+                                                  a_vote.voter, expire_blockheight)
+        final_delegate_tx_list.append(final_delegate_tx)
+
+        delegate_amount = 0
+        for delegate in final_delegate_tx:
+            if delegate.address == prep_address:
+                delegate_amount = delegate.amount
+
+        print("FinalDelegateAmount", delegate_amount)
+        if a_vote.select_item in select_list:
+            select_list[a_vote.select_item] += delegate_amount
+        else:
+            select_list[a_vote.select_item] = delegate_amount
 
 
 '''
