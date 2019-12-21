@@ -122,9 +122,9 @@ function Proposal(props: any) {
 
   function ActionButton() {
     const expireAt = new Date(props.data.proposal.expireAt);
-    // if (expireAt.getTime() < Date.now() && props.owner && props.data.proposal.published) {
-    //   return <FinalizeVoteButton />;
-    // }
+    if (expireAt.getTime() < Date.now() && props.owner && props.data.proposal.published) {
+      return <FinalizeVoteButton />;
+    }
     if (props.data.proposal.published && (props.myPRep || props.owner) && props.votedIdx === -1) {
       return <VoteButton />;
     }

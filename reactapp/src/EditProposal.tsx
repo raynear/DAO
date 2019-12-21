@@ -113,44 +113,17 @@ function EditProposal(props: any) {
 
             <Grid className={classes.item} item xs={12} md={12} lg={12}>
               <br />
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Grid
-                  className={classes.container}
-                  container
-                  justify="space-around"
-                >
-                  <Grid item>
-                    <KeyboardDatePicker
-                      disableToolbar
-                      variant="inline"
-                      format="MM/dd/yyyy"
-                      margin="normal"
-                      id="date-picker-inline"
-                      label="Date picker inline"
-                      className={classes.textField}
-                      value={props.values.date}
-                      onChange={props.handleDateChange}
-                      KeyboardButtonProps={{
-                        "aria-label": "change date"
-                      }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <KeyboardTimePicker
-                      margin="normal"
-                      variant="inline"
-                      id="time-picker"
-                      label="Time picker"
-                      className={classes.textField}
-                      value={props.values.date}
-                      onChange={props.handleDateChange}
-                      KeyboardButtonProps={{
-                        "aria-label": "change time"
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </MuiPickersUtilsProvider>
+              <TextField
+                id="votingDue"
+                label="VotingDue"
+                type="number"
+                value={props.values.votingDue}
+                onChange={props.handleProposalChange("votingDue")}
+                className={classes.textField}
+                variant="outlined"
+                inputProps={{ min: 0, max: 365, step: 1 }}
+              />
+              <Typography>Expire At {props.values.expireAt.toISOString()}</Typography>
               <br />
             </Grid>
             <Grid

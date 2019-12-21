@@ -37,7 +37,8 @@ function EditProposalContainer(props: any) {
     winningTh: 50,
     subject: "",
     contents: "",
-    expireAt: new Date("2019-12-18T21:11:54"),
+    votingDue: 0,
+    expireAt: new Date(),
     selectitemmodelSet: []
   });
 
@@ -74,18 +75,35 @@ function EditProposalContainer(props: any) {
     forceUpdate();
   }
 
-  const handleDateChange = (date: Date | null) => {
-    if (date) {
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      console.log(date);
-      setValues({ ...values, expireAt: date });
-    }
+  const handleDateChange = (days: number) => {
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    var today = new Date();
+    var dueto = new Date();
+    dueto.setDate(today.getDate() + 1);
+    console.log(dueto);
+    setValues({ ...values, expireAt: dueto });
   };
 
   const handleProposalChange = (name: string) => (
     event: React.ChangeEvent<any>
   ) => {
-    setValues({ ...values, [name]: event.target.value });
+    console.log(typeof event.target.value)
+
+    if (name === "votingDue") {
+      var today = new Date();
+      var dueto = new Date();
+      if (event.target.value !== "") {
+        dueto.setDate(today.getDate() + parseInt(event.target.value));
+        console.log(event.target.value, dueto);
+        setValues({ ...values, [name]: event.target.value, expireAt: dueto });
+      }
+      else {
+        setValues({ ...values, [name]: event.target.value });
+      }
+    }
+    else {
+      setValues({ ...values, [name]: event.target.value });
+    }
   };
 
   const handleSliderChange = (name: string) => (event: any, newValue: number | number[]) => {
@@ -170,6 +188,7 @@ function EditProposalContainer(props: any) {
       winningTh: proposal.winningTh,
       subject: proposal.subject,
       contents: proposal.contents,
+      votingDue: 0,
       expireAt: date,
       selectitemmodelSet: []
     });
