@@ -409,6 +409,49 @@ class AddIconAddress(graphene.Mutation):
         return AddIconAddress(user=user)
 
 
+class Finalize(graphene.Mutation):
+    class Arguments:
+        proposal_id = graphene.Int()
+
+    proposal = graphene.Field(ProposalModelType)
+
+    @login_required
+    def mutate(self, info, proposal_id):
+        final_blockheight = find_blockheight_from_datetime(expire_datetime)
+        print(final_blockheight)
+
+        print("a")
+        resp_vote = json_rpc_call(
+            "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal_id})
+        print("b", resp_vote)
+        vote_json = json.loads(resp_vote)
+        print("c", vote_json)
+        final_delegate_tx_list = []
+        select_list = {}
+        for a_vote in vote_json['votes']:
+            final_delegate_tx = get_final_delegate_tx(proposer,
+                                                      a_vote.voter, expire_blockheight)
+            final_delegate_tx_list.append(final_delegate_tx)
+
+            delegate_amount = 0
+            for delegate in final_delegate_tx:
+                if delegate.address == prep_address:
+                    delegate_amount = delegate.amount
+
+            print("FinalDelegateAmount", delegate_amount)
+            if a_vote.select_item in select_list:
+                select_list[a_vote.select_item] += delegate_amount
+            else:
+                select_list[a_vote.select_item] = delegate_amount
+        
+        # 최종 결과 dict로 만들어서 SCORE에 전송
+        # 1. final delegate txid
+        # 2. voting result
+        # 
+
+        return Finalize(proposal=proposal)
+
+
 def find_blockheight_from_datetime(expire_datetime):
     given_date = dateutil.parser.parse(expire_datetime)
     given_timestamp = time.mktime(given_date.timetuple())*1000000
@@ -616,3 +659,4 @@ class MyMutation(graphene.ObjectType):
     vote_proposal = VoteProposal.Field()
     set_prep = SetPRep.Field()
     add_icon_address = AddIconAddress.Field()
+    finalize = Finalize.Field()

@@ -20,6 +20,9 @@ class MulJomDaO(IconScoreBase):
     VOTE = "vote"
     VOTER = "voter"
 
+    DELEGATETXID = "final_delegate_txid"
+    DELEGATEAMOUNT = "final_delegate_amount"
+
     _OWNER = "owner"
     _READYTOOWNER = "ready_to_owner"
 
@@ -127,6 +130,29 @@ class MulJomDaO(IconScoreBase):
                 "selectItem": self._ivote[_Proposer][pid][vid][self.SELECTITEM]})
 
         return json_dumps(return_json)
+
+    @external(readonly=False)
+    def InputFinalVoteData(self, _Proposer: str, _ProposalID: int, _FinalData: str):
+        votes = json_loads(FinalData)
+
+        pid = str(_ProposalID)
+        for aVote in votes:
+            vid = self._vote[_Proposer][pid][aVote['voter']][self.COUNT]
+            self._vote[_Proposer][pid][vid][self.DELEGATETXID] = aVote['DelegateTxID']
+            self._vote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = aVote['DelegateAmount']
+
+    @external(readonly=False)
+    def CalculateVotes(self, _Proposer: str, _ProposalID: int):
+        result = dict()
+        pid = str(_ProposalID)
+        for i in range(self._ivote[_Proposer][self.COUNT][self.COUNT]):
+            amount = self._vote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
+            select_item = self._ivote[_Proposer][pid][vid][self.SELECTITEM]
+            result[seleft_item] = result[select_item] + amount
+        # amount를 각 select_item 별로 저장
+        # 최종 결과에서 electoral threshold 를 넘었는지 확인
+        # 최종 결과에서 winning threshold 를 넘은 아이템이 있는지 확인
+        # 결과에 따라 no result, result 결과 proposal에 저장.
 
     @external(readonly=False)
     def SetProposal(self, _Proposer: str, _Subject: str, _Contents: str, _ElectoralTH: int, _WinningTH: int, _ExpireDate: str, _SelectItems: str):

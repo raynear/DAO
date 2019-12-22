@@ -251,6 +251,7 @@ function ProposalContainer(props: any) {
         voteData={voteData}
         Publish={Publish}
         Vote={Vote}
+        FinalizeVote={FinalizeVote}
         handleChange={handleChange}
         {...queryVal}
       />

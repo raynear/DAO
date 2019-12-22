@@ -68,8 +68,6 @@ function Proposal(props: any) {
   }
 
   function SelectList() {
-    //    console.log("Environment for SelectList", props.data.proposal.published, props.votedIdx, props.myPRep)
-
     if (props.data.proposal.published && (props.myPRep || props.owner) && props.votedIdx === -1) {
       return (<RadioButtons />);
     }
@@ -194,25 +192,10 @@ function Proposal(props: any) {
             <br />
             <ActionButton />
           </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+          <Grid item className={classes.paddingSide} xs={6} md={6} lg={6}>
             <BarChart
               width={200}
-              height={400}
-              data={props.voteData}
-              margin={{
-                top: 20, right: 20, left: 20, bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <ChartTooltip />
-              <Bar dataKey="th" fill="#8884d8" background={{ fill: '#EEEEEE' }} />
-              <Bar dataKey="voted" fill="#3377ff" background={{ fill: '#EEEEEE' }} />
-            </BarChart>
-            <BarChart
-              width={400}
-              height={400}
+              height={200}
               data={props.votedPowerRate}
               margin={{
                 top: 5, right: 5, left: 5, bottom: 5,
@@ -225,7 +208,23 @@ function Proposal(props: any) {
               </Bar>
               <Bar dataKey="left" stackId="a" fill="#AAAAAA" />
             </BarChart>
-
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={6} md={6} lg={6}>
+            <BarChart
+              width={150}
+              height={200}
+              data={props.voteData}
+              margin={{
+                top: 20, right: 20, left: 20, bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <ChartTooltip />
+              <Bar dataKey="th" fill="#8884d8" background={{ fill: '#EEEEEE' }} />
+              <Bar dataKey="voted" fill="#3377ff" background={{ fill: '#EEEEEE' }} />
+            </BarChart>
           </Grid>
         </Grid>
       </Paper>

@@ -272,6 +272,17 @@ mutation AddIconAddress($IconAddress:String!){
 }
 `;
 
+export const FINALIZE = gql`
+mutation Finalize($ProposalID:Int!){
+  finalize(proposalId:$ProposalID){
+    proposal{
+      id
+      subject
+    }
+  }
+}
+`;
+
 export const VIEWER = gql`
   query {
     viewer{
