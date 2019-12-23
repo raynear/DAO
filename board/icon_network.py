@@ -1,4 +1,4 @@
-MAIN_NET = "https://ctz.solidwallet.io"
+MAIN_NET = "https://ctz.solidwallet.io/"
 TEST_NET = "https://bicon.net.solidwallet.io/"
 TEST_NET3 = "https://zicon.net.solidwallet.io/"
 LOCAL_NET = "http://localhost:9000"

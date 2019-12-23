@@ -142,15 +142,40 @@ class MulJomDaO(IconScoreBase):
             self._vote[_Proposer][pid][vid][self.DELEGATETXID] = aVote['DelegateTxID']
             self._vote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = aVote['DelegateAmount']
 
+        # amount를 각 select_item 별로 저장
+        total_voting_power = 0
         result = dict()
         for i in range(self._ivote[_Proposer][self.COUNT][self.COUNT]):
-            amount = self._vote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
+            vid = i+1
             select_item = self._ivote[_Proposer][pid][vid][self.SELECTITEM]
-            result[seleft_item] = result[select_item] + amount
-        # amount를 각 select_item 별로 저장
+            amount = self._vote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
+            total_voting_power = total_voting_power + amount
+            if select_item in result:
+                result[select_item] = result[select_item] + amount
+            else:
+                result[select_item] = amount
+
         # 최종 결과에서 electoral threshold 를 넘었는지 확인
+        if total_voting_power < electoral_treshold:
+            return
+
+        # 가장 많이 투표받은 것 찾기
+        most_voted_item
+        most_voted = 0
+        for i in result:
+            if result[i] > most_voted:
+                most_voted = result[i]
+                most_voted_item = i
+
         # 최종 결과에서 winning threshold 를 넘은 아이템이 있는지 확인
-        # 결과에 따라 no result, result 결과 proposal에 저장.
+        if (most_voted/total_voting_power)*100 > self._proposal[_Proposer][pid][self.WINNINGTH]:
+            # winning th 넘음.
+            self._proposal[_Proposer][pid]["WINNER"] = most_voted_item
+            # 결과에 따라 no result, result 결과 proposal에 저장.
+            self._proposal[_Proposer][pid]["STATUS"] = "WinnerDecided"
+        else:
+            # 결과에 따라 no result, result 결과 proposal에 저장.
+            self._proposal[_Proposer][pid]["STATUS"] = "NoWinner"
 
     @external(readonly=False)
     def SetProposal(self, _Proposer: str, _Subject: str, _Contents: str, _ElectoralTH: int, _WinningTH: int, _ExpireDate: str, _SelectItems: str):

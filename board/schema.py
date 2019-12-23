@@ -415,6 +415,7 @@ class Finalize(graphene.Mutation):
 
     proposal = graphene.Field(ProposalModelType)
 
+    @prep_required
     @login_required
     def mutate(self, info, proposal_id):
         proposal = ProposalModel.objects.get(pk=proposal_id)
@@ -446,7 +447,7 @@ class Finalize(graphene.Mutation):
                     tx_id = final_delegate_tx['txHash']
 
             final_delegate_tx_list.append(
-                {"DelegateTxID": final_delegate_tx['txHash'], "DelegateAmount": tx_amount})
+                {"voter":a_vote['voter'],"DelegateTxID": final_delegate_tx['txHash'], "DelegateAmount": tx_amount})
 
             if a_vote['selectItem'] in select_list:
                 select_list[a_vote['selectItem']] += tx_amount
@@ -455,6 +456,21 @@ class Finalize(graphene.Mutation):
 
         print(final_delegate_tx_list)
         print(select_list)
+
+#        icon_service = IconService(HTTPProvider(NETWORK, 3))
+        icon_service = IconService(HTTPProvider(MAIN_NET, 1))
+        print("!!!!!!!!!!!!!!", icon_service)
+        call = CallBuilder()\
+            .to("cx0000000000000000000000000000000000000000")\
+            .method("getPRep")\
+            .params({"address": "hx863e16bd18ceaa7d498b4b275e36cd58818b1f25"})\
+            .build()
+#            .params({"address": proposal.prep.icon_address})\
+
+        print("@@@@@@@@@@@@@@@@@", call)
+        prep_result = icon_service.call(call)
+        print(prep_result)
+        print(prep_result['result']['delegated'])
 
         # 최종 결과 dict로 만들어서 SCORE에 전송
         # 1. final delegate txid
@@ -638,7 +654,6 @@ def json_rpc_call(method, params):
     result = icon_service.call(call)
     print("%", result)
     return result
-
 
 def finalize_vote(proposer, proposal_id, expire_datetime):
     final_blockheight = find_blockheight_from_datetime(expire_datetime)
