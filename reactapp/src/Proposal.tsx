@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
-import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip } from "@material-ui/core";
+import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Slider } from "@material-ui/core";
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar, LabelList } from "recharts";
 // import clsx from "clsx";
 
@@ -171,6 +171,15 @@ function Proposal(props: any) {
             </div>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Slider
+              disabled
+              defaultValue={props.voteData[0].voted}
+              aria-labelledby="discrete-slider-custom"
+              valueLabelDisplay="auto"
+              marks={[{ value: 0, label: '0' }, { value: 100, label: '100' }]}
+            />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <br />
             <Divider variant="fullWidth" />
             <br />
@@ -192,43 +201,9 @@ function Proposal(props: any) {
             <br />
             <ActionButton />
           </Grid>
-          <Grid item className={classes.paddingSide} xs={6} md={6} lg={6}>
-            <BarChart
-              width={200}
-              height={200}
-              data={props.votedPowerRate}
-              margin={{
-                top: 5, right: 5, left: 5, bottom: 5,
-              }}
-            >
-              <XAxis dataKey="name" />
-              <ChartTooltip />
-              <Bar dataKey="voted" stackId="a" fill="#8884d8">
-                <LabelList dataKey="name" position="center" />
-              </Bar>
-              <Bar dataKey="left" stackId="a" fill="#AAAAAA" />
-            </BarChart>
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={6} md={6} lg={6}>
-            <BarChart
-              width={150}
-              height={200}
-              data={props.voteData}
-              margin={{
-                top: 20, right: 20, left: 20, bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <ChartTooltip />
-              <Bar dataKey="th" fill="#8884d8" background={{ fill: '#EEEEEE' }} />
-              <Bar dataKey="voted" fill="#3377ff" background={{ fill: '#EEEEEE' }} />
-            </BarChart>
-          </Grid>
         </Grid>
       </Paper>
-    </Grid>
+    </Grid >
   );
 }
 

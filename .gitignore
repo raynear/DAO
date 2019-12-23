@@ -56,3 +56,8 @@ set.py
 verify.py
 vote.py
 score_address
+key_store_prep1
+key_store_user1
+key_store_user2
+finalize.py
+total.py

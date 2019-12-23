@@ -214,9 +214,6 @@ function ProposalContainer(props: any) {
       tmpVoteData[0].th = queryVal.data.proposal.electoralTh;
       setFlag(true);
       setVoteData(tmpVoteData);
-
-
-
     }
     // voteData[0].th = queryVal.data.proposal.electoralTh;
     // voteData[1].th = queryVal.data.proposal.winningTh;
@@ -235,8 +232,6 @@ function ProposalContainer(props: any) {
       }
     });
   }
-
-
 
   return (
     <>

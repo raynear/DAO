@@ -28,6 +28,7 @@ NETWORK = LOCAL_NET
 SCORE = LOCAL_SCORE_ADDRESS
 
 prep_required = user_passes_test(lambda u: u.is_prep)
+address_required = user_passes_test(lambda u: u.icon_address)
 
 
 class CustomUserType(DjangoObjectType):
@@ -61,6 +62,7 @@ class Query(object):
     prep = graphene.Field(CustomUserType, prep_name=graphene.String())
 
     proposal = graphene.Field(ProposalModelType, id=graphene.Int())
+    proposal4edit = graphene.Field(ProposalModelType, id=graphene.Int())
 
     proposals = graphene.List(
         ProposalModelType,
@@ -87,6 +89,16 @@ class Query(object):
 
     def resolve_prep(self, info, prep_name=None, **kwargs):
         return User.objects.get(username=prep_name)
+
+    def resolve_proposal4edit(self, info, id=None, **kwargs):
+        if id == -1:
+            return None
+        # raise GraphQLError('No Proposal')
+        proposal = ProposalModel.objects.get(pk=id)
+        if proposal.prep == info.context.user:
+            return proposal
+        else:
+            return None
 
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
@@ -232,6 +244,7 @@ class VoteProposal(graphene.Mutation):
     #    vote = graphene.Field(VoteModelType)
     proposal = graphene.Field(ProposalModelType)
 
+    @address_required
     @login_required
     def mutate(self, info, proposal_id, select_item_index):
         proposal = ProposalModel.objects.get(pk=proposal_id)
@@ -447,7 +460,7 @@ class Finalize(graphene.Mutation):
                     tx_id = final_delegate_tx['txHash']
 
             final_delegate_tx_list.append(
-                {"voter":a_vote['voter'],"DelegateTxID": final_delegate_tx['txHash'], "DelegateAmount": tx_amount})
+                {"voter": a_vote['voter'], "DelegateTxID": final_delegate_tx['txHash'], "DelegateAmount": tx_amount})
 
             if a_vote['selectItem'] in select_list:
                 select_list[a_vote['selectItem']] += tx_amount
@@ -457,25 +470,37 @@ class Finalize(graphene.Mutation):
         print(final_delegate_tx_list)
         print(select_list)
 
-#        icon_service = IconService(HTTPProvider(NETWORK, 3))
-        icon_service = IconService(HTTPProvider(MAIN_NET, 1))
-        print("!!!!!!!!!!!!!!", icon_service)
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
         call = CallBuilder()\
             .to("cx0000000000000000000000000000000000000000")\
             .method("getPRep")\
-            .params({"address": "hx863e16bd18ceaa7d498b4b275e36cd58818b1f25"})\
+            .params({"address": proposal.prep.icon_address})\
             .build()
-#            .params({"address": proposal.prep.icon_address})\
 
-        print("@@@@@@@@@@@@@@@@@", call)
         prep_result = icon_service.call(call)
         print(prep_result)
-        print(prep_result['result']['delegated'])
+        print(prep_result['delegated'])
+
+        f = open("./key.pw", 'r')
+        line = f.readline()
+        wallet = KeyWallet.load("./key_store_raynear", line)
+
+        transaction = CallTransactionBuilder()\
+            .from_(wallet.get_address())\
+            .to(SCORE)\
+            .step_limit(10000000000)\
+            .nid(3)\
+            .method("Finalize")\
+            .params({"_Proposer": proposal.prep.username, "_ProposalID": proposal.prep_pid, "_TotalDelegate": prep_result['delegated'], "_FinalData":json.dumps(final_delegate_tx_list)})\
+            .build()
+
+        signed_transaction = SignedTransaction(transaction, wallet)
+        print("signed tx", signed_transaction)
+        tx_hash = icon_service.send_transaction(signed_transaction)
 
         # 최종 결과 dict로 만들어서 SCORE에 전송
         # 1. final delegate txid
         # 2. voting result
-        #
 
         return Finalize(proposal=proposal)
 
@@ -577,6 +602,7 @@ def get_final_delegate_tx(prep_address, address, block_height):
         # tracker에 연동하는 부분은 local과 연동 안되므로 dummy로 대체함
         #
         #
+        resp_text = resp_text_user3
         if address == "hxecb5942964bd920f92b53997a4b274f5bcbb7544":
             resp_text = resp_text_user1
         if address == "hx8ac83a8c5a842352699921d90bcaae6686d7cafe":
@@ -654,6 +680,7 @@ def json_rpc_call(method, params):
     result = icon_service.call(call)
     print("%", result)
     return result
+
 
 def finalize_vote(proposer, proposal_id, expire_datetime):
     final_blockheight = find_blockheight_from_datetime(expire_datetime)

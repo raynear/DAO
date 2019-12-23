@@ -125,7 +125,7 @@ function VerifyIconContainer(props: any) {
         props.setActiveStep(2);
       }
       else {
-        client.writeData({ data: { snack: { open: true, message: "You Make PRep Page" } } })
+        client.writeData({ data: { snack: { open: true, message: "You Make PRep Page", __typename: "snack" } } })
         props.history.push("/");
       }
     });
@@ -139,7 +139,7 @@ function VerifyIconContainer(props: any) {
         props.setActiveStep(2);
       }
       else {
-        client.writeData({ data: { snack: { open: true, message: "You Are Verified!" } } })
+        client.writeData({ data: { snack: { open: true, message: "You Are Verified!", __typename: "snack" } } })
         props.history.push("/");
       }
     });

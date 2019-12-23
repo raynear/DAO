@@ -22,10 +22,11 @@ function UserInfoContainer(props: any) {
   };
 
   const handleMenuLogout = () => {
-    mutateLogout();
-    setAnchorEl(null);
-    client.writeData({ data: { username: "" } });
-    window.location.reload();
+    mutateLogout().then(() => {
+      setAnchorEl(null);
+      client.writeData({ data: { username: "" } });
+      window.location.reload();
+    });
   };
 
   function nyamnyam() {

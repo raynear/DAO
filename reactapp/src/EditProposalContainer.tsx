@@ -3,7 +3,7 @@ import { Typography } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
-import { GET_PROPOSAL_N_PREP, SET_PROPOSAL, GET_LOCAL_ME } from "./GQL";
+import { GET_PROPOSAL4EDIT, SET_PROPOSAL, GET_LOCAL_ME } from "./GQL";
 import SimpleReactValidator from "simple-react-validator";
 
 import useForceUpdate from "./useForceUpdate";
@@ -24,10 +24,8 @@ function EditProposalContainer(props: any) {
     proposal_id = -1;
   }
 
-  const client = useApolloClient();
   const forceUpdate = useForceUpdate();
 
-  const [username, setUsername] = useState("");
   const [redirect, setRedirect] = useState();
 
   const [selectItems, setSelectItems] = useState(["", "", "", ""]);
@@ -153,15 +151,6 @@ function EditProposalContainer(props: any) {
     submitProposal(mutate_var);
   }
 
-  client.query({ query: GET_LOCAL_ME }).then((result) => {
-    console.log("get local me", result);
-    try {
-      setUsername(result.data.username);
-    } catch {
-      setUsername("");
-    }
-  })
-
   function submitProposal(mutate_var: any) {
     console.log("submitProposal mutate_var:", mutate_var);
     mutateProposal(mutate_var).then(result => {
@@ -175,8 +164,8 @@ function EditProposalContainer(props: any) {
     }
   }
 
-  const queryVal = useQuery(GET_PROPOSAL_N_PREP, {
-    variables: { id: proposal_id, PRepName: username }
+  const queryVal = useQuery(GET_PROPOSAL4EDIT, {
+    variables: { id: proposal_id }
   })
 
   if (queryVal.data && queryVal.data.proposal && values.id === -1) {

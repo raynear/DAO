@@ -19,6 +19,8 @@ class MulJomDaO(IconScoreBase):
     COUNT = "count"
     VOTE = "vote"
     VOTER = "voter"
+    WINNER = "winner"
+    STATUS = "status"
 
     DELEGATETXID = "final_delegate_txid"
     DELEGATEAMOUNT = "final_delegate_amount"
@@ -46,6 +48,8 @@ class MulJomDaO(IconScoreBase):
 
         self._vote = DictDB(self.VOTE, db, value_type=str, depth=4)
         self._ivote = DictDB(self.VOTE, db, value_type=int, depth=4)
+
+        self._log = VarDB("log", db, value_type=str)
 
     def on_install(self) -> None:
         super().on_install()
@@ -118,9 +122,8 @@ class MulJomDaO(IconScoreBase):
 
     @external(readonly=True)
     def GetVotes(self, _Proposer: str, _ProposalID: int) -> str:
-        total_vote_cnt = self._ivote[_Proposer][str(
-            _ProposalID)][self.COUNT][self.COUNT]
         pid = str(_ProposalID)
+        total_vote_cnt = self._ivote[_Proposer][pid][self.COUNT][self.COUNT]
 
         return_json = dict()
         return_json['vote'] = []
@@ -128,54 +131,71 @@ class MulJomDaO(IconScoreBase):
             vid = str(i+1)
             return_json['vote'].append({
                 "voter": self._vote[_Proposer][pid][vid][self.VOTER],
-                "selectItem": self._ivote[_Proposer][pid][vid][self.SELECTITEM]})
+                "selectItem": self._ivote[_Proposer][pid][vid][self.SELECTITEM],
+                "delegateTxID": self._vote[_Proposer][pid][vid][self.DELEGATETXID],
+                "delegateAmount": self._vote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
+            })
 
         return json_dumps(return_json)
 
     @external(readonly=False)
-    def Finalize(self, _Proposer: str, _ProposalID: int, _FinalData: str):
+    def Finalize(self, _Proposer: str, _ProposalID: int, _TotalDelegate: int, _FinalData: str):
         votes = json_loads(_FinalData)
 
+        self._log.set(self._log.get()+"|"+_FinalData)
         pid = str(_ProposalID)
         for aVote in votes:
-            vid = self._vote[_Proposer][pid][aVote['voter']][self.COUNT]
+            vid = str(self._ivote[_Proposer][pid][aVote['voter']][self.COUNT])
             self._vote[_Proposer][pid][vid][self.DELEGATETXID] = aVote['DelegateTxID']
-            self._vote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = aVote['DelegateAmount']
+            self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = aVote['DelegateAmount']
+        self._log.set(self._log.get()+"|1")
 
         # amount를 각 select_item 별로 저장
         total_voting_power = 0
         result = dict()
-        for i in range(self._ivote[_Proposer][self.COUNT][self.COUNT]):
-            vid = i+1
+        vote_cnt = self._ivote[_Proposer][pid][self.COUNT][self.COUNT]
+        for i in range(vote_cnt):
+            vid = str(i+1)
             select_item = self._ivote[_Proposer][pid][vid][self.SELECTITEM]
-            amount = self._vote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
+            amount = self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
+            self._log.set(self._log.get()+"|"+str(select_item)+"|"+str(amount))
             total_voting_power = total_voting_power + amount
             if select_item in result:
                 result[select_item] = result[select_item] + amount
             else:
                 result[select_item] = amount
+        self._log.set(self._log.get()+"|"+str(vote_cnt)+"|"+str(total_voting_power) + "|" +
+                      json_dumps(result)+"|2")
 
         # 최종 결과에서 electoral threshold 를 넘었는지 확인
-        if total_voting_power < electoral_treshold:
+        if (total_voting_power/_TotalDelegate)*100 < self._iproposal[_Proposer][pid][self.ELECTORALTH]:
             return
 
+        self._log.set(self._log.get()+"|3")
         # 가장 많이 투표받은 것 찾기
-        most_voted_item
+        most_voted_item = 0
         most_voted = 0
         for i in result:
             if result[i] > most_voted:
                 most_voted = result[i]
                 most_voted_item = i
+        self._log.set(self._log.get()+"|4")
 
         # 최종 결과에서 winning threshold 를 넘은 아이템이 있는지 확인
-        if (most_voted/total_voting_power)*100 > self._proposal[_Proposer][pid][self.WINNINGTH]:
+        if (most_voted/total_voting_power)*100 > self._iproposal[_Proposer][pid][self.WINNINGTH]:
+            self._log.set(self._log.get()+"|5-1")
             # winning th 넘음.
-            self._proposal[_Proposer][pid]["WINNER"] = most_voted_item
+            self._iproposal[_Proposer][pid][self.WINNER] = most_voted_item
             # 결과에 따라 no result, result 결과 proposal에 저장.
-            self._proposal[_Proposer][pid]["STATUS"] = "WinnerDecided"
+            self._proposal[_Proposer][pid][self.STATUS] = "WinnerDecided"
         else:
+            self._log.set(self._log.get()+"|5-2")
             # 결과에 따라 no result, result 결과 proposal에 저장.
-            self._proposal[_Proposer][pid]["STATUS"] = "NoWinner"
+            self._proposal[_Proposer][pid][self.STATUS] = "NoWinner"
+
+    @external(readonly=True)
+    def Log(self) -> str:
+        return self._log.get()
 
     @external(readonly=False)
     def SetProposal(self, _Proposer: str, _Subject: str, _Contents: str, _ElectoralTH: int, _WinningTH: int, _ExpireDate: str, _SelectItems: str):
@@ -190,6 +210,7 @@ class MulJomDaO(IconScoreBase):
             self._proposal[_Proposer][pid][self.CONTENTS] = _Contents
             self._iproposal[_Proposer][pid][self.ELECTORALTH] = _ElectoralTH
             self._iproposal[_Proposer][pid][self.WINNINGTH] = _WinningTH
+            self._proposal[_Proposer][pid][self.STATUS] = "Voting"
             self._proposal[_Proposer][pid][self.EXPIREDATE] = _ExpireDate
             self._proposal[_Proposer][pid][self.SELECTITEM] = _SelectItems
             self._ivote[_Proposer][pid][self.COUNT][self.COUNT] = 0
@@ -208,7 +229,9 @@ class MulJomDaO(IconScoreBase):
             self._iproposal[_Proposer][pid][self.ELECTORALTH])
         return_json[self.WINNINGTH] = str(
             self._iproposal[_Proposer][pid][self.WINNINGTH])
+        return_json[self.STATUS] = self._proposal[_Proposer][pid][self.STATUS]
         return_json[self.EXPIREDATE] = self._proposal[_Proposer][pid][self.EXPIREDATE]
         return_json[self.SELECTITEM] = self._proposal[_Proposer][pid][self.SELECTITEM]
+        return_json[self.WINNER] = self._proposal[_Proposer][pid][self.WINNER]
 
         return json_dumps(return_json)

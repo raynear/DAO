@@ -187,9 +187,9 @@ query PRep($PRepName:String!){
 `;
 
 
-export const GET_PROPOSAL_N_PREP = gql`
-  query ProposalNPRep($id: Int!, $PRepName:String!) {
-    proposal(id: $id) {
+export const GET_PROPOSAL4EDIT = gql`
+  query Proposal4Edit($id: Int!) {
+    proposal4edit(id: $id) {
       id
       prep{
         id
@@ -210,12 +210,6 @@ export const GET_PROPOSAL_N_PREP = gql`
       id
       username
     }
-  prep(prepName:$PRepName){
-    id
-    username
-    iconAddress
-  }
-
   }
 `;
 
