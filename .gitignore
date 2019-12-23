@@ -27,11 +27,6 @@ board/migrations
 account/migrations
 db.sqlite3
 
-SCORE/.score
-SCORE/.statedb
-SCORE/rc.log
-SCORE/tbears.log
-SCORE/muljomDAO.zip
 SCORE/muljomDAO/.DS_Store
 SCORE/.DS_Store
 account/.DS_Store
@@ -39,25 +34,6 @@ account/.DS_Store
 .score
 .statedb
 *.log
-test.py
 
-key.pw
-.test.py.swp
-test/tbears_cli_config.json
-test/keystore_test1
-test/tbears_server_config.json
-SCORE/muljomDAO/.idea/misc.xml
-SCORE/muljomDAO/.idea/modules.xml
-SCORE/muljomDAO/.idea/muljomDAO.iml
-SCORE/muljomDAO/.idea/vcs.xml
-SCORE/muljomDAO/.idea/workspace.xml
-read.py
-set.py
-verify.py
-vote.py
-score_address
-key_store_prep1
-key_store_user1
-key_store_user2
-finalize.py
-total.py
+test/*
+SCORE/muljomDAO/.idea/*
