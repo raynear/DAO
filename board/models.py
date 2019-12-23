@@ -1,11 +1,17 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from account.models import User
+import enum
 
 #user = get_user_model()
 user = User
 
-# Create your models here.
+
+class Status(enum.Enum):
+    NOT_PUBLISHED = 0
+    VOTING = 1
+    HAS_WINNER = 2
+    NO_WINNER = 3
 
 
 class ProposalModel(models.Model):
@@ -16,6 +22,7 @@ class ProposalModel(models.Model):
         blank=False,
         default=user
     )
+    status = models.IntegerField(default=0)
     published = models.BooleanField(default=False)
     prep_pid = models.IntegerField(default=0)
     subject = models.CharField(max_length=50, blank=True)

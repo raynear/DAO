@@ -21,7 +21,7 @@ from django.shortcuts import get_object_or_404
 
 from account.models import User
 
-from .models import ProposalModel, SelectItemModel, VoteModel
+from .models import ProposalModel, SelectItemModel, VoteModel, Status
 
 from .icon_network import MAIN_NET, TEST_NET, TEST_NET3, LOCAL_NET, SCORE_ADDRESS, LOCAL_SCORE_ADDRESS
 NETWORK = LOCAL_NET
@@ -417,37 +417,49 @@ class Finalize(graphene.Mutation):
 
     @login_required
     def mutate(self, info, proposal_id):
-        final_blockheight = find_blockheight_from_datetime(expire_datetime)
+        proposal = ProposalModel.objects.get(pk=proposal_id)
+        print(proposal.expire_at)
+        final_blockheight = find_blockheight_from_datetime(
+            str(proposal.expire_at))
         print(final_blockheight)
 
         print("a")
+        proposer = proposal.prep.username
         resp_vote = json_rpc_call(
-            "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal_id})
+            "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal.prep_pid})
         print("b", resp_vote)
         vote_json = json.loads(resp_vote)
         print("c", vote_json)
         final_delegate_tx_list = []
         select_list = {}
-        for a_vote in vote_json['votes']:
+        for a_vote in vote_json['vote']:
             final_delegate_tx = get_final_delegate_tx(proposer,
-                                                      a_vote.voter, expire_blockheight)
-            final_delegate_tx_list.append(final_delegate_tx)
+                                                      a_vote['voter'], final_blockheight)
+            print("final delegate tx", final_delegate_tx)
+#            final_delegate_tx_list.append(final_delegate_tx)
+            print("final delegate tx", final_delegate_tx_list)
+            tx_amount = 0
+            tx_id = ""
+            for delegate in final_delegate_tx['data']['params']['delegations']:
+                if delegate['address'] == proposal.prep.icon_address:
+                    tx_amount = delegate['value']
+                    tx_id = final_delegate_tx['txHash']
 
-            delegate_amount = 0
-            for delegate in final_delegate_tx:
-                if delegate.address == prep_address:
-                    delegate_amount = delegate.amount
+            final_delegate_tx_list.append(
+                {"DelegateTxID": final_delegate_tx['txHash'], "DelegateAmount": tx_amount})
 
-            print("FinalDelegateAmount", delegate_amount)
-            if a_vote.select_item in select_list:
-                select_list[a_vote.select_item] += delegate_amount
+            if a_vote['selectItem'] in select_list:
+                select_list[a_vote['selectItem']] += tx_amount
             else:
-                select_list[a_vote.select_item] = delegate_amount
-        
+                select_list[a_vote['selectItem']] = tx_amount
+
+        print(final_delegate_tx_list)
+        print(select_list)
+
         # 최종 결과 dict로 만들어서 SCORE에 전송
         # 1. final delegate txid
         # 2. voting result
-        # 
+        #
 
         return Finalize(proposal=proposal)
 
@@ -537,34 +549,53 @@ def get_final_delegate_tx(prep_address, address, block_height):
     resp = requests.get("https://tracker.icon.foundation/v3/address/txList",
                         {'address': address, 'page': 1, 'count': 1000})
     latest_tx = False
-    print("1")
+    print("1", address, block_height)
 
     if resp.status_code == 200:
-        print("2")
-        resp_json = json.loads(resp.text)
-        print("3")
+        print("2", resp)
+        resp_text_user1 = '{"data":[{"txHash":"0x9fb20f98bdcdc5287545ceae343c3302fc185b7154d3aac2dca833a7e7f60697","height":18,"createDate":"2019-09-21T02:35:34.000+0000","fromAddr":"hxf2d2bcaf5c3ec858b3a12af46d9f632ccea58210","toAddr":"cx0000000000000000000000000000000000000000","txType":"14","dataType":"call","amount":"0","fee":"0.001286","state":1,"errorMsg":null,"targetContractAddr":"cx0000000000000000000000000000000000000000","id":null}],"listSize":1,"totalSize":1,"result":"200","description":"success"}'
+        resp_text_user2 = '{"data":[{"txHash":"0xb992036a9125a95cfb9fa1308b8b77239f68add7d174b71ad2b8eb2195f12a1d","height":20,"createDate":"2019-09-21T02:35:34.000+0000","fromAddr":"hxf2d2bcaf5c3ec858b3a12af46d9f632ccea58210","toAddr":"cx0000000000000000000000000000000000000000","txType":"14","dataType":"call","amount":"0","fee":"0.001286","state":1,"errorMsg":null,"targetContractAddr":"cx0000000000000000000000000000000000000000","id":null}],"listSize":1,"totalSize":1,"result":"200","description":"success"}'
+        resp_text_user3 = '{"data":[{"txHash":"0xa6c32ea6f97b8860a98cc2086b86c23d3399a4b726224a6304c4d494d4331916","height":22,"createDate":"2019-09-21T02:35:34.000+0000","fromAddr":"hxf2d2bcaf5c3ec858b3a12af46d9f632ccea58210","toAddr":"cx0000000000000000000000000000000000000000","txType":"14","dataType":"call","amount":"0","fee":"0.001286","state":1,"errorMsg":null,"targetContractAddr":"cx0000000000000000000000000000000000000000","id":null}],"listSize":1,"totalSize":1,"result":"200","description":"success"}'
+        #
+        #
+        # tracker에 연동하는 부분은 local과 연동 안되므로 dummy로 대체함
+        #
+        #
+        if address == "hxecb5942964bd920f92b53997a4b274f5bcbb7544":
+            resp_text = resp_text_user1
+        if address == "hx8ac83a8c5a842352699921d90bcaae6686d7cafe":
+            resp_text = resp_text_user2
+        if address == "hx52672f706f3b1af440637a0d00c96beed4dee71c":
+            resp_text = resp_text_user3
+        resp_json = json.loads(resp_text)
+        print("3", resp_json)
         tx_list = resp_json['data']
-        print("4")
+        print("4", tx_list)
+
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
 
         for a_tx in tx_list:
             print("5", a_tx)
+            print(a_tx['height'])
+            print(block_height)
+            print(a_tx['toAddr'])
             if a_tx['height'] < block_height and a_tx['toAddr'] == "cx0000000000000000000000000000000000000000":
                 print("6")
-                resp_tx_detail = requests.get(
-                    "https://tracker.icon.foundation/v3/transaction/txDetail", {'txHash': a_tx['txHash']})
-
-                print("7")
-                resp_tx_json = json.loads(resp_tx_detail.text)
-                print("8")
-                tx_detail = resp_tx_json['data']
+                tx_detail = icon_service.get_transaction(a_tx['txHash'])
+#                resp_tx_detail = requests.get("https://tracker.icon.foundation/v3/transaction/txDetail", {'txHash': a_tx['txHash']})
+#                print("7", tx)
+#                resp_tx_json = json.loads(resp_tx_detail.text)
+#                print("8")
+#                tx_detail = resp_tx['data']
                 print("9")
-                if tx_detail['method'] == "setDelegation":
-                    if latest_tx['height'] < tx_detail['height'] or latest_tx == False:
+                if tx_detail['data']['method'] == "setDelegation":
+                    if latest_tx == False or latest_tx['blockHeight'] < tx_detail['blockHeight']:
                         # 1 번만 나오면 순서대로 동작하는거니 처음껄로 리턴하면 됨
                         print("!!!!!!!!!!!!!!!!!!!!!!")
                         latest_tx = tx_detail
 
-        return lastest_tx
+        print("10")
+        return latest_tx
 
 
 '''

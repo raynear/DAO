@@ -103,17 +103,18 @@ class MulJomDaO(IconScoreBase):
         if self._owner.get() == self.msg.sender:
             pid = str(_ProposalID)
             voter_address = str(self._averify_id[_UserID][self.ADDRESS])
-            UserVoteIdx = self._ivote[_Proposer][pid][voter_address][self.COUNT]
-            if self._vote[_Proposer][pid][str(UserVoteIdx)][self.VOTER] != "":
-                self._ivote[_Proposer][pid][str(
-                    UserVoteIdx)][self.SELECTITEM] = _VoteItem
-            else:
-                vote_idx = self._ivote[_Proposer][pid][self.COUNT][self.COUNT] + 1
-                vid = str(vote_idx)
-                self._vote[_Proposer][pid][vid][self.VOTER] = voter_address
-                self._ivote[_Proposer][pid][vid][self.SELECTITEM] = _VoteItem
-                self._ivote[_Proposer][pid][self.COUNT][self.COUNT] = vote_idx
-                self._ivote[_Proposer][pid][voter_address][self.COUNT] = vote_idx
+            if voter_address != None:
+                UserVoteIdx = self._ivote[_Proposer][pid][voter_address][self.COUNT]
+                if self._vote[_Proposer][pid][str(UserVoteIdx)][self.VOTER] != "":
+                    self._ivote[_Proposer][pid][str(
+                        UserVoteIdx)][self.SELECTITEM] = _VoteItem
+                else:
+                    vote_idx = self._ivote[_Proposer][pid][self.COUNT][self.COUNT] + 1
+                    vid = str(vote_idx)
+                    self._vote[_Proposer][pid][vid][self.VOTER] = voter_address
+                    self._ivote[_Proposer][pid][vid][self.SELECTITEM] = _VoteItem
+                    self._ivote[_Proposer][pid][self.COUNT][self.COUNT] = vote_idx
+                    self._ivote[_Proposer][pid][voter_address][self.COUNT] = vote_idx
 
     @external(readonly=True)
     def GetVotes(self, _Proposer: str, _ProposalID: int) -> str:
@@ -132,8 +133,8 @@ class MulJomDaO(IconScoreBase):
         return json_dumps(return_json)
 
     @external(readonly=False)
-    def InputFinalVoteData(self, _Proposer: str, _ProposalID: int, _FinalData: str):
-        votes = json_loads(FinalData)
+    def Finalize(self, _Proposer: str, _ProposalID: int, _FinalData: str):
+        votes = json_loads(_FinalData)
 
         pid = str(_ProposalID)
         for aVote in votes:
@@ -141,10 +142,7 @@ class MulJomDaO(IconScoreBase):
             self._vote[_Proposer][pid][vid][self.DELEGATETXID] = aVote['DelegateTxID']
             self._vote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = aVote['DelegateAmount']
 
-    @external(readonly=False)
-    def CalculateVotes(self, _Proposer: str, _ProposalID: int):
         result = dict()
-        pid = str(_ProposalID)
         for i in range(self._ivote[_Proposer][self.COUNT][self.COUNT]):
             amount = self._vote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
             select_item = self._ivote[_Proposer][pid][vid][self.SELECTITEM]

@@ -148,7 +148,7 @@ function Proposal(props: any) {
         <Grid container className={classes.container}>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography className={classes.title} color="textSecondary" gutterBottom>
-              <b>{props.data.proposal.prepPid}.</b> P-Rep {props.data.proposal.prep.username}
+              <b>{props.data.proposal.id}.</b> {props.data.proposal.prep.username} - {props.data.proposal.prepPid}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
