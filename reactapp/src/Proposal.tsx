@@ -12,13 +12,13 @@ import facebookImg from "./img/facebook.png";
 import twitterImg from "./img/twitter.png";
 
 function Proposal(props: any) {
-  console.log("Proposal props", props);
+  // console.log("Proposal props", props);
   // const forceUpdate = useForceUpdate;
 
   const classes = useStyles();
 
   function SelectItemList() {
-    //    console.log("SelectItemList", props.data.proposal.selectitemmodelSet);
+    //    // console.log("SelectItemList", props.data.proposal.selectitemmodelSet);
     return (
       <ul>
         {props.data.proposal.selectitemmodelSet.map(

@@ -50,14 +50,14 @@ function App(props: any) {
     const type = event.detail.type;
     const payload = event.detail.payload;
     if (type === "RESPONSE_SIGNING") {
-      console.log("response signing");
-      console.log(payload); // e.g., 'q/dVc3qj4En0GN+...'
+      // console.log("response signing");
+      // console.log(payload); // e.g., 'q/dVc3qj4En0GN+...'
     } else if (type === "RESPONSE_JSON-RPC") {
-      console.log("response json rpc");
-      console.log(payload);
+      // console.log("response json rpc");
+      // console.log(payload);
     } else if (type === "RESPONSE_ADDRESS") {
       client.writeData({ data: { icon_address: payload } });
-      console.log(client);
+      // console.log(client);
       sendVerify(payload);
     }
   };
@@ -65,7 +65,7 @@ function App(props: any) {
 
   function sendVerify(address: string) {
     client.query({ query: GET_LOCAL_ME }).then(async (result) => {
-      console.log("reload OK");
+      // console.log("reload OK");
       let lastBlock = await selected_icon_service.getBlock('latest').execute();
       let params = { "_BlockHash": lastBlock.blockHash, "_ID": result.data.username };
 
@@ -76,10 +76,10 @@ function App(props: any) {
   client.query({ query: gql`{ viewer{ username iconAddress }}` }).then((result: any) => {
     client.writeData({ data: { username: result.data.viewer.username, icon_address: result.data.viewer.iconAddress } });
     client.query({ query: GET_LOCAL_ME }).then(result => {
-      console.log("reload OK");
+      // console.log("reload OK");
     })
   }).catch((error: any) => {
-    console.log("Not Logined");
+    // console.log("Not Logined");
   })
 
   return (

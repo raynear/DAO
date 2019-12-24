@@ -3,11 +3,11 @@ import { FormControl, InputLabel, Select, MenuItem } from "@material-ui/core";
 import useStyles from "./Style";
 
 function PRepSelectList(props: any) {
-  console.log("prep select list props", props);
+  // console.log("prep select list props", props);
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>
-  if (props.error) { console.log("error", props.error); return <p>Error...</p> }
+  if (props.error) { return <p>Error...</p> }// console.log("error", props.error); 
 
   let allPRep;
   try {

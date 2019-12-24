@@ -9,7 +9,7 @@ import { useMutation, useApolloClient } from "react-apollo";
 import NewAccount from "./NewAccount";
 
 function NewAccountContainer(props: any) {
-  console.log("NewAccount props", props);
+  // console.log("NewAccount props", props);
   const forceUpdate = useForceUpdate();
 
   const client = useApolloClient();
@@ -66,9 +66,9 @@ function NewAccountContainer(props: any) {
     }
     return true;
     /*.then(result => {
-      console.log(result);
+      // console.log(result);
     }).catch(e => {
-      console.log("error?", e);
+      // console.log("error?", e);
       if (e.toString().indexOf("UNIQUE")) {
         alert("id exist. make another id")
         return false;
@@ -80,7 +80,7 @@ function NewAccountContainer(props: any) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(result => {
-      console.log(result);
+      // console.log(result);
       client.writeData({
         data: {
           username: username
@@ -97,7 +97,7 @@ function NewAccountContainer(props: any) {
     } else {
       let result = await NewUser(signInfo.username, signInfo.password);
       if (result) {
-        console.log(result);
+        // console.log(result);
         LogIn(signInfo.username, signInfo.password);
         props.setActiveStep(props.activeStep + 1);
       }

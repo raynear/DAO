@@ -10,12 +10,12 @@ import PRepSelectListContainer from "./PRepSelectListContainer";
 import useStyles from "./Style";
 
 function Proposals(props: any) {
-  console.log("Proposals props", props);
+  // console.log("Proposals props", props);
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>;
   if (props.error) return <p>Error!</p>;
-  console.log(props.data);
+  // console.log(props.data);
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>

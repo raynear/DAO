@@ -6,7 +6,7 @@ import { VIEWER, GET_LOCAL_SNACK } from "./GQL";
 import Layout from "./Layout";
 
 function LayoutContainer(props: any) {
-  console.log("LayoutContainer props", props);
+  // console.log("LayoutContainer props", props);
   const client = useApolloClient();
 
   const noSnack = { open: false, message: "" };

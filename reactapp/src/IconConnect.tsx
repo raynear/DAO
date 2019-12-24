@@ -19,7 +19,7 @@ const SELECTED_CONTRACT = LOCAL_CONTRACT;
 export const selected_icon_service = local_icon_service
 
 export async function json_rpc_call(method_name: string, params: any) {
-  console.log("params", params);
+  // console.log("params", params);
   var callBuilder = new IconBuilder.CallBuilder();
   var callObj = callBuilder
     .to(SELECTED_CONTRACT)
@@ -27,7 +27,7 @@ export async function json_rpc_call(method_name: string, params: any) {
     .params(params)
     .build();
 
-  console.log(callObj);
+  // console.log(callObj);
   return await selected_icon_service.call(callObj).execute();
 }
 
@@ -63,7 +63,7 @@ export async function json_rpc_send_tx(from_wallet: string, method_name: string,
 }
 
 export async function governance_call(method_name: string, params: any) {
-  console.log("params", params);
+  // console.log("params", params);
   var callBuilder = new IconBuilder.CallBuilder();
   var callObj = callBuilder
     .to("cx0000000000000000000000000000000000000000")
@@ -71,7 +71,7 @@ export async function governance_call(method_name: string, params: any) {
     .params(params)
     .build();
 
-  console.log(callObj);
+  // console.log(callObj);
   return await selected_icon_service.call(callObj).execute();
 }
 
@@ -107,7 +107,7 @@ export async function governance_send_tx(from_wallet: string, method_name: strin
 }
 
 export async function network_proposal_call(method_name: string, params: any) {
-  console.log("params", params);
+  // console.log("params", params);
   var callBuilder = new IconBuilder.CallBuilder();
   var callObj = callBuilder
     .to("cx0000000000000000000000000000000000000001")
@@ -115,7 +115,7 @@ export async function network_proposal_call(method_name: string, params: any) {
     .params(params)
     .build();
 
-  console.log(callObj);
+  // console.log(callObj);
   return await selected_icon_service.call(callObj).execute();
 }
 

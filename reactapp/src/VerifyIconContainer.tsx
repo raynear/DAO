@@ -8,7 +8,7 @@ import { json_rpc_call, governance_call } from "./IconConnect";
 import VerifyIcon from "./VerifyIcon";
 
 function VerifyIconContainer(props: any) {
-  console.log("VerifyIconContainer props", props);
+  // console.log("VerifyIconContainer props", props);
   const client = useApolloClient();
 
   const [iconAddress, setIconAddress] = useState("");
@@ -19,7 +19,7 @@ function VerifyIconContainer(props: any) {
 
   async function callVerify() {
     let result = await json_rpc_call("GetVerifyInfoByID", { "_ID": queryVal.data.username });
-    console.log(result);
+    // console.log(result);
     let result_json = JSON.parse(result);
     setVerifiedAddress(result_json.address);
 
@@ -92,7 +92,7 @@ function VerifyIconContainer(props: any) {
           }
         }`)
     */
-    console.log("PRepList", PRepList);
+    // console.log("PRepList", PRepList);
     PRepList.preps.forEach((item: any, idx: number, array: any) => {
       if (item.address === result_json.address) {
         setIsPRep(true);
@@ -132,9 +132,9 @@ function VerifyIconContainer(props: any) {
   }
 
   function addIconAddress() {
-    console.log("!@#!@#!@#", verifiedAddress);
+    // console.log("!@#!@#!@#", verifiedAddress);
     mutateAddIconAddress({ variables: { IconAddress: verifiedAddress } }).then((result) => {
-      console.log(result);
+      // console.log(result);
       if (props.setActiveStep) {
         props.setActiveStep(2);
       }

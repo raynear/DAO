@@ -10,7 +10,7 @@ import useForceUpdate from "./useForceUpdate";
 import EditProposal from "./EditProposal";
 
 function EditProposalContainer(props: any) {
-  console.log("EditProposalContainer props", props);
+  // console.log("EditProposalContainer props", props);
 
   //  const match = props.match;
   //  const history = props.history;
@@ -74,25 +74,25 @@ function EditProposalContainer(props: any) {
   }
 
   const handleDateChange = (days: number) => {
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     var today = new Date();
     var dueto = new Date();
     dueto.setDate(today.getDate() + 1);
-    console.log(dueto);
+    // console.log(dueto);
     setValues({ ...values, expireAt: dueto });
   };
 
   const handleProposalChange = (name: string) => (
     event: React.ChangeEvent<any>
   ) => {
-    console.log(typeof event.target.value)
+    // console.log(typeof event.target.value)
 
     if (name === "votingDue") {
       var today = new Date();
       var dueto = new Date();
       if (event.target.value !== "") {
         dueto.setDate(today.getDate() + parseInt(event.target.value));
-        console.log(event.target.value, dueto);
+        // console.log(event.target.value, dueto);
         setValues({ ...values, [name]: event.target.value, expireAt: dueto });
       }
       else {
@@ -111,7 +111,7 @@ function EditProposalContainer(props: any) {
     else {
       setValues({ ...values, [name]: newValue });
     }
-    console.log(values);
+    // console.log(values);
   };
 
   function handleEditorChange(content: string) {
@@ -152,7 +152,7 @@ function EditProposalContainer(props: any) {
   }
 
   function submitProposal(mutate_var: any) {
-    console.log("submitProposal mutate_var:", mutate_var);
+    // console.log("submitProposal mutate_var:", mutate_var);
     mutateProposal(mutate_var).then(result => {
       setRedirect(result.data.setProposal.proposal.id);
     });

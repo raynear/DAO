@@ -51,7 +51,7 @@ function SignInContainer(props: any) {
       forceUpdate();
       return;
     } else {
-      console.log("go to login");
+      // console.log("go to login");
       LogIn(signInfo.username, signInfo.password);
     }
   }

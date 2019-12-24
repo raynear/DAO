@@ -13,7 +13,7 @@ interface vote {
 }
 
 function ProposalContainer(props: any) {
-  console.log("ProposalContainer props", props);
+  // console.log("ProposalContainer props", props);
   const id = props.match.params.ID;
 
   const [voteSelect, setVoteSelect] = useState();
@@ -31,9 +31,9 @@ function ProposalContainer(props: any) {
     mutatePublish({
       variables: { proposalId: id }
     }).then(publishResult => {
-      console.log("publish", publishResult);
+      // console.log("publish", publishResult);
     });
-    console.log("Publish!!!!!!!!!!!!!!", queryVal.data.proposal);
+    // console.log("Publish!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
     window.location.reload();
     // queryVal.refetch();
@@ -43,9 +43,9 @@ function ProposalContainer(props: any) {
     mutateVote({
       variables: { proposalId: id, selectItemIndex: voteSelect }
     }).then(voteResult => {
-      console.log("vote", voteResult);
+      // console.log("vote", voteResult);
     });
-    console.log("Vote!!!!!!!!!!!!!!!!!", queryVal.data.proposal);
+    // console.log("Vote!!!!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
     window.location.reload();
     // queryVal.refetch();
@@ -55,12 +55,12 @@ function ProposalContainer(props: any) {
     mutateFinalize({
       variables: { ProposalID: parseInt(id) }
     }).then(finalizeResult => {
-      console.log("finalize", finalizeResult);
+      // console.log("finalize", finalizeResult);
     });
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Selected", (event.target as HTMLInputElement).value);
+    // console.log("Selected", (event.target as HTMLInputElement).value);
     setVoteSelect(parseInt((event.target as HTMLInputElement).value));
   };
 
@@ -72,11 +72,11 @@ function ProposalContainer(props: any) {
 
   async function GetVotersVotingPower(prepAddress: string, voterAddress: string) {
     const delegateResp = await governance_call("getDelegation", { address: voterAddress });
-    console.log(delegateResp);
+    // console.log(delegateResp);
     for (const aPRepKey in delegateResp.delegations) {
       const aPRep = delegateResp.delegations[aPRepKey];
       if (aPRep.address === prepAddress) {
-        console.log(")()(())())()()(", aPRep.value);
+        // console.log(")()(())())()()(", aPRep.value);
         return parseInt(aPRep.value, 16);
       }
     }
@@ -85,7 +85,7 @@ function ProposalContainer(props: any) {
 
   async function isMyPRep(address: string) {
     const delegateResp = await governance_call("getDelegation", { "address": address })
-    console.log(delegateResp);
+    // console.log(delegateResp);
     let delegateList;
     try {
       delegateList = delegateResp.delegations;
@@ -103,13 +103,13 @@ function ProposalContainer(props: any) {
 
   function getVotedIdx() {
     let votedIdx = -1;
-    console.log("getVotedIdx", queryVal.data.proposal.selectitemmodelSet);
+    // console.log("getVotedIdx", queryVal.data.proposal.selectitemmodelSet);
     queryVal.data.proposal.selectitemmodelSet.forEach((aVoteItem: any) => {
       if (aVoteItem && aVoteItem.votemodelSet)
         aVoteItem.votemodelSet.forEach((aVote: any) => {
-          console.log("aVote", aVote);
+          // console.log("aVote", aVote);
           if (queryViewer.data.viewer.username === aVote.voter.username) {
-            console.log("aVote", aVote);
+            // console.log("aVote", aVote);
             votedIdx = parseInt(aVoteItem.index);
           }
         });
@@ -141,7 +141,7 @@ function ProposalContainer(props: any) {
       for (const VoteKey in test) {
         const aVote = test[VoteKey];
         VotingPower += await GetVotersVotingPower(queryVal.data.proposal.prep.iconAddress, aVote.voter.iconAddress);
-        console.log("!@#!@#", VotingPower);
+        // console.log("!@#!@#", VotingPower);
       }
 
       VoteItem.push((VotingPower / 1000000000000000000));
@@ -153,9 +153,9 @@ function ProposalContainer(props: any) {
     setVoteData(tmpVoteData);
 
 
-    console.log("totalvote", totalVotedPower);
-    console.log("totaldelegated icx", TotalDelegate);
-    console.log("VoteItem!!!!!!!!!!!!!!!!!", VoteItem);
+    // console.log("totalvote", totalVotedPower);
+    // console.log("totaldelegated icx", TotalDelegate);
+    // console.log("VoteItem!!!!!!!!!!!!!!!!!", VoteItem);
     return VoteItem;
   }
 
@@ -177,7 +177,7 @@ function ProposalContainer(props: any) {
       for (const VoteKey in test) {
         const aVote = test[VoteKey];
         VotingPower += await GetVotersVotingPower(queryVal.data.proposal.prep.iconAddress, aVote.voter.iconAddress);
-        console.log("!@#!@#", VotingPower);
+        // console.log("!@#!@#", VotingPower);
       }
 
       tmpList.push((VotingPower / 1000000000000000000));
@@ -193,9 +193,9 @@ function ProposalContainer(props: any) {
   }
 
   //  const queryMe = useQuery(GET_LOCAL_ME);
-  //  console.log("queryMe", queryMe);
+  //  // console.log("queryMe", queryMe);
   //  const queryAddress = useQuery(GET_LOCAL_ADDRESS);
-  //  console.log("queryAddress", queryAddress);
+  //  // console.log("queryAddress", queryAddress);
   const queryViewer = useQuery(VIEWER);
   const queryVal = useQuery(GET_PROPOSAL, { variables: { id: id } });
 
@@ -203,17 +203,17 @@ function ProposalContainer(props: any) {
   if (queryViewer.loading || queryVal.loading) {
     return <p>loading</p>
   }
-  console.log("___________________________________________");
-  console.log(queryVal, queryViewer);
+  // console.log("___________________________________________");
+  // console.log(queryVal, queryViewer);
 
   if (queryVal && queryVal.data && queryViewer.data) {
-    console.log("!@#!@#!@#!@#!@!#!@#!@#");
-    console.log("queryVal", queryVal);
+    // console.log("!@#!@#!@#!@#!@!#!@#!@#");
+    // console.log("queryVal", queryVal);
     if (!value.load) {
       isMyPRep(queryViewer.data.viewer.iconAddress).then((result) => { setValue({ load: true, myPRep: result, votedIdx: getVotedIdx(), owner: amIOwner() }); });
-      console.log("voteData", voteData);
+      // console.log("voteData", voteData);
     }
-    // console.log("condition value", myPRep, votedIdx, owner);
+    // // console.log("condition value", myPRep, votedIdx, owner);
   }
   if (queryVal && queryVal.data) {
     if (!flag) {
@@ -228,14 +228,14 @@ function ProposalContainer(props: any) {
     getVotedPowerList().then((result) => {
       if (!votedPower) {
         setVotedPower(result);
-        // console.log("hahahaha", votedPower);
+        // // console.log("hahahaha", votedPower);
       }
     });
 
     getVotedPowerRate(queryVal.data.proposal.winningTh).then((result) => {
       if (votedPowerRate[0].name === "" && votedPowerRate[0].left === 0 && votedPowerRate[0].voted === 0) {
         setVotedPowerRate(result);
-        // console.log("hahahaha", votedPower);
+        // // console.log("hahahaha", votedPower);
       }
     });
   }

@@ -7,7 +7,7 @@ import useStyles from "./Style";
 
 
 function NewAccount(props: any) {
-  console.log("NewAccount props", props);
+  // console.log("NewAccount props", props);
   const classes = useStyles();
 
   return (
