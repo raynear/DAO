@@ -146,9 +146,9 @@ function VerifyIconContainer(props: any) {
   }
 
   const queryVal = useQuery(GET_LOCAL_ME);
-
   return (<VerifyIcon
     {...queryVal}
+    activeStep={props.activeStep}
     SelectedAddress={SelectedAddress}
     newPRepPage={newPRepPage}
     addIconAddress={addIconAddress}

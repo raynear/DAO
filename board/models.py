@@ -7,13 +7,6 @@ import enum
 user = User
 
 
-class Status(enum.Enum):
-    NOT_PUBLISHED = 0
-    VOTING = 1
-    APPROVE = 2
-    DISAPPROVE = 3
-
-
 class ProposalModel(models.Model):
     prep = models.ForeignKey(
         user,
@@ -22,7 +15,7 @@ class ProposalModel(models.Model):
         blank=False,
         default=user
     )
-    status = models.IntegerField(default=0)
+    status = models.CharField(max_length=300, blank=True, default="")
     published = models.BooleanField(default=False)
     prep_pid = models.IntegerField(default=0)
     subject = models.CharField(max_length=50, blank=True)

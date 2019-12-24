@@ -22,8 +22,8 @@ function SignInContainer(props: any) {
     }).then(() => {
       client.writeData({ data: { username: username } });
       client.writeData({ data: { snack: { open: true, message: "Welcome " + username, __typename: "snack" } } });
-      props.history.push("/");
-      window.location.reload();
+      props.history.go(-1);
+      // window.location.reload();
     });
   }
 

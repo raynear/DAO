@@ -9,6 +9,7 @@ export const GET_PROPOSAL = gql`
         username
         iconAddress
       }
+      status
       subject
       contents
       published
@@ -72,6 +73,7 @@ export const SET_PUBLISH = gql`
     publishProposal(proposalId: $proposalId) {
       proposal {
         id
+        status
         subject
         contents
         published
@@ -97,6 +99,7 @@ export const SET_VOTE = gql`
     voteProposal(proposalId: $proposalId, selectItemIndex: $selectItemIndex) {
       proposal {
         id
+        status
         subject
         contents
         published
@@ -194,6 +197,7 @@ export const GET_PROPOSAL4EDIT = gql`
       prep{
         id
       }
+      status
       subject
       contents
       published
@@ -217,6 +221,7 @@ export const GET_PROPOSALS = gql`
   query Proposals($selectedPRep:String, $search: String, $first: Int, $skip: Int) {
     proposals(prep:$selectedPRep, search: $search, first: $first, skip: $skip) {
       id
+      status
       subject
       prep{
         id
@@ -271,6 +276,7 @@ mutation Finalize($ProposalID:Int!){
   finalize(proposalId:$ProposalID){
     proposal{
       id
+      status
       subject
     }
   }

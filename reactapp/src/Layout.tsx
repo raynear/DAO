@@ -53,7 +53,7 @@ function Layout(props: any) {
             </Link>
             </Typography>
           }
-          <UserInfoContainer />
+          <UserInfoContainer refetch={props.refetch} />
         </Toolbar>
       </AppBar>
       <div className={classes.content}>

@@ -124,12 +124,12 @@ function Proposal(props: any) {
       return <FinalizeVoteButton />;
     }
     if (props.data.proposal.published && (props.myPRep || props.owner) && props.votedIdx === -1) {
-      return <VoteButton />;
+      return (<><VoteButton /><FinalizeVoteButton /></>);
     }
     if (!props.data.proposal.published && props.owner) {
-      return <PublishButton />;
+      return (<><PublishButton /><FinalizeVoteButton /></>);
     }
-    return <div>{" "}</div>
+    return <FinalizeVoteButton />;
   }
 
   function FacebookShare() {
@@ -157,7 +157,7 @@ function Proposal(props: any) {
               <Chip
                 icon={<DoneIcon />}
                 size="small"
-                label={"Approved"}
+                label={props.data.proposal.status}
                 clickable
                 color="primary"
               />

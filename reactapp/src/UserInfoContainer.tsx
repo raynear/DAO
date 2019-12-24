@@ -6,6 +6,7 @@ import { LOG_OUT, GET_LOCAL_ME } from "./GQL";
 import UserInfo from "./UserInfo";
 
 function UserInfoContainer(props: any) {
+  console.log("UserInfoContainer props", props);
   //const [badgeCnt, setBadgeCnt] = React.useState(0);
   const badgeCnt = 0;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -22,9 +23,10 @@ function UserInfoContainer(props: any) {
   };
 
   const handleMenuLogout = () => {
-    mutateLogout().then(() => {
+    mutateLogout().then((result) => {
       setAnchorEl(null);
-      client.writeData({ data: { username: "" } });
+      client.writeData({ data: { username: "", snack: { open: true, message: "logouted", __typename: "snack" } } });
+      props.refetch();
       window.location.reload();
     });
   };

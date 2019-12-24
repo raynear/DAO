@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL, GET_LOCAL_ME, GET_LOCAL_ADDRESS } from "./GQL";
+import { SET_PUBLISH, SET_VOTE, FINALIZE, GET_PROPOSAL, VIEWER } from "./GQL";
 
 import { governance_call } from "./IconConnect";
 
@@ -25,6 +25,7 @@ function ProposalContainer(props: any) {
 
   const [mutatePublish] = useMutation(SET_PUBLISH);
   const [mutateVote] = useMutation(SET_VOTE);
+  const [mutateFinalize] = useMutation(FINALIZE);
 
   function Publish() {
     mutatePublish({
@@ -35,6 +36,7 @@ function ProposalContainer(props: any) {
     console.log("Publish!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
     window.location.reload();
+    // queryVal.refetch();
   }
 
   function Vote() {
@@ -46,10 +48,15 @@ function ProposalContainer(props: any) {
     console.log("Vote!!!!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
     window.location.reload();
+    // queryVal.refetch();
   }
 
-  function FinalizeVote(proposalId: string) {
-    console.log("Finalize", proposalId);
+  function FinalizeVote() {
+    mutateFinalize({
+      variables: { ProposalID: parseInt(id) }
+    }).then(finalizeResult => {
+      console.log("finalize", finalizeResult);
+    });
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,7 +108,7 @@ function ProposalContainer(props: any) {
       if (aVoteItem && aVoteItem.votemodelSet)
         aVoteItem.votemodelSet.forEach((aVote: any) => {
           console.log("aVote", aVote);
-          if (queryMe.data.username === aVote.voter.username) {
+          if (queryViewer.data.viewer.username === aVote.voter.username) {
             console.log("aVote", aVote);
             votedIdx = parseInt(aVoteItem.index);
           }
@@ -111,7 +118,7 @@ function ProposalContainer(props: any) {
   }
 
   function amIOwner() {
-    if (queryVal.data.proposal.prep.username === queryMe.data.username) {
+    if (queryVal.data.proposal.prep.username === queryViewer.data.viewer.username) {
       return true;
     }
     return false;
@@ -185,24 +192,25 @@ function ProposalContainer(props: any) {
     return VoteItem;
   }
 
-  const queryMe = useQuery(GET_LOCAL_ME);
+  //  const queryMe = useQuery(GET_LOCAL_ME);
   //  console.log("queryMe", queryMe);
-  const queryAddress = useQuery(GET_LOCAL_ADDRESS);
+  //  const queryAddress = useQuery(GET_LOCAL_ADDRESS);
   //  console.log("queryAddress", queryAddress);
+  const queryViewer = useQuery(VIEWER);
   const queryVal = useQuery(GET_PROPOSAL, { variables: { id: id } });
 
 
-  if (queryMe.loading || queryAddress.loading || queryVal.loading) {
+  if (queryViewer.loading || queryVal.loading) {
     return <p>loading</p>
   }
   console.log("___________________________________________");
-  console.log(queryVal, queryMe, queryAddress);
+  console.log(queryVal, queryViewer);
 
-  if (queryVal && queryVal.data && queryMe.data && queryAddress.data) {
+  if (queryVal && queryVal.data && queryViewer.data) {
     console.log("!@#!@#!@#!@#!@!#!@#!@#");
     console.log("queryVal", queryVal);
     if (!value.load) {
-      isMyPRep(queryAddress.data.icon_address).then((result) => { setValue({ load: true, myPRep: result, votedIdx: getVotedIdx(), owner: amIOwner() }); });
+      isMyPRep(queryViewer.data.viewer.iconAddress).then((result) => { setValue({ load: true, myPRep: result, votedIdx: getVotedIdx(), owner: amIOwner() }); });
       console.log("voteData", voteData);
     }
     // console.log("condition value", myPRep, votedIdx, owner);

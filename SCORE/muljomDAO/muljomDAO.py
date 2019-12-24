@@ -36,7 +36,6 @@ class MulJomDaO(IconScoreBase):
 
         self._averify_id = DictDB(
             self._VERIFY_ID, db, value_type=Address, depth=2)
-        self._iverify_id = DictDB(self._VERIFY_ID, db, value_type=int, depth=2)
         self._verify_id = DictDB(self._VERIFY_ID, db, value_type=str, depth=2)
 
         self._owner = VarDB(self._OWNER, db, value_type=Address)
@@ -74,16 +73,12 @@ class MulJomDaO(IconScoreBase):
         self._averify_id[_ID][self.ADDRESS] = self.msg.sender
         self._verify_id[str(self.msg.sender)][self.ID] = _ID
         self._verify_id[str(self.msg.sender)][self.BLOCKHASH] = _BlockHash
-        self._verify_id[str(self.msg.sender)
-                        ][self.BLOCKHEIGHT] = self.block_height
 
     @external(readonly=True)
     def GetVerifyInfoByAddress(self, _Address: Address) -> str:
         return_json = dict()
         return_json[self.ADDRESS] = str(_Address)
         return_json[self.ID] = self._verify_id[str(_Address)][self.ID]
-        return_json[self.BLOCKHEIGHT] = self._iverify_id[str(
-            _Address)][self.BLOCKHEIGHT]
         return_json[self.BLOCKHASH] = self._verify_id[str(
             _Address)][self.BLOCKHASH]
 
@@ -95,8 +90,6 @@ class MulJomDaO(IconScoreBase):
         return_json = dict()
         return_json[self.ADDRESS] = str(AddressByID)
         return_json[self.ID] = self._verify_id[str(AddressByID)][self.ID]
-        return_json[self.BLOCKHEIGHT] = self._iverify_id[str(
-            AddressByID)][self.BLOCKHEIGHT]
         return_json[self.BLOCKHASH] = self._verify_id[str(
             AddressByID)][self.BLOCKHASH]
 
@@ -140,58 +133,62 @@ class MulJomDaO(IconScoreBase):
 
     @external(readonly=False)
     def Finalize(self, _Proposer: str, _ProposalID: int, _TotalDelegate: int, _FinalData: str):
-        votes = json_loads(_FinalData)
+        if self._owner.get() == self.msg.sender:
+            votes = json_loads(_FinalData)
 
-        self._log.set(self._log.get()+"|"+_FinalData)
-        pid = str(_ProposalID)
-        for aVote in votes:
-            vid = str(self._ivote[_Proposer][pid][aVote['voter']][self.COUNT])
-            self._vote[_Proposer][pid][vid][self.DELEGATETXID] = aVote['DelegateTxID']
-            self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = aVote['DelegateAmount']
-        self._log.set(self._log.get()+"|1")
+            self._log.set(self._log.get()+"|"+_FinalData)
+            pid = str(_ProposalID)
+            for aVote in votes:
+                vid = str(self._ivote[_Proposer][pid]
+                          [aVote['voter']][self.COUNT])
+                self._vote[_Proposer][pid][vid][self.DELEGATETXID] = aVote['DelegateTxID']
+                self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = aVote['DelegateAmount']
+            self._log.set(self._log.get()+"|1")
 
-        # amount를 각 select_item 별로 저장
-        total_voting_power = 0
-        result = dict()
-        vote_cnt = self._ivote[_Proposer][pid][self.COUNT][self.COUNT]
-        for i in range(vote_cnt):
-            vid = str(i+1)
-            select_item = self._ivote[_Proposer][pid][vid][self.SELECTITEM]
-            amount = self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
-            self._log.set(self._log.get()+"|"+str(select_item)+"|"+str(amount))
-            total_voting_power = total_voting_power + amount
-            if select_item in result:
-                result[select_item] = result[select_item] + amount
+            # amount를 각 select_item 별로 저장
+            total_voting_power = 0
+            result = dict()
+            vote_cnt = self._ivote[_Proposer][pid][self.COUNT][self.COUNT]
+            for i in range(vote_cnt):
+                vid = str(i+1)
+                select_item = self._ivote[_Proposer][pid][vid][self.SELECTITEM]
+                amount = self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
+                self._log.set(self._log.get()+"|" +
+                              str(select_item)+"|"+str(amount))
+                total_voting_power = total_voting_power + amount
+                if select_item in result:
+                    result[select_item] = result[select_item] + amount
+                else:
+                    result[select_item] = amount
+            self._log.set(self._log.get()+"|"+str(vote_cnt)+"|"+str(total_voting_power) + "|" +
+                          json_dumps(result)+"|2")
+
+            # 최종 결과에서 electoral threshold 를 넘었는지 확인
+            if (total_voting_power/_TotalDelegate)*100 < self._iproposal[_Proposer][pid][self.ELECTORALTH]:
+                self._proposal[_Proposer][pid][self.STATUS] = "Disapproved"
+                return
+
+            self._log.set(self._log.get()+"|3")
+            # 가장 많이 투표받은 것 찾기
+            most_voted_item = 0
+            most_voted = 0
+            for i in result:
+                if result[i] > most_voted:
+                    most_voted = result[i]
+                    most_voted_item = i
+            self._log.set(self._log.get()+"|4")
+
+            # 최종 결과에서 winning threshold 를 넘은 아이템이 있는지 확인
+            if (most_voted/total_voting_power)*100 > self._iproposal[_Proposer][pid][self.WINNINGTH]:
+                self._log.set(self._log.get()+"|5-1")
+                # winning th 넘음.
+                self._iproposal[_Proposer][pid][self.WINNER] = most_voted_item
+                # 결과에 따라 no result, result 결과 proposal에 저장.
+                self._proposal[_Proposer][pid][self.STATUS] = "Approved"
             else:
-                result[select_item] = amount
-        self._log.set(self._log.get()+"|"+str(vote_cnt)+"|"+str(total_voting_power) + "|" +
-                      json_dumps(result)+"|2")
-
-        # 최종 결과에서 electoral threshold 를 넘었는지 확인
-        if (total_voting_power/_TotalDelegate)*100 < self._iproposal[_Proposer][pid][self.ELECTORALTH]:
-            return
-
-        self._log.set(self._log.get()+"|3")
-        # 가장 많이 투표받은 것 찾기
-        most_voted_item = 0
-        most_voted = 0
-        for i in result:
-            if result[i] > most_voted:
-                most_voted = result[i]
-                most_voted_item = i
-        self._log.set(self._log.get()+"|4")
-
-        # 최종 결과에서 winning threshold 를 넘은 아이템이 있는지 확인
-        if (most_voted/total_voting_power)*100 > self._iproposal[_Proposer][pid][self.WINNINGTH]:
-            self._log.set(self._log.get()+"|5-1")
-            # winning th 넘음.
-            self._iproposal[_Proposer][pid][self.WINNER] = most_voted_item
-            # 결과에 따라 no result, result 결과 proposal에 저장.
-            self._proposal[_Proposer][pid][self.STATUS] = "WinnerDecided"
-        else:
-            self._log.set(self._log.get()+"|5-2")
-            # 결과에 따라 no result, result 결과 proposal에 저장.
-            self._proposal[_Proposer][pid][self.STATUS] = "NoWinner"
+                self._log.set(self._log.get()+"|5-2")
+                # 결과에 따라 no result, result 결과 proposal에 저장.
+                self._proposal[_Proposer][pid][self.STATUS] = "Disapproved"
 
     @external(readonly=True)
     def Log(self) -> str:
