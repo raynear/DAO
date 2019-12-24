@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
-import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Slider } from "@material-ui/core";
-import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip, Bar, LabelList } from "recharts";
+import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Slider, Chip } from "@material-ui/core";
+import { Done as DoneIcon } from "@material-ui/icons";
 // import clsx from "clsx";
 
 import { TUIViewer } from "./TUIEditor";
@@ -142,18 +142,25 @@ function Proposal(props: any) {
 
   if (props.loading) return <p>Loading...</p>;
   if (props.error) return <p>Error!:</p>;
+  const sliderTest = 40;
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
         <Grid container className={classes.container}>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography className={classes.title} color="textSecondary" gutterBottom>
-              <b>{props.data.proposal.id}.</b> {props.data.proposal.prep.username} - {props.data.proposal.prepPid}
-            </Typography>
+              <b>{props.data.proposal.id}.</b> {props.data.proposal.prep.username} - {props.data.proposal.prepPid}             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="h5" color="textPrimary" gutterBottom>
-              {props.data.proposal.subject}
+              {props.data.proposal.subject}{" "}
+              <Chip
+                icon={<DoneIcon />}
+                size="small"
+                label={"Approved"}
+                clickable
+                color="primary"
+              />
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
@@ -166,14 +173,14 @@ function Proposal(props: any) {
               expire at : {props.data.proposal.expireAt}
             </Typography>
             <div className={classes.right}>
-              <a href="#" onClick={FacebookShare} ><img src={facebookImg} width="40" alt="페이스북 공유하기" /></a>
-              <a href="#" onClick={TwitterShare} ><img src={twitterImg} width="40" alt="트위터 공유하기" /></a>
+              <div onClick={TwitterShare} style={{ float: "right" }}><img src={twitterImg} width="40" alt="트위터 공유하기" /></div>
+              <div onClick={FacebookShare} style={{ float: "right" }}><img src={facebookImg} width="40" alt="페이스북 공유하기" /></div>
             </div>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Slider
               disabled
-              defaultValue={props.voteData[0].voted}
+              defaultValue={sliderTest/*props.voteData[0].voted*/}
               aria-labelledby="discrete-slider-custom"
               valueLabelDisplay="auto"
               marks={[{ value: 0, label: '0' }, { value: 100, label: '100' }]}

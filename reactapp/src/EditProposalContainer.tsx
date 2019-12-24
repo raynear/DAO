@@ -2,8 +2,8 @@ import React, { Fragment, useState } from "react";
 import { Typography } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
 
-import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
-import { GET_PROPOSAL4EDIT, SET_PROPOSAL, GET_LOCAL_ME } from "./GQL";
+import { useQuery, useMutation } from "@apollo/react-hooks";
+import { GET_PROPOSAL4EDIT, SET_PROPOSAL } from "./GQL";
 import SimpleReactValidator from "simple-react-validator";
 
 import useForceUpdate from "./useForceUpdate";

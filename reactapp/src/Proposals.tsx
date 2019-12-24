@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import { Paper, Typography, Grid, Button, TextField } from "@material-ui/core";
-import ReactMarkdown from "react-markdown";
 import clsx from "clsx";
 
 import PRepSelectListContainer from "./PRepSelectListContainer";
@@ -65,7 +64,7 @@ function Proposals(props: any) {
           </Grid>
           {props.data.proposals.map((item: any, idx: number) => {
             return (
-              <Grid item className={classes.item} key={idx} xs={12} lg={6}>
+              <Grid item className={classes.item} key={idx} xs={12} sm={6} md={4} lg={3}>
                 <Paper className={classes.paper}>
                   <Typography className={classes.title} color="textSecondary" gutterBottom>
                     <b>{item.id}.</b> {item.prep.username} - {item.prepPid}

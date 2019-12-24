@@ -3,9 +3,6 @@ import React from "react";
 import { Paper, Grid, Typography, TextField, Button, Slider } from "@material-ui/core";
 import { AddRounded } from "@material-ui/icons";
 
-import DateFnsUtils from "@date-io/date-fns";
-import { MuiPickersUtilsProvider, KeyboardTimePicker, KeyboardDatePicker } from "@material-ui/pickers";
-
 import { TUIEditor } from "./TUIEditor";
 
 import useStyles from "./Style";

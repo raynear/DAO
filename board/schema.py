@@ -230,6 +230,7 @@ class PublishProposal(graphene.Mutation):
 #        print(tx_result_json)
 
         proposal.published = True
+        proposal.status = Status.VOTING
         proposal.prep_pid = pid
         proposal.txHash = tx_hash
         proposal.save()
@@ -314,6 +315,7 @@ class SetProposal(graphene.Mutation):
         except ProposalModel.DoesNotExist:
             proposal = ProposalModel.objects.create(
                 prep=info.context.user,
+                status=Status.NOT_PUBLISHED,
                 subject=subject,
                 contents=contents,
                 published=published,
@@ -491,7 +493,7 @@ class Finalize(graphene.Mutation):
             .step_limit(10000000000)\
             .nid(3)\
             .method("Finalize")\
-            .params({"_Proposer": proposal.prep.username, "_ProposalID": proposal.prep_pid, "_TotalDelegate": prep_result['delegated'], "_FinalData":json.dumps(final_delegate_tx_list)})\
+            .params({"_Proposer": proposal.prep.username, "_ProposalID": proposal.prep_pid, "_TotalDelegate": prep_result['delegated'], "_FinalData": json.dumps(final_delegate_tx_list)})\
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
@@ -501,6 +503,10 @@ class Finalize(graphene.Mutation):
         # 최종 결과 dict로 만들어서 SCORE에 전송
         # 1. final delegate txid
         # 2. voting result
+
+        proposal.finalizeTxHash = tx_hash
+        proposal.status = Status.APPROVE
+        proposal.save()
 
         return Finalize(proposal=proposal)
 

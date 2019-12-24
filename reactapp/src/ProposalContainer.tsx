@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { SET_PUBLISH, SET_VOTE, GET_PROPOSAL, GET_LOCAL_ME, GET_LOCAL_ADDRESS } from "./GQL";
-import axios from "axios";
 
-import { selected_icon_service, governance_call, json_rpc_call } from "./IconConnect";
+import { governance_call } from "./IconConnect";
 
 import Proposal from "./Proposal";
 
@@ -158,7 +157,7 @@ function ProposalContainer(props: any) {
     let tmpList: number[] = [];
     let totalVotedPower = 0;
 
-    let TotalDelegate = await GetTotalVotingPower(queryVal.data.proposal.prep.iconAddress);
+    //    let TotalDelegate = await GetTotalVotingPower(queryVal.data.proposal.prep.iconAddress);
 
     for (const selectItemKey in queryVal.data.proposal.selectitemmodelSet) {
       const aSelectItem = queryVal.data.proposal.selectitemmodelSet[selectItemKey];

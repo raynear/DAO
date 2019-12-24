@@ -10,8 +10,8 @@ user = User
 class Status(enum.Enum):
     NOT_PUBLISHED = 0
     VOTING = 1
-    HAS_WINNER = 2
-    NO_WINNER = 3
+    APPROVE = 2
+    DISAPPROVE = 3
 
 
 class ProposalModel(models.Model):
@@ -27,6 +27,7 @@ class ProposalModel(models.Model):
     prep_pid = models.IntegerField(default=0)
     subject = models.CharField(max_length=50, blank=True)
     txHash = models.CharField(max_length=300, blank=True)
+    finalizeTxHash = models.CharField(max_length=300, blank=True, default="")
     contents = models.TextField(default="")
     electoral_th = models.IntegerField(default=0)
     winning_th = models.IntegerField(default=0)
