@@ -13,7 +13,7 @@ import facebookImg from "./img/facebook.png";
 import twitterImg from "./img/twitter.png";
 
 function Proposal(props: any) {
-  // console.log("Proposal props", props);
+  console.log("Proposal props", props);
   // const forceUpdate = useForceUpdate;
 
   const classes = useStyles();
@@ -22,34 +22,37 @@ function Proposal(props: any) {
     // console.log("SelectItemList", props.data.proposal.selectitemmodelSet);
     return (
       <table>
-        {props.data.proposal.selectitemmodelSet.map(
-          (selectItem: any) => {
-            if (props.votedIdx === selectItem.index) {
+        <tbody>
+          {props.data.proposal.selectitemmodelSet.map(
+            (selectItem: any) => {
+              let voteRate = 0;
+              try {
+                voteRate = props.votedPowerRate[selectItem.index].voted;
+              } catch {
+                voteRate = 0;
+              } finally {
+              }
               return (
                 <tr key={selectItem.index}>
                   <td><ArrowRight /></td>
                   <td>
-                    <Tooltip key={selectItem.index} title="Voted" placement="left">
+                    {props.votedIdx === selectItem.index &&
+                      <Tooltip key={selectItem.index} title="Voted" placement="left">
+                        <Typography variant="h6">{selectItem.contents}</Typography>
+                      </Tooltip>
+                    }
+                    {props.votedIdx !== selectItem.index &&
                       <Typography variant="h6">{selectItem.contents}</Typography>
-                    </Tooltip>
+                    }
                   </td>
-                  <td>{props.votedPower && props.votedPower[selectItem.index]}</td>
-                  <td>{props.votedPower && props.votedPower[selectItem.index].toString()}</td>
-                </tr>
-              );
-            } else {
-              return (
-                <tr key={selectItem.index}>
-                  <td><ArrowRight /></td>
-                  <td><Typography variant="h6">{selectItem.contents}</Typography></td>
-                  <td>{props.votedPower && props.votedPower[selectItem.index]}</td>
-                  <td>{props.votedPower && props.votedPower[selectItem.index].toString()}</td>
+                  <td align="right"><Typography variant="h6">{" " + voteRate + " %"}</Typography></td>
+                  <td align="right"><Typography variant="h6">{props.votedPower && " " + props.votedPower[selectItem.index].toLocaleString() + " ICX"}</Typography></td>
                 </tr>
               );
             }
-          }
-        )}
-      </table>
+          )}
+        </tbody>
+      </table >
     );
   }
 

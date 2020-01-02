@@ -7,14 +7,14 @@ import Proposals from "./Proposals";
 
 function ProposalsContainer(props: any) {
   // console.log("ProposalsContainer props", props);
+  const selectedPRep = props.match.params.PRep;
+
   const [values, setValues] = useState({
-    selectedPRep: "",
     search: "",
     first: 10,
     skip: 0
   });
   const [filterValues, setFilterValues] = useState({
-    selectedPRep: "",
     search: "",
     first: 10,
     skip: 0
@@ -24,9 +24,6 @@ function ProposalsContainer(props: any) {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setFilterValues({ ...filterValues, [name]: event.target.value });
-    if (name === "selectedPRep") {
-      setValues({ ...values, selectedPRep: event.target.value });
-    }
   };
 
   function queryFilters() {
@@ -37,7 +34,7 @@ function ProposalsContainer(props: any) {
   const queryVal = useQuery(GET_PROPOSALS, {
     fetchPolicy: "network-only",
     variables: {
-      selectedPRep: values.selectedPRep,
+      selectedPRep: selectedPRep,
       search: values.search,
       first: values.first,
       skip: values.skip
@@ -47,6 +44,7 @@ function ProposalsContainer(props: any) {
   return (
     <Proposals
       {...queryVal}
+      PRep={selectedPRep}
       values={values}
       filterValues={filterValues}
       queryFilters={queryFilters}

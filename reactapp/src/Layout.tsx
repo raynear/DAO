@@ -4,8 +4,9 @@ import { CssBaseline, AppBar, Toolbar, Typography, Container, Grid, Snackbar } f
 
 import LandingPage from "./LandingPage";
 import HowTo from "./HowTo";
-import ProposalsContainer from "./ProposalsContainer";
 import VerifyIconContainer from "./VerifyIconContainer";
+import SelectPRepContainer from "./SelectPRepContainer";
+import ProposalsContainer from "./ProposalsContainer";
 import ProposalContainer from "./ProposalContainer";
 import EditProposalContainer from "./EditProposalContainer";
 import UserInfoContainer from "./UserInfoContainer";
@@ -42,7 +43,7 @@ function Layout(props: any) {
             </Link>
           </Typography>
           <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
-            <Link to="/Proposals" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+            <Link to="/SelectPRep" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
               Explorer
             </Link>
           </Typography>
@@ -66,8 +67,9 @@ function Layout(props: any) {
               <Route exact path="/EditProposal/:proposal_id" component={EditProposalContainer} />
               <Route exact path="/EditProposal" component={EditProposalContainer} />
               <Route exact path="/Profile" component={VerifyIconContainer} />
-              <Route exact path="/Proposals" component={ProposalsContainer} />
-              <Route exact path="/Proposal/:ID" component={ProposalContainer} />
+              <Route exact path="/SelectPRep" component={SelectPRepContainer} />
+              <Route exact path="/Proposals/:PRep" component={ProposalsContainer} />
+              <Route exact path="/Proposal/:PRep/:ID" component={ProposalContainer} />
               <Route exact path="/SignIn" component={SignInContainer} />
               <Route exact path="/SignUp" component={SignUpContainer} />
             </Switch>
@@ -84,7 +86,6 @@ function Layout(props: any) {
           }}
           message={<span id="message-id">{props.message}</span>}
         />
-
       </div>
     </div>
   );

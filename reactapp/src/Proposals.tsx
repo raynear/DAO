@@ -5,8 +5,6 @@ import { Paper, Typography, Grid, Button, TextField, Chip } from "@material-ui/c
 import { Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
 import clsx from "clsx";
 
-import PRepSelectListContainer from "./PRepSelectListContainer";
-
 import useStyles from "./Style";
 
 function Proposals(props: any) {
@@ -20,9 +18,6 @@ function Proposals(props: any) {
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
-          <Grid item className={classes.item} xs={12} lg={12}>
-            <PRepSelectListContainer selectedPRep={props.values.selectedPRep} handleChange={props.handleChange} />
-          </Grid>
           <Grid item className={classes.item} xs={12} lg={12}>
             <Grid container className={classes.container} spacing={0}>
               <Grid item className={classes.item} xs={3} lg={3}>
@@ -86,7 +81,7 @@ function Proposals(props: any) {
                     <b>{item.id}.</b> {item.prep.username} - {item.prepPid}
                   </Typography>
                   <Typography variant="h5" color="textPrimary" gutterBottom>
-                    <Link className={classes.link} to={"/Proposal/" + item.id} color="textPrimary">
+                    <Link className={classes.link} to={"/Proposal/" + props.PRep + "/" + item.id} color="textPrimary">
                       {item.subject}
                     </Link>
                   </Typography>

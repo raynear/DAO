@@ -14,6 +14,7 @@ interface vote {
 
 function ProposalContainer(props: any) {
   // console.log("ProposalContainer props", props);
+  const PRep = props.match.params.PRep
   const id = props.match.params.ID;
 
   const [voteSelect, setVoteSelect] = useState();
@@ -199,7 +200,6 @@ function ProposalContainer(props: any) {
   const queryViewer = useQuery(VIEWER);
   const queryVal = useQuery(GET_PROPOSAL, { variables: { id: id } });
 
-
   if (queryViewer.loading || queryVal.loading) {
     return <p>loading</p>
   }
@@ -239,6 +239,7 @@ function ProposalContainer(props: any) {
 
   return (
     <Proposal
+      PRep={PRep}
       id={id}
       myPRep={value.myPRep}
       votedIdx={value.votedIdx}
