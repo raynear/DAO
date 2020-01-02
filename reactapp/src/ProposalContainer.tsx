@@ -211,7 +211,6 @@ function ProposalContainer(props: any) {
     // console.log("queryVal", queryVal);
     if (!value.load) {
       isMyPRep(queryViewer.data.viewer.iconAddress).then((result) => { setValue({ load: true, myPRep: result, votedIdx: getVotedIdx(), owner: amIOwner() }); });
-      // console.log("voteData", voteData);
     }
     // // console.log("condition value", myPRep, votedIdx, owner);
   }
@@ -222,8 +221,6 @@ function ProposalContainer(props: any) {
       setFlag(true);
       setVoteData(tmpVoteData);
     }
-    // voteData[0].th = queryVal.data.proposal.electoralTh;
-    // voteData[1].th = queryVal.data.proposal.winningTh;
 
     getVotedPowerList().then((result) => {
       if (!votedPower) {
@@ -241,23 +238,21 @@ function ProposalContainer(props: any) {
   }
 
   return (
-    <>
-      <Proposal
-        id={id}
-        myPRep={value.myPRep}
-        votedIdx={value.votedIdx}
-        owner={value.owner}
-        voteSelect={voteSelect}
-        votedPower={votedPower}
-        votedPowerRate={votedPowerRate}
-        voteData={voteData}
-        Publish={Publish}
-        Vote={Vote}
-        FinalizeVote={FinalizeVote}
-        handleChange={handleChange}
-        {...queryVal}
-      />
-    </>
+    <Proposal
+      id={id}
+      myPRep={value.myPRep}
+      votedIdx={value.votedIdx}
+      owner={value.owner}
+      voteSelect={voteSelect}
+      votedPower={votedPower}
+      votedPowerRate={votedPowerRate}
+      voteData={voteData}
+      Publish={Publish}
+      Vote={Vote}
+      FinalizeVote={FinalizeVote}
+      handleChange={handleChange}
+      {...queryVal}
+    />
   );
 }
 

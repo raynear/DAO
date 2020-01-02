@@ -5,6 +5,7 @@ import "tui-editor/dist/tui-editor-contents.min.css";
 import { Editor, Viewer } from "@toast-ui/react-editor";
 
 export function TUIEditor(props: any) {
+  // console.log("TUI Editor props: ", props);
   let editorRef = React.createRef<any>();
 
   let handleChange = () => {
@@ -30,6 +31,7 @@ export function TUIEditor(props: any) {
 }
 
 export function TUIViewer(props: any) {
+  // console.log("TUI Viewer props: ", props);
   return (
     <Viewer
       initialValue={props.initialValue}

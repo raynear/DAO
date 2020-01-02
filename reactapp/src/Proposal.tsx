@@ -1,8 +1,9 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
-import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Slider, Chip } from "@material-ui/core";
-import { Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
-// import clsx from "clsx";
+import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Chip } from "@material-ui/core";
+import { ArrowRight, Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
+import { BarChart, Bar, XAxis, YAxis, Tooltip as BarTooltip } from "recharts";
+import clsx from "clsx";
 
 import { TUIViewer } from "./TUIEditor";
 
@@ -18,33 +19,37 @@ function Proposal(props: any) {
   const classes = useStyles();
 
   function SelectItemList() {
-    //    // console.log("SelectItemList", props.data.proposal.selectitemmodelSet);
+    // console.log("SelectItemList", props.data.proposal.selectitemmodelSet);
     return (
-      <ul>
+      <table>
         {props.data.proposal.selectitemmodelSet.map(
           (selectItem: any) => {
             if (props.votedIdx === selectItem.index) {
               return (
-                <li key={selectItem.index}>
-                  <Tooltip title="Voted" placement="left">
-                    <Typography variant="h6" color="textPrimary">
-                      {selectItem.contents} {props.votedPower && "(" + props.votedPower[selectItem.index].toString() + ")"}
-                    </Typography>
-                  </Tooltip>
-                </li>
+                <tr key={selectItem.index}>
+                  <td><ArrowRight /></td>
+                  <td>
+                    <Tooltip key={selectItem.index} title="Voted" placement="left">
+                      <Typography variant="h6">{selectItem.contents}</Typography>
+                    </Tooltip>
+                  </td>
+                  <td>{props.votedPower && props.votedPower[selectItem.index]}</td>
+                  <td>{props.votedPower && props.votedPower[selectItem.index].toString()}</td>
+                </tr>
               );
             } else {
               return (
-                <li key={selectItem.index}>
-                  <Typography variant="h6" color="textPrimary">
-                    {selectItem.contents} {props.votedPower && "(" + props.votedPower[selectItem.index].toString() + ")"}
-                  </Typography>
-                </li>
+                <tr key={selectItem.index}>
+                  <td><ArrowRight /></td>
+                  <td><Typography variant="h6">{selectItem.contents}</Typography></td>
+                  <td>{props.votedPower && props.votedPower[selectItem.index]}</td>
+                  <td>{props.votedPower && props.votedPower[selectItem.index].toString()}</td>
+                </tr>
               );
             }
           }
         )}
-      </ul>
+      </table>
     );
   }
 
@@ -142,7 +147,6 @@ function Proposal(props: any) {
 
   if (props.loading) return <p>Loading...</p>;
   if (props.error) return <p>Error!:</p>;
-  const sliderTest = 40;
   let icon;
   if (props.data.proposal.status === "Approved") {
     icon = <DoneIcon />;
@@ -157,42 +161,39 @@ function Proposal(props: any) {
         <Grid container className={classes.container}>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography className={classes.title} variant="body1" color="textSecondary" gutterBottom>
-              <b>{props.data.proposal.id}.</b> {props.data.proposal.prep.username} - {props.data.proposal.prepPid}             </Typography>
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="h5" color="textPrimary" gutterBottom>
-              {props.data.proposal.subject}{" "}
               <Chip
                 icon={icon}
                 size="small"
                 label={props.data.proposal.status}
                 clickable
                 color="primary"
-              />
+              />{"  "}
+              <b>{props.data.proposal.id}.</b> {props.data.proposal.prepPid}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="body1" color="textPrimary">
-              Published : {(props.data.proposal.published).toString()}
-            </Typography>
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="body1" color="textPrimary">
-              expire at : {props.data.proposal.expireAt}
-            </Typography>
             <div className={classes.right}>
+              <div style={{ float: "left" }}>
+                <Typography variant="h4" color="textPrimary" gutterBottom>
+                  <b>
+                    {props.data.proposal.subject}{" "}
+                  </b>
+                </Typography>
+              </div>
               <div onClick={TwitterShare} style={{ float: "right" }}><img src={twitterImg} width="40" alt="트위터 공유하기" /></div>
               <div onClick={FacebookShare} style={{ float: "right" }}><img src={facebookImg} width="40" alt="페이스북 공유하기" /></div>
             </div>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Slider
-              disabled
-              defaultValue={sliderTest/*props.voteData[0].voted*/}
-              aria-labelledby="discrete-slider-custom"
-              valueLabelDisplay="auto"
-              marks={[{ value: 0, label: '0' }, { value: 100, label: '100' }]}
-            />
+            <Typography variant="body1" color="textPrimary">
+              Proposer : {props.data.proposal.prep.username}
+            </Typography>
+            <Typography variant="body1" color="textPrimary">
+              expire at : {props.data.proposal.expireAt}
+            </Typography>
+            <Typography variant="body1" color="textPrimary">
+              Published : {(props.data.proposal.published).toString()}
+            </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <br />
@@ -200,19 +201,54 @@ function Proposal(props: any) {
             <br />
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Typography variant="caption" color="textSecondary">
+              VOTING WEIGH
+            </Typography>
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={8} lg={8}>
+            <BarChart width={600} height={40} data={[{ name: "Electoral Threshold", voted: 40, left: 10, "100": 50 }]} layout="vertical">
+              <Bar dataKey="voted" stackId="a" fill="#82ca9d" />
+              <Bar dataKey="left" stackId="a" fill="#888888" />
+              <Bar dataKey="100" stackId="a" fill="#FFFFFF" />
+              <BarTooltip cursor={false} />
+              <XAxis hide type="number" />
+              <YAxis hide dataKey="name" type="category" />
+            </BarChart>
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={4} lg={4}>
+            <div>
+              <Typography variant="body1" color="textPrimary">
+                {" "}Total # of votes :
+              </Typography>
+              <Typography variant="body1" color="textPrimary">
+                {" "}Your # of votes :
+              </Typography>
+            </div>
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <br />
+            <Divider variant="fullWidth" />
+            <br />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Typography variant="caption" color="textSecondary">
+              DESCRIPTION
+            </Typography>
+          </Grid>
+          <Grid item className={clsx(classes.paddingSide, classes.viewer)} xs={12} md={12} lg={12}>
             <TUIViewer
               initialValue={props.data.proposal.contents}
             />
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <br />
-            <Divider variant="fullWidth" />
-            <br />
+            <Typography variant="caption" color="textSecondary">
+              SELECT ITEMS
+            </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <SelectList />
           </Grid>
-          <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+          <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
             <br />
             <ActionButton />
           </Grid>

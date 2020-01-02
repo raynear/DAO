@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
       transform: "scale(0.8)"
     },
     title: {
-      fontSize: 20,
+      fontSize: 18,
       flexGrow: 1
     },
     link: {
@@ -34,6 +34,10 @@ const useStyles = makeStyles((theme: Theme) =>
     formControl: {
       margin: theme.spacing(0),
       minwidth: 240
+    },
+    viewer: {
+      height: "350px",
+      overflow: "scroll"
     },
     papercontainer: {
       spacing: theme.spacing(0),
