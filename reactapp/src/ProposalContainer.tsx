@@ -6,11 +6,6 @@ import { governance_call } from "./IconConnect";
 
 import Proposal from "./Proposal";
 
-interface vote {
-  name: string;
-  th: number;
-  voted: number;
-}
 
 function ProposalContainer(props: any) {
   // console.log("ProposalContainer props", props);
@@ -20,9 +15,8 @@ function ProposalContainer(props: any) {
   const [voteSelect, setVoteSelect] = useState();
   const [votedPower, setVotedPower] = useState<any>(false);
   const [value, setValue] = useState({ load: false, myPRep: false, votedIdx: -1, owner: false });
-  const [voteData, setVoteData] = useState<vote[]>([{ name: 'electoralTH', th: 0, voted: 0 }])
+  const [voteData, setVoteData] = useState({ name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, myVotingPower: 0 })
   const [votedPowerRate, setVotedPowerRate] = useState<any[]>([{ name: "", left: 0, voted: 0 }])
-  const [flag, setFlag] = useState(false);
 
   const [mutatePublish] = useMutation(SET_PUBLISH);
   const [mutateVote] = useMutation(SET_VOTE);
@@ -81,7 +75,20 @@ function ProposalContainer(props: any) {
         return parseInt(aPRep.value, 16);
       }
     }
-    return 1;
+    return 0;
+  }
+
+  async function GetMyVotingPower(prepAddress: string, voterAddress: string) {
+    const delegateResp = await governance_call("getDelegation", { address: voterAddress });
+    // console.log(delegateResp);
+    for (const aPRepKey in delegateResp.delegations) {
+      const aPRep = delegateResp.delegations[aPRepKey];
+      if (aPRep.address === prepAddress) {
+        // console.log(")()(())())()()(", aPRep.value);
+        return parseInt(aPRep.value, 16) / 1000000000000000000;
+      }
+    }
+    return 0;
   }
 
   async function isMyPRep(address: string) {
@@ -130,6 +137,8 @@ function ProposalContainer(props: any) {
     let totalVotedPower = 0;
 
     let TotalDelegate = await GetTotalVotingPower(queryVal.data.proposal.prep.iconAddress);
+    //    let MyVotingPower = await GetMyVotingPower(queryVal.data.proposal.prep.iconAddress, queryViewer.data.viewer.iconAddress);
+    let MyVotingPower = 0;
 
     for (const selectItemKey in queryVal.data.proposal.selectitemmodelSet) {
       const aSelectItem = queryVal.data.proposal.selectitemmodelSet[selectItemKey];
@@ -150,9 +159,11 @@ function ProposalContainer(props: any) {
     }
 
     let tmpVoteData = voteData;
-    tmpVoteData[0].voted = Math.round((totalVotedPower / TotalDelegate) * 100);
+    tmpVoteData.voted = Math.round((totalVotedPower / TotalDelegate) * 100);
+    tmpVoteData.th = queryVal.data.proposal.electoralTh; tmpVoteData.totalVoted = totalVotedPower;
+    tmpVoteData.totalDelegate = TotalDelegate;
+    tmpVoteData.myVotingPower = MyVotingPower;
     setVoteData(tmpVoteData);
-
 
     // console.log("totalvote", totalVotedPower);
     // console.log("totaldelegated icx", TotalDelegate);
@@ -165,7 +176,7 @@ function ProposalContainer(props: any) {
     let tmpList: number[] = [];
     let totalVotedPower = 0;
 
-    //    let TotalDelegate = await GetTotalVotingPower(queryVal.data.proposal.prep.iconAddress);
+    // let TotalDelegate = await GetTotalVotingPower(queryVal.data.proposal.prep.iconAddress);
 
     for (const selectItemKey in queryVal.data.proposal.selectitemmodelSet) {
       const aSelectItem = queryVal.data.proposal.selectitemmodelSet[selectItemKey];
@@ -194,9 +205,9 @@ function ProposalContainer(props: any) {
   }
 
   //  const queryMe = useQuery(GET_LOCAL_ME);
-  //  // console.log("queryMe", queryMe);
+  //  console.log("queryMe", queryMe);
   //  const queryAddress = useQuery(GET_LOCAL_ADDRESS);
-  //  // console.log("queryAddress", queryAddress);
+  //  console.log("queryAddress", queryAddress);
   const queryViewer = useQuery(VIEWER);
   const queryVal = useQuery(GET_PROPOSAL, { variables: { id: id } });
 
@@ -212,27 +223,20 @@ function ProposalContainer(props: any) {
     if (!value.load) {
       isMyPRep(queryViewer.data.viewer.iconAddress).then((result) => { setValue({ load: true, myPRep: result, votedIdx: getVotedIdx(), owner: amIOwner() }); });
     }
-    // // console.log("condition value", myPRep, votedIdx, owner);
+    // console.log("condition value", myPRep, votedIdx, owner);
   }
   if (queryVal && queryVal.data) {
-    if (!flag) {
-      let tmpVoteData = voteData;
-      tmpVoteData[0].th = queryVal.data.proposal.electoralTh;
-      setFlag(true);
-      setVoteData(tmpVoteData);
-    }
-
     getVotedPowerList().then((result) => {
       if (!votedPower) {
         setVotedPower(result);
-        // // console.log("hahahaha", votedPower);
+        // console.log("hahahaha", votedPower);
       }
     });
 
     getVotedPowerRate(queryVal.data.proposal.winningTh).then((result) => {
       if (votedPowerRate[0].name === "" && votedPowerRate[0].left === 0 && votedPowerRate[0].voted === 0) {
         setVotedPowerRate(result);
-        // // console.log("hahahaha", votedPower);
+        // console.log("hahahaha", votedPower);
       }
     });
   }

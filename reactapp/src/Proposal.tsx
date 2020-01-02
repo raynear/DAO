@@ -35,7 +35,7 @@ function Proposal(props: any) {
               return (
                 <tr key={selectItem.index}>
                   <td><ArrowRight /></td>
-                  <td>
+                  <td style={{ minWidth: "100px" }}>
                     {props.votedIdx === selectItem.index &&
                       <Tooltip key={selectItem.index} title="Voted" placement="left">
                         <Typography variant="h6">{selectItem.contents}</Typography>
@@ -45,8 +45,8 @@ function Proposal(props: any) {
                       <Typography variant="h6">{selectItem.contents}</Typography>
                     }
                   </td>
-                  <td align="right"><Typography variant="h6">{" " + voteRate + " %"}</Typography></td>
-                  <td align="right"><Typography variant="h6">{props.votedPower && " " + props.votedPower[selectItem.index].toLocaleString() + " ICX"}</Typography></td>
+                  <td align="right" style={{ minWidth: "50px" }}><Typography variant="h6">{" " + voteRate + " %"}</Typography></td>
+                  <td align="right" style={{ minWidth: "200px" }}><Typography variant="h6">{props.votedPower && " " + props.votedPower[selectItem.index].toLocaleString() + " ICX"}</Typography></td>
                 </tr>
               );
             }
@@ -209,7 +209,7 @@ function Proposal(props: any) {
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={8} lg={8}>
-            <BarChart width={600} height={40} data={[{ name: "Electoral Threshold", voted: 40, left: 10, "100": 50 }]} layout="vertical">
+            <BarChart width={600} height={40} data={[{ name: "Electoral Threshold", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
               <Bar dataKey="voted" stackId="a" fill="#82ca9d" />
               <Bar dataKey="left" stackId="a" fill="#888888" />
               <Bar dataKey="100" stackId="a" fill="#FFFFFF" />
@@ -221,10 +221,13 @@ function Proposal(props: any) {
           <Grid item className={classes.paddingSide} xs={12} md={4} lg={4}>
             <div>
               <Typography variant="body1" color="textPrimary">
-                {" "}Total # of votes :
+                {" "}Total # of votes : {props.voteData.totalVoted.toLocaleString() + " ICX"}
               </Typography>
               <Typography variant="body1" color="textPrimary">
-                {" "}Your # of votes :
+                {" "}Total # of delegates : {props.voteData.totalDelegate.toLocaleString() + " ICX"}
+              </Typography>
+              <Typography variant="body1" color="textPrimary">
+                {" "}Your # of votes : {props.voteData.myVotingPower.toLocaleString() + " ICX"}
               </Typography>
             </div>
           </Grid>
