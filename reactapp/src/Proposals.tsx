@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import { Paper, Typography, Grid, Button, TextField, Chip } from "@material-ui/core";
-import { Done as DoneIcon } from "@material-ui/icons";
+import { Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
 import clsx from "clsx";
 
 import PRepSelectListContainer from "./PRepSelectListContainer";
@@ -64,11 +64,19 @@ function Proposals(props: any) {
             </Grid>
           </Grid>
           {props.data.proposals.map((item: any, idx: number) => {
+            let icon;
+            if (item.status === "Approved") {
+              icon = <DoneIcon />;
+            } else if (item.status === "Voting") {
+              icon = <VoteIcon />;
+            } else {
+              icon = <DisapproveIcon />;
+            }
             return (
               <Grid item className={classes.item} key={idx} xs={12} sm={6} md={4} lg={3}>
                 <Paper className={classes.paper}>
                   <Chip
-                    icon={<DoneIcon />}
+                    icon={icon}
                     size="small"
                     label={item.status}
                     clickable
@@ -84,7 +92,7 @@ function Proposals(props: any) {
                   </Typography>
                   <ul>
                     {item.selectitemmodelSet.map((selectItem: any, idx: number) => (
-                      <Typography variant="body1" key={idx} color="textSecondary">
+                      <Typography variant="h6" key={idx} color="textSecondary">
                         <li>
                           {selectItem.contents}
                         </li>
@@ -97,7 +105,7 @@ function Proposals(props: any) {
           })}
         </Grid>
       </Paper>
-    </Grid>
+    </Grid >
   );
 }
 

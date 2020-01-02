@@ -48,7 +48,7 @@ class MulJomDaO(IconScoreBase):
         self._vote = DictDB(self.VOTE, db, value_type=str, depth=4)
         self._ivote = DictDB(self.VOTE, db, value_type=int, depth=4)
 
-        self._log = VarDB("log", db, value_type=str)
+        # self._log = VarDB("log", db, value_type=str)
 
     def on_install(self) -> None:
         super().on_install()
@@ -136,14 +136,14 @@ class MulJomDaO(IconScoreBase):
         if self._owner.get() == self.msg.sender:
             votes = json_loads(_FinalData)
 
-            self._log.set(self._log.get()+"|"+_FinalData)
+            # self._log.set(self._log.get()+"|"+_FinalData)
             pid = str(_ProposalID)
             for aVote in votes:
                 vid = str(self._ivote[_Proposer][pid]
                           [aVote['voter']][self.COUNT])
                 self._vote[_Proposer][pid][vid][self.DELEGATETXID] = aVote['DelegateTxID']
                 self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = aVote['DelegateAmount']
-            self._log.set(self._log.get()+"|1")
+            # self._log.set(self._log.get()+"|1")
 
             # amount를 각 select_item 별로 저장
             total_voting_power = 0
@@ -153,22 +153,22 @@ class MulJomDaO(IconScoreBase):
                 vid = str(i+1)
                 select_item = self._ivote[_Proposer][pid][vid][self.SELECTITEM]
                 amount = self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
-                self._log.set(self._log.get()+"|" +
-                              str(select_item)+"|"+str(amount))
+                # self._log.set(self._log.get()+"|" +
+                #               str(select_item)+"|"+str(amount))
                 total_voting_power = total_voting_power + amount
                 if select_item in result:
                     result[select_item] = result[select_item] + amount
                 else:
                     result[select_item] = amount
-            self._log.set(self._log.get()+"|"+str(vote_cnt)+"|"+str(total_voting_power) + "|" +
-                          json_dumps(result)+"|2")
+            # self._log.set(self._log.get()+"|"+str(vote_cnt)+"|"+str(total_voting_power) + "|" +
+            #               json_dumps(result)+"|2")
 
             # 최종 결과에서 electoral threshold 를 넘었는지 확인
             if (total_voting_power/_TotalDelegate)*100 < self._iproposal[_Proposer][pid][self.ELECTORALTH]:
                 self._proposal[_Proposer][pid][self.STATUS] = "Disapproved"
                 return
 
-            self._log.set(self._log.get()+"|3")
+            # self._log.set(self._log.get()+"|3")
             # 가장 많이 투표받은 것 찾기
             most_voted_item = 0
             most_voted = 0
@@ -176,23 +176,23 @@ class MulJomDaO(IconScoreBase):
                 if result[i] > most_voted:
                     most_voted = result[i]
                     most_voted_item = i
-            self._log.set(self._log.get()+"|4")
+            # self._log.set(self._log.get()+"|4")
 
             # 최종 결과에서 winning threshold 를 넘은 아이템이 있는지 확인
             if (most_voted/total_voting_power)*100 > self._iproposal[_Proposer][pid][self.WINNINGTH]:
-                self._log.set(self._log.get()+"|5-1")
+                # self._log.set(self._log.get()+"|5-1")
                 # winning th 넘음.
                 self._iproposal[_Proposer][pid][self.WINNER] = most_voted_item
                 # 결과에 따라 no result, result 결과 proposal에 저장.
                 self._proposal[_Proposer][pid][self.STATUS] = "Approved"
             else:
-                self._log.set(self._log.get()+"|5-2")
+                # self._log.set(self._log.get()+"|5-2")
                 # 결과에 따라 no result, result 결과 proposal에 저장.
                 self._proposal[_Proposer][pid][self.STATUS] = "Disapproved"
 
-    @external(readonly=True)
-    def Log(self) -> str:
-        return self._log.get()
+#    @external(readonly=True)
+#    def Log(self) -> str:
+#        return self._log.get()
 
     @external(readonly=False)
     def SetProposal(self, _Proposer: str, _Subject: str, _Contents: str, _ElectoralTH: int, _WinningTH: int, _ExpireDate: str, _SelectItems: str):
@@ -218,8 +218,11 @@ class MulJomDaO(IconScoreBase):
 
     @external(readonly=True)
     def GetProposal(self, _Proposer: str, _ProposalID: int) -> str:
+        if self._iproposal[_Proposer][self.ID][self.ID] < _ProposalID:
+            return
         pid = str(_ProposalID)
         return_json = dict()
+        return_json[self.ID] = pid
         return_json[self.SUBJECT] = self._proposal[_Proposer][pid][self.SUBJECT]
         return_json[self.CONTENTS] = self._proposal[_Proposer][pid][self.CONTENTS]
         return_json[self.ELECTORALTH] = str(
@@ -230,5 +233,32 @@ class MulJomDaO(IconScoreBase):
         return_json[self.EXPIREDATE] = self._proposal[_Proposer][pid][self.EXPIREDATE]
         return_json[self.SELECTITEM] = self._proposal[_Proposer][pid][self.SELECTITEM]
         return_json[self.WINNER] = self._proposal[_Proposer][pid][self.WINNER]
+
+        return json_dumps(return_json)
+
+    @external(readonly=True)
+    def GetProposals(self, _Proposer: str, _StartProposalID: int, _EndProposalID: int) -> str:
+        if self._iproposal[_Proposer][self.ID][self.ID] < _StartProposalID:
+            return
+        if self._iproposal[_Proposer][self.ID][self.ID] < _EndProposalID-1:
+            return
+
+        return_json = []
+        for i in range(_StartProposalID, _EndProposalID):
+            pid = str(i)
+            json = dict()
+            json[self.ID] = pid
+            json[self.SUBJECT] = self._proposal[_Proposer][pid][self.SUBJECT]
+            json[self.CONTENTS] = self._proposal[_Proposer][pid][self.CONTENTS]
+            json[self.ELECTORALTH] = str(
+                self._iproposal[_Proposer][pid][self.ELECTORALTH])
+            json[self.WINNINGTH] = str(
+                self._iproposal[_Proposer][pid][self.WINNINGTH])
+            json[self.STATUS] = self._proposal[_Proposer][pid][self.STATUS]
+            json[self.EXPIREDATE] = self._proposal[_Proposer][pid][self.EXPIREDATE]
+            json[self.SELECTITEM] = self._proposal[_Proposer][pid][self.SELECTITEM]
+            json[self.WINNER] = self._proposal[_Proposer][pid][self.WINNER]
+
+            return_json.append(json)
 
         return json_dumps(return_json)

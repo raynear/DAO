@@ -21,11 +21,12 @@ const useStyles = makeStyles((theme: Theme) =>
       transform: "scale(0.8)"
     },
     title: {
-      fontSize: 14,
+      fontSize: 20,
       flexGrow: 1
     },
     link: {
-      textDecoration: "none"
+      textDecoration: "none",
+      color: "#000000"
     },
     pos: {
       marginBottom: 12

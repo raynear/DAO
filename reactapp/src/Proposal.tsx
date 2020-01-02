@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Slider, Chip } from "@material-ui/core";
-import { Done as DoneIcon } from "@material-ui/icons";
+import { Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
 // import clsx from "clsx";
 
 import { TUIViewer } from "./TUIEditor";
@@ -27,7 +27,7 @@ function Proposal(props: any) {
               return (
                 <li key={selectItem.index}>
                   <Tooltip title="Voted" placement="left">
-                    <Typography variant="body1" color="primary">
+                    <Typography variant="h6" color="textPrimary">
                       {selectItem.contents} {props.votedPower && "(" + props.votedPower[selectItem.index].toString() + ")"}
                     </Typography>
                   </Tooltip>
@@ -36,7 +36,7 @@ function Proposal(props: any) {
             } else {
               return (
                 <li key={selectItem.index}>
-                  <Typography variant="body1" color="textPrimary">
+                  <Typography variant="h6" color="textPrimary">
                     {selectItem.contents} {props.votedPower && "(" + props.votedPower[selectItem.index].toString() + ")"}
                   </Typography>
                 </li>
@@ -143,19 +143,27 @@ function Proposal(props: any) {
   if (props.loading) return <p>Loading...</p>;
   if (props.error) return <p>Error!:</p>;
   const sliderTest = 40;
+  let icon;
+  if (props.data.proposal.status === "Approved") {
+    icon = <DoneIcon />;
+  } else if (props.data.proposal.status === "Voting") {
+    icon = <VoteIcon />;
+  } else {
+    icon = <DisapproveIcon />;
+  }
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
         <Grid container className={classes.container}>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography className={classes.title} color="textSecondary" gutterBottom>
+            <Typography className={classes.title} variant="body1" color="textSecondary" gutterBottom>
               <b>{props.data.proposal.id}.</b> {props.data.proposal.prep.username} - {props.data.proposal.prepPid}             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="h5" color="textPrimary" gutterBottom>
               {props.data.proposal.subject}{" "}
               <Chip
-                icon={<DoneIcon />}
+                icon={icon}
                 size="small"
                 label={props.data.proposal.status}
                 clickable
@@ -164,12 +172,12 @@ function Proposal(props: any) {
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="caption" color="textPrimary">
+            <Typography variant="body1" color="textPrimary">
               Published : {(props.data.proposal.published).toString()}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="caption" color="textPrimary">
+            <Typography variant="body1" color="textPrimary">
               expire at : {props.data.proposal.expireAt}
             </Typography>
             <div className={classes.right}>
