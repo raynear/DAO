@@ -160,7 +160,7 @@ function EditProposalContainer(props: any) {
 
   function renderRedirect() {
     if (redirect) {
-      return <Redirect to={"/Proposal/" + redirect} />;
+      return <Redirect to={"/Proposal/" + queryVal.data.viewer.username + "/" + redirect} />;
     }
   }
 
@@ -168,9 +168,10 @@ function EditProposalContainer(props: any) {
     variables: { id: proposal_id }
   })
 
-  if (queryVal.data && queryVal.data.proposal && values.id === -1) {
-    let proposal = queryVal.data.proposal;
+  if (queryVal.data && queryVal.data.proposal4edit && values.id === -1) {
+    let proposal = queryVal.data.proposal4edit;
     let date = new Date(proposal.expireAt);
+
     setValues({
       id: proposal.id,
       electoralTh: proposal.electoralTh,

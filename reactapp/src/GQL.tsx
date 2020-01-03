@@ -210,9 +210,10 @@ export const GET_PROPOSAL4EDIT = gql`
         contents
       }
     }
-    allPrep{
-      id
+    viewer{
       username
+      iconAddress
+      isPrep
     }
   }
 `;
@@ -241,7 +242,6 @@ export const GET_PROPOSALS = gql`
             username
           }
         }
-
       }
     }
   }

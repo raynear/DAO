@@ -13,7 +13,7 @@ import facebookImg from "./img/facebook.png";
 import twitterImg from "./img/twitter.png";
 
 function Proposal(props: any) {
-  console.log("Proposal props", props);
+  // console.log("Proposal props", props);
   // const forceUpdate = useForceUpdate;
 
   const classes = useStyles();
@@ -76,7 +76,10 @@ function Proposal(props: any) {
   }
 
   function SelectList() {
-    if (props.data.proposal.published && (props.myPRep || props.owner) && props.votedIdx === -1) {
+    if (props.data.proposal.published &&
+      (props.myPRep || props.owner) &&
+      props.votedIdx === -1 &&
+      props.data.proposal.status === "Voting") {
       return (<RadioButtons />);
     }
     return (<SelectItemList />);
@@ -132,12 +135,15 @@ function Proposal(props: any) {
       return <FinalizeVoteButton />;
     }
     if (props.data.proposal.published && (props.myPRep || props.owner) && props.votedIdx === -1) {
-      return (<><VoteButton /><FinalizeVoteButton /></>);
+      return (<><FinalizeVoteButton /><VoteButton /></>);
+      // TODO : 원복해야 함.
+      // 빠른 finalize를 위해 우선 변경한 버튼
+      // return (<VoteButton />);
     }
     if (!props.data.proposal.published && props.owner) {
-      return (<><PublishButton /><FinalizeVoteButton /></>);
+      return (<PublishButton />);
     }
-    return <FinalizeVoteButton />;
+    return <></>;
   }
 
   function FacebookShare() {
@@ -163,14 +169,13 @@ function Proposal(props: any) {
       <Paper className={classes.paper}>
         <Grid container className={classes.container}>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Chip
+              icon={icon}
+              size="small"
+              label={props.data.proposal.status}
+              color="primary"
+            />{"  "}
             <Typography className={classes.title} variant="body1" color="textSecondary" gutterBottom>
-              <Chip
-                icon={icon}
-                size="small"
-                label={props.data.proposal.status}
-                clickable
-                color="primary"
-              />{"  "}
               <b>{props.data.proposal.id}.</b> {props.data.proposal.prepPid}
             </Typography>
           </Grid>
@@ -219,17 +224,46 @@ function Proposal(props: any) {
             </BarChart>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={4} lg={4}>
-            <div>
-              <Typography variant="body1" color="textPrimary">
-                {" "}Total # of votes : {props.voteData.totalVoted.toLocaleString() + " ICX"}
-              </Typography>
-              <Typography variant="body1" color="textPrimary">
-                {" "}Total # of delegates : {props.voteData.totalDelegate.toLocaleString() + " ICX"}
-              </Typography>
-              <Typography variant="body1" color="textPrimary">
-                {" "}Your # of votes : {props.voteData.myVotingPower.toLocaleString() + " ICX"}
-              </Typography>
-            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <td style={{ float: "left" }}>
+                    <Typography variant="body1" color="textPrimary">
+                      {" "}Total # of votes :
+                </Typography>
+                  </td>
+                  <td style={{ float: "right" }}>
+                    <Typography variant="body1" color="textPrimary">
+                      {props.voteData.totalVoted.toLocaleString() + " ICX"}
+                    </Typography>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ float: "left" }}>
+                    <Typography variant="body1" color="textPrimary">
+                      {" "}Total # of delegate :
+                </Typography>
+                  </td>
+                  <td style={{ float: "right" }}>
+                    <Typography variant="body1" color="textPrimary">
+                      {props.voteData.totalDelegate.toLocaleString() + " ICX"}
+                    </Typography>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ float: "left" }}>
+                    <Typography variant="body1" color="textPrimary">
+                      {" "}Your # of votes :
+                </Typography>
+                  </td>
+                  <td style={{ float: "right" }}>
+                    <Typography variant="body1" color="textPrimary">
+                      {props.myVotingPower.toLocaleString() + " ICX"}
+                    </Typography>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <br />

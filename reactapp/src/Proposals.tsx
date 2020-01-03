@@ -8,11 +8,11 @@ import clsx from "clsx";
 import useStyles from "./Style";
 
 function Proposals(props: any) {
-  // console.log("Proposals props", props);
+  console.log("Proposals props", props);
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>;
-  if (props.error) return <p>Error!</p>;
+  if (props.error) { console.log(props.error); return <p>Error!</p>; }
   // console.log(props.data);
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
@@ -74,11 +74,10 @@ function Proposals(props: any) {
                     icon={icon}
                     size="small"
                     label={item.status}
-                    clickable
                     color="primary"
                   />
                   <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    <b>{item.id}.</b> {item.prep.username} - {item.prepPid}
+                    <b>{item.id}.</b>{item.prepPid}
                   </Typography>
                   <Typography variant="h5" color="textPrimary" gutterBottom>
                     <Link className={classes.link} to={"/Proposal/" + props.PRep + "/" + item.id} color="textPrimary">

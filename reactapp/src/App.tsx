@@ -75,9 +75,9 @@ function App(props: any) {
 
   client.query({ query: gql`{ viewer{ username iconAddress }}` }).then((result: any) => {
     client.writeData({ data: { username: result.data.viewer.username, icon_address: result.data.viewer.iconAddress } });
-    client.query({ query: GET_LOCAL_ME }).then(result => {
-      // console.log("reload OK");
-    })
+    // client.query({ query: GET_LOCAL_ME }).then(result => {
+    // console.log("reload OK");
+    // })
   }).catch((error: any) => {
     // console.log("Not Logined");
   })

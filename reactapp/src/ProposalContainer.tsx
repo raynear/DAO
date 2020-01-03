@@ -14,8 +14,8 @@ function ProposalContainer(props: any) {
 
   const [voteSelect, setVoteSelect] = useState();
   const [votedPower, setVotedPower] = useState<any>(false);
-  const [value, setValue] = useState({ load: false, myPRep: false, votedIdx: -1, owner: false });
-  const [voteData, setVoteData] = useState({ name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, myVotingPower: 0 })
+  const [value, setValue] = useState({ load: false, myPRep: false, votedIdx: -1, owner: false, myVotingPower: 0 });
+  const [voteData, setVoteData] = useState({ name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0 })
   const [votedPowerRate, setVotedPowerRate] = useState<any[]>([{ name: "", left: 0, voted: 0 }])
 
   const [mutatePublish] = useMutation(SET_PUBLISH);
@@ -78,19 +78,6 @@ function ProposalContainer(props: any) {
     return 0;
   }
 
-  async function GetMyVotingPower(prepAddress: string, voterAddress: string) {
-    const delegateResp = await governance_call("getDelegation", { address: voterAddress });
-    // console.log(delegateResp);
-    for (const aPRepKey in delegateResp.delegations) {
-      const aPRep = delegateResp.delegations[aPRepKey];
-      if (aPRep.address === prepAddress) {
-        // console.log(")()(())())()()(", aPRep.value);
-        return parseInt(aPRep.value, 16) / 1000000000000000000;
-      }
-    }
-    return 0;
-  }
-
   async function isMyPRep(address: string) {
     const delegateResp = await governance_call("getDelegation", { "address": address })
     // console.log(delegateResp);
@@ -103,10 +90,12 @@ function ProposalContainer(props: any) {
     }
     for (let i = 0; i < delegateList.length; i++) {
       if (delegateList[i].address === queryVal.data.proposal.prep.iconAddress) {
-        return true;
+        let myVotingPower = parseInt(delegateList[i].value, 16);
+        myVotingPower = (myVotingPower / 1000000000000000000);
+        return myVotingPower;
       }
     }
-    return false;
+    return 0;
   }
 
   function getVotedIdx() {
@@ -137,8 +126,6 @@ function ProposalContainer(props: any) {
     let totalVotedPower = 0;
 
     let TotalDelegate = await GetTotalVotingPower(queryVal.data.proposal.prep.iconAddress);
-    //    let MyVotingPower = await GetMyVotingPower(queryVal.data.proposal.prep.iconAddress, queryViewer.data.viewer.iconAddress);
-    let MyVotingPower = 0;
 
     for (const selectItemKey in queryVal.data.proposal.selectitemmodelSet) {
       const aSelectItem = queryVal.data.proposal.selectitemmodelSet[selectItemKey];
@@ -162,7 +149,6 @@ function ProposalContainer(props: any) {
     tmpVoteData.voted = Math.round((totalVotedPower / TotalDelegate) * 100);
     tmpVoteData.th = queryVal.data.proposal.electoralTh; tmpVoteData.totalVoted = totalVotedPower;
     tmpVoteData.totalDelegate = TotalDelegate;
-    tmpVoteData.myVotingPower = MyVotingPower;
     setVoteData(tmpVoteData);
 
     // console.log("totalvote", totalVotedPower);
@@ -221,7 +207,10 @@ function ProposalContainer(props: any) {
     // console.log("!@#!@#!@#!@#!@!#!@#!@#");
     // console.log("queryVal", queryVal);
     if (!value.load) {
-      isMyPRep(queryViewer.data.viewer.iconAddress).then((result) => { setValue({ load: true, myPRep: result, votedIdx: getVotedIdx(), owner: amIOwner() }); });
+      isMyPRep(queryViewer.data.viewer.iconAddress).then((result) => {
+        // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", result);
+        setValue({ load: true, myPRep: !(result === 0), votedIdx: getVotedIdx(), owner: amIOwner(), myVotingPower: result });
+      });
     }
     // console.log("condition value", myPRep, votedIdx, owner);
   }
@@ -247,6 +236,7 @@ function ProposalContainer(props: any) {
       id={id}
       myPRep={value.myPRep}
       votedIdx={value.votedIdx}
+      myVotingPower={value.myVotingPower}
       owner={value.owner}
       voteSelect={voteSelect}
       votedPower={votedPower}
