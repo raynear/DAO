@@ -55,51 +55,54 @@ class Query(object):
     all_prep = graphene.List(CustomUserType)
     all_proposal = graphene.List(ProposalModelType)
     all_selectitem = graphene.List(SelectItemModelType)
-    all_vote = graphene.List(VoteModelType)
+    # all_vote = graphene.List(VoteModelType)
 
-    is_voted = graphene.Field(ProposalModelType, proposal_id=graphene.Int())
+    # is_voted = graphene.Field(ProposalModelType, proposal_id=graphene.Int())
 
     prep = graphene.Field(CustomUserType, prep_name=graphene.String())
 
     proposal = graphene.Field(ProposalModelType, id=graphene.Int())
-    proposal4edit = graphene.Field(ProposalModelType, id=graphene.Int())
+    # proposal4edit = graphene.Field(ProposalModelType, id=graphene.Int())
 
     proposals = graphene.List(
         ProposalModelType,
         prep=graphene.String(),
-        search=graphene.String(),
         first=graphene.Int(),
-        skip=graphene.Int(),
+        end=graphene.Int(),
     )
 
-    def resolve_is_voted(self, info, proposal_id):
-        proposal = ProposalModel.objects.get(pk=proposal_id)
-        qs = SelectItemModel.objects.all()
-        qs = qs.filter(Q(proposal__exact=proposal))
-        flag = False
-        for item in qs:
-            qs2 = VoteModel.objects.all()
-            qs2 = qs2.filter(Q(voter__exact=info.context.user)
-                             & Q(select__exact=item))
-            if len(qs2) > 0:
-                flag = True
-                return proposal
+    # def resolve_is_voted(self, info, proposal_id):
+    #     proposal = ProposalModel.objects.get(pk=proposal_id)
+    #     qs = SelectItemModel.objects.all()
+    #     qs = qs.filter(Q(proposal__exact=proposal))
+    #     flag = False
+    #     for item in qs:
+    #         qs2 = VoteModel.objects.all()
+    #         qs2 = qs2.filter(Q(voter__exact=info.context.user)
+    #                          & Q(select__exact=item))
+    #         if len(qs2) > 0:
+    #             flag = True
+    #             return proposal
 
-        return None
+    #     return None
 
     def resolve_prep(self, info, prep_name=None, **kwargs):
         return User.objects.get(username=prep_name)
 
-    def resolve_proposal4edit(self, info, id=None, **kwargs):
-        if id == -1:
-            return None
-        # raise GraphQLError('No Proposal')
-        proposal = ProposalModel.objects.get(pk=id)
-        if proposal.prep == info.context.user:
-            return proposal
-        else:
-            return None
+    # @login_required
+    # @prep_required
+    # def resolve_proposalNViewer(self, info, id=None, **kwargs):
+    #     if id == -1:
+    #         return None
+    #     # raise GraphQLError('No Proposal')
+    #     proposal = ProposalModel.objects.get(pk=id)
+    #     if proposal.prep == info.context.user:
+    #         return proposal
+    #     else:
+    #         return None
 
+    @login_required
+    @prep_required
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
             return None
@@ -107,7 +110,9 @@ class Query(object):
 
         return ProposalModel.objects.get(pk=id)
 
-    def resolve_proposals(self, info, prep=None, search=None, first=None, skip=None, **kwargs):
+    @login_required
+    @prep_required
+    def resolve_proposals(self, info, prep=None, first=None, end=None, **kwargs):
         qs = ProposalModel.objects.all()
 
         if info.context.user.is_authenticated:
@@ -123,14 +128,11 @@ class Query(object):
             filter = Q(prep__exact=aPRep)
             qs = qs.filter(filter)
 
-        if search:
-            filter = (Q(subject__icontains=search) |
-                      Q(contents__icontains=search))
-            qs = qs.filter(filter)
-        if skip:
-            qs = qs[skip:]
-        if first:
-            qs = qs[:first]
+        if first is None:
+            first = 0
+        if end is None:
+            end = 1000000
+        qs = qs[first:end]
 
         return qs
 
@@ -139,14 +141,18 @@ class Query(object):
 #        finalize_vote(1, "2019:12:19T00:00:00")
         return qs.filter(Q(is_prep__exact=True))
 
+    @login_required
+    @prep_required
     def resolve_all_proposal(self, info, **kwargs):
         return ProposalModel.objects.select_related("prep").all()
 
+    @login_required
+    @prep_required
     def resolve_all_selectitem(self, info, **kwargs):
         return SelectItemModel.objects.select_related("proposal").all()
 
-    def resolve_all_vote(self, info, **kwargs):
-        return VoteModel.objects.select_related("selectitem").all()
+    # def resolve_all_vote(self, info, **kwargs):
+    #     return VoteModel.objects.select_related("selectitem").all()
 
 
 class SelectItemInput(graphene.InputObjectType):
@@ -174,7 +180,9 @@ class PublishProposal(graphene.Mutation):
             .build()
 
         result = icon_service.call(call)
+        print("AA:", result)
         result_json = json.loads(result)
+        print("BB:", result_json)
 
         call = CallBuilder()\
             .to(SCORE)\
@@ -183,8 +191,9 @@ class PublishProposal(graphene.Mutation):
             .build()
 
         result = icon_service.call(call)
+        print("CC:", result)
 
-        pid = int(result) + 1
+        # pid = int(result) + 1
 
         selectItems = SelectItemModel.objects.filter(proposal=proposal)
         _select_item = '['
@@ -211,31 +220,27 @@ class PublishProposal(graphene.Mutation):
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
 
-        proposal.published = True
-        proposal.status = "Voting"
-        proposal.prep_pid = pid
-        proposal.txHash = tx_hash
-        proposal.save()
-        return PublishProposal(proposal=proposal)
+        proposal.delete()
+        #proposal.published = True
+        #proposal.status = "Voting"
+        #proposal.prep_pid = pid
+        #proposal.txHash = tx_hash
+        # proposal.save()
+        return PublishProposal(proposal=None)
 
 
 class VoteProposal(graphene.Mutation):
     class Arguments:
         select_item_index = graphene.Int()
         proposal_id = graphene.Int()
+        proposer = graphene.String()
 
-    #    vote = graphene.Field(VoteModelType)
+    # vote = graphene.Field(VoteModelType)
     proposal = graphene.Field(ProposalModelType)
 
     @address_required
     @login_required
-    def mutate(self, info, proposal_id, select_item_index):
-        proposal = ProposalModel.objects.get(pk=proposal_id)
-        qs = SelectItemModel.objects.all()
-        filter = Q(proposal__exact=proposal) & Q(
-            index__exact=select_item_index)
-        qs = qs.filter(filter)
-
+    def mutate(self, info, proposer, proposal_id, select_item_index):
         icon_service = IconService(HTTPProvider(NETWORK, 3))
 
         f = open("./key.pw", 'r')
@@ -248,15 +253,15 @@ class VoteProposal(graphene.Mutation):
             .step_limit(10000000000)\
             .nid(3)\
             .method("Vote")\
-            .params({"_Proposer": proposal.prep.username, "_ProposalID": proposal.prep_pid, "_UserID": info.context.user.username, "_VoteItem": select_item_index})\
+            .params({"_Proposer": proposer, "_ProposalID": proposal_id, "_UserID": info.context.user.username, "_VoteItem": select_item_index})\
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
 
-        vote = VoteModel.objects.create(voter=info.context.user, select=qs[0])
-        vote.txHash = tx_hash
-        vote.save()
+        # vote = VoteModel.objects.create(voter=info.context.user, select=qs[0])
+        # vote.txHash = tx_hash
+        # vote.save()
         return VoteProposal(proposal=proposal)
 
 

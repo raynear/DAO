@@ -192,10 +192,11 @@ query PRep($PRepName:String!){
 
 export const GET_PROPOSAL4EDIT = gql`
   query Proposal4Edit($id: Int!) {
-    proposal4edit(id: $id) {
+    proposal(id: $id) {
       id
       prep{
         id
+        username
       }
       status
       subject
@@ -219,8 +220,8 @@ export const GET_PROPOSAL4EDIT = gql`
 `;
 
 export const GET_PROPOSALS = gql`
-  query Proposals($selectedPRep:String, $search: String, $first: Int, $skip: Int) {
-    proposals(prep:$selectedPRep, search: $search, first: $first, skip: $skip) {
+  query Proposals($selectedPRep:String, $first: Int, $end: Int) {
+    proposals(prep:$selectedPRep, first: $first, end: $end) {
       id
       status
       subject

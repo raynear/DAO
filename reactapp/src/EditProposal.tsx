@@ -8,7 +8,7 @@ import { TUIEditor } from "./TUIEditor";
 import useStyles from "./Style";
 
 function EditProposal(props: any) {
-  // console.log("EditProposal props", props);
+  console.log("EditProposal props", props);
 
   const classes = useStyles();
 

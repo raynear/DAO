@@ -6,6 +6,8 @@ import LandingPage from "./LandingPage";
 import HowTo from "./HowTo";
 import VerifyIconContainer from "./VerifyIconContainer";
 import SelectPRepContainer from "./SelectPRepContainer";
+import NoteProposalsContainer from "./NoteProposalsContainer";
+import NoteProposalContainer from "./NoteProposalContainer";
 import ProposalsContainer from "./ProposalsContainer";
 import ProposalContainer from "./ProposalContainer";
 import EditProposalContainer from "./EditProposalContainer";
@@ -49,9 +51,9 @@ function Layout(props: any) {
           </Typography>
           {!props.error && props.data.viewer.isPrep &&
             <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
-              <Link to="/EditProposal" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
-                Build
-            </Link>
+              <Link to={"/NoteProposals/" + props.data.viewer.username} style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+                My Draft
+              </Link>
             </Typography>
           }
           <UserInfoContainer refetch={props.refetch} />
@@ -68,6 +70,8 @@ function Layout(props: any) {
               <Route exact path="/EditProposal" component={EditProposalContainer} />
               <Route exact path="/Profile" component={VerifyIconContainer} />
               <Route exact path="/SelectPRep" component={SelectPRepContainer} />
+              <Route exact path="/NoteProposals/:PRep" component={NoteProposalsContainer} />
+              <Route exact path="/NoteProposal/:PRep/:ID" component={NoteProposalContainer} />
               <Route exact path="/Proposals/:PRep" component={ProposalsContainer} />
               <Route exact path="/Proposal/:PRep/:ID" component={ProposalContainer} />
               <Route exact path="/SignIn" component={SignInContainer} />
@@ -87,7 +91,7 @@ function Layout(props: any) {
           message={<span id="message-id">{props.message}</span>}
         />
       </div>
-    </div>
+    </div >
   );
 }
 

@@ -11,25 +11,15 @@ function Proposals(props: any) {
   console.log("Proposals props", props);
   const classes = useStyles();
 
-  if (props.loading) return <p>Loading...</p>;
-  if (props.error) { console.log(props.error); return <p>Error!</p>; }
-  // console.log(props.data);
+  // if (props.loading) return <p>Loading...</p>;
+  // if (props.error) { console.log(props.error); return <p>Error!</p>; }
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
           <Grid item className={classes.item} xs={12} lg={12}>
             <Grid container className={classes.container} spacing={0}>
-              <Grid item className={classes.item} xs={3} lg={3}>
-                <TextField
-                  className={classes.textField}
-                  label="search"
-                  type="text"
-                  value={props.filterValues.search}
-                  onChange={props.handleChange("search")}
-                />
-              </Grid>
-              <Grid item className={classes.item} xs={3} lg={3}>
+              <Grid item className={classes.item} xs={4} lg={4}>
                 <TextField
                   className={classes.textField}
                   label="first"
@@ -38,27 +28,27 @@ function Proposals(props: any) {
                   onChange={props.handleChange("first")}
                 />
               </Grid>
-              <Grid item className={classes.item} xs={3} lg={3}>
+              <Grid item className={classes.item} xs={4} lg={4}>
                 <TextField
                   className={classes.textField}
-                  label="skip"
+                  label="end"
                   type="number"
-                  value={props.filterValues.skip}
-                  onChange={props.handleChange("skip")}
+                  value={props.filterValues.end}
+                  onChange={props.handleChange("end")}
                 />
               </Grid>
-              <Grid item className={clsx(classes.item, classes.center)} xs={3} lg={3}>
+              <Grid item className={clsx(classes.item, classes.center)} xs={4} lg={4}>
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={() => props.queryFilters()}
                 >
-                  fetch!
+                  read!
                 </Button>
               </Grid>
             </Grid>
           </Grid>
-          {props.data.proposals.map((item: any, idx: number) => {
+          {props.proposals.map((item: any, idx: number) => {
             let icon;
             if (item.status === "Approved") {
               icon = <DoneIcon />;
@@ -85,10 +75,10 @@ function Proposals(props: any) {
                     </Link>
                   </Typography>
                   <ul>
-                    {item.selectitemmodelSet.map((selectItem: any, idx: number) => (
+                    {item.select_item.map((selectItem: any, idx: number) => (
                       <Typography variant="h6" key={idx} color="textSecondary">
                         <li>
-                          {selectItem.contents}
+                          {selectItem}
                         </li>
                       </Typography>
                     ))}

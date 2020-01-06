@@ -1,5 +1,6 @@
-import React from "react";
-import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Chip } from "@material-ui/core";
+import React, { Fragment } from "react";
+import { Link } from "react-router-dom";
+import { Paper, Typography, Button, Grid, Divider, Chip } from "@material-ui/core";
 import { ArrowRight, Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
 import { BarChart, Bar, XAxis, YAxis, Tooltip as BarTooltip } from "recharts";
 import clsx from "clsx";
@@ -11,41 +12,25 @@ import useStyles from "./Style";
 import facebookImg from "./img/facebook.png";
 import twitterImg from "./img/twitter.png";
 
-function Proposal(props: any) {
-  console.log("Proposal props", props);
+function NoteProposal(props: any) {
+  console.log("NoteProposal props", props);
   // const forceUpdate = useForceUpdate;
 
   const classes = useStyles();
 
   function SelectItemList() {
-    // console.log("SelectItemList", props.proposal.select_item);
+    // console.log("SelectItemList", props.data.proposal.selectitemmodelSet);
     return (
       <table>
         <tbody>
-          {props.proposal.select_item.map(
-            (selectItem: any, idx: number) => {
-              let voteRate = 0;
-              try {
-                voteRate = props.votedPowerRate[idx].voted;
-              } catch {
-                voteRate = 0;
-              } finally {
-              }
+          {props.data.proposal.selectitemmodelSet.map(
+            (selectItem: any) => {
               return (
-                <tr key={idx}>
+                <tr key={selectItem.index}>
                   <td><ArrowRight /></td>
                   <td style={{ minWidth: "100px" }}>
-                    {props.votedIdx === idx &&
-                      <Tooltip key={idx} title="Voted" placement="left">
-                        <Typography variant="h6">{selectItem}</Typography>
-                      </Tooltip>
-                    }
-                    {props.votedIdx !== idx &&
-                      <Typography variant="h6">{selectItem}</Typography>
-                    }
+                    <Typography variant="h6">{selectItem.contents}</Typography>
                   </td>
-                  <td align="right" style={{ minWidth: "50px" }}><Typography variant="h6">{" " + voteRate + " %"}</Typography></td>
-                  <td align="right" style={{ minWidth: "200px" }}><Typography variant="h6">{props.votedPower && " " + props.votedPower[idx].toLocaleString() + " ICX"}</Typography></td>
                 </tr>
               );
             }
@@ -55,71 +40,23 @@ function Proposal(props: any) {
     );
   }
 
-  function RadioButtons() {
+  function PublishButton() {
     return (
-      <FormControl>
-        <RadioGroup value={props.voteSelect} onChange={props.handleChange}>
-          {props.proposal.select_item.map(
-            (selectItem: any, idx: number) => (
-              <FormControlLabel
-                key={idx}
-                control={<Radio />}
-                value={idx}
-                label={selectItem}
-              />
-            )
-          )}
-        </RadioGroup>
-      </FormControl>
+      <Fragment>
+        <Button variant="outlined" color="primary">
+          <Link to={"/EditProposal/" + props.id} className={classes.link}>
+            Edit
+          </Link>
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={props.Publish}
+        >
+          Publish
+        </Button>
+      </Fragment>
     );
-  }
-
-  function SelectList() {
-    if ((props.myPRep || props.owner) &&
-      props.votedIdx === -1 &&
-      props.proposal.status === "Voting") {
-      return (<RadioButtons />);
-    }
-    return (<SelectItemList />);
-  }
-
-  function VoteButton() {
-    return (
-      <Button
-        variant="contained"
-        color="primary"
-        disabled={props.voteSelect === -1}
-        onClick={props.Vote}
-      >
-        Vote
-      </Button>
-    );
-  }
-
-  function FinalizeVoteButton() {
-    return (
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={props.FinalizeVote}
-      >
-        Finalize Vote
-      </Button>
-    );
-  }
-
-  function ActionButton() {
-    const expireAt = new Date(props.proposal.expire_date);
-    if (expireAt.getTime() < Date.now() && props.owner) {
-      return <FinalizeVoteButton />;
-    }
-    if ((props.myPRep || props.owner) && props.votedIdx === -1) {
-      // return (<><FinalizeVoteButton /><VoteButton /></>);
-      // TODO : 원복해야 함.
-      // 빠른 finalize를 위해 우선 변경한 버튼
-      return (<VoteButton />);
-    }
-    return <></>;
   }
 
   function FacebookShare() {
@@ -133,9 +70,9 @@ function Proposal(props: any) {
   if (props.loading) return <p>Loading...</p>;
   if (props.error) return <p>Error!:</p>;
   let icon;
-  if (props.proposal.status === "Approved") {
+  if (props.data.proposal.status === "Approved") {
     icon = <DoneIcon />;
-  } else if (props.proposal.status === "Voting") {
+  } else if (props.data.proposal.status === "Voting") {
     icon = <VoteIcon />;
   } else {
     icon = <DisapproveIcon />;
@@ -148,11 +85,11 @@ function Proposal(props: any) {
             <Chip
               icon={icon}
               size="small"
-              label={props.proposal.status}
+              label={props.data.proposal.status}
               color="primary"
             />{"  "}
             <Typography className={classes.title} variant="body1" color="textSecondary" gutterBottom>
-              <b>{props.proposal.ID}.</b>
+              <b>{props.data.proposal.ID}.</b>
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
@@ -160,7 +97,7 @@ function Proposal(props: any) {
               <div style={{ float: "left" }}>
                 <Typography variant="h4" color="textPrimary" gutterBottom>
                   <b>
-                    {props.proposal.subject}{" "}
+                    {props.data.proposal.subject}{" "}
                   </b>
                 </Typography>
               </div>
@@ -170,10 +107,10 @@ function Proposal(props: any) {
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="body1" color="textPrimary">
-              Proposer : {props.PRep}
+              Proposer : {props.data.proposal.prep.username}
             </Typography>
             <Typography variant="body1" color="textPrimary">
-              expire at : {props.proposal.expire_date}
+              expire at : {props.data.proposal.expireAt}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
@@ -183,14 +120,13 @@ function Proposal(props: any) {
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="caption" color="textSecondary">
-              VOTING WEIGH
+              Threshold
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={8} lg={8}>
-            <BarChart width={600} height={40} data={[{ name: "Electoral Threshold", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
-              <Bar dataKey="voted" stackId="a" fill="#82ca9d" />
-              <Bar dataKey="left" stackId="a" fill="#888888" />
-              <Bar dataKey="100" stackId="a" fill="#FFFFFF" />
+            <BarChart width={600} height={40} data={[{ name: "Threshold", winning: props.data.proposal.winningTh, electoral: props.data.proposal.electoralTh, "100": 100 }]} layout="vertical">
+              <Bar dataKey="winning" fill="#82ca9d" />
+              <Bar dataKey="electoral" fill="#3888c8" />
               <BarTooltip cursor={false} />
               <XAxis hide type="number" />
               <YAxis hide dataKey="name" type="category" />
@@ -202,24 +138,12 @@ function Proposal(props: any) {
                 <tr>
                   <td style={{ float: "left" }}>
                     <Typography variant="body1" color="textPrimary">
-                      {" "}Total # of votes :
-                </Typography>
-                  </td>
-                  <td style={{ float: "right" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {props.voteData.totalVoted.toLocaleString() + " ICX"}
+                      {" "}Total # of delegate :
                     </Typography>
                   </td>
-                </tr>
-                <tr>
-                  <td style={{ float: "left" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {" "}Total # of delegate :
-                </Typography>
-                  </td>
                   <td style={{ float: "right" }}>
                     <Typography variant="body1" color="textPrimary">
-                      {props.voteData.totalDelegate.toLocaleString() + " ICX"}
+                      {props.value.totalVotingPower}
                     </Typography>
                   </td>
                 </tr>
@@ -227,11 +151,11 @@ function Proposal(props: any) {
                   <td style={{ float: "left" }}>
                     <Typography variant="body1" color="textPrimary">
                       {" "}Your # of votes :
-                </Typography>
+                    </Typography>
                   </td>
                   <td style={{ float: "right" }}>
                     <Typography variant="body1" color="textPrimary">
-                      {props.myVotingPower.toLocaleString() + " ICX"}
+                      {props.value.pRepVotingPower}
                     </Typography>
                   </td>
                 </tr>
@@ -250,7 +174,7 @@ function Proposal(props: any) {
           </Grid>
           <Grid item className={clsx(classes.paddingSide, classes.viewer)} xs={12} md={12} lg={12}>
             <TUIViewer
-              initialValue={props.proposal.contents}
+              initialValue={props.data.proposal.contents}
             />
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
@@ -259,11 +183,11 @@ function Proposal(props: any) {
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <SelectList />
+            <SelectItemList />
           </Grid>
           <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
             <br />
-            <ActionButton />
+            <PublishButton />
           </Grid>
         </Grid>
       </Paper>
@@ -271,4 +195,4 @@ function Proposal(props: any) {
   );
 }
 
-export default Proposal;
+export default NoteProposal;
