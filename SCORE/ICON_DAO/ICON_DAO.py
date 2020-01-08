@@ -190,7 +190,7 @@ class ICON_DAO(IconScoreBase):
             else:
                 # self._log.set(self._log.get()+"|5-2")
                 # 결과에 따라 no result, result 결과 proposal에 저장.
-                self._proposal[_Proposer][pid][self.STATUS] = "Disapproved"
+                self._proposal[_Proposer][pid][self.STATUS] = "Rejected"
 
     @external(readonly=True)
     def Log(self) -> str:

@@ -25,7 +25,8 @@ function NoteProposalContainer(props: any) {
     });
     // console.log("Publish!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
-    window.location.reload();
+    props.history.push("/Proposals/" + PRep);
+    // window.location.reload();
     // queryVal.refetch();
   }
 

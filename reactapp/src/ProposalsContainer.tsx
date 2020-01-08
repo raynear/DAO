@@ -49,11 +49,10 @@ function ProposalsContainer(props: any) {
         console.log(result);
         if (result) {
           let Proposals = JSON.parse(result);
-          console.log("test", Proposals);
-          let tmpProposals: any = [];
-          let aProposal: any = {};
           if (Proposals.length > 0) {
+            let tmpProposals: any = [];
             for (let i = 0; i < Proposals.length; i++) {
+              let aProposal: any = {};
               if (Proposals[i].subject === "") {
                 continue;
               }

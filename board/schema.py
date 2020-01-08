@@ -11,6 +11,7 @@ from iconsdk.builder.call_builder import CallBuilder
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.wallet.wallet import KeyWallet
 
+from time import sleep
 import time
 import json
 import datetime
@@ -183,17 +184,17 @@ class PublishProposal(graphene.Mutation):
         print("AA:", result)
         result_json = json.loads(result)
         print("BB:", result_json)
+        if result_json['address'] != info.context.user.icon_address:
+            return PublishProposal(proposal=None)
 
-        call = CallBuilder()\
-            .to(SCORE)\
-            .method("GetLastProposalID")\
-            .params({"_Proposer": info.context.user.username})\
-            .build()
+        # call = CallBuilder()\
+        #     .to(SCORE)\
+        #     .method("GetLastProposalID")\
+        #     .params({"_Proposer": info.context.user.username})\
+        #     .build()
 
-        result = icon_service.call(call)
-        print("CC:", result)
-
-        # pid = int(result) + 1
+        # result = icon_service.call(call)
+        # print("CC:", result)
 
         selectItems = SelectItemModel.objects.filter(proposal=proposal)
         _select_item = '['
@@ -220,12 +221,21 @@ class PublishProposal(graphene.Mutation):
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
 
-        proposal.delete()
-        #proposal.published = True
-        #proposal.status = "Voting"
-        #proposal.prep_pid = pid
-        #proposal.txHash = tx_hash
+        print("CC", tx_hash)
+        sleep(3)
+        tx_result = icon_service.get_transaction_result(tx_hash)
+
+        print("DD", tx_result)
+
+        if tx_result['status'] == 1:
+            proposal.delete()
+        # proposal.published = True
+        # proposal.status = "Voting"
+        # pid = int(result) + 1
+        # proposal.prep_pid = pid
+        # proposal.txHash = tx_hash
         # proposal.save()
+
         return PublishProposal(proposal=None)
 
 
@@ -242,6 +252,7 @@ class VoteProposal(graphene.Mutation):
     @login_required
     def mutate(self, info, proposer, proposal_id, select_item_index):
         icon_service = IconService(HTTPProvider(NETWORK, 3))
+        print("ABCDEFG")
 
         f = open("./key.pw", 'r')
         line = f.readline()
@@ -258,6 +269,11 @@ class VoteProposal(graphene.Mutation):
 
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
+        print(tx_hash)
+
+        sleep(3)
+        tx_result = icon_service.get_transaction_result(tx_hash)
+        print(tx_result)
 
         # vote = VoteModel.objects.create(voter=info.context.user, select=qs[0])
         # vote.txHash = tx_hash
@@ -297,7 +313,7 @@ class SetProposal(graphene.Mutation):
         except ProposalModel.DoesNotExist:
             proposal = ProposalModel.objects.create(
                 prep=info.context.user,
-                status="Not_Published",
+                status="Draft",
                 subject=subject,
                 contents=contents,
                 published=published,
@@ -406,19 +422,30 @@ class AddIconAddress(graphene.Mutation):
 class Finalize(graphene.Mutation):
     class Arguments:
         proposal_id = graphene.Int()
+        proposer = graphene.String()
 
     proposal = graphene.Field(ProposalModelType)
 
     @prep_required
     @login_required
-    def mutate(self, info, proposal_id):
-        proposal = ProposalModel.objects.get(pk=proposal_id)
-        final_blockheight = find_blockheight_from_datetime(
-            str(proposal.expire_at))
+    def mutate(self, info, proposer, proposal_id):
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
+        call = CallBuilder()\
+            .to(SCORE)\
+            .method("GetProposal")\
+            .params({"_Proposer": proposer, "_ProposalID": proposal_id})\
+            .build()
 
-        proposer = proposal.prep.username
+        proposal_result = icon_service.call(call)
+        result_json = json.loads(proposal_result)
+        print("Proposal!!!!!!!!!!", result_json)
+
+        final_blockheight = find_blockheight_from_datetime(
+            str(result_json['expire_date']))
+
         resp_vote = json_rpc_call(
-            "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal.prep_pid})
+            "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal_id})
+
         vote_json = json.loads(resp_vote)
         final_delegate_tx_list = []
         select_list = {}
@@ -428,7 +455,7 @@ class Finalize(graphene.Mutation):
             tx_amount = 0
             tx_id = ""
             for delegate in final_delegate_tx['data']['params']['delegations']:
-                if delegate['address'] == proposal.prep.icon_address:
+                if delegate['address'] == result_json['address']:
                     tx_amount = delegate['value']
                     tx_id = final_delegate_tx['txHash']
 
@@ -440,7 +467,6 @@ class Finalize(graphene.Mutation):
             else:
                 select_list[a_vote['selectItem']] = tx_amount
 
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
         call = CallBuilder()\
             .to("cx0000000000000000000000000000000000000000")\
             .method("getPReps")\
@@ -451,7 +477,7 @@ class Finalize(graphene.Mutation):
 
         prep_delegate = 0
         for a_prep in prep_result['preps']:
-            if a_prep['address'] == proposal.prep.icon_address:
+            if a_prep['address'] == result_json['address']:
                 prep_delegate = a_prep['delegated']
 
         f = open("./key.pw", 'r')
@@ -464,7 +490,7 @@ class Finalize(graphene.Mutation):
             .step_limit(10000000000)\
             .nid(3)\
             .method("Finalize")\
-            .params({"_Proposer": proposal.prep.username, "_ProposalID": proposal.prep_pid, "_TotalDelegate": prep_delegate, "_FinalData": json.dumps(final_delegate_tx_list)})\
+            .params({"_Proposer": proposer, "_ProposalID": proposal_id, "_TotalDelegate": prep_delegate, "_FinalData": json.dumps(final_delegate_tx_list)})\
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
@@ -473,15 +499,15 @@ class Finalize(graphene.Mutation):
         call = CallBuilder()\
             .to(SCORE)\
             .method("GetProposal")\
-            .params({"_Proposer": proposal.prep.username, "_ProposalID": proposal.prep_pid})\
+            .params({"_Proposer": proposer, "_ProposalID": proposal_id})\
             .build()
 
         proposal_result = icon_service.call(call)
         result_json = json.loads(proposal_result)
 
-        proposal.finalizeTxHash = tx_hash
-        proposal.status = result_json['status']
-        proposal.save()
+        # proposal.finalizeTxHash = tx_hash
+        # proposal.status = result_json['status']
+        # proposal.save()
 
         return Finalize(proposal=proposal)
 

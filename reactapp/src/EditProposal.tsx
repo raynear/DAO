@@ -2,6 +2,7 @@ import React from "react";
 // import { withRouter } from "react-router-dom";
 import { Paper, Grid, Typography, TextField, Button, Slider } from "@material-ui/core";
 import { AddRounded } from "@material-ui/icons";
+import clsx from "clsx";
 
 import { TUIEditor } from "./TUIEditor";
 
@@ -108,8 +109,8 @@ function EditProposal(props: any) {
               />
             </Grid>
 
-            <Grid className={classes.item} item xs={12} md={12} lg={12}>
-              <br />
+            <Grid className={clsx(classes.item, classes.center)} item xs={12} md={12} lg={12}>
+              <Typography><b>Vote Duration</b></Typography>
               <TextField
                 id="votingDue"
                 label="VotingDue"
@@ -131,7 +132,7 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
-              <Typography><b>Electoral TH : {props.values.electoralTh}</b></Typography>
+              <Typography><b>Minimum participation requirement by delegates for the vote to be valid : {props.values.electoralTh}</b></Typography>
               <Slider
                 value={props.values.electoralTh}
                 onChange={props.handleSliderChange("electoralTh")}
@@ -153,7 +154,7 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
-              <Typography><b>Winning TH : {props.values.winningTh}</b></Typography>
+              <Typography><b>Minimum % of participating votes for a winning option to be valid : {props.values.winningTh}</b></Typography>
               <Slider
                 value={props.values.winningTh}
                 onChange={props.handleSliderChange("winningTh")}

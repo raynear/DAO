@@ -40,12 +40,12 @@ function SignUp(props: any) {
         }
         <Grid container className={classes.container}>
           <Grid item className={clsx(classes.item, classes.left)} xs={6} md={6} lg={6}>
-            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep - 1) }}>
+            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep - 1) }} disabled={props.activeStep > 0} >
               Back
             </Button>
           </Grid>
           <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
-            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep + 1) }}>
+            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep + 1) }} disabled={props.activeStep < 2}>
               Forward
             </Button>
           </Grid>

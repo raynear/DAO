@@ -1,5 +1,6 @@
 import React from "react";
 import { Grid, Paper, Typography, Divider, Button } from "@material-ui/core";
+import { LooksOneOutlined, LooksTwoOutlined, Looks3Outlined } from "@material-ui/icons";
 import clsx from "clsx";
 import useStyles from "./Style";
 
@@ -28,13 +29,13 @@ function VerifyIcon(props: any) {
                 {props.isPRep &&
                   <>
                     <Typography>You Are PRep</Typography>
-                    <Button variant="contained" color="primary" onClick={props.newPRepPage}>Make New P-Rep DAO Page</Button>
+                    <Button variant="contained" color="primary" onClick={props.newPRepPage} startIcon={<Looks3Outlined />}>Make New P-Rep DAO Page</Button>
                   </>
                 }
                 {!props.isPRep && props.verifiedAddress !== "" && props.verifiedAddress !== "None" &&
                   <>
                     <Typography>You Are Verified</Typography>
-                    <Button variant="contained" color="primary" onClick={props.addIconAddress}>Verify Icon Address</Button>
+                    <Button variant="contained" color="primary" onClick={props.addIconAddress} startIcon={<Looks3Outlined />}>Verify Icon Address</Button>
                   </>
                 }
               </Grid>
@@ -46,10 +47,10 @@ function VerifyIcon(props: any) {
               </Grid>
               <Grid container className={classes.container}>
                 <Grid item className={classes.item} xs={6} md={6} lg={6}>
-                  <Button variant="contained" color="primary" fullWidth onClick={selectWallet}>Verify ICON Address</Button>
+                  <Button variant="contained" color="primary" fullWidth onClick={selectWallet} startIcon={<LooksOneOutlined />}>Verify ICON Address</Button>
                 </Grid>
                 <Grid item className={classes.item} xs={6} md={6} lg={6}>
-                  <Button variant="contained" color="primary" fullWidth onClick={props.callVerify}>Check Your Verify Info</Button>
+                  <Button variant="contained" color="primary" fullWidth onClick={props.callVerify} startIcon={<LooksTwoOutlined />}>Check Your Verify Info</Button>
                 </Grid>
               </Grid>
 
@@ -70,13 +71,13 @@ function VerifyIcon(props: any) {
             {props.isPRep &&
               <>
                 <Typography>You Are PRep</Typography>
-                <Button variant="contained" color="primary" onClick={props.newPRepPage}>Make New P-Rep DAO Page</Button>
+                <Button variant="contained" color="primary" onClick={props.newPRepPage} startIcon={<Looks3Outlined />}>Make New P-Rep DAO Page</Button>
               </>
             }
             {!props.isPRep && props.verifiedAddress !== "" && props.verifiedAddress !== "None" &&
               <>
                 <Typography>You Are Verified</Typography>
-                <Button variant="contained" color="primary" onClick={props.addIconAddress}>Verify Icon Address</Button>
+                <Button variant="contained" color="primary" onClick={props.addIconAddress} startIcon={<Looks3Outlined />}>Verify Icon Address</Button>
               </>
             }
           </Grid>
@@ -88,10 +89,10 @@ function VerifyIcon(props: any) {
           </Grid>
           <Grid container className={classes.container}>
             <Grid item className={classes.item} xs={6} md={6} lg={6}>
-              <Button variant="contained" color="primary" fullWidth onClick={selectWallet}>Verify ICON Address</Button>
+              <Button variant="contained" color="primary" fullWidth onClick={selectWallet} startIcon={<LooksOneOutlined />}>Verify ICON Address</Button>
             </Grid>
             <Grid item className={classes.item} xs={6} md={6} lg={6}>
-              <Button variant="contained" color="primary" fullWidth onClick={props.callVerify}>Check Your Verify Info</Button>
+              <Button variant="contained" color="primary" fullWidth onClick={props.callVerify} startIcon={<LooksTwoOutlined />}>Check Your Verify Info</Button>
             </Grid>
           </Grid>
         </>

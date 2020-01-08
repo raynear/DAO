@@ -52,7 +52,7 @@ function Layout(props: any) {
           {!props.error && props.data.viewer.isPrep &&
             <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
               <Link to={"/NoteProposals/" + props.data.viewer.username} style={{ textDecoration: 'none', color: "#FFFFFF" }}>
-                My Draft
+                Build
               </Link>
             </Typography>
           }

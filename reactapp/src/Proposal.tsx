@@ -1,6 +1,6 @@
 import React from "react";
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Chip } from "@material-ui/core";
-import { ArrowRight, Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
+import { ArrowLeft, ArrowRight, Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
 import { BarChart, Bar, XAxis, YAxis, Tooltip as BarTooltip } from "recharts";
 import clsx from "clsx";
 
@@ -45,7 +45,7 @@ function Proposal(props: any) {
                     }
                   </td>
                   <td align="right" style={{ minWidth: "50px" }}><Typography variant="h6">{" " + voteRate + " %"}</Typography></td>
-                  <td align="right" style={{ minWidth: "200px" }}><Typography variant="h6">{props.votedPower && " " + props.votedPower[idx].toLocaleString() + " ICX"}</Typography></td>
+                  <td align="right" style={{ minWidth: "200px" }}><Typography variant="h6">{props.votedPowerRate && " " + props.votedPowerRate[idx].icx.toLocaleString() + " ICX"}</Typography></td>
                 </tr>
               );
             }
@@ -60,14 +60,23 @@ function Proposal(props: any) {
       <FormControl>
         <RadioGroup value={props.voteSelect} onChange={props.handleChange}>
           {props.proposal.select_item.map(
-            (selectItem: any, idx: number) => (
-              <FormControlLabel
-                key={idx}
-                control={<Radio />}
-                value={idx}
-                label={selectItem}
-              />
-            )
+            (selectItem: any, idx: number) => {
+              let voteRate = 0;
+              try {
+                voteRate = props.votedPowerRate[idx].voted;
+              } catch {
+                voteRate = 0;
+              } finally {
+              }
+              return (
+                <FormControlLabel
+                  key={idx}
+                  control={<Radio />}
+                  value={idx}
+                  label={selectItem + " " + voteRate + " %" + " " + props.votedPowerRate[idx].icx.toLocaleString() + " ICX"}
+                />
+              );
+            }
           )}
         </RadioGroup>
       </FormControl>
@@ -75,7 +84,9 @@ function Proposal(props: any) {
   }
 
   function SelectList() {
-    if ((props.myPRep || props.owner) &&
+    const expireAt = new Date(props.proposal.expire_date);
+    if (expireAt.getTime() > Date.now() &&
+      (props.myPRep || props.owner) &&
       props.votedIdx === -1 &&
       props.proposal.status === "Voting") {
       return (<RadioButtons />);
@@ -113,7 +124,7 @@ function Proposal(props: any) {
     if (expireAt.getTime() < Date.now() && props.owner) {
       return <FinalizeVoteButton />;
     }
-    if ((props.myPRep || props.owner) && props.votedIdx === -1) {
+    if (expireAt.getTime() > Date.now() && (props.myPRep || props.owner) && props.votedIdx === -1) {
       // return (<><FinalizeVoteButton /><VoteButton /></>);
       // TODO : 원복해야 함.
       // 빠른 finalize를 위해 우선 변경한 버튼
@@ -143,6 +154,18 @@ function Proposal(props: any) {
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={props.back}
+          style={{ width: "200px", float: "right" }}
+          startIcon={<ArrowLeft />}
+        >
+          Back
+        </Button>
+      </Paper>
+
+      <Paper className={classes.paper}>
         <Grid container className={classes.container}>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Chip
@@ -150,17 +173,15 @@ function Proposal(props: any) {
               size="small"
               label={props.proposal.status}
               color="primary"
-            />{"  "}
-            <Typography className={classes.title} variant="body1" color="textSecondary" gutterBottom>
-              <b>{props.proposal.ID}.</b>
-            </Typography>
+              style={{ float: "left" }}
+            />
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <div className={classes.right}>
               <div style={{ float: "left" }}>
                 <Typography variant="h4" color="textPrimary" gutterBottom>
                   <b>
-                    {props.proposal.subject}{" "}
+                    {props.proposal.id + ". " + props.proposal.subject}{" "}
                   </b>
                 </Typography>
               </div>
@@ -173,7 +194,7 @@ function Proposal(props: any) {
               Proposer : {props.PRep}
             </Typography>
             <Typography variant="body1" color="textPrimary">
-              expire at : {props.proposal.expire_date}
+              Ending Time : {props.proposal.expire_date}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
@@ -183,7 +204,7 @@ function Proposal(props: any) {
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="caption" color="textSecondary">
-              VOTING WEIGH
+              VOTING PROGRESS
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={8} lg={8}>
@@ -245,16 +266,6 @@ function Proposal(props: any) {
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="caption" color="textSecondary">
-              DESCRIPTION
-            </Typography>
-          </Grid>
-          <Grid item className={clsx(classes.paddingSide, classes.viewer)} xs={12} md={12} lg={12}>
-            <TUIViewer
-              initialValue={props.proposal.contents}
-            />
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="caption" color="textSecondary">
               SELECT ITEMS
             </Typography>
           </Grid>
@@ -264,6 +275,21 @@ function Proposal(props: any) {
           <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
             <br />
             <ActionButton />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <br />
+            <Divider variant="fullWidth" />
+            <br />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Typography variant="caption" color="textSecondary">
+              DESCRIPTION
+            </Typography>
+          </Grid>
+          <Grid item className={clsx(classes.paddingSide, classes.viewer)} xs={12} md={12} lg={12}>
+            <TUIViewer
+              initialValue={props.proposal.contents}
+            />
           </Grid>
         </Grid>
       </Paper>

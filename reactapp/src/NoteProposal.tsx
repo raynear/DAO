@@ -169,16 +169,6 @@ function NoteProposal(props: any) {
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="caption" color="textSecondary">
-              DESCRIPTION
-            </Typography>
-          </Grid>
-          <Grid item className={clsx(classes.paddingSide, classes.viewer)} xs={12} md={12} lg={12}>
-            <TUIViewer
-              initialValue={props.data.proposal.contents}
-            />
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="caption" color="textSecondary">
               SELECT ITEMS
             </Typography>
           </Grid>
@@ -188,6 +178,21 @@ function NoteProposal(props: any) {
           <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
             <br />
             <PublishButton />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <br />
+            <Divider variant="fullWidth" />
+            <br />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Typography variant="caption" color="textSecondary">
+              DESCRIPTION
+            </Typography>
+          </Grid>
+          <Grid item className={clsx(classes.paddingSide, classes.viewer)} xs={12} md={12} lg={12}>
+            <TUIViewer
+              initialValue={props.data.proposal.contents}
+            />
           </Grid>
         </Grid>
       </Paper>

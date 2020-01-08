@@ -95,8 +95,8 @@ export const SET_PUBLISH = gql`
 `;
 
 export const SET_VOTE = gql`
-  mutation VoteProposal($proposalId: Int!, $selectItemIndex: Int!) {
-    voteProposal(proposalId: $proposalId, selectItemIndex: $selectItemIndex) {
+  mutation VoteProposal($proposer:String!, $proposalId: Int!, $selectItemIndex: Int!) {
+    voteProposal(proposer:$proposer, proposalId: $proposalId, selectItemIndex: $selectItemIndex) {
       proposal {
         id
         status
@@ -273,8 +273,8 @@ mutation AddIconAddress($IconAddress:String!){
 `;
 
 export const FINALIZE = gql`
-mutation Finalize($ProposalID:Int!){
-  finalize(proposalId:$ProposalID){
+mutation Finalize($Proposer:String!, $ProposalID:Int!){
+  finalize(proposer:$Proposer, proposalId:$ProposalID){
     proposal{
       id
       status

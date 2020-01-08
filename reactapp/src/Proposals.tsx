@@ -67,7 +67,7 @@ function Proposals(props: any) {
                     color="primary"
                   />
                   <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    <b>{item.id}.</b>{item.prepPid}
+                    <b>{item.id}.</b>
                   </Typography>
                   <Typography variant="h5" color="textPrimary" gutterBottom>
                     <Link className={classes.link} to={"/Proposal/" + props.PRep + "/" + item.id} color="textPrimary">
