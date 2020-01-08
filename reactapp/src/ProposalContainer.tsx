@@ -177,7 +177,8 @@ function ProposalContainer(props: any) {
 
     let tmpVoteData = voteData;
     tmpVoteData.voted = Math.round((totalVotedPower / TotalDelegate) * 100);
-    tmpVoteData.th = proposal.electoral_threshold;
+    tmpVoteData.th = proposal.electoral_threshold - tmpVoteData.voted;
+    if (tmpVoteData.th < 0) tmpVoteData.th = 0;
     tmpVoteData.totalVoted = totalVotedPower;
     tmpVoteData.totalDelegate = TotalDelegate;
     setVoteData(tmpVoteData);

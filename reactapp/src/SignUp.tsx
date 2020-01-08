@@ -16,6 +16,7 @@ function SignUp(props: any) {
       <Paper className={clsx(classes.paper, classes.center)}>
         <Grid container className={clsx(classes.container, classes.center)}>
           <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
+            <br />
             <Stepper activeStep={props.activeStep} alternativeLabel>
               {props.steps.map((label: any) => (
                 <Step key={label}>
@@ -23,6 +24,8 @@ function SignUp(props: any) {
                 </Step>
               ))}
             </Stepper>
+            <br />
+            <br />
           </Grid>
         </Grid>
         {props.activeStep === 0 &&
@@ -34,18 +37,26 @@ function SignUp(props: any) {
         {props.activeStep === 2 &&
           <Grid container className={classes.container}>
             <Grid item className={classes.item} xs={12} md={12} lg={12}>
+              <br />
+              <br />
+              <br />
+              <br />
               <Typography>Good Job</Typography>
+              <br />
+              <br />
+              <br />
+              <br />
             </Grid>
           </Grid>
         }
         <Grid container className={classes.container}>
           <Grid item className={clsx(classes.item, classes.left)} xs={6} md={6} lg={6}>
-            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep - 1) }} disabled={props.activeStep > 0} >
+            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep - 1) }} disabled={props.activeStep <= 0} >
               Back
             </Button>
           </Grid>
           <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
-            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep + 1) }} disabled={props.activeStep < 2}>
+            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep + 1) }} disabled={props.activeStep >= 2}>
               Forward
             </Button>
           </Grid>

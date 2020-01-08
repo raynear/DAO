@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 
-// import { useQuery } from "@apollo/react-hooks";
-// import { GET_PROPOSALS } from "./GQL";
-import { json_rpc_call } from "./IconConnect";
+import { useQuery } from "@apollo/react-hooks";
+import { VIEWER } from "./GQL";
+import { json_rpc_call, governance_call } from "./IconConnect";
+// import axios from "axios";
 
 import Proposals from "./Proposals";
 
@@ -25,6 +26,14 @@ function ProposalsContainer(props: any) {
     currPage: 0
   });
 
+  const [pRepInfo, setPRepInfo] = useState({
+    logo: "",
+    website: "",
+    name: "",
+    totalDelegation: 0,
+    myVotingPower: 0
+  })
+
   const [proposals, setProposals] = useState([]);
   const [flag, setFlag] = useState(false);
 
@@ -42,7 +51,77 @@ function ProposalsContainer(props: any) {
     console.log(data.selected);
   }
 
-  if (!flag) {
+  async function getPRepInfo(PRepName: string) {
+    const getPRepAddressResp = await json_rpc_call("GetVerifyInfoByID", { _ID: PRepName });
+    const getPRepAddress = JSON.parse(getPRepAddressResp);
+    console.log("getPRepAddress", getPRepAddress);
+
+    const getPRepResp = await governance_call("getPRep", { address: getPRepAddress.address });
+    console.log("getPRepResp", getPRepResp);
+
+    // TODO : real server로 바뀌면 삭제
+    // const detail = await axios.get(getPRepResp.details);
+    const detail = {
+      "representative": {
+        "logo": {
+          "logo_256": "https://www.theuc.xyz/ubikprep/ubik256x256.png",
+          "logo_1024": "https://www.theuc.xyz/ubikprep/ubik1024x1024.png",
+          "logo_svg": "https://www.theuc.xyz/ubikprep/ubik1024x1024.svg"
+        },
+        "media": {
+          "steemit": "https://steemitwallet.com/@ubikcapital",
+          "twitter": "https://twitter.com/ubikcapital",
+          "youtube": "https://www.youtube.com/channel/UCS9knn2BSqwEZ_WqjPFOFrA?view_as=subscriber",
+          "facebook": "",
+          "github": "https://github.com/ubikcapital",
+          "reddit": "https://www.reddit.com/user/UbikCapital",
+          "keybase": "https://keybase.io/ubikcosmos",
+          "telegram": "https://t.me/ubikcapital",
+          "wechat": ""
+        }
+      },
+      "server": {
+        "location": {
+          "country": "USA",
+          "city": "Detroit"
+        },
+        "server_type": "cloud",
+        "api_endpoint": "13.58.103.19:9000"
+      }
+    };
+
+    let myVotingPower = 0;
+    if (queryVal.data && queryVal.data.hasOwnProperty("viewer")) {
+      myVotingPower = await MyVotingPower(PRepName, queryVal.data.viewer.address);
+    }
+
+    setPRepInfo({ name: getPRepResp.name, logo: detail.representative.logo.logo_1024, website: getPRepResp.website, totalDelegation: (parseInt(getPRepResp.delegated, 16) / 10 ** 18), myVotingPower: myVotingPower });
+    // console.log("detail", detail.representative.logo.logo_1024);
+  }
+
+  async function MyVotingPower(PRepName: string, address: string) {
+    const getPRepAddressResp = await json_rpc_call("GetVerifyInfoByID", { _ID: PRepName });
+    const getPRepAddress = JSON.parse(getPRepAddressResp);
+    const delegateResp = await governance_call("getDelegation", { "address": address })
+    // console.log(delegateResp);
+    let delegateList;
+    try {
+      delegateList = delegateResp.delegations;
+    }
+    catch {
+      delegateList = [];
+    }
+    for (let i = 0; i < delegateList.length; i++) {
+      if (delegateList[i].address === getPRepAddress.address) {
+        let myVotingPower = parseInt(delegateList[i].value, 16);
+        myVotingPower = (myVotingPower / 1000000000000000000);
+        return myVotingPower;
+      }
+    }
+    return 0;
+  }
+
+  if (flag === false) {
     if (proposals.length === 0) {
       json_rpc_call("GetProposals", { "_Proposer": selectedPRep, "_StartProposalID": (values.first).toString(), "_EndProposalID": (values.end).toString() }).then((result) => {
         console.log("GetProposals");
@@ -81,22 +160,21 @@ function ProposalsContainer(props: any) {
     setFlag(true);
   }
 
+  const queryVal = useQuery(VIEWER);
 
-  // console.log("what we send?", values);
-  // const queryVal = useQuery(GET_PROPOSALS, {
-  //   fetchPolicy: "network-only",
-  //   variables: {
-  //     selectedPRep: selectedPRep,
-  //     first: values.first,
-  //     end: values.end
-  //   }
-  // });
+  if (queryVal.loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (pRepInfo.name === "") {
+    getPRepInfo(selectedPRep);
+  }
 
   return (
     <Proposals
-      //      {...queryVal}
       proposals={proposals}
       PRep={selectedPRep}
+      PRepInfo={pRepInfo}
       values={values}
       filterValues={filterValues}
       queryFilters={queryFilters}

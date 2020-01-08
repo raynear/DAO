@@ -136,7 +136,7 @@ class ICON_DAO(IconScoreBase):
         if self._owner.get() == self.msg.sender:
             votes = json_loads(_FinalData)
 
-            # self._log.set(self._log.get()+"|"+_FinalData)
+            self._log.set(self._log.get()+"|"+_FinalData)
             pid = str(_ProposalID)
             for aVote in votes:
                 vid = str(self._ivote[_Proposer][pid]
@@ -144,7 +144,7 @@ class ICON_DAO(IconScoreBase):
                 self._vote[_Proposer][pid][vid][self.DELEGATETXID] = aVote['DelegateTxID']
                 self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = int(
                     aVote['DelegateAmount'], 0)
-            # self._log.set(self._log.get()+"|1")
+            self._log.set(self._log.get()+"|1")
 
             # amount를 각 select_item 별로 저장
             total_voting_power = 0
@@ -161,16 +161,16 @@ class ICON_DAO(IconScoreBase):
                     result[select_item] = result[select_item] + amount
                 else:
                     result[select_item] = amount
-            # self._log.set(self._log.get()+"|"+str(vote_cnt)+"|"+str(total_voting_power) + "|" +
-            #               json_dumps(result)+"|2")
+            self._log.set(self._log.get()+"|"+str(vote_cnt)+"|"+str(total_voting_power) + "|" +
+                          json_dumps(result)+"|2")
 
             # 최종 결과에서 electoral threshold 를 넘었는지 확인
             if (total_voting_power/_TotalDelegate)*100 < self._iproposal[_Proposer][pid][self.ELECTORALTH]:
                 self._proposal[_Proposer][pid][self.STATUS] = "Disapproved"
                 return
 
-            # self._log.set(self._log.get()+"|3"+str(_TotalDelegate) +
-            #               "|3-1|"+str(total_voting_power))
+            self._log.set(self._log.get()+"|3"+str(_TotalDelegate) +
+                          "|3-1|"+str(total_voting_power))
             # 가장 많이 투표받은 것 찾기
             most_voted_item = 0
             most_voted = 0
@@ -178,17 +178,17 @@ class ICON_DAO(IconScoreBase):
                 if result[i] > most_voted:
                     most_voted = result[i]
                     most_voted_item = i
-            # self._log.set(self._log.get()+"|4"+str(most_voted_item))
+            self._log.set(self._log.get()+"|4"+str(most_voted_item))
 
             # 최종 결과에서 winning threshold 를 넘은 아이템이 있는지 확인
             if (most_voted/total_voting_power)*100 > self._iproposal[_Proposer][pid][self.WINNINGTH]:
-                # self._log.set(self._log.get()+"|5-1")
+                self._log.set(self._log.get()+"|5-1")
                 # winning th 넘음.
                 self._iproposal[_Proposer][pid][self.WINNER] = most_voted_item
                 # 결과에 따라 no result, result 결과 proposal에 저장.
                 self._proposal[_Proposer][pid][self.STATUS] = "Approved"
             else:
-                # self._log.set(self._log.get()+"|5-2")
+                self._log.set(self._log.get()+"|5-2")
                 # 결과에 따라 no result, result 결과 proposal에 저장.
                 self._proposal[_Proposer][pid][self.STATUS] = "Rejected"
 

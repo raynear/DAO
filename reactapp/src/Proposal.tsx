@@ -1,7 +1,7 @@
 import React from "react";
 import { Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Chip } from "@material-ui/core";
 import { ArrowLeft, ArrowRight, Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
-import { BarChart, Bar, XAxis, YAxis, Tooltip as BarTooltip } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ReferenceLine, Tooltip as BarTooltip } from "recharts";
 import clsx from "clsx";
 
 import { TUIViewer } from "./TUIEditor";
@@ -175,6 +175,8 @@ function Proposal(props: any) {
               color="primary"
               style={{ float: "left" }}
             />
+            <br />
+            <br />
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <div className={classes.right}>
@@ -208,12 +210,13 @@ function Proposal(props: any) {
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={8} lg={8}>
-            <BarChart width={600} height={40} data={[{ name: "Electoral Threshold", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
+            <BarChart width={600} height={70} data={[{ name: "Electoral Threshold", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
               <Bar dataKey="voted" stackId="a" fill="#82ca9d" />
               <Bar dataKey="left" stackId="a" fill="#888888" />
               <Bar dataKey="100" stackId="a" fill="#FFFFFF" />
               <BarTooltip cursor={false} />
-              <XAxis hide type="number" />
+              <ReferenceLine x={props.proposal.electoral_threshold} label={props.proposal.electoral_threshold} stroke="red" />
+              <XAxis type="number" domain={[0, 100]} />
               <YAxis hide dataKey="name" type="category" />
             </BarChart>
           </Grid>
@@ -223,20 +226,8 @@ function Proposal(props: any) {
                 <tr>
                   <td style={{ float: "left" }}>
                     <Typography variant="body1" color="textPrimary">
-                      {" "}Total # of votes :
-                </Typography>
-                  </td>
-                  <td style={{ float: "right" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {props.voteData.totalVoted.toLocaleString() + " ICX"}
-                    </Typography>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ float: "left" }}>
-                    <Typography variant="body1" color="textPrimary">
                       {" "}Total # of delegate :
-                </Typography>
+                    </Typography>
                   </td>
                   <td style={{ float: "right" }}>
                     <Typography variant="body1" color="textPrimary">
@@ -247,8 +238,20 @@ function Proposal(props: any) {
                 <tr>
                   <td style={{ float: "left" }}>
                     <Typography variant="body1" color="textPrimary">
+                      {" "}Total # of votes :
+                    </Typography>
+                  </td>
+                  <td style={{ float: "right" }}>
+                    <Typography variant="body1" color="textPrimary">
+                      {props.voteData.totalVoted.toLocaleString() + " ICX"}
+                    </Typography>
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ float: "left" }}>
+                    <Typography variant="body1" color="textPrimary">
                       {" "}Your # of votes :
-                </Typography>
+                    </Typography>
                   </td>
                   <td style={{ float: "right" }}>
                     <Typography variant="body1" color="textPrimary">

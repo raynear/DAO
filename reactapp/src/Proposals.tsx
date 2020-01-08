@@ -17,6 +17,20 @@ function Proposals(props: any) {
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
+          <Grid item className={classes.item} xs={12} md={8} lg={8}>
+            <img src={props.PRepInfo.logo} width="100" />
+            <a href={props.PRepInfo.website} style={{ textDecoration: "none", color: "#000000" }}>
+              <Typography variant="h4">{props.PRepInfo.name}</Typography>
+            </a>
+          </Grid>
+          <Grid item className={classes.item} xs={12} md={4} lg={4}>
+            <Typography variant="h6">Total Delegate :{props.PRepInfo.totalDelegation.toLocaleString()}</Typography>
+            <Typography variant="h6">My Voting Power :{props.PRepInfo.myVotingPower}</Typography>
+          </Grid>
+        </Grid>
+      </Paper>
+      <Paper className={classes.paper}>
+        <Grid container className={classes.container} spacing={0}>
           <Grid item className={classes.item} xs={12} lg={12}>
             <Grid container className={classes.container} spacing={0}>
               <Grid item className={classes.item} xs={4} lg={4}>
@@ -60,29 +74,34 @@ function Proposals(props: any) {
             return (
               <Grid item className={classes.item} key={idx} xs={12} sm={6} md={4} lg={3}>
                 <Paper className={classes.paper}>
-                  <Chip
-                    icon={icon}
-                    size="small"
-                    label={item.status}
-                    color="primary"
-                  />
-                  <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    <b>{item.id}.</b>
-                  </Typography>
-                  <Typography variant="h5" color="textPrimary" gutterBottom>
-                    <Link className={classes.link} to={"/Proposal/" + props.PRep + "/" + item.id} color="textPrimary">
-                      {item.subject}
-                    </Link>
-                  </Typography>
-                  <ul>
-                    {item.select_item.map((selectItem: any, idx: number) => (
-                      <Typography variant="h6" key={idx} color="textSecondary">
-                        <li>
-                          {selectItem}
-                        </li>
+                  <Grid container className={classes.container}>
+                    <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+                      <Chip
+                        icon={icon}
+                        size="small"
+                        label={item.status}
+                        color="primary"
+                      />
+                    </Grid>
+                    <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+                      <Typography variant="h5" color="textPrimary" gutterBottom>
+                        <Link className={classes.link} to={"/Proposal/" + props.PRep + "/" + item.id} color="textPrimary">
+                          <b>{item.id}.</b>{" "}{item.subject}
+                        </Link>
                       </Typography>
-                    ))}
-                  </ul>
+                    </Grid>
+                    <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+                      <ul>
+                        {item.select_item.map((selectItem: any, idx: number) => (
+                          <Typography variant="h6" key={idx} color="textSecondary">
+                            <li>
+                              {selectItem}
+                            </li>
+                          </Typography>
+                        ))}
+                      </ul>
+                    </Grid>
+                  </Grid>
                 </Paper>
               </Grid>
             );

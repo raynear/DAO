@@ -15,7 +15,7 @@ function NewAccount(props: any) {
       <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
         <TextField
           id="username"
-          label="User Name"
+          label="Username"
           name="username"
           type="text"
           variant="outlined"
@@ -65,9 +65,13 @@ function NewAccount(props: any) {
         />
       </Grid>
       <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
+        <br />
+        <br />
         <Button variant="contained" color="primary" onClick={props.SignUp}>
           Sign up
         </Button>
+        <br />
+        <br />
       </Grid>
     </Grid>
   );
