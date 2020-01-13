@@ -102,8 +102,6 @@ class Query(object):
     #     else:
     #         return None
 
-    @login_required
-    @prep_required
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
             return None
@@ -111,8 +109,6 @@ class Query(object):
 
         return ProposalModel.objects.get(pk=id)
 
-    @login_required
-    @prep_required
     def resolve_proposals(self, info, prep=None, first=None, end=None, **kwargs):
         qs = ProposalModel.objects.all()
 
@@ -142,13 +138,9 @@ class Query(object):
 #        finalize_vote(1, "2019:12:19T00:00:00")
         return qs.filter(Q(is_prep__exact=True))
 
-    @login_required
-    @prep_required
     def resolve_all_proposal(self, info, **kwargs):
         return ProposalModel.objects.select_related("prep").all()
 
-    @login_required
-    @prep_required
     def resolve_all_selectitem(self, info, **kwargs):
         return SelectItemModel.objects.select_related("proposal").all()
 
