@@ -35,7 +35,8 @@ function EditProposalContainer(props: any) {
     winningTh: 50,
     subject: "",
     contents: "",
-    votingDue: 0,
+    days: 0,
+    hours: 0,
     expireAt: new Date(),
     selectitemmodelSet: []
   });
@@ -86,17 +87,21 @@ function EditProposalContainer(props: any) {
     event: React.ChangeEvent<any>
   ) => {
     // console.log(typeof event.target.value)
+    console.log("~~~~~~~~~~~~~~~~~~~~~", name, event.target.value)
 
-    if (name === "votingDue") {
-      var today = new Date();
-      var dueto = new Date();
+    if (name === "days" || name === "hours") {
       if (event.target.value !== "") {
-        dueto.setDate(today.getDate() + parseInt(event.target.value));
-        // console.log(event.target.value, dueto);
-        setValues({ ...values, [name]: event.target.value, expireAt: dueto });
-      }
-      else {
-        setValues({ ...values, [name]: event.target.value });
+        var today = new Date();
+        if (name === "days") {
+          today.setDate(today.getDate() + parseInt(event.target.value));
+          today.setHours(today.getHours() + values.hours)
+        }
+        else {
+          today.setDate(today.getDate() + values.days);
+          today.setHours(today.getHours() + parseInt(event.target.value))
+        }
+        console.log(today.toString());
+        setValues({ ...values, [name]: parseInt(event.target.value), expireAt: today });
       }
     }
     else {
@@ -171,6 +176,16 @@ function EditProposalContainer(props: any) {
   if (queryVal.data && queryVal.data.proposal && values.id === -1) {
     let proposal = queryVal.data.proposal;
     let date = new Date(proposal.expireAt);
+    let now = new Date();
+    let diff = (date.getTime() - now.getTime()) / 1000;
+
+    let DayDiff = 0;
+    let HourDiff = 0;
+
+    if (diff > 0) {
+      DayDiff = Math.floor(diff / (60 * 60 * 24));
+      HourDiff = Math.floor((diff - (DayDiff * 60 * 60 * 24)) / (60 * 60));
+    }
 
     setValues({
       id: proposal.id,
@@ -178,7 +193,8 @@ function EditProposalContainer(props: any) {
       winningTh: proposal.winningTh,
       subject: proposal.subject,
       contents: proposal.contents,
-      votingDue: 0,
+      days: DayDiff,
+      hours: HourDiff,
       expireAt: date,
       selectitemmodelSet: []
     });

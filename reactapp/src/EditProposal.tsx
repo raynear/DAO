@@ -111,17 +111,34 @@ function EditProposal(props: any) {
 
             <Grid className={clsx(classes.item, classes.center)} item xs={12} md={12} lg={12}>
               <Typography><b>Vote Duration</b></Typography>
-              <TextField
-                id="votingDue"
-                label="VotingDue"
-                type="number"
-                value={props.values.votingDue}
-                onChange={props.handleProposalChange("votingDue")}
-                className={classes.textField}
-                variant="outlined"
-                inputProps={{ min: 0, max: 365, step: 1 }}
-              />
-              <Typography>Expire At {props.values.expireAt.toISOString()}</Typography>
+            </Grid>
+            <Grid className={clsx(classes.item, classes.center)} item xs={12} md={12} lg={12}>
+              <div style={{ textAlign: "center" }}>
+                <TextField
+                  id="days"
+                  type="number"
+                  value={props.values.days}
+                  onChange={props.handleProposalChange("days")}
+                  variant="outlined"
+                  inputProps={{ min: 0, max: 365, step: 1 }}
+                  style={{ float: "left", width: "200" }}
+                />
+                <Typography variant="h6" style={{ float: "left", width: "200" }}><b>Days</b></Typography>
+                <TextField
+                  id="hours"
+                  type="number"
+                  value={props.values.hours}
+                  onChange={props.handleProposalChange("hours")}
+                  variant="outlined"
+                  inputProps={{ min: 0, max: 24, step: 1 }}
+                  style={{ float: "left", width: "200" }}
+                />
+                <Typography variant="h6" style={{ float: "left", width: "200" }}><b>Hours</b></Typography>
+              </div>
+            </Grid>
+            <Grid className={clsx(classes.item, classes.center)} item xs={12} md={12} lg={12}>
+              <br />
+              <Typography>End At {props.values.expireAt.toString()}</Typography>
               <br />
             </Grid>
             <Grid

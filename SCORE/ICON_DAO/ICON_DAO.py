@@ -21,6 +21,8 @@ class ICON_DAO(IconScoreBase):
     VOTER = "voter"
     WINNER = "winner"
     STATUS = "status"
+    TX = "transaction"
+    FINAL = "final"
 
     DELEGATETXID = "final_delegate_txid"
     DELEGATEAMOUNT = "final_delegate_amount"
@@ -103,6 +105,8 @@ class ICON_DAO(IconScoreBase):
             if voter_address != None:
                 UserVoteIdx = self._ivote[_Proposer][pid][voter_address][self.COUNT]
                 if self._vote[_Proposer][pid][str(UserVoteIdx)][self.VOTER] != "":
+                    self._vote[_Proposer][pid][vid][self.TX] = bytes.hex(
+                        self.tx.hash)
                     self._ivote[_Proposer][pid][str(
                         UserVoteIdx)][self.SELECTITEM] = _VoteItem
                 else:
@@ -110,6 +114,8 @@ class ICON_DAO(IconScoreBase):
                     vid = str(vote_idx)
                     self._vote[_Proposer][pid][vid][self.VOTER] = voter_address
                     self._ivote[_Proposer][pid][vid][self.SELECTITEM] = _VoteItem
+                    self._vote[_Proposer][pid][vid][self.TX] = bytes.hex(
+                        self.tx.hash)
                     self._ivote[_Proposer][pid][self.COUNT][self.COUNT] = vote_idx
                     self._ivote[_Proposer][pid][voter_address][self.COUNT] = vote_idx
 
@@ -125,6 +131,7 @@ class ICON_DAO(IconScoreBase):
             return_json['vote'].append({
                 "voter": self._vote[_Proposer][pid][vid][self.VOTER],
                 "selectItem": self._ivote[_Proposer][pid][vid][self.SELECTITEM],
+                "voteTxHash": self._vote[_Proposer][pid][vid][self.TX],
                 "delegateTxID": self._vote[_Proposer][pid][vid][self.DELEGATETXID],
                 "delegateAmount": self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
             })
@@ -136,7 +143,7 @@ class ICON_DAO(IconScoreBase):
         if self._owner.get() == self.msg.sender:
             votes = json_loads(_FinalData)
 
-            self._log.set(self._log.get()+"|"+_FinalData)
+            self._log.set(self._log.get()+"|start|"+_FinalData)
             pid = str(_ProposalID)
             for aVote in votes:
                 vid = str(self._ivote[_Proposer][pid]
@@ -144,7 +151,7 @@ class ICON_DAO(IconScoreBase):
                 self._vote[_Proposer][pid][vid][self.DELEGATETXID] = aVote['DelegateTxID']
                 self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = int(
                     aVote['DelegateAmount'], 0)
-            self._log.set(self._log.get()+"|1")
+            self._log.set(self._log.get()+"|1!|\r\n")
 
             # amount를 각 select_item 별로 저장
             total_voting_power = 0
@@ -154,23 +161,23 @@ class ICON_DAO(IconScoreBase):
                 vid = str(i+1)
                 select_item = self._ivote[_Proposer][pid][vid][self.SELECTITEM]
                 amount = self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
-                # self._log.set(self._log.get()+"|" +
-                #               str(select_item)+"|"+str(amount))
+                self._log.set(self._log.get()+"|1-1!|" +
+                              str(select_item)+"|"+str(amount)+"\r\n")
                 total_voting_power = total_voting_power + amount
                 if select_item in result:
                     result[select_item] = result[select_item] + amount
                 else:
                     result[select_item] = amount
-            self._log.set(self._log.get()+"|"+str(vote_cnt)+"|"+str(total_voting_power) + "|" +
-                          json_dumps(result)+"|2")
+            self._log.set(self._log.get()+"|2!|"+str(vote_cnt)+"|"+str(total_voting_power) + "|" +
+                          json_dumps(result)+"\r\n")
 
             # 최종 결과에서 electoral threshold 를 넘었는지 확인
             if (total_voting_power/_TotalDelegate)*100 < self._iproposal[_Proposer][pid][self.ELECTORALTH]:
-                self._proposal[_Proposer][pid][self.STATUS] = "Disapproved"
+                self._proposal[_Proposer][pid][self.STATUS] = "Electoral Rejected"
                 return
 
-            self._log.set(self._log.get()+"|3"+str(_TotalDelegate) +
-                          "|3-1|"+str(total_voting_power))
+            self._log.set(self._log.get()+"|3!|"+str(_TotalDelegate) +
+                          "|3-1|"+str(total_voting_power)+"\r\n")
             # 가장 많이 투표받은 것 찾기
             most_voted_item = 0
             most_voted = 0
@@ -178,19 +185,22 @@ class ICON_DAO(IconScoreBase):
                 if result[i] > most_voted:
                     most_voted = result[i]
                     most_voted_item = i
-            self._log.set(self._log.get()+"|4"+str(most_voted_item))
+            self._log.set(self._log.get()+"|4!|"+str(most_voted_item)+"\r\n")
+
+            self._proposal[_Proposer][pid][self.FINAL] = bytes.hex(
+                self.tx.hash)
 
             # 최종 결과에서 winning threshold 를 넘은 아이템이 있는지 확인
             if (most_voted/total_voting_power)*100 > self._iproposal[_Proposer][pid][self.WINNINGTH]:
-                self._log.set(self._log.get()+"|5-1")
+                self._log.set(self._log.get()+"|5-1!|"+"\r\n")
                 # winning th 넘음.
                 self._iproposal[_Proposer][pid][self.WINNER] = most_voted_item
                 # 결과에 따라 no result, result 결과 proposal에 저장.
                 self._proposal[_Proposer][pid][self.STATUS] = "Approved"
             else:
-                self._log.set(self._log.get()+"|5-2")
+                self._log.set(self._log.get()+"|5-2!|"+"\r\n")
                 # 결과에 따라 no result, result 결과 proposal에 저장.
-                self._proposal[_Proposer][pid][self.STATUS] = "Rejected"
+                self._proposal[_Proposer][pid][self.STATUS] = "Winning Rejected"
 
     @external(readonly=True)
     def Log(self) -> str:
@@ -216,6 +226,7 @@ class ICON_DAO(IconScoreBase):
             self._proposal[_Proposer][pid][self.STATUS] = "Voting"
             self._proposal[_Proposer][pid][self.EXPIREDATE] = _ExpireDate
             self._proposal[_Proposer][pid][self.SELECTITEM] = _SelectItems
+            self._proposal[_Proposer][pid][self.TX] = bytes.hex(self.tx.hash)
             self._ivote[_Proposer][pid][self.COUNT][self.COUNT] = 0
 
     @external(readonly=True)
@@ -239,6 +250,8 @@ class ICON_DAO(IconScoreBase):
         return_json[self.STATUS] = self._proposal[_Proposer][pid][self.STATUS]
         return_json[self.EXPIREDATE] = self._proposal[_Proposer][pid][self.EXPIREDATE]
         return_json[self.SELECTITEM] = self._proposal[_Proposer][pid][self.SELECTITEM]
+        return_json[self.TX] = self._proposal[_Proposer][pid][self.TX]
+        return_json[self.FINAL] = self._proposal[_Proposer][pid][self.FINAL]
         return_json[self.WINNER] = self._proposal[_Proposer][pid][self.WINNER]
 
         return json_dumps(return_json)
@@ -268,6 +281,8 @@ class ICON_DAO(IconScoreBase):
             json[self.STATUS] = self._proposal[_Proposer][pid][self.STATUS]
             json[self.EXPIREDATE] = self._proposal[_Proposer][pid][self.EXPIREDATE]
             json[self.SELECTITEM] = self._proposal[_Proposer][pid][self.SELECTITEM]
+            json[self.TX] = self._proposal[_Proposer][pid][self.TX]
+            json[self.FINAL] = self._proposal[_Proposer][pid][self.FINAL]
             json[self.WINNER] = self._proposal[_Proposer][pid][self.WINNER]
 
             return_json.append(json)

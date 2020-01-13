@@ -3,9 +3,11 @@ import { Link } from "react-router-dom";
 
 import { Paper, Typography, Grid, Button, TextField, Chip } from "@material-ui/core";
 import { Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
+import Pagination from "react-js-pagination";
 import clsx from "clsx";
 
 import useStyles from "./Style";
+import "./paginate.css";
 
 function Proposals(props: any) {
   console.log("Proposals props", props);
@@ -18,14 +20,14 @@ function Proposals(props: any) {
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
           <Grid item className={classes.item} xs={12} md={8} lg={8}>
-            <img src={props.PRepInfo.logo} width="100" />
+            <img src={props.PRepInfo.logo} width="100" alt={props.PRepInfo.name} />
             <a href={props.PRepInfo.website} style={{ textDecoration: "none", color: "#000000" }}>
               <Typography variant="h4">{props.PRepInfo.name}</Typography>
             </a>
           </Grid>
           <Grid item className={classes.item} xs={12} md={4} lg={4}>
-            <Typography variant="h6">Total Delegate :{props.PRepInfo.totalDelegation.toLocaleString()}</Typography>
-            <Typography variant="h6">My Voting Power :{props.PRepInfo.myVotingPower}</Typography>
+            <Typography variant="h6">Total Delegate :{props.PRepInfo.totalDelegation.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
+            <Typography variant="h6">My Voting Power :{props.PRepInfo.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
           </Grid>
         </Grid>
       </Paper>
@@ -106,6 +108,15 @@ function Proposals(props: any) {
               </Grid>
             );
           })}
+          <Grid item className={clsx(classes.item, classes.center)} xs={12} lg={12}>
+            <Pagination
+              activePage={props.activePage}
+              itemsCountPerPage={props.itemPerPage}
+              totalItemsCount={props.itemCount}
+              pageRangeDisplayed={5}
+              onChange={props.handlePageChange}
+            />
+          </Grid>
         </Grid>
       </Paper>
     </Grid >

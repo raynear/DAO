@@ -110,7 +110,7 @@ function NoteProposal(props: any) {
               Proposer : {props.data.proposal.prep.username}
             </Typography>
             <Typography variant="body1" color="textPrimary">
-              expire at : {props.data.proposal.expireAt}
+              Ending time : {new Date(props.data.proposal.expireAt).toString()}
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>

@@ -447,18 +447,24 @@ class Finalize(graphene.Mutation):
             "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal_id})
 
         vote_json = json.loads(resp_vote)
+        print("getVotes!!!!!!!", resp_vote)
         final_delegate_tx_list = []
         select_list = {}
         for a_vote in vote_json['vote']:
+            print("!ASDF!@")
             final_delegate_tx = get_final_delegate_tx(proposer,
                                                       a_vote['voter'], final_blockheight)
+            print("final_delegate_tx", final_delegate_tx)
             tx_amount = 0
             tx_id = ""
             for delegate in final_delegate_tx['data']['params']['delegations']:
+                print("delegate", delegate)
                 if delegate['address'] == result_json['address']:
                     tx_amount = delegate['value']
                     tx_id = final_delegate_tx['txHash']
 
+            print("tx_amount", tx_amount)
+            print("td_id", tx_id)
             final_delegate_tx_list.append(
                 {"voter": a_vote['voter'], "DelegateTxID": final_delegate_tx['txHash'], "DelegateAmount": tx_amount})
 
@@ -467,6 +473,7 @@ class Finalize(graphene.Mutation):
             else:
                 select_list[a_vote['selectItem']] = tx_amount
 
+        print("select_list!!!!!!!!!!!!!!!!!!!!", select_list)
         call = CallBuilder()\
             .to("cx0000000000000000000000000000000000000000")\
             .method("getPReps")\
@@ -479,6 +486,8 @@ class Finalize(graphene.Mutation):
         for a_prep in prep_result['preps']:
             if a_prep['address'] == result_json['address']:
                 prep_delegate = a_prep['delegated']
+
+        print("prep_delegate!!!!!!!!!!!!!!!!", prep_delegate)
 
         f = open("./key.pw", 'r')
         line = f.readline()
@@ -496,6 +505,8 @@ class Finalize(graphene.Mutation):
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
 
+        print("AAAAAAAAAAA")
+
         call = CallBuilder()\
             .to(SCORE)\
             .method("GetProposal")\
@@ -504,6 +515,8 @@ class Finalize(graphene.Mutation):
 
         proposal_result = icon_service.call(call)
         result_json = json.loads(proposal_result)
+
+        print("BBBBBBBBBBB")
 
         # proposal.finalizeTxHash = tx_hash
         # proposal.status = result_json['status']
@@ -556,10 +569,13 @@ def get_final_delegate_tx(prep_address, address, block_height):
                         {'address': address, 'page': 1, 'count': 1000})
     latest_tx = False
 
+    print("!!!!!!!", prep_address, address, block_height)
+    print("!@#", resp)
+
     if resp.status_code == 200:
-        resp_text_user1 = '{"data":[{"txHash":"0x9fb20f98bdcdc5287545ceae343c3302fc185b7154d3aac2dca833a7e7f60697","height":18,"createDate":"2019-09-21T02:35:34.000+0000","fromAddr":"hxf2d2bcaf5c3ec858b3a12af46d9f632ccea58210","toAddr":"cx0000000000000000000000000000000000000000","txType":"14","dataType":"call","amount":"0","fee":"0.001286","state":1,"errorMsg":null,"targetContractAddr":"cx0000000000000000000000000000000000000000","id":null}],"listSize":1,"totalSize":1,"result":"200","description":"success"}'
-        resp_text_user2 = '{"data":[{"txHash":"0xb992036a9125a95cfb9fa1308b8b77239f68add7d174b71ad2b8eb2195f12a1d","height":20,"createDate":"2019-09-21T02:35:34.000+0000","fromAddr":"hxf2d2bcaf5c3ec858b3a12af46d9f632ccea58210","toAddr":"cx0000000000000000000000000000000000000000","txType":"14","dataType":"call","amount":"0","fee":"0.001286","state":1,"errorMsg":null,"targetContractAddr":"cx0000000000000000000000000000000000000000","id":null}],"listSize":1,"totalSize":1,"result":"200","description":"success"}'
-        resp_text_user3 = '{"data":[{"txHash":"0xa6c32ea6f97b8860a98cc2086b86c23d3399a4b726224a6304c4d494d4331916","height":22,"createDate":"2019-09-21T02:35:34.000+0000","fromAddr":"hxf2d2bcaf5c3ec858b3a12af46d9f632ccea58210","toAddr":"cx0000000000000000000000000000000000000000","txType":"14","dataType":"call","amount":"0","fee":"0.001286","state":1,"errorMsg":null,"targetContractAddr":"cx0000000000000000000000000000000000000000","id":null}],"listSize":1,"totalSize":1,"result":"200","description":"success"}'
+        resp_text_user1 = '{"data":[{"txHash":"0x53c09a88f787c713f937e7b3a6b4261331d564b092f19d7f23152ca5ea4e269a","height":18,"createDate":"2019-09-21T02:35:34.000+0000","fromAddr":"hxf2d2bcaf5c3ec858b3a12af46d9f632ccea58210","toAddr":"cx0000000000000000000000000000000000000000","txType":"14","dataType":"call","amount":"0","fee":"0.001286","state":1,"errorMsg":null,"targetContractAddr":"cx0000000000000000000000000000000000000000","id":null}],"listSize":1,"totalSize":1,"result":"200","description":"success"}'
+        resp_text_user2 = '{"data":[{"txHash":"0xdb058eb0be66b330edc15aa3c1d63d9e356e2f53b1eed9e74ecc6b7addd2a050","height":20,"createDate":"2019-09-21T02:35:34.000+0000","fromAddr":"hxf2d2bcaf5c3ec858b3a12af46d9f632ccea58210","toAddr":"cx0000000000000000000000000000000000000000","txType":"14","dataType":"call","amount":"0","fee":"0.001286","state":1,"errorMsg":null,"targetContractAddr":"cx0000000000000000000000000000000000000000","id":null}],"listSize":1,"totalSize":1,"result":"200","description":"success"}'
+        resp_text_user3 = '{"data":[{"txHash":"0x138a104f65a1cf23b4fa53af75e8967e65c651111cefa743312efad6ed897d6b","height":22,"createDate":"2019-09-21T02:35:34.000+0000","fromAddr":"hxf2d2bcaf5c3ec858b3a12af46d9f632ccea58210","toAddr":"cx0000000000000000000000000000000000000000","txType":"14","dataType":"call","amount":"0","fee":"0.001286","state":1,"errorMsg":null,"targetContractAddr":"cx0000000000000000000000000000000000000000","id":null}],"listSize":1,"totalSize":1,"result":"200","description":"success"}'
         #
         #
         # tracker에 연동하는 부분은 local과 연동 안되므로 dummy로 대체함
@@ -575,12 +591,19 @@ def get_final_delegate_tx(prep_address, address, block_height):
         resp_json = json.loads(resp_text)
         tx_list = resp_json['data']
 
+        print("resp_json", resp_json)
+        print("tx_list", tx_list)
+
         icon_service = IconService(HTTPProvider(NETWORK, 3))
 
         for a_tx in tx_list:
+            print("a")
             if a_tx['height'] < block_height and a_tx['toAddr'] == "cx0000000000000000000000000000000000000000":
+                print("b")
                 tx_detail = icon_service.get_transaction(a_tx['txHash'])
+                print("tx_detail", tx_detail)
                 if tx_detail['data']['method'] == "setDelegation":
+                    print("c")
                     if latest_tx == False or latest_tx['blockHeight'] < tx_detail['blockHeight']:
                         # 1 번만 나오면 순서대로 동작하는거니 처음껄로 리턴하면 됨
                         print("!!!!!!!!!!!!!!!!!!!!!!")

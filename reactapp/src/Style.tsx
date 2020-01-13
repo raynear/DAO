@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     viewer: {
       height: "350px",
-      overflow: "scroll"
+      overflow: "auto"
     },
     papercontainer: {
       spacing: theme.spacing(0),
@@ -80,6 +80,9 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(1),
     },
+    table: {
+      minWidth: 650,
+    },
     center: {
       textAlign: "center"
     },
@@ -88,6 +91,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     right: {
       textAlign: "right"
+    },
+    pagination: {
+      flexShrink: 0,
+      marginLeft: theme.spacing(2.5)
     },
     selectLabel: {
       margin: theme.spacing(0),

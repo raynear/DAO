@@ -34,6 +34,10 @@ function ProposalsContainer(props: any) {
     myVotingPower: 0
   })
 
+  const itemCount = 1;
+  const perPage = 12;
+  const [activePage, setActivePage] = useState(1);
+
   const [proposals, setProposals] = useState([]);
   const [flag, setFlag] = useState(false);
 
@@ -47,8 +51,9 @@ function ProposalsContainer(props: any) {
     setValues(filterValues);
   }
 
-  const handlePageClick = (data: any) => {
-    console.log(data.selected);
+  const handlePageChange = (data: any) => {
+    console.log(data);
+    setActivePage(data);
   }
 
   async function getPRepInfo(PRepName: string) {
@@ -92,7 +97,7 @@ function ProposalsContainer(props: any) {
 
     let myVotingPower = 0;
     if (queryVal.data && queryVal.data.hasOwnProperty("viewer")) {
-      myVotingPower = await MyVotingPower(PRepName, queryVal.data.viewer.address);
+      myVotingPower = await MyVotingPower(PRepName, queryVal.data.viewer.iconAddress);
     }
 
     setPRepInfo({ name: getPRepResp.name, logo: detail.representative.logo.logo_1024, website: getPRepResp.website, totalDelegation: (parseInt(getPRepResp.delegated, 16) / 10 ** 18), myVotingPower: myVotingPower });
@@ -100,8 +105,11 @@ function ProposalsContainer(props: any) {
   }
 
   async function MyVotingPower(PRepName: string, address: string) {
+    // console.log(PRepName, address);
     const getPRepAddressResp = await json_rpc_call("GetVerifyInfoByID", { _ID: PRepName });
+    // console.log(getPRepAddressResp);
     const getPRepAddress = JSON.parse(getPRepAddressResp);
+    // console.log(getPRepAddress);
     const delegateResp = await governance_call("getDelegation", { "address": address })
     // console.log(delegateResp);
     let delegateList;
@@ -124,8 +132,8 @@ function ProposalsContainer(props: any) {
   if (flag === false) {
     if (proposals.length === 0) {
       json_rpc_call("GetProposals", { "_Proposer": selectedPRep, "_StartProposalID": (values.first).toString(), "_EndProposalID": (values.end).toString() }).then((result) => {
-        console.log("GetProposals");
-        console.log(result);
+        // console.log("GetProposals");
+        // console.log(result);
         if (result) {
           let Proposals = JSON.parse(result);
           if (Proposals.length > 0) {
@@ -152,8 +160,8 @@ function ProposalsContainer(props: any) {
 
     if (values.total === 0) {
       json_rpc_call("GetLastProposalID", { "_Proposer": selectedPRep }).then((result) => {
-        console.log("GetLastProposalID");
-        console.log(result);
+        // console.log("GetLastProposalID");
+        // console.log(result);
         setValues({ ...values, total: parseInt(result) })
       });
     }
@@ -167,8 +175,10 @@ function ProposalsContainer(props: any) {
   }
 
   if (pRepInfo.name === "") {
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     getPRepInfo(selectedPRep);
   }
+  // console.log("Viewer", queryVal);
 
   return (
     <Proposals
@@ -179,7 +189,10 @@ function ProposalsContainer(props: any) {
       filterValues={filterValues}
       queryFilters={queryFilters}
       handleChange={handleChange}
-      handlePageClick={handlePageClick}
+      activePage={activePage}
+      itemPerPage={perPage}
+      itemCount={itemCount}
+      handlePageChange={handlePageChange}
     />
   );
 }

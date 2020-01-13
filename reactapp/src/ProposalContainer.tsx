@@ -12,15 +12,26 @@ function ProposalContainer(props: any) {
   const PRep = props.match.params.PRep
   const id = props.match.params.ID;
 
-  const [proposal, setProposal] = useState<any>(false);
+  const [callResult, setCallResult] = useState<any>(false);
   const [voteSelect, setVoteSelect] = useState();
-  //  const [votedPower, setVotedPower] = useState<any>(false);
-  const [value, setValue] = useState({ load: false, myPRep: false, votedIdx: -1, owner: false, myVotingPower: 0 });
   const [voteData, setVoteData] = useState({ name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0 })
   const [votedPowerRate, setVotedPowerRate] = useState<any[]>([])
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [mutateVote] = useMutation(SET_VOTE);
   const [mutateFinalize] = useMutation(FINALIZE);
+
+  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   function Vote() {
     mutateVote({
@@ -51,12 +62,10 @@ function ProposalContainer(props: any) {
     setVoteSelect(parseInt((event.target as HTMLInputElement).value));
   };
 
+  function GetTotalVotingPower() {
+    // const delegateResp = await governance_call("getPRep", { address: prepAddress });
 
-
-  async function GetTotalVotingPower(prepAddress: string) {
-    const delegateResp = await governance_call("getPRep", { address: prepAddress });
-
-    return parseInt(delegateResp.delegated, 16) / 1000000000000000000;
+    return parseInt(callResult.getPRep.delegated, 16) / 1000000000000000000;
   }
 
   async function GetVotersVotingPower(prepAddress: string, voterAddress: string) {
@@ -72,35 +81,27 @@ function ProposalContainer(props: any) {
     return 0;
   }
 
-  async function isMyPRep(address: string) {
-    const delegateResp = await governance_call("getDelegation", { "address": address })
-    // console.log(delegateResp);
-    let delegateList;
-    try {
-      delegateList = delegateResp.delegations;
+  function getMyDelegation() {
+    if (callResult.getDelegation === false) {
+      return 0;
     }
-    catch {
-      delegateList = [];
-    }
-    for (let i = 0; i < delegateList.length; i++) {
-      if (delegateList[i].address === proposal.address) {
-        let myVotingPower = parseInt(delegateList[i].value, 16);
-        myVotingPower = (myVotingPower / 1000000000000000000);
-        return myVotingPower;
+    else {
+      const delegateList = callResult.getDelegation.delegations;
+      for (let i = 0; i < delegateList.length; i++) {
+        if (delegateList[i].address === callResult.GetProposal.address) {
+          let myVotingPower = parseInt(delegateList[i].value, 16);
+          myVotingPower = (myVotingPower / 1000000000000000000);
+          return myVotingPower;
+        }
       }
+      return 0;
     }
-    return 0;
   }
 
-  async function getVotedIdx() {
+  function getVotedIdx() {
+    const votes = callResult.GetVotes;
+
     let votedIdx = -1;
-    // console.log("getVotedIdx", queryVal.data.proposal.select_item);
-
-    const votestr = await json_rpc_call("GetVotes", { "_Proposer": PRep, "_ProposalID": id })
-    // console.log("VOTES!!!!!!!!!!!", votestr);
-    const votes = JSON.parse(votestr).vote;
-    // console.log("VOTES!!!", votes, queryViewer);
-
     for (let i = 0; i < votes.length; i++) {
       // console.log(i, votes[i], queryViewer.data.viewer.iconAddress);
       if (votes[i].voter === queryViewer.data.viewer.iconAddress) {
@@ -110,42 +111,27 @@ function ProposalContainer(props: any) {
     }
     // console.log(votedIdx);
     return votedIdx
-
-    /*
-      proposal.select_item.forEach((aVoteItem: any) => {
-      if (aVoteItem && aVoteItem.votemodelSet)
-        aVoteItem.votemodelSet.forEach((aVote: any) => {
-          // console.log("aVote", aVote);
-          if (queryViewer.data.viewer.username === aVote.voter.username) {
-            // console.log("aVote", aVote);
-            votedIdx = parseInt(aVoteItem.index);
-          }
-        });
-    });
-    */
   }
 
   function amIOwner() {
-    if (PRep === queryViewer.data.viewer.username) {
-      return true;
+    try {
+      if (PRep === queryViewer.data.viewer.username) {
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
     }
-    return false;
   }
 
   async function getVotedPowerRate(WinningTh: number) {
-    let VoteItem: any[] = [];
-    // let tmpList: number[] = [];
     let totalVotedPower = 0;
 
-    // let TotalDelegate = await GetTotalVotingPower(proposal.address);
-    const votestr = await json_rpc_call("GetVotes", { "_Proposer": PRep, "_ProposalID": id })
-    // console.log("#######################");
-    // console.log(votestr);
-    const votes = JSON.parse(votestr).vote;
+    const votes = callResult.GetVotes;
 
     let VotedPowerRate = [];
     let VotedPowers = [];
-    for (let i = 0; i < proposal.select_item.length; i++) {
+    for (let i = 0; i < callResult.GetProposal.select_item.length; i++) {
       VotedPowerRate[i] = [];
       VotedPowers[i] = 0;
     }
@@ -160,132 +146,119 @@ function ProposalContainer(props: any) {
       }
     }
 
-    // console.log("VotedPowerRate", VotedPowerRate);
+    console.log("VotedPowerRate", VotedPowerRate);
 
     for (let i = 0; i < VotedPowerRate.length; i++) {
       // console.log(i, VotedPowerRate[i]);
       let VotingPower = 0;
       for (let j = 0; j < VotedPowerRate[i].length; j++) {
-        VotingPower += await GetVotersVotingPower(proposal.address, VotedPowerRate[i][j]);
+        VotingPower += await GetVotersVotingPower(callResult.GetProposal.address, VotedPowerRate[i][j]);
       }
 
       VotedPowers[i] = (VotingPower / 1000000000000000000);
       totalVotedPower += (VotingPower / 1000000000000000000);
     }
+    console.log("VotedPowers", VotedPowers);
+    console.log("totalVotedPower", totalVotedPower);
 
-    let TotalDelegate = await GetTotalVotingPower(proposal.address);
+    let TotalDelegate = GetTotalVotingPower();
 
-    let tmpVoteData = voteData;
-    tmpVoteData.voted = Math.round((totalVotedPower / TotalDelegate) * 100);
-    tmpVoteData.th = proposal.electoral_threshold - tmpVoteData.voted;
-    if (tmpVoteData.th < 0) tmpVoteData.th = 0;
-    tmpVoteData.totalVoted = totalVotedPower;
-    tmpVoteData.totalDelegate = TotalDelegate;
-    setVoteData(tmpVoteData);
+    console.log("TotalDelegate", TotalDelegate);
 
-    // console.log("VotedPowers", VotedPowers);
-
-    for (let i = 0; i < VotedPowers.length; i++) {
-      const votedRate = Math.round((VotedPowers[i] / totalVotedPower) * 100);
-      VoteItem.push({ name: proposal.select_item[i], voted: votedRate ? votedRate : 0, left: votedRate ? (votedRate > WinningTh ? 0 : WinningTh - votedRate) : 0, icx: VotedPowers[i] });
-    }
-
-    return VoteItem;
-
-
-    /*
-    for (const selectItemKey in proposal.select_item) {
-      const aSelectItem = proposal.select_item[selectItemKey];
-      let VotingPower = 0;
-
-      let test: any[] = [];
-      if (aSelectItem['votemodelSet']) {
-        test = aSelectItem['votemodelSet'];
-      }
-      for (const VoteKey in test) {
-        const aVote = test[VoteKey];
-        VotingPower += await GetVotersVotingPower(proposal.address, aVote.voter.iconAddress);
-        // console.log("!@#!@#", VotingPower);
-      }
-
-      tmpList.push((VotingPower / 1000000000000000000));
-      totalVotedPower += (VotingPower / 1000000000000000000);
-    }
-
-    for (let i = 0; i < tmpList.length; i++) {
-      const votedRate = Math.round((tmpList[i] / totalVotedPower) * 100);
-      VoteItem.push({ name: proposal.select_item[i].contents, voted: votedRate, left: votedRate > WinningTh ? 0 : WinningTh - votedRate });
-    }
-
-    return VoteItem;
-    */
+    return { VotedPowerRate: VotedPowerRate, VotedPowers: VotedPowers, totalVotedPower: totalVotedPower, TotalDelegate: TotalDelegate }
   }
 
-  if (proposal === false) {
-    json_rpc_call("GetProposal", { "_Proposer": PRep, "_ProposalID": id }).then((result) => {
-      // console.log(result);
-      if (result) {
-        let Proposal = JSON.parse(result);
-        // console.log("proposal", Proposal);
-        let aProposal: any = {};
-        if (Proposal.subject !== "") {
-          aProposal['id'] = Proposal.ID;
-          aProposal['subject'] = Proposal.subject;
-          aProposal['contents'] = Proposal.contents;
-          aProposal['address'] = Proposal.address;
-          aProposal['status'] = Proposal.status;
-          aProposal['expire_date'] = Proposal.expire_date;
-          aProposal['winning_threshold'] = Proposal.winning_threshold;
-          aProposal['electoral_threshold'] = Proposal.electoral_threshold;
-          aProposal['winner'] = Proposal.winner;
-          let items = JSON.parse(Proposal.select_item)
-          aProposal['select_item'] = items;
+  async function Call() {
+    if (callResult) return;
 
-          // console.log(aProposal);
-          setProposal(aProposal);
+    let votes = {};
+    const GetVotesResp = await json_rpc_call("GetVotes", { "_Proposer": PRep, "_ProposalID": id });
+    console.log("GetVotesResp", GetVotesResp);
+    if (GetVotesResp) {
+      votes = JSON.parse(GetVotesResp).vote;
+    }
+
+    const GetProposalResp = await json_rpc_call("GetProposal", { "_Proposer": PRep, "_ProposalID": id })
+    console.log("GetProposalResp", GetProposalResp);
+    if (GetProposalResp) {
+      let Proposal = JSON.parse(GetProposalResp);
+      // console.log("proposal", Proposal);
+      let aProposal: any = {};
+      if (Proposal.subject !== "") {
+        aProposal['id'] = Proposal.ID;
+        aProposal['subject'] = Proposal.subject;
+        aProposal['contents'] = Proposal.contents;
+        aProposal['address'] = Proposal.address;
+        aProposal['status'] = Proposal.status;
+        aProposal['expire_date'] = Proposal.expire_date;
+        aProposal['winning_threshold'] = Proposal.winning_threshold;
+        aProposal['electoral_threshold'] = Proposal.electoral_threshold;
+        aProposal['transaction'] = Proposal.transaction;
+        aProposal['final'] = Proposal.final;
+        aProposal['winner'] = Proposal.winner;
+        let items = JSON.parse(Proposal.select_item)
+        aProposal['select_item'] = items;
+
+
+        const GetPRepResp = await governance_call("getPRep", { address: aProposal.address });
+        console.log("GetPRepResp", GetPRepResp);
+
+        let GetDelegationResp: any = false;
+        if (queryViewer.data && queryViewer.data.viewer) {
+          GetDelegationResp = await governance_call("getDelegation", { address: queryViewer.data.viewer.iconAddress });
+          console.log("GetDelegationResp", GetDelegationResp);
         }
+        setCallResult({ GetVotes: votes, GetProposal: aProposal, getPRep: GetPRepResp, getDelegation: GetDelegationResp });
       }
-    });
+    }
   }
 
   const queryViewer = useQuery(VIEWER);
-  //  const queryVal = useQuery(GET_PROPOSAL, { variables: { id: id } });
 
-  if (queryViewer.loading || proposal === false) {
+  if (queryViewer.loading) {
     return <p>loading</p>
   }
-  // console.log("___________________________________________");
-  // console.log(queryVal, queryViewer);
 
+  if (callResult === false) {
+    Call();
+    return <p>loading</p>;
+  }
+  console.log("callResult!!!!!", callResult);
 
-  if (queryViewer.data) {
-    if (!value.load) {
-      isMyPRep(queryViewer.data.viewer.iconAddress).then((result) => {
-        // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", result);
-        getVotedIdx().then((votedIdx) => {
-          setValue({ load: true, myPRep: !(result === 0), votedIdx: (votedIdx === undefined) ? -1 : votedIdx, owner: amIOwner(), myVotingPower: result });
-        });
-      });
-    }
+  // logined?
+  let myDelegation = 0;
+  let votedIdx = -1;
+  if (queryViewer.data && queryViewer.data.viewer) {
+    myDelegation = getMyDelegation();
+    votedIdx = getVotedIdx();
   }
 
-  // console.log("condition value", myPRep, votedIdx, owner);
-  //  getVotedPowerList().then((result) => {
-  //    if (!votedPower) {
-  //      setVotedPower(result);
-  //      // console.log("hahahaha", votedPower);
-  //    }
-  //  });
+  const value = { myPRep: !(myDelegation === 0), votedIdx: votedIdx, owner: amIOwner(), myVotingPower: myDelegation };
 
-  getVotedPowerRate(proposal.winning_threshold).then((result) => {
-    if (votedPowerRate[0] === undefined) {
-      setVotedPowerRate(result);
-      // console.log("hahahaha", votedPower);
-    }
-  });
-
+  console.log("votedPowerRate", votedPowerRate, votedPowerRate[0]);
   if (votedPowerRate[0] === undefined) {
-    return <></>;
+    const WinningTh = callResult.GetProposal.winning_threshold;
+    getVotedPowerRate(WinningTh).then((r) => {
+      console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+      console.log("r", r);
+      if (voteData.th === 0) {
+        let tmpVoteData = voteData;
+        tmpVoteData.voted = Math.round((r.totalVotedPower / r.TotalDelegate) * 100);
+        tmpVoteData.th = callResult.GetProposal.electoral_threshold - tmpVoteData.voted;
+        if (tmpVoteData.th < 0) tmpVoteData.th = 0;
+        tmpVoteData.totalVoted = r.totalVotedPower;
+        tmpVoteData.totalDelegate = r.TotalDelegate;
+        setVoteData(tmpVoteData);
+      }
+
+      let VoteItem: any[] = [];
+      for (let i = 0; i < r.VotedPowers.length; i++) {
+        const votedRate = Math.round((r.VotedPowers[i] / r.totalVotedPower) * 100);
+        VoteItem.push({ name: callResult.GetProposal.select_item[i], voted: votedRate ? votedRate : 0, left: votedRate ? (votedRate > WinningTh ? 0 : WinningTh - votedRate) : 0, icx: r.VotedPowers[i] });
+      }
+      setVotedPowerRate(VoteItem);
+    });
+    return <p>Loading...</p>;
   }
 
   return (
@@ -300,10 +273,15 @@ function ProposalContainer(props: any) {
       back={back}
       votedPowerRate={votedPowerRate}
       voteData={voteData}
+      votes={callResult.GetVotes}
       Vote={Vote}
       FinalizeVote={FinalizeVote}
       handleChange={handleChange}
-      proposal={proposal}
+      handleChangePage={handleChangePage}
+      handleChangeRowsPerPage={handleChangeRowsPerPage}
+      page={page}
+      rowsPerPage={rowsPerPage}
+      proposal={callResult.GetProposal}
     />
   );
 }
