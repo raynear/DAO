@@ -63,7 +63,7 @@ function SignIn(props: any) {
             <Button
               variant="contained"
               color="secondary"
-              href="https://localhost:8080/oauth/login/kakao"
+              href="https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080/oauth/login/kakao"
             >
               Kakao Login
             </Button>

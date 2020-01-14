@@ -87,7 +87,7 @@ ROOT_URLCONF = "DAO.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR,'reactapp','build')],
+        "DIRS": [os.path.join(BASE_DIR, 'reactapp', 'build')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -103,7 +103,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "DAO.wsgi.application"
-
 
 
 # Database
@@ -147,7 +146,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'reactapp', 'build', 'static'),]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'reactapp', 'build', 'static'), ]
 
 
 # auth
@@ -210,8 +209,8 @@ CORS_REPLACE_HTTPS_REFERER = True   # react 합치고 난 뒤에 제거해야됨
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:3000",
     "https://localhost:3000",
-    "http://localhost:8080",
-    "https://localhost:8080",
+    "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080",
+    "https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080",
     "http://127.0.0.1:3000",
     "https://127.0.0.1:3000",
     "http://127.0.0.1:8080",
@@ -219,4 +218,5 @@ CORS_ORIGIN_WHITELIST = (
 )
 
 CSRF_COOKIE_SECURE = False
-CSRF_TRUSTED_ORIGINS = ["https://localhost:3000", "http://localhost:3000"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:3000", "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:3000"]
