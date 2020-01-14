@@ -33,37 +33,6 @@ function Proposals(props: any) {
       </Paper>
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
-          <Grid item className={classes.item} xs={12} lg={12}>
-            <Grid container className={classes.container} spacing={0}>
-              <Grid item className={classes.item} xs={4} lg={4}>
-                <TextField
-                  className={classes.textField}
-                  label="first"
-                  type="number"
-                  value={props.filterValues.first}
-                  onChange={props.handleChange("first")}
-                />
-              </Grid>
-              <Grid item className={classes.item} xs={4} lg={4}>
-                <TextField
-                  className={classes.textField}
-                  label="end"
-                  type="number"
-                  value={props.filterValues.end}
-                  onChange={props.handleChange("end")}
-                />
-              </Grid>
-              <Grid item className={clsx(classes.item, classes.center)} xs={4} lg={4}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => props.queryFilters()}
-                >
-                  read!
-                </Button>
-              </Grid>
-            </Grid>
-          </Grid>
           {props.proposals.map((item: any, idx: number) => {
             let icon;
             if (item.status === "Approved") {
