@@ -51,6 +51,7 @@ function ProposalContainer(props: any) {
     }).then(finalizeResult => {
       // console.log("finalize", finalizeResult);
     });
+    window.location.reload();
   }
 
   const back = () => {
