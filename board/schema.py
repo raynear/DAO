@@ -199,7 +199,7 @@ class PublishProposal(graphene.Mutation):
         f = open("./key.pw", 'r')
         line = f.readline()
         wallet = KeyWallet.load(
-            "./key_store_raynear", line)
+            "./key_store_raynear", "p@ssw0rd")
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
@@ -248,7 +248,7 @@ class VoteProposal(graphene.Mutation):
 
         f = open("./key.pw", 'r')
         line = f.readline()
-        wallet = KeyWallet.load("./key_store_raynear", line)
+        wallet = KeyWallet.load("./key_store_raynear", "p@ssw0rd")
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
@@ -483,7 +483,7 @@ class Finalize(graphene.Mutation):
 
         f = open("./key.pw", 'r')
         line = f.readline()
-        wallet = KeyWallet.load("./key_store_raynear", line)
+        wallet = KeyWallet.load("./key_store_raynear", "p@ssw0rd")
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
