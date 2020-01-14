@@ -219,4 +219,4 @@ CORS_ORIGIN_WHITELIST = (
 
 CSRF_COOKIE_SECURE = False
 CSRF_TRUSTED_ORIGINS = [
-    "https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:3000", "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:3000"]
+    "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080", "https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080"]
