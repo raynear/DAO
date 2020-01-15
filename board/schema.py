@@ -435,7 +435,7 @@ class Finalize(graphene.Mutation):
         final_blockheight = find_blockheight_from_datetime(
             str(result_json['expire_date']))
 
-        resp_vote = json_rpc_call(
+        resp_vote = jsonRpcCall(
             "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal_id})
 
         vote_json = json.loads(resp_vote)
@@ -604,7 +604,7 @@ def get_final_delegate_tx(prep_address, address, block_height):
         return latest_tx
 
 
-def json_rpc_call(method, params):
+def jsonRpcCall(method, params):
     icon_service = IconService(HTTPProvider(NETWORK, 3))
     call = CallBuilder()\
         .to(SCORE)\
@@ -618,7 +618,7 @@ def json_rpc_call(method, params):
 def finalize_vote(proposer, proposal_id, expire_datetime):
     final_blockheight = find_blockheight_from_datetime(expire_datetime)
 
-    resp_vote = json_rpc_call(
+    resp_vote = jsonRpcCall(
         "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal_id})
     vote_json = json.loads(resp_vote)
     final_delegate_tx_list = []

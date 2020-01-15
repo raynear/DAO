@@ -7,7 +7,7 @@ import { ApolloProvider } from "react-apollo";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
 import { GET_LOCAL_ME } from "./GQL";
-import { selected_icon_service, json_rpc_send_tx } from "./IconConnect";
+import { selectedIconService, jsonRpcSendTx } from "./IconConnect";
 import Cookies from "js-cookie";
 
 import LayoutContainer from "./LayoutContainer";
@@ -66,10 +66,10 @@ function App(props: any) {
   function sendVerify(address: string) {
     client.query({ query: GET_LOCAL_ME }).then(async (result) => {
       // console.log("reload OK");
-      let lastBlock = await selected_icon_service.getBlock('latest').execute();
-      let params = { "_BlockHash": lastBlock.blockHash, "_ID": result.data.username };
+      const lastBlock = await selectedIconService.getBlock('latest').execute();
+      const params = { "_BlockHash": lastBlock.blockHash, "_ID": result.data.username };
 
-      json_rpc_send_tx(address, "Verify", params);
+      jsonRpcSendTx(address, "Verify", params);
     })
   }
 

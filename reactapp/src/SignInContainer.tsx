@@ -16,7 +16,7 @@ function SignInContainer(props: any) {
 
   const [mutateTokenAuth] = useMutation(TOKEN_AUTH);
 
-  function LogIn(username: string, password: string) {
+  function logIn(username: string, password: string) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(() => {
@@ -45,14 +45,14 @@ function SignInContainer(props: any) {
     )
   });
 
-  function ValidateSignIn() {
+  function validateSignIn() {
     if (!validator.allValid()) {
       validator.showMessages();
       forceUpdate();
       return;
     } else {
       // console.log("go to login");
-      LogIn(signInfo.username, signInfo.password);
+      logIn(signInfo.username, signInfo.password);
     }
   }
 
@@ -65,7 +65,7 @@ function SignInContainer(props: any) {
       signInfo={signInfo}
       handleSignInfo={handleSignInfo}
       validator={validator}
-      ValidateSignIn={ValidateSignIn}
+      validateSignIn={validateSignIn}
     />
   );
 }

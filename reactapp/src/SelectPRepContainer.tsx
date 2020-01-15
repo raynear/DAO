@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks"
 import { GET_PREPS } from "./GQL";
-import { json_rpc_call } from "./IconConnect";
+import { jsonRpcCall } from "./IconConnect";
 import SelectPRep from "./SelectPRep";
 
 function SelectPRepContainer(props: any) {
@@ -16,9 +16,9 @@ function SelectPRepContainer(props: any) {
   const data = queryVal.data;
   // console.log(data);
   if (data && data.username) {
-    json_rpc_call("GetVerifyInfoByID", { "_ID": data.username }).then((result) => {
+    jsonRpcCall("GetVerifyInfoByID", { "_ID": data.username }).then((result) => {
       // console.log("result", result);
-      json_rpc_call("getDelegation", { "address": result.data.ID }).then((result2) => {
+      jsonRpcCall("getDelegation", { "address": result.data.ID }).then((result2) => {
         // console.log("result2", result2);
       });
     });

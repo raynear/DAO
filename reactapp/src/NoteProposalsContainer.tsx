@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
 import { GET_PROPOSALS } from "./GQL";
-import { json_rpc_call } from "./IconConnect";
+import { jsonRpcCall } from "./IconConnect";
 
 import NoteProposals from "./NoteProposals";
 
@@ -47,7 +47,7 @@ function NoteProposalsContainer(props: any) {
 
   if (!flag) {
     if (values.total === 0) {
-      json_rpc_call("GetLastProposalID", { "_Proposer": selectedPRep }).then((result) => {
+      jsonRpcCall("GetLastProposalID", { "_Proposer": selectedPRep }).then((result) => {
         // console.log("GetLastProposalID");
         // console.log(result);
         setValues({ ...values, total: parseInt(result) })
@@ -70,7 +70,7 @@ function NoteProposalsContainer(props: any) {
   return (
     <NoteProposals
       {...queryVal}
-      PRep={selectedPRep}
+      pRep={selectedPRep}
       values={values}
       filterValues={filterValues}
       queryFilters={queryFilters}

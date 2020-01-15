@@ -17,15 +17,14 @@ function Proposal(props: any) {
 
   const classes = useStyles();
 
-
-  interface ITablePaginationActionsProps {
+  interface TablePaginationActionsProps {
     count: number;
     page: number;
     rowsPerPage: number;
     onChangePage: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
   }
 
-  function TablePaginationActions(props: ITablePaginationActionsProps) {
+  function tablePaginationActions(props: TablePaginationActionsProps) {
     const classes = useStyles();
     const theme = useTheme();
     const { count, page, rowsPerPage, onChangePage } = props;
@@ -161,7 +160,7 @@ function Proposal(props: any) {
         variant="contained"
         color="primary"
         disabled={props.voteSelect === -1}
-        onClick={props.Vote}
+        onClick={props.vote}
       >
         Vote
       </Button>
@@ -173,7 +172,7 @@ function Proposal(props: any) {
       <Button
         variant="contained"
         color="primary"
-        onClick={props.FinalizeVote}
+        onClick={props.finalizeVote}
       >
         Finalize Vote
       </Button>
@@ -199,16 +198,16 @@ function Proposal(props: any) {
     return <></>;
   }
 
-  function FacebookShare() {
+  function facebookShare() {
     window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(document.URL) + '&t=' + encodeURIComponent(document.title), 'facebooksharedialog', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');
   }
 
-  function TwitterShare() {
+  function twitterShare() {
     window.open('https://twitter.com/intent/tweet?text=[%EA%B3%B5%EC%9C%A0]%20' + encodeURIComponent(document.URL) + '%20-%20' + encodeURIComponent(document.title), 'twittersharedialog', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');
   }
-  const EndTime = new Date(props.proposal.expire_date);
-  const LeftHour = Math.floor((EndTime.getTime() - Date.now()) / 3600000);
-  const LeftMinute = Math.floor(((EndTime.getTime() - Date.now()) / 60000) - (LeftHour * 60));
+  const endTime = new Date(props.proposal.expire_date);
+  const leftHour = Math.floor((endTime.getTime() - Date.now()) / 3600000);
+  const leftMinute = Math.floor(((endTime.getTime() - Date.now()) / 60000) - (leftHour * 60));
 
   if (props.loading) return <p>Loading...</p>;
   if (props.error) return <p>Error!:</p>;
@@ -256,16 +255,16 @@ function Proposal(props: any) {
                   </b>
                 </Typography>
               </div>
-              <div onClick={TwitterShare} style={{ float: "right" }}><img src={twitterImg} width="40" alt="트위터 공유하기" /></div>
-              <div onClick={FacebookShare} style={{ float: "right" }}><img src={facebookImg} width="40" alt="페이스북 공유하기" /></div>
+              <div onClick={twitterShare} style={{ float: "right" }}><img src={twitterImg} width="40" alt="트위터 공유하기" /></div>
+              <div onClick={facebookShare} style={{ float: "right" }}><img src={facebookImg} width="40" alt="페이스북 공유하기" /></div>
             </div>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="body1" color="textPrimary">
-              Proposer : {props.PRep}
+              Proposer : {props.pRep}
             </Typography>
             <Typography variant="body1" color="textPrimary">
-              Ending Time : {EndTime.toString()} {LeftHour > 0 && "(" + LeftHour + " Hour " + LeftMinute + " Minute Left)"}
+              Ending Time : {endTime.toString()} {leftHour > 0 && "(" + leftHour + " Hour " + leftMinute + " Minute Left)"}
             </Typography>
             <Typography variant="body1" color="textPrimary">
               Transaction : <a href={"https://tracker.icon.foundation/transaction/0x" + props.proposal.transaction} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.transaction}</a>
@@ -418,7 +417,7 @@ function Proposal(props: any) {
                     }}
                     onChangePage={props.handleChangePage}
                     onChangeRowsPerPage={props.handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
+                    ActionsComponent={tablePaginationActions}
                   />
                 </TableRow>
               </TableFooter>

@@ -140,7 +140,7 @@ function EditProposalContainer(props: any) {
       return item;
     });
 
-    let mutate_var: { [index: string]: any } = {
+    const mutate_var: { [index: string]: any } = {
       variables: {
         proposalId: values.id,
         subject: values.subject,
@@ -174,17 +174,17 @@ function EditProposalContainer(props: any) {
   })
 
   if (queryVal.data && queryVal.data.proposal && values.id === -1) {
-    let proposal = queryVal.data.proposal;
-    let date = new Date(proposal.expireAt);
-    let now = new Date();
-    let diff = (date.getTime() - now.getTime()) / 1000;
+    const proposal = queryVal.data.proposal;
+    const date = new Date(proposal.expireAt);
+    const now = new Date();
+    const diff = (date.getTime() - now.getTime()) / 1000;
 
-    let DayDiff = 0;
-    let HourDiff = 0;
+    let dayDiff = 0;
+    let hourDiff = 0;
 
     if (diff > 0) {
-      DayDiff = Math.floor(diff / (60 * 60 * 24));
-      HourDiff = Math.floor((diff - (DayDiff * 60 * 60 * 24)) / (60 * 60));
+      dayDiff = Math.floor(diff / (60 * 60 * 24));
+      hourDiff = Math.floor((diff - (dayDiff * 60 * 60 * 24)) / (60 * 60));
     }
 
     setValues({
@@ -193,8 +193,8 @@ function EditProposalContainer(props: any) {
       winningTh: proposal.winningTh,
       subject: proposal.subject,
       contents: proposal.contents,
-      days: DayDiff,
-      hours: HourDiff,
+      days: dayDiff,
+      hours: hourDiff,
       expireAt: date,
       selectitemmodelSet: []
     });

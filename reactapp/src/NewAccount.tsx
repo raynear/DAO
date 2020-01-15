@@ -55,10 +55,10 @@ function NewAccount(props: any) {
           onChange={props.handleSignInfo}
           onKeyPress={e => {
             if (e.key === "Enter") {
-              props.SignUp();
+              props.signUp();
             }
           }}
-          helperText={props.SameValidate([
+          helperText={props.sameValidate([
             props.signInfo.password,
             props.signInfo.password2
           ])}
@@ -67,7 +67,7 @@ function NewAccount(props: any) {
       <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
         <br />
         <br />
-        <Button variant="contained" color="primary" onClick={props.SignUp}>
+        <Button variant="contained" color="primary" onClick={props.signUp}>
           Sign up
         </Button>
         <br />

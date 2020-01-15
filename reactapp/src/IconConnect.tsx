@@ -1,47 +1,47 @@
 import IconService from 'icon-sdk-js';
 
-const MAIN_NET = "https://ctz.solidwallet.io/api/v3";
-// const MAIN_CONTRACT = "cx_main_net_contract";
-const TEST_NET = "https://bicon.net.solidwallet.io/api/v3"
-//const TEST_CONTRACT = "cx938d363b50736607821a7f0346d0fb4f8e2a2514";
-const LOCAL_NET = "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:9000/api/v3";
-const LOCAL_CONTRACT = "cx15695d9cde317a272ed419f8234148af4304594c";
-const main_provider = new IconService.HttpProvider(MAIN_NET);
-export const main_icon_service = new IconService(main_provider);
-const local_provider = new IconService.HttpProvider(LOCAL_NET);
-export const local_icon_service = new IconService(local_provider);
-const test_provider = new IconService.HttpProvider(TEST_NET);
-export const test_icon_service = new IconService(test_provider);
+const MAINNET = "https://ctz.solidwallet.io/api/v3";
+// const MAINCONTRACT = "cx_main_net_contract";
+const TESTNET = "https://bicon.net.solidwallet.io/api/v3"
+//const TESTCONTRACT = "cx938d363b50736607821a7f0346d0fb4f8e2a2514";
+const LOCALNET = "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:9000/api/v3";
+const LOCALCONTRACT = "cx15695d9cde317a272ed419f8234148af4304594c";
+const mainProvider = new IconService.HttpProvider(MAINNET);
+export const mainIconService = new IconService(mainProvider);
+const localProvider = new IconService.HttpProvider(LOCALNET);
+export const localIconService = new IconService(localProvider);
+const testProvider = new IconService.HttpProvider(TESTNET);
+export const testIconService = new IconService(testProvider);
 export const IconBuilder = IconService.IconBuilder;
 export const IconConverter = IconService.IconConverter;
 
-const SELECTED_CONTRACT = LOCAL_CONTRACT;
-export const selected_icon_service = local_icon_service
+const SELECTEDCONTRACT = LOCALCONTRACT;
+export const selectedIconService = localIconService
 
-export async function json_rpc_call(method_name: string, params: any) {
+export async function jsonRpcCall(method_name: string, params: any) {
   // console.log("params", params);
   var callBuilder = new IconBuilder.CallBuilder();
   var callObj = callBuilder
-    .to(SELECTED_CONTRACT)
+    .to(SELECTEDCONTRACT)
     .method(method_name)
     .params(params)
     .build();
 
   // console.log(callObj);
-  return await selected_icon_service.call(callObj).execute();
+  return await selectedIconService.call(callObj).execute();
 }
 
-export async function json_rpc_send_tx(from_wallet: string, method_name: string, params: any) {
+export async function jsonRpcSendTx(fromWallet: string, methodName: string, params: any) {
   let timestamp = new Date();
   var txBuilder = new IconBuilder.CallTransactionBuilder();
   var txObj = txBuilder
-    .from(from_wallet)
-    .to(SELECTED_CONTRACT)
+    .from(fromWallet)
+    .to(SELECTEDCONTRACT)
     .nid(IconConverter.toBigNumber("3"))
     .version(IconConverter.toBigNumber("3"))
     .stepLimit(IconConverter.toBigNumber("100000000"))
     .timestamp(timestamp.valueOf() * 1000)
-    .method(method_name)
+    .method(methodName)
     .params(params)
     .build();
   const scoreData = JSON.stringify({
@@ -62,30 +62,30 @@ export async function json_rpc_send_tx(from_wallet: string, method_name: string,
   window.dispatchEvent(customEvent);
 }
 
-export async function governance_call(method_name: string, params: any) {
+export async function governanceCall(methodName: string, params: any) {
   // console.log("params", params);
   var callBuilder = new IconBuilder.CallBuilder();
   var callObj = callBuilder
     .to("cx0000000000000000000000000000000000000000")
-    .method(method_name)
+    .method(methodName)
     .params(params)
     .build();
 
   // console.log(callObj);
-  return await selected_icon_service.call(callObj).execute();
+  return await selectedIconService.call(callObj).execute();
 }
 
-export async function governance_send_tx(from_wallet: string, method_name: string, params: any) {
+export async function governanceSendTx(fromWallet: string, methodName: string, params: any) {
   let timestamp = new Date();
   var txBuilder = new IconBuilder.CallTransactionBuilder();
   var txObj = txBuilder
-    .from(from_wallet)
+    .from(fromWallet)
     .to("cx0000000000000000000000000000000000000000")
     .nid(IconConverter.toBigNumber("3"))
     .version(IconConverter.toBigNumber("3"))
     .stepLimit(IconConverter.toBigNumber("100000000"))
     .timestamp(timestamp.valueOf() * 1000)
-    .method(method_name)
+    .method(methodName)
     .params(params)
     .build();
   const scoreData = JSON.stringify({
@@ -106,30 +106,30 @@ export async function governance_send_tx(from_wallet: string, method_name: strin
   window.dispatchEvent(customEvent);
 }
 
-export async function network_proposal_call(method_name: string, params: any) {
+export async function networkProposalCall(methodName: string, params: any) {
   // console.log("params", params);
   var callBuilder = new IconBuilder.CallBuilder();
   var callObj = callBuilder
     .to("cx0000000000000000000000000000000000000001")
-    .method(method_name)
+    .method(methodName)
     .params(params)
     .build();
 
   // console.log(callObj);
-  return await selected_icon_service.call(callObj).execute();
+  return await selectedIconService.call(callObj).execute();
 }
 
-export async function network_proposal_send_tx(from_wallet: string, method_name: string, params: any) {
+export async function networkProposalSendTx(fromWallet: string, methodName: string, params: any) {
   let timestamp = new Date();
   var txBuilder = new IconBuilder.CallTransactionBuilder();
   var txObj = txBuilder
-    .from(from_wallet)
+    .from(fromWallet)
     .to("cx0000000000000000000000000000000000000001")
     .nid(IconConverter.toBigNumber("3"))
     .version(IconConverter.toBigNumber("3"))
     .stepLimit(IconConverter.toBigNumber("100000000"))
     .timestamp(timestamp.valueOf() * 1000)
-    .method(method_name)
+    .method(methodName)
     .params(params)
     .build();
   const scoreData = JSON.stringify({

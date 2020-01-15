@@ -48,7 +48,7 @@ function NoteProposals(props: any) {
                     <b>{item.id}.</b>
                   </Typography>
                   <Typography variant="h5" color="textPrimary" gutterBottom>
-                    <Link className={classes.link} to={"/NoteProposal/" + props.PRep + "/" + item.id} color="textPrimary">
+                    <Link className={classes.link} to={"/NoteProposal/" + props.pRep + "/" + item.id} color="textPrimary">
                       {item.subject}
                     </Link>
                   </Typography>

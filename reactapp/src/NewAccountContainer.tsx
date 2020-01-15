@@ -40,7 +40,7 @@ function NewAccountContainer(props: any) {
     )
   });
 
-  function SameValidate(val: any) {
+  function sameValidate(val: any) {
     if (val[0] === val[1]) {
       return;
     } else {
@@ -52,7 +52,7 @@ function NewAccountContainer(props: any) {
     }
   }
 
-  async function NewUser(username: string, password: string) {
+  async function newUser(username: string, password: string) {
     try {
       await mutateSetUser({
         variables: { username: username, password: password }
@@ -65,18 +65,9 @@ function NewAccountContainer(props: any) {
       return false;
     }
     return true;
-    /*.then(result => {
-      // console.log(result);
-    }).catch(e => {
-      // console.log("error?", e);
-      if (e.toString().indexOf("UNIQUE")) {
-        alert("id exist. make another id")
-        return false;
-      }
-    });*/
   }
 
-  function LogIn(username: string, password: string) {
+  function logIn(username: string, password: string) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(result => {
@@ -89,16 +80,16 @@ function NewAccountContainer(props: any) {
     });
   }
 
-  async function SignUp() {
+  async function signUp() {
     if (!validator.allValid()) {
       validator.showMessages();
       forceUpdate();
       return;
     } else {
-      let result = await NewUser(signInfo.username, signInfo.password);
+      let result = await newUser(signInfo.username, signInfo.password);
       if (result) {
         // console.log(result);
-        LogIn(signInfo.username, signInfo.password);
+        logIn(signInfo.username, signInfo.password);
         props.setActiveStep(props.activeStep + 1);
       }
     }
@@ -112,8 +103,8 @@ function NewAccountContainer(props: any) {
     signInfo={signInfo}
     handleSignInfo={handleSignInfo}
     validator={validator}
-    SignUp={SignUp}
-    SameValidate={SameValidate}
+    signUp={signUp}
+    sameValidate={sameValidate}
   />);
 }
 

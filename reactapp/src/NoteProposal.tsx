@@ -51,7 +51,7 @@ function NoteProposal(props: any) {
         <Button
           variant="contained"
           color="primary"
-          onClick={props.Publish}
+          onClick={props.publish}
         >
           Publish
         </Button>

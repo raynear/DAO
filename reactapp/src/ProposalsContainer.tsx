@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
 import { VIEWER } from "./GQL";
-import { json_rpc_call, governance_call } from "./IconConnect";
+import { jsonRpcCall, governanceCall } from "./IconConnect";
 // import axios from "axios";
 
 import Proposals from "./Proposals";
@@ -56,12 +56,12 @@ function ProposalsContainer(props: any) {
     setActivePage(data);
   }
 
-  async function getPRepInfo(PRepName: string) {
-    const getPRepAddressResp = await json_rpc_call("GetVerifyInfoByID", { _ID: PRepName });
+  async function getPRepInfo(pRepName: string) {
+    const getPRepAddressResp = await jsonRpcCall("GetVerifyInfoByID", { _ID: pRepName });
     const getPRepAddress = JSON.parse(getPRepAddressResp);
     // console.log("getPRepAddress", getPRepAddress);
 
-    const getPRepResp = await governance_call("getPRep", { address: getPRepAddress.address });
+    const getPRepResp = await governanceCall("getPRep", { address: getPRepAddress.address });
     // console.log("getPRepResp", getPRepResp);
 
     // TODO : real server로 바뀌면 삭제
@@ -95,22 +95,22 @@ function ProposalsContainer(props: any) {
       }
     };
 
-    let myVotingPower = 0;
+    let votingPower = 0;
     if (queryVal.data && queryVal.data.hasOwnProperty("viewer")) {
-      myVotingPower = await MyVotingPower(PRepName, queryVal.data.viewer.iconAddress);
+      votingPower = await myVotingPower(pRepName, queryVal.data.viewer.iconAddress);
     }
 
-    setPRepInfo({ name: getPRepResp.name, logo: detail.representative.logo.logo_1024, website: getPRepResp.website, totalDelegation: (parseInt(getPRepResp.delegated, 16) / 10 ** 18), myVotingPower: myVotingPower });
+    setPRepInfo({ name: getPRepResp.name, logo: detail.representative.logo.logo_1024, website: getPRepResp.website, totalDelegation: (parseInt(getPRepResp.delegated, 16) / 10 ** 18), myVotingPower: votingPower });
     // console.log("detail", detail.representative.logo.logo_1024);
   }
 
-  async function MyVotingPower(PRepName: string, address: string) {
+  async function myVotingPower(pRepName: string, address: string) {
     // console.log(PRepName, address);
-    const getPRepAddressResp = await json_rpc_call("GetVerifyInfoByID", { _ID: PRepName });
+    const getPRepAddressResp = await jsonRpcCall("GetVerifyInfoByID", { _ID: pRepName });
     // console.log(getPRepAddressResp);
     const getPRepAddress = JSON.parse(getPRepAddressResp);
     // console.log(getPRepAddress);
-    const delegateResp = await governance_call("getDelegation", { "address": address })
+    const delegateResp = await governanceCall("getDelegation", { "address": address })
     // console.log(delegateResp);
     let delegateList;
     try {
@@ -131,23 +131,23 @@ function ProposalsContainer(props: any) {
 
   if (flag === false) {
     if (proposals.length === 0) {
-      json_rpc_call("GetProposals", { "_Proposer": selectedPRep, "_StartProposalID": (values.first).toString(), "_EndProposalID": (values.end).toString() }).then((result) => {
+      jsonRpcCall("GetProposals", { "_Proposer": selectedPRep, "_StartProposalID": (values.first).toString(), "_EndProposalID": (values.end).toString() }).then((result) => {
         // console.log("GetProposals");
         // console.log(result);
         if (result) {
-          let Proposals = JSON.parse(result);
-          if (Proposals.length > 0) {
+          let proposals = JSON.parse(result);
+          if (proposals.length > 0) {
             let tmpProposals: any = [];
             for (let i = 0; i < Proposals.length; i++) {
               let aProposal: any = {};
-              if (Proposals[i].subject === "") {
+              if (proposals[i].subject === "") {
                 continue;
               }
-              aProposal['id'] = Proposals[i].ID;
-              aProposal['subject'] = Proposals[i].subject;
-              aProposal['status'] = Proposals[i].status;
-              aProposal['winner'] = Proposals[i].winner;
-              let items = JSON.parse(Proposals[i].select_item)
+              aProposal['id'] = proposals[i].ID;
+              aProposal['subject'] = proposals[i].subject;
+              aProposal['status'] = proposals[i].status;
+              aProposal['winner'] = proposals[i].winner;
+              let items = JSON.parse(proposals[i].select_item)
               aProposal['select_item'] = items;
 
               tmpProposals.push(aProposal);
@@ -159,7 +159,7 @@ function ProposalsContainer(props: any) {
     }
 
     if (values.total === 0) {
-      json_rpc_call("GetLastProposalID", { "_Proposer": selectedPRep }).then((result) => {
+      jsonRpcCall("GetLastProposalID", { "_Proposer": selectedPRep }).then((result) => {
         // console.log("GetLastProposalID");
         // console.log(result);
         setValues({ ...values, total: parseInt(result) })
@@ -183,8 +183,8 @@ function ProposalsContainer(props: any) {
   return (
     <Proposals
       proposals={proposals}
-      PRep={selectedPRep}
-      PRepInfo={pRepInfo}
+      pRep={selectedPRep}
+      pRepInfo={pRepInfo}
       values={values}
       filterValues={filterValues}
       queryFilters={queryFilters}

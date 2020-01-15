@@ -37,7 +37,7 @@ function SignIn(props: any) {
                 onChange={props.handleSignInfo}
                 onKeyPress={e => {
                   if (e.key === "Enter") {
-                    props.ValidateSignIn();
+                    props.validateSignIn();
                   }
                 }}
                 helperText={props.validator.message(
@@ -48,7 +48,7 @@ function SignIn(props: any) {
               />
             </Grid>
             <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
-              <Button variant="contained" color="primary" onClick={props.ValidateSignIn}>
+              <Button variant="contained" color="primary" onClick={props.validateSignIn}>
                 Sign in
               </Button>
             </Grid>
@@ -58,16 +58,5 @@ function SignIn(props: any) {
     </Fragment>
   );
 }
-/*
-          <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
-            <Button
-              variant="contained"
-              color="secondary"
-              href="https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080/oauth/login/kakao"
-            >
-              Kakao Login
-            </Button>
-          </Grid>
-*/
 
 export default SignIn;

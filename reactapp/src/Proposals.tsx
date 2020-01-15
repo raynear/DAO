@@ -20,14 +20,14 @@ function Proposals(props: any) {
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
           <Grid item className={classes.item} xs={12} md={8} lg={8}>
-            <img src={props.PRepInfo.logo} width="100" alt={props.PRepInfo.name} />
-            <a href={props.PRepInfo.website} style={{ textDecoration: "none", color: "#000000" }}>
-              <Typography variant="h4">{props.PRepInfo.name}</Typography>
+            <img src={props.pRepInfo.logo} width="100" alt={props.pRepInfo.name} />
+            <a href={props.pRepInfo.website} style={{ textDecoration: "none", color: "#000000" }}>
+              <Typography variant="h4">{props.pRepInfo.name}</Typography>
             </a>
           </Grid>
           <Grid item className={classes.item} xs={12} md={4} lg={4}>
-            <Typography variant="h6">Total Delegate :{props.PRepInfo.totalDelegation.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
-            <Typography variant="h6">My Voting Power :{props.PRepInfo.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
+            <Typography variant="h6">Total Delegate :{props.pRepInfo.totalDelegation.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
+            <Typography variant="h6">My Voting Power :{props.pRepInfo.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
           </Grid>
         </Grid>
       </Paper>
@@ -56,7 +56,7 @@ function Proposals(props: any) {
                     </Grid>
                     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
                       <Typography variant="h5" color="textPrimary" gutterBottom>
-                        <Link className={classes.link} to={"/Proposal/" + props.PRep + "/" + item.id} color="textPrimary">
+                        <Link className={classes.link} to={"/Proposal/" + props.pRep + "/" + item.id} color="textPrimary">
                           <b>{item.id}.</b>{" "}{item.subject}
                         </Link>
                       </Typography>

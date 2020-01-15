@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { SET_PUBLISH, GET_PROPOSAL, VIEWER } from "./GQL";
 
-import { governance_call } from "./IconConnect";
+import { governanceCall } from "./IconConnect";
 
 import NoteProposal from "./NoteProposal";
 
 
 function NoteProposalContainer(props: any) {
   // console.log("NoteProposalContainer props", props);
-  const PRep = props.match.params.PRep
+  const pRep = props.match.params.PRep
   const id = props.match.params.ID;
 
   const [voteSelect, setVoteSelect] = useState();
@@ -17,7 +17,7 @@ function NoteProposalContainer(props: any) {
 
   const [mutatePublish] = useMutation(SET_PUBLISH);
 
-  function Publish() {
+  function publish() {
     mutatePublish({
       variables: { proposalId: id }
     }).then(publishResult => {
@@ -25,7 +25,7 @@ function NoteProposalContainer(props: any) {
     });
     // console.log("Publish!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
-    props.history.push("/Proposals/" + PRep);
+    props.history.push("/Proposals/" + pRep);
     // window.location.reload();
     // queryVal.refetch();
   }
@@ -35,14 +35,14 @@ function NoteProposalContainer(props: any) {
     setVoteSelect(parseInt((event.target as HTMLInputElement).value));
   };
 
-  async function GetTotalVotingPower(prepAddress: string) {
-    const delegateResp = await governance_call("getPRep", { address: prepAddress });
+  async function getTotalVotingPower(prepAddress: string) {
+    const delegateResp = await governanceCall("getPRep", { address: prepAddress });
 
     return parseInt(delegateResp.delegated, 16) / 1000000000000000000;
   }
 
-  async function GetVotersVotingPower(prepAddress: string, voterAddress: string) {
-    const delegateResp = await governance_call("getDelegation", { address: voterAddress });
+  async function getVotersVotingPower(prepAddress: string, voterAddress: string) {
+    const delegateResp = await governanceCall("getDelegation", { address: voterAddress });
     // console.log(delegateResp);
     for (const aPRepKey in delegateResp.delegations) {
       const aPRep = delegateResp.delegations[aPRepKey];
@@ -73,8 +73,8 @@ function NoteProposalContainer(props: any) {
   if (queryVal && queryVal.data && queryViewer.data) {
     if (!value.load) {
       // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", result);
-      GetTotalVotingPower(queryVal.data.proposal.prep.iconAddress).then((result) => {
-        GetVotersVotingPower(queryVal.data.proposal.prep.iconAddress, queryViewer.data.viewer.iconAddress).then((result2) => {
+      getTotalVotingPower(queryVal.data.proposal.prep.iconAddress).then((result) => {
+        getVotersVotingPower(queryVal.data.proposal.prep.iconAddress, queryViewer.data.viewer.iconAddress).then((result2) => {
           setValue({ load: true, owner: amIOwner(), totalVotingPower: result, pRepVotingPower: result2 });
         });
       });
@@ -84,11 +84,11 @@ function NoteProposalContainer(props: any) {
 
   return (
     <NoteProposal
-      PRep={PRep}
+      pRep={pRep}
       id={id}
       value={value}
       voteSelect={voteSelect}
-      Publish={Publish}
+      publish={publish}
       handleChange={handleChange}
       {...queryVal}
     />
