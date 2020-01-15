@@ -89,7 +89,7 @@ function ProposalContainer(props: any) {
     else {
       const delegateList = callResult.getDelegation.delegations;
       for (let i = 0; i < delegateList.length; i++) {
-        if (delegateList[i].address === callResult.GetProposal.address) {
+        if (delegateList[i].address === callResult.getProposal.address) {
           let myVotingPower = parseInt(delegateList[i].value, 16);
           myVotingPower = (myVotingPower / 1000000000000000000);
           return myVotingPower;
@@ -100,7 +100,7 @@ function ProposalContainer(props: any) {
   }
 
   function getVotedIdx() {
-    const votes = callResult.GetVotes;
+    const votes = callResult.getVotes;
 
     let votedIdx = -1;
     for (let i = 0; i < votes.length; i++) {
@@ -128,11 +128,11 @@ function ProposalContainer(props: any) {
   async function getVotedPowerRate(WinningTh: number) {
     let totalVotedPower = 0;
 
-    const votes = callResult.GetVotes;
+    const votes = callResult.getVotes;
 
     let votedPowerRate = [];
     let votedPowers = [];
-    for (let i = 0; i < callResult.GetProposal.select_item.length; i++) {
+    for (let i = 0; i < callResult.getProposal.select_item.length; i++) {
       votedPowerRate[i] = [];
       votedPowers[i] = 0;
     }
@@ -153,7 +153,7 @@ function ProposalContainer(props: any) {
       // console.log(i, VotedPowerRate[i]);
       let votingPower = 0;
       for (let j = 0; j < votedPowerRate[i].length; j++) {
-        votingPower += await getVotersVotingPower(callResult.GetProposal.address, votedPowerRate[i][j]);
+        votingPower += await getVotersVotingPower(callResult.getProposal.address, votedPowerRate[i][j]);
       }
 
       votedPowers[i] = (votingPower / 1000000000000000000);
@@ -245,7 +245,7 @@ function ProposalContainer(props: any) {
       if (voteData.th === 0) {
         let tmpVoteData = voteData;
         tmpVoteData.voted = Math.round((r.totalVotedPower / r.totalDelegate) * 100);
-        tmpVoteData.th = callResult.GetProposal.electoral_threshold - tmpVoteData.voted;
+        tmpVoteData.th = callResult.getProposal.electoral_threshold - tmpVoteData.voted;
         if (tmpVoteData.th < 0) tmpVoteData.th = 0;
         tmpVoteData.totalVoted = r.totalVotedPower;
         tmpVoteData.totalDelegate = r.totalDelegate;
@@ -255,7 +255,7 @@ function ProposalContainer(props: any) {
       let voteItem: any[] = [];
       for (let i = 0; i < r.votedPowers.length; i++) {
         const votedRate = Math.round((r.votedPowers[i] / r.totalVotedPower) * 100);
-        voteItem.push({ name: callResult.GetProposal.select_item[i], voted: votedRate ? votedRate : 0, left: votedRate ? (votedRate > winningTh ? 0 : winningTh - votedRate) : 0, icx: r.votedPowers[i] });
+        voteItem.push({ name: callResult.getProposal.select_item[i], voted: votedRate ? votedRate : 0, left: votedRate ? (votedRate > winningTh ? 0 : winningTh - votedRate) : 0, icx: r.votedPowers[i] });
       }
       setVotedPowerRate(voteItem);
     });
