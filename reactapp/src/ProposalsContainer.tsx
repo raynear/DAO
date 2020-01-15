@@ -52,17 +52,17 @@ function ProposalsContainer(props: any) {
   }
 
   const handlePageChange = (data: any) => {
-    console.log(data);
+    // console.log(data);
     setActivePage(data);
   }
 
   async function getPRepInfo(PRepName: string) {
     const getPRepAddressResp = await json_rpc_call("GetVerifyInfoByID", { _ID: PRepName });
     const getPRepAddress = JSON.parse(getPRepAddressResp);
-    console.log("getPRepAddress", getPRepAddress);
+    // console.log("getPRepAddress", getPRepAddress);
 
     const getPRepResp = await governance_call("getPRep", { address: getPRepAddress.address });
-    console.log("getPRepResp", getPRepResp);
+    // console.log("getPRepResp", getPRepResp);
 
     // TODO : real server로 바뀌면 삭제
     // const detail = await axios.get(getPRepResp.details);
@@ -175,7 +175,7 @@ function ProposalsContainer(props: any) {
   }
 
   if (pRepInfo.name === "") {
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     getPRepInfo(selectedPRep);
   }
   // console.log("Viewer", queryVal);

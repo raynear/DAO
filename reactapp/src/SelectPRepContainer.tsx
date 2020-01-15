@@ -5,7 +5,7 @@ import { json_rpc_call } from "./IconConnect";
 import SelectPRep from "./SelectPRep";
 
 function SelectPRepContainer(props: any) {
-  console.log("select prep props", props);
+  // console.log("select prep props", props);
 
   const queryVal = useQuery(GET_PREPS);
 

@@ -87,7 +87,7 @@ function EditProposalContainer(props: any) {
     event: React.ChangeEvent<any>
   ) => {
     // console.log(typeof event.target.value)
-    console.log("~~~~~~~~~~~~~~~~~~~~~", name, event.target.value)
+    // console.log("~~~~~~~~~~~~~~~~~~~~~", name, event.target.value)
 
     if (name === "days" || name === "hours") {
       if (event.target.value !== "") {
@@ -100,7 +100,7 @@ function EditProposalContainer(props: any) {
           today.setDate(today.getDate() + values.days);
           today.setHours(today.getHours() + parseInt(event.target.value))
         }
-        console.log(today.toString());
+        // console.log(today.toString());
         setValues({ ...values, [name]: parseInt(event.target.value), expireAt: today });
       }
     }
