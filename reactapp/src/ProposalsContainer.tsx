@@ -132,8 +132,7 @@ function ProposalsContainer(props: any) {
   if (flag === false) {
     if (proposals.length === 0) {
       jsonRpcCall("GetProposals", { "_Proposer": selectedPRep, "_StartProposalID": (values.first).toString(), "_EndProposalID": (values.end).toString() }).then((result) => {
-        // console.log("GetProposals");
-        // console.log(result);
+        console.log("GetProposals", result);
         if (result) {
           let proposals = JSON.parse(result);
           if (proposals.length > 0) {
@@ -152,6 +151,7 @@ function ProposalsContainer(props: any) {
 
               tmpProposals.push(aProposal);
             }
+            console.log("proposals", tmpProposals);
             setProposals(tmpProposals);
           }
         }

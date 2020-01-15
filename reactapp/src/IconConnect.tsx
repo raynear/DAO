@@ -1,11 +1,11 @@
 import IconService from 'icon-sdk-js';
 
 const MAINNET = "https://ctz.solidwallet.io/api/v3";
-// const MAINCONTRACT = "cx_main_net_contract";
+// const MAIN_CONTRACT = "cx_main_net_contract";
 const TESTNET = "https://bicon.net.solidwallet.io/api/v3"
-//const TESTCONTRACT = "cx938d363b50736607821a7f0346d0fb4f8e2a2514";
+//const TEST_CONTRACT = "cx938d363b50736607821a7f0346d0fb4f8e2a2514";
 const LOCALNET = "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:9000/api/v3";
-const LOCALCONTRACT = "cx15695d9cde317a272ed419f8234148af4304594c";
+const LOCAL_CONTRACT = "cx15695d9cde317a272ed419f8234148af4304594c";
 const mainProvider = new IconService.HttpProvider(MAINNET);
 export const mainIconService = new IconService(mainProvider);
 const localProvider = new IconService.HttpProvider(LOCALNET);
@@ -15,15 +15,15 @@ export const testIconService = new IconService(testProvider);
 export const IconBuilder = IconService.IconBuilder;
 export const IconConverter = IconService.IconConverter;
 
-const SELECTEDCONTRACT = LOCALCONTRACT;
-export const selectedIconService = localIconService
+const SELECTED_CONTRACT = LOCAL_CONTRACT;
+export const selectedIconService = localIconService;
 
-export async function jsonRpcCall(method_name: string, params: any) {
+export async function jsonRpcCall(methodName: string, params: any) {
   // console.log("params", params);
   var callBuilder = new IconBuilder.CallBuilder();
   var callObj = callBuilder
-    .to(SELECTEDCONTRACT)
-    .method(method_name)
+    .to(SELECTED_CONTRACT)
+    .method(methodName)
     .params(params)
     .build();
 
@@ -36,7 +36,7 @@ export async function jsonRpcSendTx(fromWallet: string, methodName: string, para
   var txBuilder = new IconBuilder.CallTransactionBuilder();
   var txObj = txBuilder
     .from(fromWallet)
-    .to(SELECTEDCONTRACT)
+    .to(SELECTED_CONTRACT)
     .nid(IconConverter.toBigNumber("3"))
     .version(IconConverter.toBigNumber("3"))
     .stepLimit(IconConverter.toBigNumber("100000000"))
