@@ -238,7 +238,7 @@ function ProposalContainer(props: any) {
 
   // console.log("votedPowerRate", votedPowerRate, votedPowerRate[0]);
   if (votedPowerRate[0] === undefined) {
-    const winningTh = callResult.GetProposal.winning_threshold;
+    const winningTh = callResult.getProposal.winning_threshold;
     getVotedPowerRate(winningTh).then((r) => {
       // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
       // console.log("r", r);

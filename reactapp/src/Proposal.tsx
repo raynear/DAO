@@ -24,7 +24,7 @@ function Proposal(props: any) {
     onChangePage: (event: React.MouseEvent<HTMLButtonElement>, newPage: number) => void;
   }
 
-  function tablePaginationActions(props: TablePaginationActionsProps) {
+  function TablePaginationActions(props: TablePaginationActionsProps) {
     const classes = useStyles();
     const theme = useTheme();
     const { count, page, rowsPerPage, onChangePage } = props;
@@ -417,7 +417,7 @@ function Proposal(props: any) {
                     }}
                     onChangePage={props.handleChangePage}
                     onChangeRowsPerPage={props.handleChangeRowsPerPage}
-                    ActionsComponent={tablePaginationActions}
+                    ActionsComponent={TablePaginationActions}
                   />
                 </TableRow>
               </TableFooter>
