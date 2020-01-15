@@ -7,7 +7,7 @@ import useStyles from "./Style";
 import { selectWallet } from "./GQL";
 
 function VerifyIcon(props: any) {
-  // console.log("VerifyIcon props", props);
+  console.log("VerifyIcon props", props);
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>;

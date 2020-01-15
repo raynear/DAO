@@ -12,7 +12,7 @@ import facebookImg from "./img/facebook.png";
 import twitterImg from "./img/twitter.png";
 
 function Proposal(props: any) {
-  // console.log("Proposal props", props);
+  console.log("Proposal props", props);
   // const forceUpdate = useForceUpdate;
 
   const classes = useStyles();

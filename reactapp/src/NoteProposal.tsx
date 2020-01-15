@@ -13,7 +13,7 @@ import facebookImg from "./img/facebook.png";
 import twitterImg from "./img/twitter.png";
 
 function NoteProposal(props: any) {
-  // console.log("NoteProposal props", props);
+  console.log("NoteProposal props", props);
   // const forceUpdate = useForceUpdate;
 
   const classes = useStyles();

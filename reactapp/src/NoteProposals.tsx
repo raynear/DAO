@@ -8,7 +8,7 @@ import clsx from "clsx";
 import useStyles from "./Style";
 
 function NoteProposals(props: any) {
-  // console.log("NoteProposals props", props);
+  console.log("NoteProposals props", props);
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>;

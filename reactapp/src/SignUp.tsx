@@ -8,7 +8,7 @@ import VerifyIconContainer from "./VerifyIconContainer";
 import NewAccountContainer from "./NewAccountContainer";
 
 function SignUp(props: any) {
-  // console.log("SingUp props", props);
+  console.log("SingUp props", props);
   const classes = useStyles();
 
   return (

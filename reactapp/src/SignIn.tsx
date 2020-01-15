@@ -5,6 +5,7 @@ import clsx from "clsx";
 import useStyles from "./Style";
 
 function SignIn(props: any) {
+  console.log("SignIn props", props);
   const classes = useStyles();
 
   return (
