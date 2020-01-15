@@ -350,6 +350,11 @@ function Proposal(props: any) {
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <Typography variant="subtitle2" color="textSecondary">
+              Winning Threshold : {props.proposal.winning_threshold} %
+            </Typography>
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <SelectList />
           </Grid>
           <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>

@@ -89,13 +89,16 @@ class ICON_DAO(IconScoreBase):
     @external(readonly=True)
     def GetVerifyInfoByID(self, _ID: str) -> str:
         AddressByID = self._averify_id[_ID][self.ADDRESS]
-        return_json = dict()
-        return_json[self.ADDRESS] = str(AddressByID)
-        return_json[self.ID] = self._verify_id[str(AddressByID)][self.ID]
-        return_json[self.BLOCKHASH] = self._verify_id[str(
-            AddressByID)][self.BLOCKHASH]
+        if _ID == self._verify_id[str(AddressByID)][self.ID]:
+            return_json = dict()
+            return_json[self.ADDRESS] = str(AddressByID)
+            return_json[self.ID] = self._verify_id[str(AddressByID)][self.ID]
+            return_json[self.BLOCKHASH] = self._verify_id[str(
+                AddressByID)][self.BLOCKHASH]
 
-        return json_dumps(return_json)
+            return json_dumps(return_json)
+        else:
+            return None
 
     @external(readonly=False)
     def Vote(self, _Proposer: str, _ProposalID: int, _UserID: str, _VoteItem: int):
