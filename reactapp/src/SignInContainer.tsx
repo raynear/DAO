@@ -27,15 +27,8 @@ function SignInContainer(props: any) {
     });
   }
 
-  const validator = new SimpleReactValidator({
-    validators: {
-      same: {
-        message: "input two password same.",
-        rule: (val: any, params: any) => {
-          return val[0] === val[1];
-        }
-      }
-    },
+  const [validator] = useState(new SimpleReactValidator({
+    validators: {},
     locale: "en",
     className: "text-danger",
     element: (message: any, className: any) => (
@@ -43,7 +36,7 @@ function SignInContainer(props: any) {
         {message}
       </Typography>
     )
-  });
+  }));
 
   function validateSignIn() {
     if (!validator.allValid()) {

@@ -181,9 +181,9 @@ class PublishProposal(graphene.Mutation):
             .build()
 
         result = icon_service.call(call)
-        print("AA:", result)
+        # print("AA:", result)
         result_json = json.loads(result)
-        print("BB:", result_json)
+        # print("BB:", result_json)
         if result_json['address'] != info.context.user.icon_address:
             return PublishProposal(proposal=None)
 
@@ -222,11 +222,11 @@ class PublishProposal(graphene.Mutation):
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
 
-        print("CC", tx_hash)
+        # print("CC", tx_hash)
         sleep(3)
         tx_result = icon_service.get_transaction_result(tx_hash)
 
-        print("DD", tx_result)
+        # print("DD", tx_result)
 
         if tx_result['status'] == 1:
             proposal.delete()
@@ -253,7 +253,7 @@ class VoteProposal(graphene.Mutation):
     @login_required
     def mutate(self, info, proposer, proposal_id, select_item_index):
         icon_service = IconService(HTTPProvider(NETWORK, 3))
-        print("ABCDEFG")
+        # print("ABCDEFG")
 
         f = open("./key.pw", 'r')
         line = f.readline()
@@ -271,11 +271,11 @@ class VoteProposal(graphene.Mutation):
 
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
-        print(tx_hash)
+        # print(tx_hash)
 
         sleep(3)
         tx_result = icon_service.get_transaction_result(tx_hash)
-        print(tx_result)
+        # print(tx_result)
 
         # vote = VoteModel.objects.create(voter=info.context.user, select=qs[0])
         # vote.txHash = tx_hash
@@ -437,7 +437,7 @@ class Finalize(graphene.Mutation):
 
         proposal_result = icon_service.call(call)
         result_json = json.loads(proposal_result)
-        print("Proposal!!!!!!!!!!", result_json)
+        # print("Proposal!!!!!!!!!!", result_json)
 
         final_blockheight = find_blockheight_from_datetime(
             str(result_json['expire_date']))
@@ -446,24 +446,24 @@ class Finalize(graphene.Mutation):
             "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal_id})
 
         vote_json = json.loads(resp_vote)
-        print("getVotes!!!!!!!", resp_vote)
+        # print("getVotes!!!!!!!", resp_vote)
         final_delegate_tx_list = []
         select_list = {}
         for a_vote in vote_json['vote']:
-            print("!ASDF!@")
+            # print("!ASDF!@")
             final_delegate_tx = get_final_delegate_tx(proposer,
                                                       a_vote['voter'], final_blockheight)
-            print("final_delegate_tx", final_delegate_tx)
+            # print("final_delegate_tx", final_delegate_tx)
             tx_amount = 0
             tx_id = ""
             for delegate in final_delegate_tx['data']['params']['delegations']:
-                print("delegate", delegate)
+                # print("delegate", delegate)
                 if delegate['address'] == result_json['address']:
                     tx_amount = delegate['value']
                     tx_id = final_delegate_tx['txHash']
 
-            print("tx_amount", tx_amount)
-            print("td_id", tx_id)
+            # print("tx_amount", tx_amount)
+            # print("td_id", tx_id)
             final_delegate_tx_list.append(
                 {"voter": a_vote['voter'], "DelegateTxID": final_delegate_tx['txHash'], "DelegateAmount": tx_amount})
 
@@ -472,7 +472,7 @@ class Finalize(graphene.Mutation):
             else:
                 select_list[a_vote['selectItem']] = tx_amount
 
-        print("select_list!!!!!!!!!!!!!!!!!!!!", select_list)
+        # print("select_list!!!!!!!!!!!!!!!!!!!!", select_list)
         call = CallBuilder()\
             .to("cx0000000000000000000000000000000000000000")\
             .method("getPReps")\
@@ -486,7 +486,7 @@ class Finalize(graphene.Mutation):
             if a_prep['address'] == result_json['address']:
                 prep_delegate = a_prep['delegated']
 
-        print("prep_delegate!!!!!!!!!!!!!!!!", prep_delegate)
+        # print("prep_delegate!!!!!!!!!!!!!!!!", prep_delegate)
 
         f = open("./key.pw", 'r')
         line = f.readline()
@@ -505,7 +505,7 @@ class Finalize(graphene.Mutation):
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
 
-        print("AAAAAAAAAAA")
+        # print("AAAAAAAAAAA")
 
         call = CallBuilder()\
             .to(SCORE)\
@@ -516,13 +516,13 @@ class Finalize(graphene.Mutation):
         proposal_result = icon_service.call(call)
         result_json = json.loads(proposal_result)
 
-        print("BBBBBBBBBBB")
+        # print("BBBBBBBBBBB")
 
         # proposal.finalizeTxHash = tx_hash
         # proposal.status = result_json['status']
         # proposal.save()
 
-        return Finalize(proposal=proposal)
+        return Finalize(proposal=None)
 
 
 def find_blockheight_from_datetime(expire_datetime):
@@ -569,8 +569,8 @@ def get_final_delegate_tx(prep_address, address, block_height):
                         {'address': address, 'page': 1, 'count': 1000})
     latest_tx = False
 
-    print("!!!!!!!", prep_address, address, block_height)
-    print("!@#", resp)
+    # print("!!!!!!!", prep_address, address, block_height)
+    # print("!@#", resp)
 
     if resp.status_code == 200:
         resp_text_user1 = '{"data":[{"txHash":"0x865fac73e74b6ab1103605fe8f1534068f611fa6a8b52d9e7e3e5eddf347cc4c","height":18,"createDate":"2019-09-21T02:35:34.000+0000","fromAddr":"hxf2d2bcaf5c3ec858b3a12af46d9f632ccea58210","toAddr":"cx0000000000000000000000000000000000000000","txType":"14","dataType":"call","amount":"0","fee":"0.001286","state":1,"errorMsg":null,"targetContractAddr":"cx0000000000000000000000000000000000000000","id":null}],"listSize":1,"totalSize":1,"result":"200","description":"success"}'
@@ -591,22 +591,22 @@ def get_final_delegate_tx(prep_address, address, block_height):
         resp_json = json.loads(resp_text)
         tx_list = resp_json['data']
 
-        print("resp_json", resp_json)
-        print("tx_list", tx_list)
+        # print("resp_json", resp_json)
+        # print("tx_list", tx_list)
 
         icon_service = IconService(HTTPProvider(NETWORK, 3))
 
         for a_tx in tx_list:
-            print("a")
+            # print("a")
             if a_tx['height'] < block_height and a_tx['toAddr'] == "cx0000000000000000000000000000000000000000":
-                print("b")
+                # print("b")
                 tx_detail = icon_service.get_transaction(a_tx['txHash'])
-                print("tx_detail", tx_detail)
+                # print("tx_detail", tx_detail)
                 if tx_detail['data']['method'] == "setDelegation":
-                    print("c")
+                    # print("c")
                     if latest_tx == False or latest_tx['blockHeight'] < tx_detail['blockHeight']:
                         # 1 번만 나오면 순서대로 동작하는거니 처음껄로 리턴하면 됨
-                        print("!!!!!!!!!!!!!!!!!!!!!!")
+                        # print("!!!!!!!!!!!!!!!!!!!!!!")
                         latest_tx = tx_detail
 
         return latest_tx

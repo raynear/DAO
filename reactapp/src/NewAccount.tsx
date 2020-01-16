@@ -37,11 +37,11 @@ function NewAccount(props: any) {
           variant="outlined"
           value={props.signInfo.password}
           onChange={props.handleSignInfo}
-          helperText={
-            props.sameValidate([
-              props.signInfo.password,
-              props.signInfo.password2
-            ])}
+          helperText={props.validator.message(
+            "password",
+            [props.signInfo.password, props.signInfo.password2],
+            "required|same"
+          )}
         />
       </Grid>
       <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
@@ -58,10 +58,11 @@ function NewAccount(props: any) {
               props.signUp();
             }
           }}
-          helperText={props.sameValidate([
-            props.signInfo.password,
-            props.signInfo.password2
-          ])}
+          helperText={props.validator.message(
+            "password",
+            [props.signInfo.password, props.signInfo.password2],
+            "required|same"
+          )}
         />
       </Grid>
       <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>

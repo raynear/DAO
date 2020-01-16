@@ -22,12 +22,20 @@ function NewAccountContainer(props: any) {
     password2: ""
   });
 
-  const validator = new SimpleReactValidator({
+  const [validator] = useState(new SimpleReactValidator({
     validators: {
       same: {
-        message: "input two password same.",
+        message: "input same password.",
         rule: (val: any, params: any) => {
-          return val[0] === val[1];
+          // console.log(val, params, validator);
+          for (let i = 0; i < val.length; i++) {
+            for (let j = i + 1; j < val.length; j++) {
+              if (val[i] !== val[j]) {
+                return false;
+              }
+            }
+          }
+          return true;
         }
       }
     },
@@ -38,7 +46,7 @@ function NewAccountContainer(props: any) {
         {message}
       </Typography>
     )
-  });
+  }));
 
   function sameValidate(val: any) {
     if (val[0] === val[1]) {

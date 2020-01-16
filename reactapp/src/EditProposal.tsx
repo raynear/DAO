@@ -66,7 +66,11 @@ function EditProposal(props: any) {
                     value={item}
                     onChange={props.handleSelectItemChange(idx)}
                     className={classes.textField}
-                    helperText={props.validator.message("item", item, "required")}
+                    helperText={props.validator.message(
+                      "select_item",
+                      props.selectItems,
+                      "required|diff"
+                    )}
                     variant="outlined"
                     InputProps={{
                       endAdornment: (

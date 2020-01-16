@@ -43,7 +43,23 @@ function EditProposalContainer(props: any) {
 
   const [mutateProposal] = useMutation(SET_PROPOSAL);
 
-  const validator = new SimpleReactValidator({
+  const [validator] = useState(new SimpleReactValidator({
+    validators: {
+      diff: {
+        message: "input diffrent options.",
+        rule: (val: any, params: any) => {
+          // console.log(val, params);
+          for (let i = 0; i < val.length; i++) {
+            for (let j = i + 1; j < val.length; j++) {
+              if (val[i] === val[j]) {
+                return false;
+              }
+            }
+          }
+          return true;
+        }
+      }
+    },
     locale: "en",
     className: "text-danger",
     element: (message: any, className: any) => (
@@ -51,7 +67,7 @@ function EditProposalContainer(props: any) {
         {message}
       </Typography>
     )
-  });
+  }));
 
   const addSelectItem = () => {
     setSelectItems([...selectItems, ""]);
