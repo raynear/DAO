@@ -125,10 +125,11 @@ function ProposalContainer(props: any) {
     }
   }
 
-  async function getVotedPowerRate(WinningTh: number) {
+  async function getVotedPowerRate() {
     let totalVotedPower = 0;
 
     const votes = callResult.getVotes;
+    // console.log("votes", votes);
 
     let votedPowerRate = [];
     let votedPowers = [];
@@ -147,7 +148,7 @@ function ProposalContainer(props: any) {
       }
     }
 
-    // console.log("VotedPowerRate", VotedPowerRate);
+    // console.log("votedPowerRate", votedPowerRate);
 
     for (let i = 0; i < votedPowerRate.length; i++) {
       // console.log(i, VotedPowerRate[i]);
@@ -159,12 +160,12 @@ function ProposalContainer(props: any) {
       votedPowers[i] = (votingPower / 1000000000000000000);
       totalVotedPower += (votingPower / 1000000000000000000);
     }
-    // console.log("VotedPowers", VotedPowers);
+    // console.log("votedPowers", votedPowers);
     // console.log("totalVotedPower", totalVotedPower);
 
     let totalDelegate = getTotalVotingPower();
 
-    // console.log("TotalDelegate", TotalDelegate);
+    // console.log("totalDelegate", totalDelegate);
 
     return { votedPowerRate: votedPowerRate, votedPowers: votedPowers, totalVotedPower: totalVotedPower, totalDelegate: totalDelegate }
   }
@@ -180,10 +181,10 @@ function ProposalContainer(props: any) {
     }
 
     const getProposalResp = await jsonRpcCall("GetProposal", { "_Proposer": pRep, "_ProposalID": id })
-    // console.log("GetProposalResp", GetProposalResp);
+    // console.log("GetProposalResp", getProposalResp);
     if (getProposalResp) {
       let proposal = JSON.parse(getProposalResp);
-      // console.log("proposal", Proposal);
+      // console.log("proposal", proposal);
       let aProposal: any = {};
       if (proposal.subject !== "") {
         aProposal['id'] = proposal.ID;
@@ -200,14 +201,13 @@ function ProposalContainer(props: any) {
         let items = JSON.parse(proposal.select_item)
         aProposal['select_item'] = items;
 
-
         const getPRepResp = await governanceCall("getPRep", { address: aProposal.address });
-        // console.log("GetPRepResp", GetPRepResp);
+        // console.log("GetPRepResp", getPRepResp);
 
         let getDelegationResp: any = false;
-        if (queryViewer.data && queryViewer.data.viewer) {
+        if (queryViewer.data && queryViewer.data.viewer && queryViewer.data.viewer.iconAddress) {
           getDelegationResp = await governanceCall("getDelegation", { address: queryViewer.data.viewer.iconAddress });
-          // console.log("GetDelegationResp", GetDelegationResp);
+          // console.log("GetDelegationResp", getDelegationResp);
         }
         setCallResult({ getVotes: votes, getProposal: aProposal, getPRep: getPRepResp, getDelegation: getDelegationResp });
       }
@@ -239,7 +239,7 @@ function ProposalContainer(props: any) {
   // console.log("votedPowerRate", votedPowerRate, votedPowerRate[0]);
   if (votedPowerRate[0] === undefined) {
     const winningTh = callResult.getProposal.winning_threshold;
-    getVotedPowerRate(winningTh).then((r) => {
+    getVotedPowerRate().then((r) => {
       // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
       // console.log("r", r);
       if (voteData.th === 0) {

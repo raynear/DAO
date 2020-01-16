@@ -38,7 +38,7 @@ function NewAccount(props: any) {
           value={props.signInfo.password}
           onChange={props.handleSignInfo}
           helperText={
-            props.SameValidate([
+            props.sameValidate([
               props.signInfo.password,
               props.signInfo.password2
             ])}

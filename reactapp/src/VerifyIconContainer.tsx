@@ -19,9 +19,11 @@ function VerifyIconContainer(props: any) {
 
   async function callVerify() {
     let result = await jsonRpcCall("GetVerifyInfoByID", { "_ID": queryVal.data.username });
-    // console.log(result);
+    // console.log(queryVal.data.username, result);
     let result_json = JSON.parse(result);
-    setVerifiedAddress(result_json.address);
+    if (result_json.address) {
+      setVerifiedAddress(result_json.address);
+    }
 
     let PRepList = await governanceCall("getPReps", { "startRanking": "0x1", "endRanking": "0x60" });
     /*    const result2 = JSON.parse(`{

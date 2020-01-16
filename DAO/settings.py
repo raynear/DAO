@@ -211,6 +211,8 @@ CORS_ORIGIN_WHITELIST = (
     "https://localhost:3000",
     "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080",
     "https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080",
+    "http://localhost:8080",
+    "https://localhost:8080",
     "http://127.0.0.1:3000",
     "https://127.0.0.1:3000",
     "http://127.0.0.1:8080",
@@ -219,4 +221,8 @@ CORS_ORIGIN_WHITELIST = (
 
 CSRF_COOKIE_SECURE = False
 CSRF_TRUSTED_ORIGINS = [
-    "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080", "https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080"]
+    "http://localhost:8080",
+    "https://localhost:8080",
+    "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080",
+    "https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080"
+]

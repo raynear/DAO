@@ -190,9 +190,6 @@ function Proposal(props: any) {
       }
     }
     if (expireAt.getTime() > Date.now() && (props.myPRep || props.owner) && props.votedIdx === -1) {
-      // return (<><FinalizeVoteButton /><VoteButton /></>);
-      // TODO : 원복해야 함.
-      // 빠른 finalize를 위해 우선 변경한 버튼
       return (<VoteButton />);
     }
     return <></>;

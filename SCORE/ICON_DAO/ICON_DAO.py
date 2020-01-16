@@ -98,7 +98,7 @@ class ICON_DAO(IconScoreBase):
 
             return json_dumps(return_json)
         else:
-            return None
+            return json_dumps(dict())
 
     @external(readonly=False)
     def Vote(self, _Proposer: str, _ProposalID: int, _UserID: str, _VoteItem: int):

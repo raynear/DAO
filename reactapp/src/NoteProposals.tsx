@@ -1,11 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { Paper, Typography, Grid, Button, TextField, Chip } from "@material-ui/core";
+import { Paper, Typography, Grid, Button, Chip } from "@material-ui/core";
 import { Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
+import Pagination from "react-js-pagination";
 import clsx from "clsx";
 
 import useStyles from "./Style";
+import "./paginate.css";
 
 function NoteProposals(props: any) {
   console.log("NoteProposals props", props);
@@ -65,36 +67,14 @@ function NoteProposals(props: any) {
               </Grid>
             );
           })}
-          <Grid item className={classes.item} xs={12} lg={12}>
-            <Grid container className={classes.container} spacing={0}>
-              <Grid item className={classes.item} xs={4} lg={4}>
-                <TextField
-                  className={classes.textField}
-                  label="first"
-                  type="number"
-                  value={props.filterValues.first}
-                  onChange={props.handleChange("first")}
-                />
-              </Grid>
-              <Grid item className={classes.item} xs={4} lg={4}>
-                <TextField
-                  className={classes.textField}
-                  label="end"
-                  type="number"
-                  value={props.filterValues.end}
-                  onChange={props.handleChange("end")}
-                />
-              </Grid>
-              <Grid item className={clsx(classes.item, classes.center)} xs={4} lg={4}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => props.queryFilters()}
-                >
-                  read!
-                </Button>
-              </Grid>
-            </Grid>
+          <Grid item className={clsx(classes.item, classes.center)} xs={12} lg={12}>
+            <Pagination
+              activePage={props.activePage}
+              itemsCountPerPage={props.itemPerPage}
+              totalItemsCount={props.itemCount}
+              pageRangeDisplayed={5}
+              onChange={props.handlePageChange}
+            />
           </Grid>
         </Grid>
       </Paper>

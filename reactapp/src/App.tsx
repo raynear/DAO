@@ -13,14 +13,18 @@ import Cookies from "js-cookie";
 import LayoutContainer from "./LayoutContainer";
 
 const client = new ApolloClient({
-  uri: "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080/graphql/",
+  // TODO : change on test serve
+  // uri: "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080/graphql/",
+  uri: "http://localhost:8080/graphql/",
   // tell apollo to include credentials for csrf token protection
   credentials: "include",
   // async operation with fetch to get csrf token
   request: async operation => {
     let csrf = Cookies.get("csrftoken");
     if (csrf === undefined) {
-      let csrftoken = await fetch("http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080/csrf/")
+      // TODO : change on test serve
+      // let csrftoken = await fetch("http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080/csrf/")
+      let csrftoken = await fetch("http://localhost:8080/csrf/")
         .then(response => response.json())
         .then(data => data.csrfToken);
       // set the cookie 'csrftoken'

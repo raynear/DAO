@@ -46,13 +46,13 @@ function Layout(props: any) {
           </Typography>
           <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
             <Link to="/SelectPRep" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
-              Explorer
+              Vote Explorer
             </Link>
           </Typography>
           {!props.error && props.data.viewer.isPrep &&
             <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
               <Link to={"/NoteProposals/" + props.data.viewer.username} style={{ textDecoration: 'none', color: "#FFFFFF" }}>
-                Build
+                Launch new votes
               </Link>
             </Typography>
           }

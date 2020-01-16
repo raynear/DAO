@@ -48,5 +48,6 @@ urlpatterns = [
     path(r'board/', include('board.urls')),
     path(r'graphql/', jwt_cookie(CustomGraphQLView.as_view(graphiql=True, schema=schema))),
     path(r'csrf/', views.csrf),
-    re_path(r'.*', TemplateView.as_view(template_name="index.html"))
+    # TODO : change on test serve
+    # re_path(r'.*', TemplateView.as_view(template_name="index.html"))
 ]

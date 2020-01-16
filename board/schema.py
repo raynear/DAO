@@ -102,6 +102,8 @@ class Query(object):
     #     else:
     #         return None
 
+    @login_required
+    @prep_required
     def resolve_proposal(self, info, id=None, **kwargs):
         if id == -1:
             return None
@@ -109,6 +111,8 @@ class Query(object):
 
         return ProposalModel.objects.get(pk=id)
 
+    @login_required
+    @prep_required
     def resolve_proposals(self, info, prep=None, first=None, end=None, **kwargs):
         qs = ProposalModel.objects.all()
 
@@ -138,9 +142,13 @@ class Query(object):
 #        finalize_vote(1, "2019:12:19T00:00:00")
         return qs.filter(Q(is_prep__exact=True))
 
+    @login_required
+    @prep_required
     def resolve_all_proposal(self, info, **kwargs):
         return ProposalModel.objects.select_related("prep").all()
 
+    @login_required
+    @prep_required
     def resolve_all_selectitem(self, info, **kwargs):
         return SelectItemModel.objects.select_related("proposal").all()
 
@@ -198,8 +206,9 @@ class PublishProposal(graphene.Mutation):
 
         f = open("./key.pw", 'r')
         line = f.readline()
+        # TODO : change on test serve
         wallet = KeyWallet.load(
-            "./key_store_raynear", "p@ssw0rd")
+            "./key_store_raynear", line)
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
@@ -248,7 +257,8 @@ class VoteProposal(graphene.Mutation):
 
         f = open("./key.pw", 'r')
         line = f.readline()
-        wallet = KeyWallet.load("./key_store_raynear", "p@ssw0rd")
+        # TODO : change on test serve
+        wallet = KeyWallet.load("./key_store_raynear", line)
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
@@ -372,9 +382,6 @@ class SetPRep(graphene.Mutation):
         result = icon_service.call(call)
         result_json = json.loads(result)
 
-        # TODO!!!!!!!!!!
-        # prep이고 본인 id로 verify 됐으면 셋팅하라
-
         if prep_result and result_json['address'] == icon_address:
             user.icon_address = icon_address
             user.is_prep = True
@@ -483,7 +490,8 @@ class Finalize(graphene.Mutation):
 
         f = open("./key.pw", 'r')
         line = f.readline()
-        wallet = KeyWallet.load("./key_store_raynear", "p@ssw0rd")
+        # TODO : change on test serve
+        wallet = KeyWallet.load("./key_store_raynear", line)
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\

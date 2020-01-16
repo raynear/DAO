@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { Paper, Typography, Grid, Button, TextField, Chip } from "@material-ui/core";
+import { Paper, Typography, Grid, Chip } from "@material-ui/core";
 import { Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
 import Pagination from "react-js-pagination";
 import clsx from "clsx";

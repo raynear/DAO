@@ -34,7 +34,6 @@ function ProposalsContainer(props: any) {
     myVotingPower: 0
   })
 
-  const itemCount = 1;
   const perPage = 12;
   const [activePage, setActivePage] = useState(1);
 
@@ -96,7 +95,8 @@ function ProposalsContainer(props: any) {
     };
 
     let votingPower = 0;
-    if (queryVal.data && queryVal.data.hasOwnProperty("viewer")) {
+    if (queryVal.data && queryVal.data.viewer && queryVal.data.viewer.iconAddress) {
+      // console.log("iconAddress", queryVal.data.viewer);
       votingPower = await myVotingPower(pRepName, queryVal.data.viewer.iconAddress);
     }
 
@@ -132,12 +132,13 @@ function ProposalsContainer(props: any) {
   if (flag === false) {
     if (proposals.length === 0) {
       jsonRpcCall("GetProposals", { "_Proposer": selectedPRep, "_StartProposalID": (values.first).toString(), "_EndProposalID": (values.end).toString() }).then((result) => {
-        console.log("GetProposals", result);
+        // console.log("GetProposals", result);
         if (result) {
           let proposals = JSON.parse(result);
           if (proposals.length > 0) {
             let tmpProposals: any = [];
-            for (let i = 0; i < Proposals.length; i++) {
+            for (let i = 0; i < proposals.length; i++) {
+              // console.log("proposals[" + i + "]", proposals[i]);
               let aProposal: any = {};
               if (proposals[i].subject === "") {
                 continue;
@@ -151,7 +152,7 @@ function ProposalsContainer(props: any) {
 
               tmpProposals.push(aProposal);
             }
-            console.log("proposals", tmpProposals);
+            // console.log("proposals", tmpProposals);
             setProposals(tmpProposals);
           }
         }
@@ -191,7 +192,7 @@ function ProposalsContainer(props: any) {
       handleChange={handleChange}
       activePage={activePage}
       itemPerPage={perPage}
-      itemCount={itemCount}
+      itemCount={values.total}
       handlePageChange={handlePageChange}
     />
   );

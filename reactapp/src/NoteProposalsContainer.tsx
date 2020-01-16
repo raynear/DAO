@@ -25,6 +25,10 @@ function NoteProposalsContainer(props: any) {
     currPage: 0
   });
 
+  const itemCount = 1;
+  const perPage = 12;
+  const [activePage, setActivePage] = useState(1);
+
   const [flag, setFlag] = useState(false);
 
   const handleChange = (name: any) => (
@@ -37,12 +41,13 @@ function NoteProposalsContainer(props: any) {
     setValues(filterValues);
   }
 
-  function createNewProposal() {
-    props.history.push("/EditProposal");
+  const handlePageChange = (data: any) => {
+    // console.log(data);
+    setActivePage(data);
   }
 
-  const handlePageClick = (data: any) => {
-    console.log(data.selected);
+  function createNewProposal() {
+    props.history.push("/EditProposal");
   }
 
   if (!flag) {
@@ -76,7 +81,10 @@ function NoteProposalsContainer(props: any) {
       queryFilters={queryFilters}
       createNewProposal={createNewProposal}
       handleChange={handleChange}
-      handlePageClick={handlePageClick}
+      activePage={activePage}
+      itemPerPage={perPage}
+      itemCount={itemCount}
+      handlePageChange={handlePageChange}
     />
   );
 }
