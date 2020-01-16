@@ -112,6 +112,13 @@ function EditProposal(props: any) {
                 onChange={props.handleEditorChange}
               />
             </Grid>
+            {props.values.contents !== "" &&
+              props.validator.message(
+                "contents",
+                props.values.contents,
+                "required|min:10"
+              )
+            }
 
             <Grid className={clsx(classes.item, classes.center)} item xs={12} md={12} lg={12}>
               <Typography><b>Vote Duration</b></Typography>
