@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Paper, List, ListSubheader, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import { StarBorder as StarIcon } from "@material-ui/icons";
+import { FiberManualRecord } from "@material-ui/icons";
 import useStyles from "./Style";
 
 function SelectPRep(props: any) {
@@ -31,7 +31,7 @@ function SelectPRep(props: any) {
             >
               {allPRep.map((item: any) => (
                 <ListItem key={item.id} button onClick={() => props.handleClick(item.username)}>
-                  <ListItemIcon><StarIcon /></ListItemIcon>
+                  <ListItemIcon><FiberManualRecord /></ListItemIcon>
                   <ListItemText>{item.username}</ListItemText>
                 </ListItem>
               ))}

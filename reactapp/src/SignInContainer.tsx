@@ -20,10 +20,12 @@ function SignInContainer(props: any) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(() => {
-      client.writeData({ data: { username: username } });
       client.writeData({ data: { snack: { open: true, message: "Welcome " + username, __typename: "snack" } } });
       props.history.go(-1);
       // window.location.reload();
+    }).catch((e) => {
+      client.writeData({ data: { snack: { open: true, message: "Login Fail", __typename: "snack" } } });
+      console.log("login error", e);
     });
   }
 

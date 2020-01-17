@@ -24,7 +24,7 @@ function NewAccount(props: any) {
           helperText={props.validator.message(
             "username",
             props.signInfo.username,
-            "required|min:3"
+            "required|min:3|alpha_num"
           )}
         />
       </Grid>
@@ -40,7 +40,7 @@ function NewAccount(props: any) {
           helperText={props.validator.message(
             "password",
             [props.signInfo.password, props.signInfo.password2],
-            "required|same"
+            "required|min:6|same"
           )}
         />
       </Grid>
@@ -61,7 +61,7 @@ function NewAccount(props: any) {
           helperText={props.validator.message(
             "password",
             [props.signInfo.password, props.signInfo.password2],
-            "required|same"
+            "required|min:6|same"
           )}
         />
       </Grid>

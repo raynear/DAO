@@ -26,7 +26,7 @@ function Proposals(props: any) {
             </a>
           </Grid>
           <Grid item className={classes.item} xs={12} md={4} lg={4}>
-            <Typography variant="h6">Total Delegate :{props.pRepInfo.totalDelegation.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
+            <Typography variant="h6">Total Delegations :{props.pRepInfo.totalDelegation.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
             <Typography variant="h6">My Voting Power :{props.pRepInfo.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
           </Grid>
         </Grid>
