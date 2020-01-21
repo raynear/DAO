@@ -7,13 +7,13 @@ import { AccountCircle } from "@material-ui/icons";
 import useStyles from "./Style";
 
 function UserInfo(props: any) {
-  // console.log("UserInfo props", props);
+  console.log("UserInfo props", props);
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>
-  if (props.error) return <p>Error...{props.error.message}</p>
+  //  if (props.error) return <p>Error...{props.error.message}</p>
 
-  if (props.data && props.data.username) {
+  if (props.data && props.data.viewer.username) {
     return (
       <Fragment>
         <IconButton
@@ -28,7 +28,7 @@ function UserInfo(props: any) {
             className={classes.noMarginPadding}
           >
             <Avatar
-              alt={props.data.username}
+              alt={props.data.viewer.username}
               src={""}
               className={classes.noMarginPadding}
             >
@@ -43,8 +43,8 @@ function UserInfo(props: any) {
           open={Boolean(props.anchorEl)}
           onClose={props.handleMenuClose}
         >
-          <MenuItem onClick={props.nyamnyam}>
-            <Typography component="h6">{props.data.username}</Typography>
+          <MenuItem onClick={props.showUserInfo}>
+            <Typography component="h6">{props.data.viewer.username}</Typography>
           </MenuItem>
           <MenuItem onClick={props.handleMenuClose}>
             <Link to="/Profile" className={classes.link}>

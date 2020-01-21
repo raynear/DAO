@@ -119,11 +119,11 @@ function NoteProposal(props: any) {
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="caption" color="textSecondary">
-              Threshold
+              Thresholds
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={8} lg={8}>
-            <BarChart width={600} height={80} data={[{ name: "Threshold", winning: props.data.proposal.winningTh, electoral: props.data.proposal.electoralTh, "100": 100 }]} layout="vertical">
+            <BarChart width={600} height={80} data={[{ name: "Thresholds", winning: props.data.proposal.winningTh, electoral: props.data.proposal.electoralTh, "100": 100 }]} layout="vertical">
               <Bar dataKey="winning" fill="#82ca9d" />
               <Bar dataKey="electoral" fill="#3888c8" />
               <BarTooltip cursor={false} />
@@ -137,7 +137,7 @@ function NoteProposal(props: any) {
                 <tr>
                   <td style={{ float: "left" }}>
                     <Typography variant="body1" color="textPrimary">
-                      {" "}Total # of delegate :
+                      {" "}Total Delegation :
                     </Typography>
                   </td>
                   <td style={{ float: "right" }}>
@@ -146,6 +146,7 @@ function NoteProposal(props: any) {
                     </Typography>
                   </td>
                 </tr>
+                {/*
                 <tr>
                   <td style={{ float: "left" }}>
                     <Typography variant="body1" color="textPrimary">
@@ -158,6 +159,7 @@ function NoteProposal(props: any) {
                     </Typography>
                   </td>
                 </tr>
+                */}
               </tbody>
             </table>
           </Grid>

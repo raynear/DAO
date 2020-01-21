@@ -37,6 +37,16 @@ function NewAccountContainer(props: any) {
           }
           return true;
         }
+      },
+      minpass: {
+        message: "input more than :param character",
+        rule: (val: any, params: any) => {
+          if (val[0].length >= parseInt(params[0])) {
+            return true;
+          }
+          return false;
+        },
+        messageReplace: (msg: any, params: any) => msg.replace(':param', validator.helpers.toSentence(params))
       }
     },
     locale: "en",

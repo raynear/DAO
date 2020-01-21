@@ -284,6 +284,14 @@ mutation Finalize($Proposer:String!, $ProposalID:Int!){
 }
 `;
 
+export const REFRESH_TOKEN = gql`
+mutation RefreshToken($token:String!) {
+  refreshToken(token:$token) {
+    token
+  }
+}
+`;
+
 export const VIEWER = gql`
   query {
     viewer{

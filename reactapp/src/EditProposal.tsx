@@ -14,7 +14,7 @@ function EditProposal(props: any) {
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>;
-  if (props.error) return <p>Error!:</p>;
+  if (props.error) return <p>Error: Check your login status.</p>;
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
@@ -89,6 +89,7 @@ function EditProposal(props: any) {
             })}
 
             <Grid className={classes.item} item xs={12} md={12} lg={12}>
+              <Typography variant="subtitle2" color="textSecondary">Description</Typography>
               <TUIEditor
                 usageStatistics={false}
                 height="600px"
@@ -124,7 +125,7 @@ function EditProposal(props: any) {
               <Typography><b>Vote Duration</b></Typography>
             </Grid>
             <Grid className={clsx(classes.item, classes.center)} item xs={12} md={12} lg={12}>
-              <div style={{ textAlign: "center" }}>
+              <div>
                 <TextField
                   id="days"
                   type="number"
@@ -160,7 +161,7 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
-              <Typography><b>Minimum participation requirement by delegates for the vote to be valid : {props.values.electoralTh}</b></Typography>
+              <Typography><b>Participation Quorum : {props.values.electoralTh}</b></Typography>
               <Slider
                 value={props.values.electoralTh}
                 onChange={props.handleSliderChange("electoralTh")}
@@ -182,7 +183,7 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
-              <Typography><b>Minimum % of participating votes for a winning option to be valid : {props.values.winningTh}</b></Typography>
+              <Typography><b>Minimum Approval Rate to Pass : {props.values.winningTh}</b></Typography>
               <Slider
                 value={props.values.winningTh}
                 onChange={props.handleSliderChange("winningTh")}

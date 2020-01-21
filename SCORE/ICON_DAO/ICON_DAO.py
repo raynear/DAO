@@ -176,7 +176,7 @@ class ICON_DAO(IconScoreBase):
 
             # 최종 결과에서 electoral threshold 를 넘었는지 확인
             if (total_voting_power/_TotalDelegate)*100 < self._iproposal[_Proposer][pid][self.ELECTORALTH]:
-                self._proposal[_Proposer][pid][self.STATUS] = "Electoral Rejected"
+                self._proposal[_Proposer][pid][self.STATUS] = "Rejected"
                 return
 
             self._log.set(self._log.get()+"|3!|"+str(_TotalDelegate) +
@@ -203,7 +203,7 @@ class ICON_DAO(IconScoreBase):
             else:
                 self._log.set(self._log.get()+"|5-2!|"+"\r\n")
                 # 결과에 따라 no result, result 결과 proposal에 저장.
-                self._proposal[_Proposer][pid][self.STATUS] = "Winning Rejected"
+                self._proposal[_Proposer][pid][self.STATUS] = "Rejected"
 
     @external(readonly=True)
     def Log(self) -> str:

@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { VIEWER } from "./GQL";
 import { jsonRpcCall, governanceCall } from "./IconConnect";
-// import axios from "axios";
 
 import Proposals from "./Proposals";
 

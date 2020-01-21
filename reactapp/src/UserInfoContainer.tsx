@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
-import { LOG_OUT, GET_LOCAL_ME } from "./GQL";
+import { LOG_OUT, VIEWER } from "./GQL";
 
 import UserInfo from "./UserInfo";
 
@@ -31,11 +31,11 @@ function UserInfoContainer(props: any) {
     });
   };
 
-  function nyamnyam() {
-    client.writeData({ data: { snack: { open: true, message: "chitos", __typename: "snack" } } });
+  function showUserInfo() {
+    client.writeData({ data: { snack: { open: true, message: queryVal.data.viewer.username, __typename: "snack" } } });
   }
 
-  const queryVal = useQuery(GET_LOCAL_ME);
+  const queryVal = useQuery(VIEWER);
 
   return (<UserInfo
     {...queryVal}
@@ -45,7 +45,7 @@ function UserInfoContainer(props: any) {
     handleMenu={handleMenu}
     handleMenuClose={handleMenuClose}
     handleMenuLogout={handleMenuLogout}
-    nyamnyam={nyamnyam}
+    showUserInfo={showUserInfo}
   />);
 
 }

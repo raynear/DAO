@@ -16,7 +16,7 @@ function SignIn(props: any) {
             <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
               <TextField
                 id="username"
-                label="User Name"
+                label="Username"
                 name="username"
                 type="text"
                 value={props.signInfo.username}

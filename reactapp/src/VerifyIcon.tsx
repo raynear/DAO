@@ -25,6 +25,27 @@ function VerifyIcon(props: any) {
               <Grid item className={classes.item} xs={12} md={12} lg={12}>
                 <Typography>Verified Address: {props.verifiedAddress}</Typography>
               </Grid>
+              <Grid className={classes.item} item xs={12} md={12} lg={12}>
+                <br />
+                <Divider />
+                <br />
+              </Grid>
+              <Grid className={classes.item} item xs={12} md={12} lg={12}>
+                <Typography variant="subtitle1">Connected Address: <props.SelectedAddress /></Typography>
+              </Grid>
+              <Grid container className={classes.container}>
+                <Grid item className={classes.item} xs={6} md={6} lg={6}>
+                  <Button variant="contained" color="primary" fullWidth onClick={selectWallet} startIcon={<LooksOneOutlined />}>Verify ICON Address</Button>
+                </Grid>
+                <Grid item className={classes.item} xs={6} md={6} lg={6}>
+                  <Button variant="contained" color="primary" fullWidth onClick={props.callVerify} startIcon={<LooksTwoOutlined />}>Check Your Verified Address</Button>
+                </Grid>
+              </Grid>
+              <Grid className={classes.item} item xs={12} md={12} lg={12}>
+                <br />
+                <Divider />
+                <br />
+              </Grid>
               <Grid item className={classes.item} xs={12} md={12} lg={12}>
                 {props.isPRep &&
                   <>
@@ -39,21 +60,6 @@ function VerifyIcon(props: any) {
                   </>
                 }
               </Grid>
-              <Grid className={classes.item} item xs={12} md={12} lg={12}>
-                <br />
-                <Divider />
-                <br />
-                <Typography variant="subtitle1">Connected Address: <props.SelectedAddress /></Typography>
-              </Grid>
-              <Grid container className={classes.container}>
-                <Grid item className={classes.item} xs={6} md={6} lg={6}>
-                  <Button variant="contained" color="primary" fullWidth onClick={selectWallet} startIcon={<LooksOneOutlined />}>Verify ICON Address</Button>
-                </Grid>
-                <Grid item className={classes.item} xs={6} md={6} lg={6}>
-                  <Button variant="contained" color="primary" fullWidth onClick={props.callVerify} startIcon={<LooksTwoOutlined />}>Check Your Verify Info</Button>
-                </Grid>
-              </Grid>
-
             </Grid>
           </Paper>
         </Grid>
@@ -66,6 +72,27 @@ function VerifyIcon(props: any) {
           </Grid>
           <Grid item className={classes.item} xs={12} md={12} lg={12}>
             <Typography>Verified Address: {props.verifiedAddress}</Typography>
+          </Grid>
+          <Grid className={classes.item} item xs={12} md={12} lg={12}>
+            <br />
+            <Divider />
+            <br />
+          </Grid>
+          <Grid className={classes.item} item xs={12} md={12} lg={12}>
+            <Typography variant="subtitle1">Connected Address: <props.SelectedAddress /></Typography>
+          </Grid>
+          <Grid container className={classes.container}>
+            <Grid item className={classes.item} xs={6} md={6} lg={6}>
+              <Button variant="contained" color="primary" fullWidth onClick={selectWallet} startIcon={<LooksOneOutlined />}>Verify ICON Address</Button>
+            </Grid>
+            <Grid item className={classes.item} xs={6} md={6} lg={6}>
+              <Button variant="contained" color="primary" fullWidth onClick={props.callVerify} startIcon={<LooksTwoOutlined />}>Check Your Verified Address</Button>
+            </Grid>
+          </Grid>
+          <Grid className={classes.item} item xs={12} md={12} lg={12}>
+            <br />
+            <Divider />
+            <br />
           </Grid>
           <Grid item className={classes.item} xs={12} md={12} lg={12}>
             {props.isPRep &&
@@ -81,20 +108,7 @@ function VerifyIcon(props: any) {
               </>
             }
           </Grid>
-          <Grid className={classes.item} item xs={12} md={12} lg={12}>
-            <br />
-            <Divider />
-            <br />
-            <Typography variant="subtitle1">Connected Address: <props.SelectedAddress /></Typography>
-          </Grid>
-          <Grid container className={classes.container}>
-            <Grid item className={classes.item} xs={6} md={6} lg={6}>
-              <Button variant="contained" color="primary" fullWidth onClick={selectWallet} startIcon={<LooksOneOutlined />}>Verify ICON Address</Button>
-            </Grid>
-            <Grid item className={classes.item} xs={6} md={6} lg={6}>
-              <Button variant="contained" color="primary" fullWidth onClick={props.callVerify} startIcon={<LooksTwoOutlined />}>Check Your Verify Info</Button>
-            </Grid>
-          </Grid>
+
         </>
       );
     }

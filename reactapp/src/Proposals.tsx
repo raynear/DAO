@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import { Paper, Typography, Grid, Chip } from "@material-ui/core";
-import { Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
+import { MoreVert, ArrowRight, Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
 import Pagination from "react-js-pagination";
 import clsx from "clsx";
 
@@ -12,6 +12,8 @@ import "./paginate.css";
 function Proposals(props: any) {
   console.log("Proposals props", props);
   const classes = useStyles();
+
+  const select_items = [0, 1, 2, 3];
 
   // if (props.loading) return <p>Loading...</p>;
   // if (props.error) { console.log(props.error); return <p>Error!</p>; }
@@ -26,8 +28,8 @@ function Proposals(props: any) {
             </a>
           </Grid>
           <Grid item className={classes.item} xs={12} md={4} lg={4}>
-            <Typography variant="h6">Total Delegations :{props.pRepInfo.totalDelegation.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
-            <Typography variant="h6">My Voting Power :{props.pRepInfo.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
+            <Typography variant="h6">Total Delegations :{props.pRepInfo.totalDelegation.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+            <Typography variant="h6">My Voting Power :{props.pRepInfo.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
           </Grid>
         </Grid>
       </Paper>
@@ -62,15 +64,41 @@ function Proposals(props: any) {
                       </Typography>
                     </Grid>
                     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                      <ul>
-                        {item.select_item.map((selectItem: any, idx: number) => (
-                          <Typography variant="h6" key={idx} color="textSecondary">
-                            <li>
-                              {selectItem}
-                            </li>
-                          </Typography>
-                        ))}
-                      </ul>
+                      <table>
+                        <tbody>
+                          {select_items.map((itm: any, idx: number) => {
+                            const selectItem = item.select_item[idx];
+                            if (idx > item.select_item.length - 1) {
+                              return (
+                                <tr key={idx}>
+                                  <td>&nbsp;</td>
+                                  <td><Typography variant="h6" color="textSecondary">&nbsp;</Typography></td>
+                                </tr>
+                              );
+                            }
+                            return (
+                              <tr key={idx}>
+                                <td><ArrowRight /></td>
+                                <td>
+                                  <Typography variant="h6" color="textSecondary">{selectItem}</Typography>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                          {item.select_item.length - select_items.length > 0 &&
+                            <tr>
+                              <td>&nbsp;</td>
+                              <td><MoreVert /></td>
+                            </tr>
+                          }
+                          {item.select_item.length - select_items.length <= 0 &&
+                            <tr>
+                              <td>&nbsp;</td>
+                              <td><Typography variant="h6" key={idx} color="textSecondary">&nbsp;</Typography></td>
+                            </tr>
+                          }
+                        </tbody>
+                      </table>
                     </Grid>
                   </Grid>
                 </Paper>

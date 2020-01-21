@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "graphene_django",
-    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
+    # "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "social_django",
     "corsheaders",
     "sslserver",
@@ -51,8 +51,8 @@ INSTALLED_APPS = [
 AUTHENTICATION_BACKENDS = (
     "social_core.backends.kakao.KakaoOAuth2",
     "social_core.backends.google.GoogleOAuth2",
-    "django.contrib.auth.backends.ModelBackend",
     "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
 )
 
 SITE_ID = 1
@@ -63,11 +63,12 @@ GRAPHENE = {
 }
 
 GRAPHQL_JWT = {
-    'JWT_ALLOW_ARGUMENT': True,
     'JWT_VERIFY_EXPIRATION': True,
-    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
-    'JWT_EXPIRATION_DELTA': timedelta(minutes=20),
-    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+    'JWT_EXPIRATION_DELTA': timedelta(minutes=60),
+    'JWT_ALLOW_REFRESH': True,
+    # 'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+    # 'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+    # 'JWT_REFRESH_EXPIRED_HANDLER': lambda orig_iat, context: False,
 }
 
 MIDDLEWARE = [
