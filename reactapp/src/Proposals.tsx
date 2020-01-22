@@ -57,7 +57,7 @@ function Proposals(props: any) {
                       />
                     </Grid>
                     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                      <Typography variant="h5" color="textPrimary" gutterBottom>
+                      <Typography variant="h5" color="textPrimary" gutterBottom style={{ overflow: "hidden" }}>
                         <Link className={classes.link} to={"/Proposal/" + props.pRep + "/" + item.id} color="textPrimary">
                           <b>{item.id}.</b>{" "}{item.subject}
                         </Link>

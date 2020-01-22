@@ -69,7 +69,7 @@ function EditProposal(props: any) {
                     helperText={props.validator.message(
                       "select_item",
                       props.selectItems,
-                      "required|diff"
+                      "required|listFilled:" + String(idx) + "|diff"
                     )}
                     variant="outlined"
                     InputProps={{

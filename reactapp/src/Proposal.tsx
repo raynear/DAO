@@ -5,6 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, ReferenceLine, Tooltip as BarTooltip } fro
 import clsx from "clsx";
 
 import { TUIViewer } from "./TUIEditor";
+import { trackerURL } from "./Config";
 
 import useStyles from "./Style";
 
@@ -264,11 +265,11 @@ function Proposal(props: any) {
               Ending Time : {endTime.toString()} {leftHour > 0 && "(" + leftHour + " Hour " + leftMinute + " Minute Left)"}
             </Typography>
             <Typography variant="body1" color="textPrimary">
-              Transaction : <a href={"https://tracker.icon.foundation/transaction/0x" + props.proposal.transaction} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.transaction}</a>
+              Transaction : <a href={trackerURL + "transaction/0x" + props.proposal.transaction} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.transaction}</a>
             </Typography>
             {props.proposal.final !== "" &&
               <Typography variant="body1" color="textPrimary">
-                Finalize Transaction : <a href={"https://tracker.icon.foundation/transaction/0x" + props.proposal.final} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.final}</a>
+                Finalize Transaction : <a href={trackerURL + "transaction/0x" + props.proposal.final} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.final}</a>
               </Typography>
             }
           </Grid>
@@ -394,8 +395,8 @@ function Proposal(props: any) {
                 {props.votes.map((item: any, idx: any) => {
                   return (
                     <TableRow key={idx}>
-                      <TableCell align="center"><a href={"https://tracker.icon.foundation/address/" + item.voter} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{item.voter}</a></TableCell>
-                      <TableCell align="center"><a href={"https://tracker.icon.foundation/transaction/" + item.voteTxHash} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{item.voteTxHash}</a></TableCell>
+                      <TableCell align="center"><a href={trackerURL + "address/" + item.voter} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{item.voter}</a></TableCell>
+                      <TableCell align="center"><a href={trackerURL + "transaction/" + item.voteTxHash} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{item.voteTxHash}</a></TableCell>
                     </TableRow>
                   )
                 })}

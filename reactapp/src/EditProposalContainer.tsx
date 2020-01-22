@@ -58,6 +58,16 @@ function EditProposalContainer(props: any) {
           }
           return true;
         }
+      },
+      listFilled: {
+        message: "input every field",
+        rule: (val: any, params: any) => {
+          console.log("valval", val, params);
+          if (val[parseInt(params[0])] === "") {
+            return false;
+          }
+          return true;
+        }
       }
     },
     locale: "en",

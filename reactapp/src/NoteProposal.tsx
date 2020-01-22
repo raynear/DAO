@@ -123,9 +123,9 @@ function NoteProposal(props: any) {
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={8} lg={8}>
-            <BarChart width={600} height={80} data={[{ name: "Thresholds", winning: props.data.proposal.winningTh, electoral: props.data.proposal.electoralTh, "100": 100 }]} layout="vertical">
-              <Bar dataKey="winning" fill="#82ca9d" />
-              <Bar dataKey="electoral" fill="#3888c8" />
+            <BarChart width={600} height={80} data={[{ name: "Thresholds", "Minimum approval rate": props.data.proposal.winningTh, "Quorum": props.data.proposal.electoralTh, "100": 100 }]} layout="vertical">
+              <Bar dataKey="Minimum approval rate" fill="#82ca9d" />
+              <Bar dataKey="Quorum" fill="#3888c8" />
               <BarTooltip cursor={false} />
               <XAxis type="number" />
               <YAxis hide dataKey="name" type="category" />

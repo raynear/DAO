@@ -12,7 +12,7 @@ function VerifyIcon(props: any) {
 
   if (props.loading) return <p>Loading...</p>;
   if (props.error) return <p>Error!:{props.error.message}</p>;
-  if (props.data && props.data.username) {
+  if (props.data && props.data.viewer.username) {
 
     if (!props.activeStep) {
       return (
@@ -20,7 +20,7 @@ function VerifyIcon(props: any) {
           <Paper className={clsx(classes.paper, classes.center)}>
             <Grid container className={clsx(classes.container, classes.center)}>
               <Grid item className={classes.item} xs={12} md={12} lg={12}>
-                <Typography>Name: {props.data.username}</Typography>
+                <Typography>Name: {props.data.viewer.username}</Typography>
               </Grid>
               <Grid item className={classes.item} xs={12} md={12} lg={12}>
                 <Typography>Verified Address: {props.verifiedAddress}</Typography>
@@ -68,7 +68,7 @@ function VerifyIcon(props: any) {
       return (
         <>
           <Grid item className={classes.item} xs={12} md={12} lg={12}>
-            <Typography>Name: {props.data.username}</Typography>
+            <Typography>Name: {props.data.viewer.username}</Typography>
           </Grid>
           <Grid item className={classes.item} xs={12} md={12} lg={12}>
             <Typography>Verified Address: {props.verifiedAddress}</Typography>

@@ -1,21 +1,20 @@
 import React from "react";
 import { BrowserRouter } from "react-router-dom";
 
-import gql from "graphql-tag";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "react-apollo";
 import { InMemoryCache } from "apollo-cache-inmemory";
 
-import { GET_LOCAL_ME } from "./GQL";
-import { selectedIconService, jsonRpcSendTx } from "./IconConnect";
 import Cookies from "js-cookie";
 
+import { VIEWER } from "./GQL";
+import { selectedIconService, jsonRpcSendTx } from "./IconConnect";
 import LayoutContainer from "./LayoutContainer";
+import { graphqlURL, csrfURL } from "./Config";
 
 const client = new ApolloClient({
   // TODO : change on test serve
-  // uri: "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080/graphql/",
-  uri: "http://localhost:8080/graphql/",
+  uri: graphqlURL,
   // tell apollo to include credentials for csrf token protection
   credentials: "include",
   // async operation with fetch to get csrf token
@@ -23,8 +22,7 @@ const client = new ApolloClient({
     let csrf = Cookies.get("csrftoken");
     if (csrf === undefined) {
       // TODO : change on test serve
-      // let csrftoken = await fetch("http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080/csrf/")
-      let csrftoken = await fetch("http://localhost:8080/csrf/")
+      let csrftoken = await fetch(csrfURL)
         .then(response => response.json())
         .then(data => data.csrfToken);
       // set the cookie 'csrftoken'
@@ -60,7 +58,7 @@ function App(props: any) {
       // console.log("response json rpc");
       // console.log(payload);
     } else if (type === "RESPONSE_ADDRESS") {
-      client.writeData({ data: { icon_address: payload } });
+      client.writeData({ data: { connected_address: payload } });
       // console.log(client);
       sendVerify(payload);
     }
@@ -68,23 +66,14 @@ function App(props: any) {
   window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
 
   function sendVerify(address: string) {
-    client.query({ query: GET_LOCAL_ME }).then(async (result) => {
+    client.query({ query: VIEWER }).then(async (result) => {
       // console.log("reload OK");
       const lastBlock = await selectedIconService.getBlock('latest').execute();
-      const params = { "_BlockHash": lastBlock.blockHash, "_ID": result.data.username };
+      const params = { "_block_hash": lastBlock.blockHash, "_id": result.data.viewer.username };
 
-      jsonRpcSendTx(address, "Verify", params);
+      jsonRpcSendTx(address, "verify", params);
     })
   }
-
-  client.query({ query: gql`{ viewer{ username iconAddress }}` }).then((result: any) => {
-    client.writeData({ data: { username: result.data.viewer.username, icon_address: result.data.viewer.iconAddress } });
-    // client.query({ query: GET_LOCAL_ME }).then(result => {
-    // console.log("reload OK");
-    // })
-  }).catch((error: any) => {
-    // console.log("Not Logined");
-  })
 
   return (
     <BrowserRouter>

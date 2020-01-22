@@ -174,13 +174,13 @@ function ProposalContainer(props: any) {
     if (callResult) return;
 
     let votes = {};
-    const getVotesResp = await jsonRpcCall("GetVotes", { "_Proposer": pRep, "_ProposalID": id });
+    const getVotesResp = await jsonRpcCall("get_votes", { "_proposer": pRep, "_proposal_id": id });
     // console.log("GetVotesResp", GetVotesResp);
     if (getVotesResp) {
       votes = JSON.parse(getVotesResp).vote;
     }
 
-    const getProposalResp = await jsonRpcCall("GetProposal", { "_Proposer": pRep, "_ProposalID": id })
+    const getProposalResp = await jsonRpcCall("get_proposal", { "_proposer": pRep, "_proposal_id": id })
     // console.log("GetProposalResp", getProposalResp);
     if (getProposalResp) {
       let proposal = JSON.parse(getProposalResp);

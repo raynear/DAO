@@ -3,52 +3,49 @@ from iconservice import *
 TAG = 'ICON_DAO'
 
 
-class ICON_DAO(IconScoreBase):
-    BLOCKHEIGHT = "blockheight"
-    BLOCKHASH = "blockhash"
+class IconDAO(IconScoreBase):
+    BLOCK_HASH = "block_hash"
     ADDRESS = "address"
     ID = "ID"
 
     SUBJECT = "subject"
     CONTENTS = "contents"
     PROPOSER = "proposer"
-    ELECTORALTH = "electoral_threshold"
-    WINNINGTH = "winning_threshold"
-    EXPIREDATE = "expire_date"
-    SELECTITEM = "select_item"
+    ELECTORAL_TH = "electoral_threshold"
+    WINNING_TH = "winning_threshold"
+    EXPIRE_DATE = "expire_date"
+    SELECT_ITEM = "select_item"
     COUNT = "count"
-    VOTE = "vote"
     VOTER = "voter"
     WINNER = "winner"
     STATUS = "status"
     TX = "transaction"
     FINAL = "final"
 
-    DELEGATETXID = "final_delegate_txid"
-    DELEGATEAMOUNT = "final_delegate_amount"
+    DELEGATE_TX_ID = "final_delegate_tx_id"
+    DELEGATE_AMOUNT = "final_delegate_amount"
 
     _OWNER = "owner"
-    _READYTOOWNER = "ready_to_owner"
+    _READY_TO_OWNER = "ready_to_owner"
 
+    _VOTE = "vote"
     _VERIFY_ID = "verify_id"
     _PROPOSAL = "proposal"
 
     def __init__(self, db: IconScoreDatabase) -> None:
         super().__init__(db)
 
-        self._averify_id = DictDB(
-            self._VERIFY_ID, db, value_type=Address, depth=2)
+        self._a_verify_id = DictDB(self._VERIFY_ID, db, value_type=Address, depth=2)
         self._verify_id = DictDB(self._VERIFY_ID, db, value_type=str, depth=2)
 
         self._owner = VarDB(self._OWNER, db, value_type=Address)
-        self._ready_to_owner = VarDB(
-            self._READYTOOWNER, db, value_type=Address)
+        self._ready_to_owner = VarDB(self._READY_TO_OWNER, db, value_type=Address)
 
         self._proposal = DictDB(self._PROPOSAL, db, value_type=str, depth=3)
-        self._iproposal = DictDB(self._PROPOSAL, db, value_type=int, depth=3)
+        self._i_proposal = DictDB(self._PROPOSAL, db, value_type=int, depth=3)
 
-        self._vote = DictDB(self.VOTE, db, value_type=str, depth=4)
-        self._ivote = DictDB(self.VOTE, db, value_type=int, depth=4)
+        self._vote = DictDB(self._VOTE, db, value_type=str, depth=4)
+        self._i_vote = DictDB(self._VOTE, db, value_type=int, depth=4)
 
         self._log = VarDB("log", db, value_type=str)
 
@@ -60,126 +57,118 @@ class ICON_DAO(IconScoreBase):
         super().on_update()
 
     @external(readonly=False)
-    def TransferOwnership(self, _NewOwnerAddress: Address):
+    def transfer_ownership(self, _new_owner_address: Address):
         if self._owner.get() == self.msg.sender or self.owner == self.msg.sender:
-            self._ready_to_owner.set(_NewOwnerAddress)
+            self._ready_to_owner.set(_new_owner_address)
 
     @external(readonly=False)
-    def AcceptOwnership(self):
+    def accept_ownership(self):
         if self._ready_to_owner.get() == self.msg.sender:
             self._owner.set(self._ready_to_owner.get())
             self._ready_to_owner.remove()
 
     @external(readonly=False)
-    def Verify(self, _BlockHash: str, _ID: str):
-        self._averify_id[_ID][self.ADDRESS] = self.msg.sender
-        self._verify_id[str(self.msg.sender)][self.ID] = _ID
-        self._verify_id[str(self.msg.sender)][self.BLOCKHASH] = _BlockHash
+    def verify(self, _block_hash: str, _id: str):
+        self._a_verify_id[_id][self.ADDRESS] = self.msg.sender
+        self._verify_id[str(self.msg.sender)][self.ID] = _id
+        self._verify_id[str(self.msg.sender)][self.BLOCK_HASH] = _block_hash
 
     @external(readonly=True)
-    def GetVerifyInfoByAddress(self, _Address: Address) -> str:
+    def get_verify_info_by_address(self, _address: Address) -> str:
         return_json = dict()
-        return_json[self.ADDRESS] = str(_Address)
-        return_json[self.ID] = self._verify_id[str(_Address)][self.ID]
-        return_json[self.BLOCKHASH] = self._verify_id[str(
-            _Address)][self.BLOCKHASH]
+        return_json[self.ADDRESS] = str(_address)
+        return_json[self.ID] = self._verify_id[str(_address)][self.ID]
+        return_json[self.BLOCK_HASH] = self._verify_id[str(_address)][self.BLOCK_HASH]
 
         return json_dumps(return_json)
 
     @external(readonly=True)
-    def GetVerifyInfoByID(self, _ID: str) -> str:
-        AddressByID = self._averify_id[_ID][self.ADDRESS]
-        if _ID == self._verify_id[str(AddressByID)][self.ID]:
+    def get_verify_info_by_id(self, _id: str) -> str:
+        address_by_id = self._a_verify_id[_id][self.ADDRESS]
+        if _id == self._verify_id[str(address_by_id)][self.ID]:
             return_json = dict()
-            return_json[self.ADDRESS] = str(AddressByID)
-            return_json[self.ID] = self._verify_id[str(AddressByID)][self.ID]
-            return_json[self.BLOCKHASH] = self._verify_id[str(
-                AddressByID)][self.BLOCKHASH]
+            return_json[self.ADDRESS] = str(address_by_id)
+            return_json[self.ID] = self._verify_id[str(address_by_id)][self.ID]
+            return_json[self.BLOCK_HASH] = self._verify_id[str(address_by_id)][self.BLOCK_HASH]
 
             return json_dumps(return_json)
         else:
             return json_dumps(dict())
 
     @external(readonly=False)
-    def Vote(self, _Proposer: str, _ProposalID: int, _UserID: str, _VoteItem: int):
+    def vote(self, _proposer: str, _proposal_id: int, _user_id: str, _vote_item: int):
         if self._owner.get() == self.msg.sender:
-            pid = str(_ProposalID)
-            voter_address = str(self._averify_id[_UserID][self.ADDRESS])
-            if voter_address != None:
-                UserVoteIdx = self._ivote[_Proposer][pid][voter_address][self.COUNT]
-                if self._vote[_Proposer][pid][str(UserVoteIdx)][self.VOTER] != "":
-                    self._vote[_Proposer][pid][vid][self.TX] = bytes.hex(
-                        self.tx.hash)
-                    self._ivote[_Proposer][pid][str(
-                        UserVoteIdx)][self.SELECTITEM] = _VoteItem
+            pid = str(_proposal_id)
+            voter_address = str(self._a_verify_id[_user_id][self.ADDRESS])
+            if voter_address is not None:
+                user_vote_idx = self._i_vote[_proposer][pid][voter_address][self.COUNT]
+                if user_vote_idx != 0:
+                    self._vote[_proposer][pid][str(user_vote_idx)][self.TX] = bytes.hex(self.tx.hash)
+                    self._i_vote[_proposer][pid][str(user_vote_idx)][self.SELECT_ITEM] = _vote_item
                 else:
-                    vote_idx = self._ivote[_Proposer][pid][self.COUNT][self.COUNT] + 1
+                    vote_idx = self._i_vote[_proposer][pid][self.COUNT][self.COUNT] + 1
                     vid = str(vote_idx)
-                    self._vote[_Proposer][pid][vid][self.VOTER] = voter_address
-                    self._ivote[_Proposer][pid][vid][self.SELECTITEM] = _VoteItem
-                    self._vote[_Proposer][pid][vid][self.TX] = bytes.hex(
-                        self.tx.hash)
-                    self._ivote[_Proposer][pid][self.COUNT][self.COUNT] = vote_idx
-                    self._ivote[_Proposer][pid][voter_address][self.COUNT] = vote_idx
+                    self._vote[_proposer][pid][vid][self.VOTER] = voter_address
+                    self._i_vote[_proposer][pid][vid][self.SELECT_ITEM] = _vote_item
+                    self._vote[_proposer][pid][vid][self.TX] = bytes.hex(self.tx.hash)
+                    self._i_vote[_proposer][pid][self.COUNT][self.COUNT] = vote_idx
+                    self._i_vote[_proposer][pid][voter_address][self.COUNT] = vote_idx
 
     @external(readonly=True)
-    def GetVotes(self, _Proposer: str, _ProposalID: int) -> str:
-        pid = str(_ProposalID)
-        total_vote_cnt = self._ivote[_Proposer][pid][self.COUNT][self.COUNT]
+    def get_votes(self, _proposer: str, _proposal_id: int) -> str:
+        pid = str(_proposal_id)
+        total_vote_cnt = self._i_vote[_proposer][pid][self.COUNT][self.COUNT]
 
         return_json = dict()
         return_json['vote'] = []
         for i in range(total_vote_cnt):
             vid = str(i+1)
             return_json['vote'].append({
-                "voter": self._vote[_Proposer][pid][vid][self.VOTER],
-                "selectItem": self._ivote[_Proposer][pid][vid][self.SELECTITEM],
-                "voteTxHash": self._vote[_Proposer][pid][vid][self.TX],
-                "delegateTxID": self._vote[_Proposer][pid][vid][self.DELEGATETXID],
-                "delegateAmount": self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
+                "voter": self._vote[_proposer][pid][vid][self.VOTER],
+                "selectItem": self._i_vote[_proposer][pid][vid][self.SELECT_ITEM],
+                "voteTxHash": self._vote[_proposer][pid][vid][self.TX],
+                "delegateTxID": self._vote[_proposer][pid][vid][self.DELEGATE_TX_ID],
+                "delegateAmount": self._i_vote[_proposer][pid][vid][self.DELEGATE_AMOUNT]
             })
 
         return json_dumps(return_json)
 
     @external(readonly=False)
-    def Finalize(self, _Proposer: str, _ProposalID: int, _TotalDelegate: int, _FinalData: str):
+    def finalize(self, _proposer: str, _proposal_id: int, _total_delegate: int, _final_data: str):
         if self._owner.get() == self.msg.sender:
-            votes = json_loads(_FinalData)
+            votes = json_loads(_final_data)
 
-            self._log.set(self._log.get()+"|start|"+_FinalData)
-            pid = str(_ProposalID)
+            self._log.set(self._log.get()+"|start|"+_final_data)
+            pid = str(_proposal_id)
             for aVote in votes:
-                vid = str(self._ivote[_Proposer][pid]
-                          [aVote['voter']][self.COUNT])
-                self._vote[_Proposer][pid][vid][self.DELEGATETXID] = aVote['DelegateTxID']
-                self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT] = int(
-                    aVote['DelegateAmount'], 0)
+                vid = str(self._i_vote[_proposer][pid][aVote['voter']][self.COUNT])
+                self._vote[_proposer][pid][vid][self.DELEGATE_TX_ID] = aVote[self.DELEGATE_TX_ID]
+                self._i_vote[_proposer][pid][vid][self.DELEGATE_AMOUNT] = int(aVote[self.DELEGATE_AMOUNT], 0)
             self._log.set(self._log.get()+"|1!|\r\n")
 
             # amount를 각 select_item 별로 저장
             total_voting_power = 0
             result = dict()
-            vote_cnt = self._ivote[_Proposer][pid][self.COUNT][self.COUNT]
+            vote_cnt = self._i_vote[_proposer][pid][self.COUNT][self.COUNT]
             for i in range(vote_cnt):
                 vid = str(i+1)
-                select_item = self._ivote[_Proposer][pid][vid][self.SELECTITEM]
-                amount = self._ivote[_Proposer][pid][vid][self.DELEGATEAMOUNT]
-                self._log.set(self._log.get()+"|1-1!|" +
-                              str(select_item)+"|"+str(amount)+"\r\n")
+                select_item = self._i_vote[_proposer][pid][vid][self.SELECT_ITEM]
+                amount = self._i_vote[_proposer][pid][vid][self.DELEGATE_AMOUNT]
+                self._log.set(self._log.get()+"|1-1!|" + str(select_item)+"|"+str(amount)+"\r\n")
                 total_voting_power = total_voting_power + amount
                 if select_item in result:
                     result[select_item] = result[select_item] + amount
                 else:
                     result[select_item] = amount
-            self._log.set(self._log.get()+"|2!|"+str(vote_cnt)+"|"+str(total_voting_power) + "|" +
-                          json_dumps(result)+"\r\n")
+            self._log.set(self._log.get()+"|2!|"+str(vote_cnt)+"|"+str(total_voting_power) + "|"
+                          + json_dumps(result) + "\r\n")
 
             # 최종 결과에서 electoral threshold 를 넘었는지 확인
-            if (total_voting_power/_TotalDelegate)*100 < self._iproposal[_Proposer][pid][self.ELECTORALTH]:
-                self._proposal[_Proposer][pid][self.STATUS] = "Rejected"
+            if (total_voting_power/_total_delegate)*100 < self._i_proposal[_proposer][pid][self.ELECTORAL_TH]:
+                self._proposal[_proposer][pid][self.STATUS] = "Rejected"
                 return
 
-            self._log.set(self._log.get()+"|3!|"+str(_TotalDelegate) +
+            self._log.set(self._log.get()+"|3!|"+str(_total_delegate) +
                           "|3-1|"+str(total_voting_power)+"\r\n")
             # 가장 많이 투표받은 것 찾기
             most_voted_item = 0
@@ -190,103 +179,97 @@ class ICON_DAO(IconScoreBase):
                     most_voted_item = i
             self._log.set(self._log.get()+"|4!|"+str(most_voted_item)+"\r\n")
 
-            self._proposal[_Proposer][pid][self.FINAL] = bytes.hex(
-                self.tx.hash)
+            self._proposal[_proposer][pid][self.FINAL] = bytes.hex(self.tx.hash)
 
             # 최종 결과에서 winning threshold 를 넘은 아이템이 있는지 확인
-            if (most_voted/total_voting_power)*100 > self._iproposal[_Proposer][pid][self.WINNINGTH]:
+            if (most_voted/total_voting_power)*100 > self._i_proposal[_proposer][pid][self.WINNING_TH]:
                 self._log.set(self._log.get()+"|5-1!|"+"\r\n")
                 # winning th 넘음.
-                self._iproposal[_Proposer][pid][self.WINNER] = most_voted_item
+                self._i_proposal[_proposer][pid][self.WINNER] = most_voted_item
                 # 결과에 따라 no result, result 결과 proposal에 저장.
-                self._proposal[_Proposer][pid][self.STATUS] = "Approved"
+                self._proposal[_proposer][pid][self.STATUS] = "Approved"
             else:
                 self._log.set(self._log.get()+"|5-2!|"+"\r\n")
                 # 결과에 따라 no result, result 결과 proposal에 저장.
-                self._proposal[_Proposer][pid][self.STATUS] = "Rejected"
+                self._proposal[_proposer][pid][self.STATUS] = "Rejected"
 
     @external(readonly=True)
-    def Log(self) -> str:
+    def log(self) -> str:
         return self._log.get()
 
     @external(readonly=False)
-    def SetProposal(self, _Proposer: str, _Subject: str, _Contents: str, _ElectoralTH: int, _WinningTH: int, _ExpireDate: str, _SelectItems: str):
+    def set_proposal(self, _proposer: str, _subject: str, _contents: str, _electoral_th: int, _winning_th: int,
+                     _expire_date: str, _select_items: str):
         if self._owner.get() == self.msg.sender:
-            if self._averify_id[_Proposer][self.ADDRESS] == None:
+            if self._a_verify_id[_proposer][self.ADDRESS] is None:
                 revert()
-            if self._iproposal[_Proposer][self.ID][self.ID] > 0:
-                p_id = self._iproposal[_Proposer][self.ID][self.ID] + 1
+            if self._i_proposal[_proposer][self.ID][self.ID] > 0:
+                p_id = self._i_proposal[_proposer][self.ID][self.ID] + 1
             else:
                 p_id = 1
             pid = str(p_id)
-            self._iproposal[_Proposer][self.ID][self.ID] = p_id
-            self._proposal[_Proposer][pid][self.ADDRESS] = str(
-                self._averify_id[_Proposer][self.ADDRESS])
-            self._proposal[_Proposer][pid][self.SUBJECT] = _Subject
-            self._proposal[_Proposer][pid][self.CONTENTS] = _Contents
-            self._iproposal[_Proposer][pid][self.ELECTORALTH] = _ElectoralTH
-            self._iproposal[_Proposer][pid][self.WINNINGTH] = _WinningTH
-            self._proposal[_Proposer][pid][self.STATUS] = "Voting"
-            self._proposal[_Proposer][pid][self.EXPIREDATE] = _ExpireDate
-            self._proposal[_Proposer][pid][self.SELECTITEM] = _SelectItems
-            self._proposal[_Proposer][pid][self.TX] = bytes.hex(self.tx.hash)
-            self._ivote[_Proposer][pid][self.COUNT][self.COUNT] = 0
+            self._i_proposal[_proposer][self.ID][self.ID] = p_id
+            self._proposal[_proposer][pid][self.ADDRESS] = str(self._a_verify_id[_proposer][self.ADDRESS])
+            self._proposal[_proposer][pid][self.SUBJECT] = _subject
+            self._proposal[_proposer][pid][self.CONTENTS] = _contents
+            self._i_proposal[_proposer][pid][self.ELECTORAL_TH] = _electoral_th
+            self._i_proposal[_proposer][pid][self.WINNING_TH] = _winning_th
+            self._proposal[_proposer][pid][self.STATUS] = "Voting"
+            self._proposal[_proposer][pid][self.EXPIRE_DATE] = _expire_date
+            self._proposal[_proposer][pid][self.SELECT_ITEM] = _select_items
+            self._proposal[_proposer][pid][self.TX] = bytes.hex(self.tx.hash)
+            self._i_vote[_proposer][pid][self.COUNT][self.COUNT] = 0
 
     @external(readonly=True)
-    def GetLastProposalID(self, _Proposer: str) -> str:
-        return str(self._iproposal[_Proposer][self.ID][self.ID])
+    def get_last_proposal_id(self, _proposer: str) -> str:
+        return str(self._i_proposal[_proposer][self.ID][self.ID])
 
     @external(readonly=True)
-    def GetProposal(self, _Proposer: str, _ProposalID: int) -> str:
-        if self._iproposal[_Proposer][self.ID][self.ID] < _ProposalID:
-            return
-        pid = str(_ProposalID)
+    def get_proposal(self, _proposer: str, _proposal_id: int) -> str:
+        if self._i_proposal[_proposer][self.ID][self.ID] < _proposal_id:
+            return ""
+        pid = str(_proposal_id)
         return_json = dict()
         return_json[self.ID] = pid
-        return_json[self.ADDRESS] = self._proposal[_Proposer][pid][self.ADDRESS]
-        return_json[self.SUBJECT] = self._proposal[_Proposer][pid][self.SUBJECT]
-        return_json[self.CONTENTS] = self._proposal[_Proposer][pid][self.CONTENTS]
-        return_json[self.ELECTORALTH] = str(
-            self._iproposal[_Proposer][pid][self.ELECTORALTH])
-        return_json[self.WINNINGTH] = str(
-            self._iproposal[_Proposer][pid][self.WINNINGTH])
-        return_json[self.STATUS] = self._proposal[_Proposer][pid][self.STATUS]
-        return_json[self.EXPIREDATE] = self._proposal[_Proposer][pid][self.EXPIREDATE]
-        return_json[self.SELECTITEM] = self._proposal[_Proposer][pid][self.SELECTITEM]
-        return_json[self.TX] = self._proposal[_Proposer][pid][self.TX]
-        return_json[self.FINAL] = self._proposal[_Proposer][pid][self.FINAL]
-        return_json[self.WINNER] = self._proposal[_Proposer][pid][self.WINNER]
+        return_json[self.ADDRESS] = self._proposal[_proposer][pid][self.ADDRESS]
+        return_json[self.SUBJECT] = self._proposal[_proposer][pid][self.SUBJECT]
+        return_json[self.CONTENTS] = self._proposal[_proposer][pid][self.CONTENTS]
+        return_json[self.ELECTORAL_TH] = str(self._i_proposal[_proposer][pid][self.ELECTORAL_TH])
+        return_json[self.WINNING_TH] = str(self._i_proposal[_proposer][pid][self.WINNING_TH])
+        return_json[self.STATUS] = self._proposal[_proposer][pid][self.STATUS]
+        return_json[self.EXPIRE_DATE] = self._proposal[_proposer][pid][self.EXPIRE_DATE]
+        return_json[self.SELECT_ITEM] = self._proposal[_proposer][pid][self.SELECT_ITEM]
+        return_json[self.TX] = self._proposal[_proposer][pid][self.TX]
+        return_json[self.FINAL] = self._proposal[_proposer][pid][self.FINAL]
+        return_json[self.WINNER] = self._proposal[_proposer][pid][self.WINNER]
 
         return json_dumps(return_json)
 
     @external(readonly=True)
-    def GetProposals(self, _Proposer: str, _StartProposalID: int, _EndProposalID: int) -> str:
-        End = -1
-        lastProposalID = self._iproposal[_Proposer][self.ID][self.ID]
-        if lastProposalID == 0 or lastProposalID < _StartProposalID:
-            return
-        if lastProposalID+1 < _EndProposalID:
-            End = lastProposalID+1
+    def get_proposals(self, _proposer: str, _start_proposal_id: int, _end_proposal_id: int) -> str:
+        last_proposal_id = self._i_proposal[_proposer][self.ID][self.ID]
+        if last_proposal_id == 0 or last_proposal_id < _start_proposal_id:
+            return ""
+        if last_proposal_id+1 < _end_proposal_id:
+            end = last_proposal_id + 1
         else:
-            End = _EndProposalID
+            end = _end_proposal_id
 
         return_json = []
-        for i in range(_StartProposalID, End):
+        for i in range(_start_proposal_id, end):
             pid = str(i)
             json = dict()
             json[self.ID] = pid
-            json[self.SUBJECT] = self._proposal[_Proposer][pid][self.SUBJECT]
-            json[self.CONTENTS] = self._proposal[_Proposer][pid][self.CONTENTS]
-            json[self.ELECTORALTH] = str(
-                self._iproposal[_Proposer][pid][self.ELECTORALTH])
-            json[self.WINNINGTH] = str(
-                self._iproposal[_Proposer][pid][self.WINNINGTH])
-            json[self.STATUS] = self._proposal[_Proposer][pid][self.STATUS]
-            json[self.EXPIREDATE] = self._proposal[_Proposer][pid][self.EXPIREDATE]
-            json[self.SELECTITEM] = self._proposal[_Proposer][pid][self.SELECTITEM]
-            json[self.TX] = self._proposal[_Proposer][pid][self.TX]
-            json[self.FINAL] = self._proposal[_Proposer][pid][self.FINAL]
-            json[self.WINNER] = self._proposal[_Proposer][pid][self.WINNER]
+            json[self.SUBJECT] = self._proposal[_proposer][pid][self.SUBJECT]
+            json[self.CONTENTS] = self._proposal[_proposer][pid][self.CONTENTS]
+            json[self.ELECTORAL_TH] = str(self._i_proposal[_proposer][pid][self.ELECTORAL_TH])
+            json[self.WINNING_TH] = str(self._i_proposal[_proposer][pid][self.WINNING_TH])
+            json[self.STATUS] = self._proposal[_proposer][pid][self.STATUS]
+            json[self.EXPIRE_DATE] = self._proposal[_proposer][pid][self.EXPIRE_DATE]
+            json[self.SELECT_ITEM] = self._proposal[_proposer][pid][self.SELECT_ITEM]
+            json[self.TX] = self._proposal[_proposer][pid][self.TX]
+            json[self.FINAL] = self._proposal[_proposer][pid][self.FINAL]
+            json[self.WINNER] = self._proposal[_proposer][pid][self.WINNER]
 
             return_json.append(json)
 

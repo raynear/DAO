@@ -18,9 +18,9 @@ from iconsdk.wallet.wallet import KeyWallet
 import json
 
 import board.schema
-from board.icon_network import LOCAL_NET, SCORE_ADDRESS
+from board.icon_network import ICON_NETWORK, SCORE_ADDRESS
 
-NETWORK = LOCAL_NET
+NETWORK = ICON_NETWORK
 
 
 class UserType(DjangoObjectType):

@@ -24,9 +24,9 @@ from account.models import User
 
 from .models import ProposalModel, SelectItemModel, VoteModel
 
-from .icon_network import MAIN_NET, TEST_NET, TEST_NET3, LOCAL_NET, SCORE_ADDRESS, LOCAL_SCORE_ADDRESS
-NETWORK = LOCAL_NET
-SCORE = LOCAL_SCORE_ADDRESS
+from .icon_network import ICON_NETWORK, SCORE_ADDRESS
+NETWORK = ICON_NETWORK
+SCORE = SCORE_ADDRESS
 
 prep_required = user_passes_test(lambda u: u.is_prep)
 address_required = user_passes_test(lambda u: u.icon_address)
@@ -174,27 +174,13 @@ class PublishProposal(graphene.Mutation):
 
         icon_service = IconService(HTTPProvider(NETWORK, 3))
 
-        call = CallBuilder()\
-            .to(SCORE)\
-            .method("GetVerifyInfoByID")\
-            .params({"_ID": info.context.user.username})\
-            .build()
-
-        result = icon_service.call(call)
+        result = jsonRpcCall("get_verify_info_by_id", {
+            "_id": info.context.user.username})
         # print("AA:", result)
         result_json = json.loads(result)
         # print("BB:", result_json)
         if result_json['address'] != info.context.user.icon_address:
             return PublishProposal(proposal=None)
-
-        # call = CallBuilder()\
-        #     .to(SCORE)\
-        #     .method("GetLastProposalID")\
-        #     .params({"_Proposer": info.context.user.username})\
-        #     .build()
-
-        # result = icon_service.call(call)
-        # print("CC:", result)
 
         selectItems = SelectItemModel.objects.filter(proposal=proposal)
         _select_item = '['
@@ -215,8 +201,8 @@ class PublishProposal(graphene.Mutation):
             .to(SCORE)\
             .step_limit(10000000000)\
             .nid(3)\
-            .method("SetProposal")\
-            .params({"_Subject": proposal.subject, "_Contents": proposal.contents, "_Proposer": proposal.prep.username, "_ExpireDate": proposal.expire_at.isoformat(), "_SelectItems": _select_item, "_ElectoralTH": proposal.electoral_th, "_WinningTH": proposal.winning_th})\
+            .method("set_proposal")\
+            .params({"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_date": proposal.expire_at.isoformat(), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th})\
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
@@ -265,8 +251,8 @@ class VoteProposal(graphene.Mutation):
             .to(SCORE)\
             .step_limit(10000000000)\
             .nid(3)\
-            .method("Vote")\
-            .params({"_Proposer": proposer, "_ProposalID": proposal_id, "_UserID": info.context.user.username, "_VoteItem": select_item_index})\
+            .method("vote")\
+            .params({"_proposer": proposer, "_proposal_id": proposal_id, "_user_id": info.context.user.username, "_vote_item": select_item_index})\
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
@@ -363,23 +349,9 @@ class SetPRep(graphene.Mutation):
     def mutate(self, info, icon_address):
         user = info.context.user
 
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
-        call = CallBuilder()\
-            .to("cx0000000000000000000000000000000000000000")\
-            .method("getPRep")\
-            .params({"address": icon_address})\
-            .build()
+        prep_result = governanceCall("getPRep", {"address": icon_address})
 
-        prep_result = icon_service.call(call)
-
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
-        call = CallBuilder()\
-            .to(SCORE)\
-            .method("GetVerifyInfoByID")\
-            .params({"_ID": user.username})\
-            .build()
-
-        result = icon_service.call(call)
+        result = jsonRpcCall("get_verify_info_by_id", {"_id": user.username})
         result_json = json.loads(result)
 
         if prep_result and result_json['address'] == icon_address:
@@ -401,14 +373,7 @@ class AddIconAddress(graphene.Mutation):
     def mutate(self, info, icon_address):
         user = info.context.user
 
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
-        call = CallBuilder()\
-            .to(SCORE)\
-            .method("GetVerifyInfoByID")\
-            .params({"_ID": user.username})\
-            .build()
-
-        result = icon_service.call(call)
+        result = jsonRpcCall("get_verify_info_by_id", {"_id": user.username})
         result_json = json.loads(result)
 
         if result_json['address'] == icon_address:
@@ -428,14 +393,8 @@ class Finalize(graphene.Mutation):
     @prep_required
     @login_required
     def mutate(self, info, proposer, proposal_id):
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
-        call = CallBuilder()\
-            .to(SCORE)\
-            .method("GetProposal")\
-            .params({"_Proposer": proposer, "_ProposalID": proposal_id})\
-            .build()
-
-        proposal_result = icon_service.call(call)
+        proposal_result = jsonRpcCall(
+            "get_proposal", {"_proposer": proposer, "_proposal_id": proposal_id})
         result_json = json.loads(proposal_result)
         # print("Proposal!!!!!!!!!!", result_json)
 
@@ -443,7 +402,7 @@ class Finalize(graphene.Mutation):
             str(result_json['expire_date']))
 
         resp_vote = jsonRpcCall(
-            "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal_id})
+            "get_votes", {"_proposer": proposer, "_proposal_id": proposal_id})
 
         vote_json = json.loads(resp_vote)
         # print("getVotes!!!!!!!", resp_vote)
@@ -465,7 +424,7 @@ class Finalize(graphene.Mutation):
             # print("tx_amount", tx_amount)
             # print("td_id", tx_id)
             final_delegate_tx_list.append(
-                {"voter": a_vote['voter'], "DelegateTxID": final_delegate_tx['txHash'], "DelegateAmount": tx_amount})
+                {"voter": a_vote['voter'], "final_delegate_tx_id": final_delegate_tx['txHash'], "final_delegate_amount": tx_amount})
 
             if a_vote['selectItem'] in select_list:
                 select_list[a_vote['selectItem']] += tx_amount
@@ -473,13 +432,8 @@ class Finalize(graphene.Mutation):
                 select_list[a_vote['selectItem']] = tx_amount
 
         # print("select_list!!!!!!!!!!!!!!!!!!!!", select_list)
-        call = CallBuilder()\
-            .to("cx0000000000000000000000000000000000000000")\
-            .method("getPReps")\
-            .params({"blockHeight": final_blockheight})\
-            .build()
-
-        prep_result = icon_service.call(call)
+        prep_result = governanceCall(
+            "getPReps", {"blockHeight": final_blockheight})
 
         prep_delegate = 0
         for a_prep in prep_result['preps']:
@@ -498,8 +452,8 @@ class Finalize(graphene.Mutation):
             .to(SCORE)\
             .step_limit(10000000000)\
             .nid(3)\
-            .method("Finalize")\
-            .params({"_Proposer": proposer, "_ProposalID": proposal_id, "_TotalDelegate": prep_delegate, "_FinalData": json.dumps(final_delegate_tx_list)})\
+            .method("finalize")\
+            .params({"_proposer": proposer, "_proposal_id": proposal_id, "_total_delegate": prep_delegate, "_final_data": json.dumps(final_delegate_tx_list)})\
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
@@ -507,13 +461,8 @@ class Finalize(graphene.Mutation):
 
         # print("AAAAAAAAAAA")
 
-        call = CallBuilder()\
-            .to(SCORE)\
-            .method("GetProposal")\
-            .params({"_Proposer": proposer, "_ProposalID": proposal_id})\
-            .build()
-
-        proposal_result = icon_service.call(call)
+        proposal_result = jsonRpcCall(
+            "get_proposal", {"_proposer": proposer, "_proposal_id": proposal_id})
         result_json = json.loads(proposal_result)
 
         # print("BBBBBBBBBBB")
@@ -612,6 +561,17 @@ def get_final_delegate_tx(prep_address, address, block_height):
         return latest_tx
 
 
+def governanceCall(method, params):
+    icon_service = IconService(HTTPProvider(NETWORK, 3))
+    call = CallBuilder()\
+        .to("cx0000000000000000000000000000000000000000")\
+        .method(method)\
+        .params(params)\
+        .build()
+    result = icon_service.call(call)
+    return result
+
+
 def jsonRpcCall(method, params):
     icon_service = IconService(HTTPProvider(NETWORK, 3))
     call = CallBuilder()\
@@ -627,7 +587,7 @@ def finalize_vote(proposer, proposal_id, expire_datetime):
     final_blockheight = find_blockheight_from_datetime(expire_datetime)
 
     resp_vote = jsonRpcCall(
-        "GetVotes", {"_Proposer": proposer, "_ProposalID": proposal_id})
+        "get_votes", {"_proposer": proposer, "_proposal_id": proposal_id})
     vote_json = json.loads(resp_vote)
     final_delegate_tx_list = []
     select_list = {}

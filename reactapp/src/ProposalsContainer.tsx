@@ -55,7 +55,7 @@ function ProposalsContainer(props: any) {
   }
 
   async function getPRepInfo(pRepName: string) {
-    const getPRepAddressResp = await jsonRpcCall("GetVerifyInfoByID", { _ID: pRepName });
+    const getPRepAddressResp = await jsonRpcCall("get_verify_info_by_id", { _id: pRepName });
     const getPRepAddress = JSON.parse(getPRepAddressResp);
     // console.log("getPRepAddress", getPRepAddress);
 
@@ -105,7 +105,7 @@ function ProposalsContainer(props: any) {
 
   async function myVotingPower(pRepName: string, address: string) {
     // console.log(PRepName, address);
-    const getPRepAddressResp = await jsonRpcCall("GetVerifyInfoByID", { _ID: pRepName });
+    const getPRepAddressResp = await jsonRpcCall("get_verify_info_by_id", { _id: pRepName });
     // console.log(getPRepAddressResp);
     const getPRepAddress = JSON.parse(getPRepAddressResp);
     // console.log(getPRepAddress);
@@ -130,7 +130,7 @@ function ProposalsContainer(props: any) {
 
   if (flag === false) {
     if (proposals.length === 0) {
-      jsonRpcCall("GetProposals", { "_Proposer": selectedPRep, "_StartProposalID": (values.first).toString(), "_EndProposalID": (values.end).toString() }).then((result) => {
+      jsonRpcCall("get_proposals", { "_proposer": selectedPRep, "_start_proposal_id": (values.first).toString(), "_end_proposal_id": (values.end).toString() }).then((result) => {
         // console.log("GetProposals", result);
         if (result) {
           let proposals = JSON.parse(result);
@@ -159,7 +159,7 @@ function ProposalsContainer(props: any) {
     }
 
     if (values.total === 0) {
-      jsonRpcCall("GetLastProposalID", { "_Proposer": selectedPRep }).then((result) => {
+      jsonRpcCall("get_last_proposal_id", { "_proposer": selectedPRep }).then((result) => {
         // console.log("GetLastProposalID");
         // console.log(result);
         setValues({ ...values, total: parseInt(result) })

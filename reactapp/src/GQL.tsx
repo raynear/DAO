@@ -129,12 +129,6 @@ export const TOKEN_AUTH = gql`
   }
 `;
 
-export const GET_LOCAL_ME = gql`
-  query {
-    username @client
-  }
-`;
-
 export const GET_LOCAL_SNACK = gql`
   query {
     snack @client {
@@ -146,7 +140,7 @@ export const GET_LOCAL_SNACK = gql`
 
 export const GET_LOCAL_ADDRESS = gql`
   query {
-    icon_address @client
+    connected_address @client
   }
 `;
 
@@ -178,17 +172,6 @@ export const GET_PREPS = gql`
     }
   }
 `;
-
-export const GET_PREP = gql`
-query PRep($PRepName:String!){
-  prep(prepName:$PRepName){
-    id
-    username
-    iconAddress
-  }
-}
-`;
-
 
 export const GET_PROPOSAL4EDIT = gql`
   query Proposal4Edit($id: Int!) {

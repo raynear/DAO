@@ -52,7 +52,7 @@ function NoteProposalsContainer(props: any) {
 
   if (!flag) {
     if (values.total === 0) {
-      jsonRpcCall("GetLastProposalID", { "_Proposer": selectedPRep }).then((result) => {
+      jsonRpcCall("get_last_proposal_id", { "_proposer": selectedPRep }).then((result) => {
         // console.log("GetLastProposalID");
         // console.log(result);
         setValues({ ...values, total: parseInt(result) })
