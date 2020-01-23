@@ -4,7 +4,7 @@ import { Typography } from "@material-ui/core";
 import SimpleReactValidator from "simple-react-validator";
 import useForceUpdate from "./useForceUpdate";
 import { SET_USER, TOKEN_AUTH } from "./GQL";
-import { useMutation, useApolloClient } from "react-apollo";
+import { useMutation } from "react-apollo";
 
 import NewAccount from "./NewAccount";
 
@@ -12,7 +12,6 @@ function NewAccountContainer(props: any) {
   // console.log("NewAccount props", props);
   const forceUpdate = useForceUpdate();
 
-  const client = useApolloClient();
   const [mutateSetUser] = useMutation(SET_USER);
   const [mutateTokenAuth] = useMutation(TOKEN_AUTH);
 
@@ -89,12 +88,7 @@ function NewAccountContainer(props: any) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(result => {
-      // console.log(result);
-      client.writeData({
-        data: {
-          username: username
-        }
-      });
+      props.setActiveStep(props.activeStep + 1);
     });
   }
 
@@ -108,7 +102,6 @@ function NewAccountContainer(props: any) {
       if (result) {
         // console.log(result);
         logIn(signInfo.username, signInfo.password);
-        props.setActiveStep(props.activeStep + 1);
       }
     }
   }

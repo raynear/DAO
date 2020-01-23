@@ -137,7 +137,7 @@ function NoteProposal(props: any) {
                 <tr>
                   <td style={{ float: "left" }}>
                     <Typography variant="body1" color="textPrimary">
-                      {" "}Total Delegation :
+                      {" "}Total Delegates :
                     </Typography>
                   </td>
                   <td style={{ float: "right" }}>

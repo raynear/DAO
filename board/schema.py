@@ -378,6 +378,7 @@ class AddIconAddress(graphene.Mutation):
 
         if result_json['address'] == icon_address:
             user.icon_address = icon_address
+            user.is_prep = False
             user.save()
 
         return AddIconAddress(user=user)

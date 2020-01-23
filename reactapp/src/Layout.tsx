@@ -19,6 +19,8 @@ import Copyright from "./Copyright";
 
 import useStyles from "./Style";
 
+import iconLogo from "./img/Logo_horizon.png"
+
 const IconTheme = createMuiTheme({
   palette: {
     primary: {
@@ -42,13 +44,9 @@ function Layout(props: any) {
           className={classes.appBar}
         >
           <Toolbar className={classes.toolbar}>
-            <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
-              <Link to="/" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
-                <b>
-                  ICON-DAO
-              </b>
-              </Link>
-            </Typography>
+            <Link to="/" style={{ flexGrow: 1 }}>
+              <img width={200} src={iconLogo} alt="ICON Vote" />
+            </Link>
             <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
               <Link to="/HowTo" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
                 How-To

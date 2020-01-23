@@ -28,8 +28,32 @@ function Proposals(props: any) {
             </a>
           </Grid>
           <Grid item className={classes.item} xs={12} md={4} lg={4}>
-            <Typography variant="h6">Total Delegations :{props.pRepInfo.totalDelegation.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
-            <Typography variant="h6">My Voting Power :{props.pRepInfo.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+            <table>
+              <tbody>
+                <tr>
+                  <td>
+                    <Typography variant="h6">Total Delegations</Typography>
+                  </td>
+                  <td>
+                    <Typography variant="h6">:</Typography>
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    <Typography variant="h6">{props.pRepInfo.totalDelegation.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <Typography variant="h6">My Voting Power</Typography>
+                  </td>
+                  <td>
+                    <Typography variant="h6">:</Typography>
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    <Typography variant="h6">{props.pRepInfo.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </Grid>
         </Grid>
       </Paper>
@@ -56,10 +80,10 @@ function Proposals(props: any) {
                         color="primary"
                       />
                     </Grid>
-                    <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-                      <Typography variant="h5" color="textPrimary" gutterBottom style={{ overflow: "hidden" }}>
+                    <Grid item className={classes.grid} style={{ overflow: "hidden" }} xs={12} md={12} lg={12}>
+                      <Typography variant="h5" color="textPrimary" gutterBottom>
                         <Link className={classes.link} to={"/Proposal/" + props.pRep + "/" + item.id} color="textPrimary">
-                          <b>{item.id}.</b>{" "}{item.subject}
+                          <b>{item.id}.</b>{" "}{item.subject.substring(0, 14)} {item.subject.length > 14 && "..."}
                         </Link>
                       </Typography>
                     </Grid>
@@ -112,6 +136,7 @@ function Proposals(props: any) {
               totalItemsCount={props.itemCount}
               pageRangeDisplayed={5}
               onChange={props.handlePageChange}
+              activeLinkClass={"link"}
             />
           </Grid>
         </Grid>

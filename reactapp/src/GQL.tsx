@@ -170,6 +170,10 @@ export const GET_PREPS = gql`
       username
       iconAddress
     }
+    viewer{
+      username
+      iconAddress
+    }
   }
 `;
 

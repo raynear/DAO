@@ -129,7 +129,7 @@ function EditProposal(props: any) {
                 <TextField
                   id="days"
                   type="number"
-                  value={props.values.days}
+                  value={props.values.days.toString()}
                   onChange={props.handleProposalChange("days")}
                   variant="outlined"
                   inputProps={{ min: 0, max: 365, step: 1 }}
@@ -139,7 +139,7 @@ function EditProposal(props: any) {
                 <TextField
                   id="hours"
                   type="number"
-                  value={props.values.hours}
+                  value={props.values.hours.toString()}
                   onChange={props.handleProposalChange("hours")}
                   variant="outlined"
                   inputProps={{ min: 0, max: 24, step: 1 }}

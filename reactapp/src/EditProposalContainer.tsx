@@ -62,7 +62,6 @@ function EditProposalContainer(props: any) {
       listFilled: {
         message: "input every field",
         rule: (val: any, params: any) => {
-          console.log("valval", val, params);
           if (val[parseInt(params[0])] === "") {
             return false;
           }
@@ -112,8 +111,7 @@ function EditProposalContainer(props: any) {
   const handleProposalChange = (name: string) => (
     event: React.ChangeEvent<any>
   ) => {
-    // console.log(typeof event.target.value)
-    // console.log("~~~~~~~~~~~~~~~~~~~~~", name, event.target.value)
+    // console.log("~~~~~~~~~~~~~~~~~~~~~", name, event.target.value, parseInt(event.target.value))
 
     if (name === "days" || name === "hours") {
       if (event.target.value !== "") {

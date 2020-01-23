@@ -95,7 +95,7 @@ function Proposal(props: any) {
               return (
                 <tr key={idx}>
                   <td><ArrowRight /></td>
-                  <td style={{ minWidth: "100px" }}>
+                  <td style={{ minWidth: "200px" }}>
                     {props.votedIdx === idx &&
                       <Tooltip key={idx} title="Voted" placement="left">
                         <Typography variant="h6">{selectItem}</Typography>
@@ -105,7 +105,7 @@ function Proposal(props: any) {
                       <Typography variant="h6">{selectItem}</Typography>
                     }
                   </td>
-                  <td align="right" style={{ minWidth: "50px" }}><Typography variant="h6">{" " + voteRate + " %"}</Typography></td>
+                  <td align="right" style={{ minWidth: "50px" }}><Typography variant="h6" color="textSecondary">{" " + voteRate + " %"}</Typography></td>
                   <td align="right" style={{ minWidth: "200px" }}><Typography variant="h6">{props.votedPowerRate.length > 0 && " " + props.votedPowerRate[idx].icx.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography></td>
                 </tr>
               );
@@ -120,25 +120,38 @@ function Proposal(props: any) {
     return (
       <FormControl>
         <RadioGroup value={props.voteSelect} onChange={props.handleChange}>
-          {props.proposal.select_item.map(
-            (selectItem: any, idx: number) => {
-              let voteRate = 0;
-              try {
-                voteRate = props.votedPowerRate[idx].voted;
-              } catch {
-                voteRate = 0;
-              } finally {
-              }
-              return (
-                <FormControlLabel
-                  key={idx}
-                  control={<Radio />}
-                  value={idx}
-                  label={selectItem + " " + voteRate + " % " + props.votedPowerRate[idx].icx.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
-                />
-              );
-            }
-          )}
+          <table>
+            <tbody>
+              {props.proposal.select_item.map(
+                (selectItem: any, idx: number) => {
+                  let voteRate = 0;
+                  try {
+                    voteRate = props.votedPowerRate[idx].voted;
+                  } catch {
+                    voteRate = 0;
+                  } finally {
+                  }
+                  return (
+                    <tr key={idx}>
+                      <td style={{ minWidth: "200px" }}>
+                        <FormControlLabel
+                          control={<Radio />}
+                          value={idx}
+                          label={<Typography variant="h6" color="textPrimary">{selectItem}</Typography>}
+                        />
+                      </td>
+                      <td align="right" style={{ minWidth: "50px" }}>
+                        <Typography variant="h6" color="textSecondary">{voteRate + " %"}</Typography>
+                      </td>
+                      <td align="right" style={{ minWidth: "200px" }}>
+                        <Typography variant="h6" color="textSecondary">{props.votedPowerRate[idx].icx.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+                      </td>
+                    </tr>
+                  );
+                }
+              )}
+            </tbody>
+          </table>
         </RadioGroup>
       </FormControl>
     );
@@ -264,11 +277,11 @@ function Proposal(props: any) {
             <Typography variant="body1" color="textPrimary">
               Ending Time : {endTime.toString()} {leftHour > 0 && "(" + leftHour + " Hour " + leftMinute + " Minute Left)"}
             </Typography>
-            <Typography variant="body1" color="textPrimary">
+            <Typography variant="body1" color="textPrimary" style={{ overflow: "auto" }}>
               Transaction : <a href={trackerURL + "transaction/0x" + props.proposal.transaction} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.transaction}</a>
             </Typography>
             {props.proposal.final !== "" &&
-              <Typography variant="body1" color="textPrimary">
+              <Typography variant="body1" color="textPrimary" style={{ overflow: "auto" }}>
                 Finalize Transaction : <a href={trackerURL + "transaction/0x" + props.proposal.final} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.final}</a>
               </Typography>
             }
@@ -283,8 +296,8 @@ function Proposal(props: any) {
               VOTING PROGRESS
             </Typography>
           </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={8} lg={8}>
-            <BarChart width={600} height={70} data={[{ name: "Electoral Threshold", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
+          <Grid item className={classes.paddingSide} style={{ overflow: "auto" }} xs={12} md={8} lg={8}>
+            <BarChart width={600} height={70} data={[{ name: "Minimum approval rate", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
               <Bar dataKey="voted" stackId="a" fill="#82ca9d" />
               <Bar dataKey="left" stackId="a" fill="#888888" />
               <Bar dataKey="100" stackId="a" fill="#FFFFFF" />
@@ -300,7 +313,7 @@ function Proposal(props: any) {
                 <tr>
                   <td style={{ float: "left" }}>
                     <Typography variant="body1" color="textPrimary">
-                      {" "}Total # of delegate :
+                      {" "}Total # of delegates :
                     </Typography>
                   </td>
                   <td style={{ float: "right" }}>
@@ -383,7 +396,7 @@ function Proposal(props: any) {
               VOTES
             </Typography>
           </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+          <Grid item className={classes.paddingSide} style={{ overflow: "auto" }} xs={12} md={12} lg={12}>
             <Table className={classes.table} aria-label="simple table">
               <TableHead>
                 <TableRow>

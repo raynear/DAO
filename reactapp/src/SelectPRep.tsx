@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Paper, List, ListSubheader, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import { FiberManualRecord } from "@material-ui/icons";
+import { Star, FiberManualRecord } from "@material-ui/icons";
 import useStyles from "./Style";
 
 function SelectPRep(props: any) {
@@ -8,13 +8,29 @@ function SelectPRep(props: any) {
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>
-  if (props.error) { return <p>Error...</p> }// console.log("error", props.error); 
+  if (props.error) return <p>Error...</p>
 
-  let allPRep;
+  let allPRep: any[] = [];
   try {
-    allPRep = props.data.allPrep;
+    for (let i = 0; i < props.data.allPrep.length; i++) {
+      for (let j = 0; j < props.delegations.length; j++) {
+        if (props.data.allPrep[i].iconAddress === props.delegations[j].address) {
+          allPRep.push({ username: props.data.allPrep[i].username, isMyPRep: true })
+        }
+      }
+    }
+    for (let i = 0; i < props.data.allPrep.length; i++) {
+      let flag = false;
+      for (let j = 0; j < allPRep.length; j++) {
+        if (props.data.allPrep[i].username === allPRep[j].username) {
+          flag = true;
+        }
+      }
+      if (!flag) {
+        allPRep.push({ username: props.data.allPrep[i].username, isMyPRep: false })
+      }
+    }
   } catch {
-    allPRep = [];
   }
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
@@ -29,9 +45,18 @@ function SelectPRep(props: any) {
                 </ListSubheader>
               }
             >
-              {allPRep.map((item: any) => (
-                <ListItem key={item.id} button onClick={() => props.handleClick(item.username)}>
-                  <ListItemIcon><FiberManualRecord /></ListItemIcon>
+              {allPRep.map((item: any, idx: number) => (
+                <ListItem key={idx} button onClick={() => props.handleClick(item.username)}>
+                  {item.isMyPRep &&
+                    <ListItemIcon>
+                      <Star />
+                    </ListItemIcon>
+                  }
+                  {!item.isMyPRep &&
+                    <ListItemIcon>
+                      <FiberManualRecord />
+                    </ListItemIcon>
+                  }
                   <ListItemText>{item.username}</ListItemText>
                 </ListItem>
               ))}

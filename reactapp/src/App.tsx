@@ -7,8 +7,6 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 
 import Cookies from "js-cookie";
 
-import { VIEWER } from "./GQL";
-import { selectedIconService, jsonRpcSendTx } from "./IconConnect";
 import LayoutContainer from "./LayoutContainer";
 import { graphqlURL, csrfURL } from "./Config";
 
@@ -47,33 +45,6 @@ const client = new ApolloClient({
 });
 
 function App(props: any) {
-
-  const eventHandler = async (event: any) => {
-    const type = event.detail.type;
-    const payload = event.detail.payload;
-    if (type === "RESPONSE_SIGNING") {
-      // console.log("response signing");
-      // console.log(payload); // e.g., 'q/dVc3qj4En0GN+...'
-    } else if (type === "RESPONSE_JSON-RPC") {
-      // console.log("response json rpc");
-      // console.log(payload);
-    } else if (type === "RESPONSE_ADDRESS") {
-      client.writeData({ data: { connected_address: payload } });
-      // console.log(client);
-      sendVerify(payload);
-    }
-  };
-  window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
-
-  function sendVerify(address: string) {
-    client.query({ query: VIEWER }).then(async (result) => {
-      // console.log("reload OK");
-      const lastBlock = await selectedIconService.getBlock('latest').execute();
-      const params = { "_block_hash": lastBlock.blockHash, "_id": result.data.viewer.username };
-
-      jsonRpcSendTx(address, "verify", params);
-    })
-  }
 
   return (
     <BrowserRouter>
