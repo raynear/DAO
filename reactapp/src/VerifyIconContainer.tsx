@@ -63,15 +63,17 @@ function VerifyIconContainer(props: any) {
 
     let PRepList = await governanceCall("getPReps", { "startRanking": "0x1", "endRanking": "0x60" });
     // console.log("PRepList", PRepList);
-    PRepList.preps.forEach((item: any, idx: number, array: any) => {
-      if (item.address === result_json.address) {
+    for (let i = 0; i < PRepList.preps.length; i++) {
+      const aPRep = PRepList.preps[i];
+      if (aPRep.address === result_json.address) {
         setIsPRep(true);
 
         newPRepPage(result_json.address);
         setNotice(msgForNotice[2]);
         return;
       }
-    });
+    }
+
     if (result_json.address) {
       addIconAddress(result_json.address);
       setNotice(msgForNotice[3]);
