@@ -138,12 +138,6 @@ export const GET_LOCAL_SNACK = gql`
   }
 `;
 
-export const GET_LOCAL_ADDRESS = gql`
-  query {
-    connected_address @client
-  }
-`;
-
 export const SET_USER = gql`
   mutation SetUser($username: String!, $password: String!) {
     setUser(username: $username, password: $password) {
@@ -167,10 +161,6 @@ export const GET_PREPS = gql`
   query {
     allPrep{
       id
-      username
-      iconAddress
-    }
-    viewer{
       username
       iconAddress
     }

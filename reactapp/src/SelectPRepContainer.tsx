@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks"
-import { GET_PREPS } from "./GQL";
+import { GET_PREPS, VIEWER } from "./GQL";
 import { jsonRpcCall, governanceCall } from "./IconConnect";
 import SelectPRep from "./SelectPRep";
 
@@ -14,15 +14,16 @@ function SelectPRepContainer(props: any) {
     props.history.push("/Proposals/" + PRepName)
   }
 
-  if (queryVal.data && !delegations) {
-    jsonRpcCall("get_verify_info_by_id", { "_id": queryVal.data.viewer.username }).then((result) => {
+  const queryViewer = useQuery(VIEWER);
+
+  if (queryViewer.data && queryViewer.data.viewer && queryViewer.data.viewer.username && !delegations) {
+    jsonRpcCall("get_verify_info_by_id", { "_id": queryViewer.data.viewer.username }).then((result) => {
       const resultJson = JSON.parse(result);
       governanceCall("getDelegation", { "address": resultJson.address }).then((result2) => {
         setDelegations(result2.delegations);
       });
     });
   }
-  // myPReps list 상위로 배치하기
 
   return (
     <SelectPRep

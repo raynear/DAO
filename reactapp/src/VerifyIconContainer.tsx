@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
-import { NEW_PREP, ADD_ICON_ADDRESS, VIEWER, GET_LOCAL_ADDRESS } from "./GQL";
+import { NEW_PREP, ADD_ICON_ADDRESS, VIEWER } from "./GQL";
 
 import { jsonRpcCall, jsonRpcSendTx, governanceCall, selectedIconService } from "./IconConnect";
 
@@ -18,14 +18,15 @@ function VerifyIconContainer(props: any) {
     ("You are verified as User")
   ];
 
-  const [iconAddress, setIconAddress] = useState("");
   const [notice, setNotice] = useState(msgForNotice[0]);
   const [isPRep, setIsPRep] = useState(false);
   const [verifiedAddress, setVerifiedAddress] = useState("");
+  const [flag, setFlag] = useState(true);
+  const [connectedAddress, setConnectedAddress] = useState("");
   const [mutateNewPRep] = useMutation(NEW_PREP);
   const [mutateAddIconAddress] = useMutation(ADD_ICON_ADDRESS);
 
-  const eventHandler = async (event: any) => {
+  const eventHandler = (event: any) => {
     const type = event.detail.type;
     const payload = event.detail.payload;
     if (type === "RESPONSE_SIGNING") {
@@ -36,12 +37,15 @@ function VerifyIconContainer(props: any) {
       // console.log(payload);
       setNotice(msgForNotice[1]);
     } else if (type === "RESPONSE_ADDRESS") {
-      client.writeData({ data: { connected_address: payload } });
-      // console.log(client);
+      // console.log("response!!!!", event, event.detail);
       sendVerify(payload);
+      setConnectedAddress(payload);
     }
   };
-  window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
+  if (flag) {
+    setFlag(false);
+    window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
+  }
 
   function sendVerify(address: string) {
     client.query({ query: VIEWER }).then(async (result) => {
@@ -80,17 +84,6 @@ function VerifyIconContainer(props: any) {
     }
   }
 
-  function SelectedAddress() {
-    const { loading, error, data } = useQuery(GET_LOCAL_ADDRESS);
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error!:{error.message}</p>;
-    if (data && data.connected_address) {
-      setIconAddress(data.connected_address);
-      return <>{data.connected_address}</>
-    }
-    return <>{" "}</>
-  }
-
   function newPRepPage(address: string) {
     mutateNewPRep({ variables: { Address: address } }).then(() => {
       client.writeData({ data: { snack: { open: true, message: "You Are Verified as P-Rep", __typename: "snack" } } })
@@ -108,11 +101,10 @@ function VerifyIconContainer(props: any) {
   return (<VerifyIcon
     {...queryVal}
     activeStep={props.activeStep}
-    SelectedAddress={SelectedAddress}
+    connectedAddress={connectedAddress}
     newPRepPage={newPRepPage}
     addIconAddress={addIconAddress}
     callVerify={callVerify}
-    iconAddress={iconAddress}
     verifiedAddress={verifiedAddress}
     isPRep={isPRep}
     notice={notice}

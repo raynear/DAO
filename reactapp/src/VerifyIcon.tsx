@@ -22,7 +22,7 @@ function VerifyIcon(props: any) {
           <Typography variant="h6" color="textPrimary">Verified Address: {props.verifiedAddress}</Typography>
         </Grid>
         <Grid className={classes.item} item xs={12} md={12} lg={12}>
-          <Typography variant="subtitle1" color="textSecondary">Connected Address: <props.SelectedAddress /></Typography>
+          <Typography variant="subtitle1" color="textSecondary">Connected Address: {props.connectedAddress}</Typography>
         </Grid>
         <Grid className={classes.item} item xs={12} md={12} lg={12}>
           <br />
