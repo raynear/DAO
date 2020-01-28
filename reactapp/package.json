@@ -79,5 +79,5 @@
     ]
   },
   "devDependencies": {},
-  "proxy": "http://localhost:8080"
+  "proxy": "https://13.58.159.193:80"
 }

@@ -3,6 +3,7 @@ import useStyles from "./Style";
 import { Typography, Grid, Paper } from "@material-ui/core";
 import clsx from "clsx";
 import { Player, ControlBar } from "video-react";
+import { nodeURL } from "./Config";
 
 import './video-react.css';
 
@@ -22,7 +23,7 @@ function LandingPage(props: any) {
             <br />
             <br />
             <Player autoPlay>
-              <source src="http://localhost:8080/static/IconVoteIntroduction.mp4" />
+              <source src={nodeURL + "static/IconVoteIntroduction.mp4"} />
               <ControlBar autoHide={true} />
             </Player>
             <br />

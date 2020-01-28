@@ -1,2 +1,2 @@
-ICON_NETWORK = "http://localhost:9000"
+ICON_NETWORK = "https://ctz.solidwallet.io"
 SCORE_ADDRESS = "cx9e3716dd51af8a389e18ff2751a0812175324489"

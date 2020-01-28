@@ -29,7 +29,7 @@ export async function jsonRpcSendTx(fromWallet: string, methodName: string, para
   var txObj = txBuilder
     .from(fromWallet)
     .to(CONTRACT)
-    .nid(IconConverter.toBigNumber("3"))
+    .nid(IconConverter.toBigNumber("1"))
     .version(IconConverter.toBigNumber("3"))
     .stepLimit(IconConverter.toBigNumber("100000000"))
     .timestamp(timestamp.valueOf() * 1000)
@@ -73,7 +73,7 @@ export async function governanceSendTx(fromWallet: string, methodName: string, p
   var txObj = txBuilder
     .from(fromWallet)
     .to("cx0000000000000000000000000000000000000000")
-    .nid(IconConverter.toBigNumber("3"))
+    .nid(IconConverter.toBigNumber("1"))
     .version(IconConverter.toBigNumber("3"))
     .stepLimit(IconConverter.toBigNumber("100000000"))
     .timestamp(timestamp.valueOf() * 1000)
@@ -117,7 +117,7 @@ export async function networkProposalSendTx(fromWallet: string, methodName: stri
   var txObj = txBuilder
     .from(fromWallet)
     .to("cx0000000000000000000000000000000000000001")
-    .nid(IconConverter.toBigNumber("3"))
+    .nid(IconConverter.toBigNumber("1"))
     .version(IconConverter.toBigNumber("3"))
     .stepLimit(IconConverter.toBigNumber("100000000"))
     .timestamp(timestamp.valueOf() * 1000)

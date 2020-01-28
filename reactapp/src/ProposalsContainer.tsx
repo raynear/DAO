@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { VIEWER } from "./GQL";
 import { jsonRpcCall, governanceCall } from "./IconConnect";
+import axios from "axios";
 
 import Proposals from "./Proposals";
 
@@ -60,46 +61,56 @@ function ProposalsContainer(props: any) {
     // console.log("getPRepAddress", getPRepAddress);
 
     const getPRepResp = await governanceCall("getPRep", { address: getPRepAddress.address });
-    // console.log("getPRepResp", getPRepResp);
+    console.log("getPRepResp", getPRepResp);
 
-    // TODO : real server로 바뀌면 삭제
-    // const detail = await axios.get(getPRepResp.details);
-    const detail = {
-      "representative": {
-        "logo": {
-          "logo_256": "https://www.theuc.xyz/ubikprep/ubik256x256.png",
-          "logo_1024": "https://www.theuc.xyz/ubikprep/ubik1024x1024.png",
-          "logo_svg": "https://www.theuc.xyz/ubikprep/ubik1024x1024.svg"
-        },
-        "media": {
-          "steemit": "https://steemitwallet.com/@ubikcapital",
-          "twitter": "https://twitter.com/ubikcapital",
-          "youtube": "https://www.youtube.com/channel/UCS9knn2BSqwEZ_WqjPFOFrA?view_as=subscriber",
-          "facebook": "",
-          "github": "https://github.com/ubikcapital",
-          "reddit": "https://www.reddit.com/user/UbikCapital",
-          "keybase": "https://keybase.io/ubikcosmos",
-          "telegram": "https://t.me/ubikcapital",
-          "wechat": ""
-        }
-      },
-      "server": {
-        "location": {
-          "country": "USA",
-          "city": "Detroit"
-        },
-        "server_type": "cloud",
-        "api_endpoint": "13.58.103.19:9000"
+    const detail = await axios.get(getPRepResp.details, {
+      headers: {
+        'Access-Control-Allow-Origin': '*'
       }
-    };
+    });
+    console.log("detail", detail);
+    // TODO : real server로 바뀌면 삭제
+    // const detail = {
+    //   "representative": {
+    //     "logo": {
+    //       "logo_256": "https://www.theuc.xyz/ubikprep/ubik256x256.png",
+    //       "logo_1024": "https://www.theuc.xyz/ubikprep/ubik1024x1024.png",
+    //       "logo_svg": "https://www.theuc.xyz/ubikprep/ubik1024x1024.svg"
+    //     },
+    //     "media": {
+    //       "steemit": "https://steemitwallet.com/@ubikcapital",
+    //       "twitter": "https://twitter.com/ubikcapital",
+    //       "youtube": "https://www.youtube.com/channel/UCS9knn2BSqwEZ_WqjPFOFrA?view_as=subscriber",
+    //       "facebook": "",
+    //       "github": "https://github.com/ubikcapital",
+    //       "reddit": "https://www.reddit.com/user/UbikCapital",
+    //       "keybase": "https://keybase.io/ubikcosmos",
+    //       "telegram": "https://t.me/ubikcapital",
+    //       "wechat": ""
+    //     }
+    //   },
+    //   "server": {
+    //     "location": {
+    //       "country": "USA",
+    //       "city": "Detroit"
+    //     },
+    //     "server_type": "cloud",
+    //     "api_endpoint": "13.58.103.19:9000"
+    //   }
+    // };
 
     let votingPower = 0;
     if (queryVal.data && queryVal.data.viewer && queryVal.data.viewer.iconAddress) {
       // console.log("iconAddress", queryVal.data.viewer);
       votingPower = await myVotingPower(pRepName, queryVal.data.viewer.iconAddress);
     }
+    let logo = "https://www.theuc.xyz/ubikprep/ubik1024x1024.png";
 
-    setPRepInfo({ name: getPRepResp.name, logo: detail.representative.logo.logo_1024, website: getPRepResp.website, totalDelegation: (parseInt(getPRepResp.delegated, 16) / 10 ** 18), myVotingPower: votingPower });
+    if (detail.data && detail.data.representative && detail.data.representative.logo && detail.data.representative.logo.logo_1024) {
+      logo = detail.data.representative.logo.logo_1024;
+    }
+
+    setPRepInfo({ name: getPRepResp.name, logo: logo, website: getPRepResp.website, totalDelegation: (parseInt(getPRepResp.delegated, 16) / 10 ** 18), myVotingPower: votingPower });
     // console.log("detail", detail.representative.logo.logo_1024);
   }
 

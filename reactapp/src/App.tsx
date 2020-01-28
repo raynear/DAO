@@ -11,7 +11,6 @@ import LayoutContainer from "./LayoutContainer";
 import { graphqlURL, csrfURL } from "./Config";
 
 const client = new ApolloClient({
-  // TODO : change on test serve
   uri: graphqlURL,
   // tell apollo to include credentials for csrf token protection
   credentials: "include",
@@ -19,7 +18,6 @@ const client = new ApolloClient({
   request: async operation => {
     let csrf = Cookies.get("csrftoken");
     if (csrf === undefined) {
-      // TODO : change on test serve
       let csrftoken = await fetch(csrfURL)
         .then(response => response.json())
         .then(data => data.csrfToken);
