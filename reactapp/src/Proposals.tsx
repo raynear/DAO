@@ -10,7 +10,7 @@ import useStyles from "./Style";
 import "./paginate.css";
 
 function Proposals(props: any) {
-  console.log("Proposals props", props);
+  // console.log("Proposals props", props);
   const classes = useStyles();
 
   const select_items = [0, 1, 2, 3];

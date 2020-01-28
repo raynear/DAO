@@ -25,7 +25,7 @@ function SignInContainer(props: any) {
       // window.location.reload();
     }).catch((e) => {
       client.writeData({ data: { snack: { open: true, message: "Login Fail", __typename: "snack" } } });
-      console.log("login error", e);
+      // console.log("login error", e);
     });
   }
 

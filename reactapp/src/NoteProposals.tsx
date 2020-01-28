@@ -10,7 +10,7 @@ import useStyles from "./Style";
 import "./paginate.css";
 
 function NoteProposals(props: any) {
-  console.log("NoteProposals props", props);
+  // console.log("NoteProposals props", props);
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>;

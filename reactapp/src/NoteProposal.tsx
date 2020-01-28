@@ -10,7 +10,7 @@ import { TUIViewer } from "./TUIEditor";
 import useStyles from "./Style";
 
 function NoteProposal(props: any) {
-  console.log("NoteProposal props", props);
+  // console.log("NoteProposal props", props);
   // const forceUpdate = useForceUpdate;
 
   const classes = useStyles();

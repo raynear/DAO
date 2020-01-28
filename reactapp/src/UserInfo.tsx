@@ -7,7 +7,7 @@ import { AccountCircle } from "@material-ui/icons";
 import useStyles from "./Style";
 
 function UserInfo(props: any) {
-  console.log("UserInfo props", props);
+  // console.log("UserInfo props", props);
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>

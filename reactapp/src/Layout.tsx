@@ -30,7 +30,7 @@ const IconTheme = createMuiTheme({
 })
 
 function Layout(props: any) {
-  console.log("Layout props", props);
+  // console.log("Layout props", props);
   const classes = useStyles();
 
   if (props.loading) return <p>Loading...</p>
