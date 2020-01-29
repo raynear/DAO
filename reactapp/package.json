@@ -21,6 +21,7 @@
     "@types/react-js-pagination": "^3.0.3",
     "@types/react-paginate": "^6.2.1",
     "@types/react-router-dom": "^5.1.0",
+    "@types/react-youtube": "^7.6.2",
     "@types/recharts": "^1.8.3",
     "apollo-boost": "^0.4.4",
     "apollo-cache-control": "^0.8.5",
@@ -52,6 +53,7 @@
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.1.2",
+    "react-youtube": "^7.9.0",
     "recharts": "^1.8.5",
     "simple-react-validator": "^1.2.4",
     "typescript": "^3.7.4",
@@ -79,5 +81,5 @@
     ]
   },
   "devDependencies": {},
-  "proxy": "https://13.58.159.193:80"
+  "proxy": "https://icon.vote"
 }

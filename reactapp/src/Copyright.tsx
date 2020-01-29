@@ -5,8 +5,8 @@ function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
-            <Link color="inherit" href="https://raynear.net/">
-                Raynear{' '}
+            <Link color="inherit" href="https://icon.vote/">
+                ICON.Vote{' '}
             </Link>
             {new Date().getFullYear()}
             {'.'}

@@ -46,7 +46,7 @@ function EditProposalContainer(props: any) {
   const [validator] = useState(new SimpleReactValidator({
     validators: {
       diff: {
-        message: "input diffrent options.",
+        message: "input different options.",
         rule: (val: any, params: any) => {
           // console.log(val, params);
           for (let i = 0; i < val.length; i++) {

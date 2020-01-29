@@ -2,8 +2,7 @@ import React from "react";
 import useStyles from "./Style";
 import { Typography, Grid, Paper } from "@material-ui/core";
 import clsx from "clsx";
-import { Player, ControlBar } from "video-react";
-import { nodeURL } from "./Config";
+import YoutubePlayer from 'react-player/lib/players/YouTube';
 
 import './video-react.css';
 
@@ -22,10 +21,11 @@ function LandingPage(props: any) {
             <Typography variant="h4" color="primary"><b>Welcome to ICON VOTE</b></Typography>
             <br />
             <br />
-            <Player autoPlay>
-              <source src={nodeURL + "static/IconVoteIntroduction.mp4"} />
-              <ControlBar autoHide={true} />
-            </Player>
+            <YoutubePlayer
+              url="https://youtube.com/watch?v=mERTt_IYy7A"
+              playing={true}
+              width={"100%"}
+            />
             <br />
             <br />
             <Typography variant="h5" color="textPrimary"></Typography>
