@@ -172,7 +172,7 @@ class PublishProposal(graphene.Mutation):
     def mutate(self, info, proposal_id):
         proposal = ProposalModel.objects.get(pk=proposal_id)
 
-        icon_service = IconService(HTTPProvider(NETWORK, 1))
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
 
         result = jsonRpcCall("get_verify_info_by_id", {
             "_id": info.context.user.username})
@@ -238,7 +238,7 @@ class VoteProposal(graphene.Mutation):
     @address_required
     @login_required
     def mutate(self, info, proposer, proposal_id, select_item_index):
-        icon_service = IconService(HTTPProvider(NETWORK, 1))
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
         # print("ABCDEFG")
 
         f = open("./key.pw", 'r')
@@ -394,7 +394,7 @@ class Finalize(graphene.Mutation):
     @prep_required
     @login_required
     def mutate(self, info, proposer, proposal_id):
-        icon_service = IconService(HTTPProvider(NETWORK, 1))
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
         proposal_result = jsonRpcCall(
             "get_proposal", {"_proposer": proposer, "_proposal_id": proposal_id})
         result_json = json.loads(proposal_result)
@@ -480,7 +480,7 @@ def find_blockheight_from_datetime(expire_datetime):
     given_date = dateutil.parser.parse(expire_datetime)
     given_timestamp = time.mktime(given_date.timetuple())*1000000
     delegate_start_blockheight = 0
-    icon_service = IconService(HTTPProvider(NETWORK, 1))
+    icon_service = IconService(HTTPProvider(NETWORK, 3))
     result = icon_service.get_block("latest")
 #    result_json = json.loads(result)
 
@@ -547,7 +547,7 @@ def get_final_delegate_tx(prep_address, address, block_height):
         # print("resp_json", resp_json)
         # print("tx_list", tx_list)
 
-        icon_service = IconService(HTTPProvider(NETWORK, 1))
+        icon_service = IconService(HTTPProvider(NETWORK, 3))
 
         for a_tx in tx_list:
             # print("a")
@@ -566,7 +566,7 @@ def get_final_delegate_tx(prep_address, address, block_height):
 
 
 def governanceCall(method, params):
-    icon_service = IconService(HTTPProvider(NETWORK, 1))
+    icon_service = IconService(HTTPProvider(NETWORK, 3))
     call = CallBuilder()\
         .to("cx0000000000000000000000000000000000000000")\
         .method(method)\
@@ -577,7 +577,7 @@ def governanceCall(method, params):
 
 
 def jsonRpcCall(method, params):
-    icon_service = IconService(HTTPProvider(NETWORK, 1))
+    icon_service = IconService(HTTPProvider(NETWORK, 3))
     call = CallBuilder()\
         .to(SCORE)\
         .method(method)\
