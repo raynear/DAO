@@ -87,7 +87,8 @@ const useStyles = makeStyles((theme: Theme) =>
       minWidth: 650,
     },
     center: {
-      textAlign: "center"
+      textAlign: "center",
+      verticalAlign: "middle"
     },
     left: {
       textAlign: "left"

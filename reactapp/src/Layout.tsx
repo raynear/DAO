@@ -74,7 +74,7 @@ function Layout(props: any) {
                   </Typography>
                 </Grid>
               }
-              <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs={3} md={3} lg={3}>
+              <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs>
                 <UserInfoContainer refetch={props.refetch} />
               </Grid>
             </Grid>
