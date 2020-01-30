@@ -34,6 +34,8 @@ account/.DS_Store
 .score
 .statedb
 *.log
+*.pyc
+gunicorn_start
 
 test/*
 key_store_raynear

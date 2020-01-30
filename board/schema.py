@@ -503,8 +503,8 @@ def get_final_delegate_tx(prep_address, address, block_height):
                         {'address': address, 'page': 1, 'count': 1000})
     latest_tx = False
 
-    # print("!!!!!!!", prep_address, address, block_height)
-    # print("!@#", resp)
+    print("!!!!!!!", prep_address, address, block_height)
+    print("!@#", resp)
 
     if resp.status_code == 200:
         """
@@ -525,7 +525,7 @@ def get_final_delegate_tx(prep_address, address, block_height):
             resp_text = resp_text_user3
         resp_json = json.loads(resp_text)
         """
-        tx_list = resp['data']
+        tx_list = resp.json()['data']
 
         # print("resp_json", resp_json)
         # print("tx_list", tx_list)
