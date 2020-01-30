@@ -204,25 +204,5 @@ SOCIAL_AUTH_PIPELINE = [
 # CORS
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_REPLACE_HTTPS_REFERER = True   # react 합치고 난 뒤에 제거해야됨. http=>https 호출 허용
 
-CORS_ORIGIN_WHITELIST = (
-    "http://localhost:3000",
-    "https://localhost:3000",
-    "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080",
-    "https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080",
-    "http://localhost:8080",
-    "https://localhost:8080",
-    "http://127.0.0.1:3000",
-    "https://127.0.0.1:3000",
-    "http://127.0.0.1:8080",
-    "https://127.0.0.1:8080",
-)
-
-CSRF_COOKIE_SECURE = True
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8080",
-    "https://localhost:8080",
-    "http://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080",
-    "https://ec2-52-79-207-139.ap-northeast-2.compute.amazonaws.com:8080"
-]
+CSRF_COOKIE_SECURE = False

@@ -15,6 +15,9 @@ const useStyles = makeStyles((theme: Theme) =>
       width: 60,
       height: 60
     },
+    overflowHidden: {
+      overflow: "hidden"
+    },
     bullet: {
       display: "inline-block",
       margin: "0 2px",

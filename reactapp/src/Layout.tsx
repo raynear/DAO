@@ -2,6 +2,7 @@ import React from "react";
 import { Link, Switch, Route } from "react-router-dom";
 import { CssBaseline, AppBar, Toolbar, Typography, Container, Grid, Snackbar } from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
+import clsx from "clsx";
 
 import LandingPage from "./LandingPage";
 import HowTo from "./HowTo";
@@ -44,27 +45,39 @@ function Layout(props: any) {
           className={classes.appBar}
         >
           <Toolbar className={classes.toolbar}>
-            <Link to="/" style={{ flexGrow: 1 }}>
-              <img width={200} src={iconLogo} alt="ICON Vote" />
-            </Link>
-            <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
-              <Link to="/HowTo" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
-                How-To
-            </Link>
-            </Typography>
-            <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
-              <Link to="/SelectPRep" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
-                Vote Explorer
-            </Link>
-            </Typography>
-            {!props.error && props.data.viewer.isPrep &&
-              <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
-                <Link to={"/NoteProposals/" + props.data.viewer.username} style={{ textDecoration: 'none', color: "#FFFFFF" }}>
-                  Launch new votes
-              </Link>
-              </Typography>
-            }
-            <UserInfoContainer refetch={props.refetch} />
+            <Grid container className={classes.container}>
+              <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs={3} md={3} lg={3}>
+                <Link to="/" style={{ flexGrow: 1 }}>
+                  <img src={iconLogo} alt="ICON Vote" style={{ maxWidth: "200px" }} />
+                </Link>
+              </Grid>
+              <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs={3} md={3} lg={3}>
+                <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
+                  <Link to="/HowTo" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+                    How-To
+                  </Link>
+                </Typography>
+              </Grid>
+              <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs={3} md={3} lg={3}>
+                <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
+                  <Link to="/SelectPRep" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+                    Vote Explorer
+                  </Link>
+                </Typography>
+              </Grid>
+              {!props.error && props.data.viewer.isPrep &&
+                <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs={3} md={3} lg={3}>
+                  <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
+                    <Link to={"/NoteProposals/" + props.data.viewer.username} style={{ textDecoration: 'none', color: "#FFFFFF" }}>
+                      Launch new votes
+                    </Link>
+                  </Typography>
+                </Grid>
+              }
+              <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs={3} md={3} lg={3}>
+                <UserInfoContainer refetch={props.refetch} />
+              </Grid>
+            </Grid>
           </Toolbar>
         </AppBar>
         <div className={classes.content}>
@@ -100,7 +113,7 @@ function Layout(props: any) {
           />
         </div>
       </div>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 }
 

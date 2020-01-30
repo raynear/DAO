@@ -83,7 +83,7 @@ function Proposals(props: any) {
                     <Grid item className={classes.grid} style={{ overflow: "hidden" }} xs={12} md={12} lg={12}>
                       <Typography variant="h5" color="textPrimary" gutterBottom>
                         <Link className={classes.link} to={"/Proposal/" + props.pRep + "/" + item.id} color="textPrimary">
-                          <b>{item.id}.</b>{" "}{item.subject.substring(0, 14)} {item.subject.length > 14 && "..."}
+                          <b>{item.id}.</b>{" "}{item.subject}
                         </Link>
                       </Typography>
                     </Grid>
