@@ -178,7 +178,6 @@ class PublishProposal(graphene.Mutation):
             "_id": info.context.user.username})
         # print("AA:", result)
         result_json = json.loads(result)
-        # print("BB:", result_json)
         if result_json['address'] != info.context.user.icon_address:
             return PublishProposal(proposal=None)
 
@@ -212,12 +211,6 @@ class PublishProposal(graphene.Mutation):
 
         if tx_result['status'] == 1:
             proposal.delete()
-        # proposal.published = True
-        # proposal.status = "Voting"
-        # pid = int(result) + 1
-        # proposal.prep_pid = pid
-        # proposal.txHash = tx_hash
-        # proposal.save()
 
         return PublishProposal(proposal=None)
 
