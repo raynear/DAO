@@ -164,7 +164,7 @@ class IconDAO(IconScoreBase):
                 else:
                     result[select_item] = amount
 
-            if _total_delegate is not 0 and (total_voting_power/_total_delegate)*100 < self._i_proposal[_proposer][pid][self.ELECTORAL_TH]:
+            if _total_delegate != 0 and (total_voting_power/_total_delegate)*100 < self._i_proposal[_proposer][pid][self.ELECTORAL_TH]:
                 self._proposal[_proposer][pid][self.STATUS] = "Rejected"
                 return
 
@@ -178,7 +178,7 @@ class IconDAO(IconScoreBase):
             self._proposal[_proposer][pid][self.FINAL] = bytes.hex(
                 self.tx.hash)
 
-            if total_voting_power is not 0 and (most_voted/total_voting_power)*100 > self._i_proposal[_proposer][pid][self.WINNING_TH]:
+            if total_voting_power != 0 and (most_voted/total_voting_power)*100 > self._i_proposal[_proposer][pid][self.WINNING_TH]:
                 self._i_proposal[_proposer][pid][self.WINNER] = most_voted_item
                 self._proposal[_proposer][pid][self.STATUS] = "Approved"
             else:
