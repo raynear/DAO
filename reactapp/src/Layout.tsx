@@ -51,14 +51,14 @@ function Layout(props: any) {
                   <img src={iconLogo} alt="ICON Vote" style={{ maxWidth: "200px" }} />
                 </Link>
               </Grid>
-              <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs={3} md={3} lg={3}>
+              <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs>
                 <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
                   <Link to="/HowTo" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
                     How-To
                   </Link>
                 </Typography>
               </Grid>
-              <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs={3} md={3} lg={3}>
+              <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs>
                 <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
                   <Link to="/SelectPRep" style={{ textDecoration: 'none', color: "#FFFFFF" }}>
                     Vote Explorer
@@ -66,7 +66,7 @@ function Layout(props: any) {
                 </Typography>
               </Grid>
               {!props.error && props.data.viewer.isPrep &&
-                <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs={3} md={3} lg={3}>
+                <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs>
                   <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
                     <Link to={"/NoteProposals/" + props.data.viewer.username} style={{ textDecoration: 'none', color: "#FFFFFF" }}>
                       Launch new votes
