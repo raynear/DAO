@@ -67,6 +67,7 @@ const useStyles = makeStyles((theme: Theme) =>
       margin: theme.spacing(0),
       padding: theme.spacing(0),
       display: "flex",
+      alignItems: "center",
       flexwrap: "wrap"
     },
     grid: {
@@ -87,8 +88,7 @@ const useStyles = makeStyles((theme: Theme) =>
       minWidth: 650,
     },
     center: {
-      textAlign: "center",
-      verticalAlign: "middle"
+      textAlign: "center"
     },
     left: {
       textAlign: "left"
