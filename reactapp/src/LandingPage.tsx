@@ -22,8 +22,8 @@ function LandingPage(props: any) {
             <br />
             <br />
             <YoutubePlayer
-              url="https://youtube.com/watch?v=mERTt_IYy7A"
-              playing={true}
+              url="https://youtube.com/watch?v=iRuEEdgsG2Q"
+              playing={false}
               width={"100%"}
             />
             <br />

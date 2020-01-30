@@ -190,16 +190,12 @@ class PublishProposal(graphene.Mutation):
                 _select_item += ','
         _select_item += ']'
 
-        f = open("./key.pw", 'r')
-        line = f.readline()
-        # TODO : change on test serve
-        wallet = KeyWallet.load(
-            "./key_store_raynear", line)
+        wallet = KeyWallet.load("../master.key", "p@ssw0rd")
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
             .to(SCORE)\
-            .step_limit(10000000000)\
+            .step_limit(100000000)\
             .nid(1)\
             .method("set_proposal")\
             .params({"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_date": proposal.expire_at.isoformat(), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th})\
@@ -241,15 +237,12 @@ class VoteProposal(graphene.Mutation):
         icon_service = IconService(HTTPProvider(NETWORK, 3))
         # print("ABCDEFG")
 
-        f = open("./key.pw", 'r')
-        line = f.readline()
-        # TODO : change on test serve
-        wallet = KeyWallet.load("./key_store_raynear", line)
+        wallet = KeyWallet.load("../master.key", "p@ssw0rd")
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
             .to(SCORE)\
-            .step_limit(10000000000)\
+            .step_limit(100000000)\
             .nid(1)\
             .method("vote")\
             .params({"_proposer": proposer, "_proposal_id": proposal_id, "_user_id": info.context.user.username, "_vote_item": select_item_index})\
@@ -444,15 +437,12 @@ class Finalize(graphene.Mutation):
 
         print("prep_delegate!!!!!!!!!!!!!!!!", prep_delegate)
 
-        f = open("./key.pw", 'r')
-        line = f.readline()
-        # TODO : change on test serve
-        wallet = KeyWallet.load("./key_store_raynear", line)
+        wallet = KeyWallet.load("../master.key", "p@ssw0rd")
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
             .to(SCORE)\
-            .step_limit(10000000000)\
+            .step_limit(300000000)\
             .nid(1)\
             .method("finalize")\
             .params({"_proposer": proposer, "_proposal_id": proposal_id, "_total_delegate": prep_delegate, "_final_data": json.dumps(final_delegate_tx_list)})\

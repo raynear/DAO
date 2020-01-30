@@ -69,7 +69,7 @@ function Proposals(props: any) {
               icon = <DisapproveIcon />;
             }
             return (
-              <Grid item className={classes.item} key={idx} xs={12} sm={6} md={4} lg={3}>
+              <Grid item className={classes.item} key={idx} xs={12} sm={6} md={4} lg={4}>
                 <Paper className={classes.paper}>
                   <Grid container className={classes.container}>
                     <Grid item className={classes.grid} xs={12} md={12} lg={12}>

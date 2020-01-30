@@ -409,7 +409,7 @@ function Proposal(props: any) {
                   return (
                     <TableRow key={idx}>
                       <TableCell align="center"><a href={trackerURL + "address/" + item.voter} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{item.voter}</a></TableCell>
-                      <TableCell align="center"><a href={trackerURL + "transaction/" + item.voteTxHash} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{item.voteTxHash}</a></TableCell>
+                      <TableCell align="center"><a href={trackerURL + "transaction/0x" + item.voteTxHash} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{item.voteTxHash}</a></TableCell>
                     </TableRow>
                   )
                 })}

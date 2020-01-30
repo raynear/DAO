@@ -65,7 +65,8 @@ function ProposalsContainer(props: any) {
 
     const detail = await axios.get(getPRepResp.details, {
       headers: {
-        'Access-Control-Allow-Origin': '*'
+        'Origin': '*',
+        'Access-Control-Request-Method': 'GET'
       }
     });
     console.log("detail", detail);
