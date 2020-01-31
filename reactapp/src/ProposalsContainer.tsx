@@ -72,8 +72,8 @@ function ProposalsContainer(props: any) {
     }
     console.log(url);
 
-    const detail = await axios.get(getPRepResp.details);
-    console.log("detail", detail);
+    // const detail = await axios.get(getPRepResp.details);
+    // console.log("detail", detail);
     // TODO : real server로 바뀌면 삭제
     // const detail = {
     //   "representative": {
@@ -104,15 +104,15 @@ function ProposalsContainer(props: any) {
     //   }
     // };
 
+    let logo = "https://icon.vote/static/logo.png";
+
     let votingPower = 0;
     if (queryVal.data && queryVal.data.viewer && queryVal.data.viewer.iconAddress) {
       // console.log("iconAddress", queryVal.data.viewer);
       votingPower = await myVotingPower(pRepName, queryVal.data.viewer.iconAddress);
-    }
-    let logo = "https://www.theuc.xyz/ubikprep/ubik1024x1024.png";
-
-    if (detail.data && detail.data.representative && detail.data.representative.logo && detail.data.representative.logo.logo_1024) {
-      logo = detail.data.representative.logo.logo_1024;
+      // if (queryVal.data.viewer.avatar !== "") {
+      //   logo = queryVal.data.viewer.avatar;
+      // }
     }
 
     setPRepInfo({ name: getPRepResp.name, logo: logo, website: getPRepResp.website, totalDelegation: (parseInt(getPRepResp.delegated, 16) / 10 ** 18), myVotingPower: votingPower });
