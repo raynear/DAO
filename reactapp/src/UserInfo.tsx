@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 
-import { Avatar, Typography, IconButton, Badge, Menu, MenuItem, Button } from "@material-ui/core";
+import { Grid, Avatar, Typography, IconButton, Badge, Menu, MenuItem, Button } from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 
 import useStyles from "./Style";
@@ -61,14 +61,18 @@ function UserInfo(props: any) {
     );
   } else {
     return (
-      <Fragment>
-        <Button component={Link} to="/Signup">
-          <Typography component="h6" style={{ color: "#FFFFFF" }}>Join now</Typography>
-        </Button>
-        <Button component={Link} to="/Signin" variant="contained" style={{ color: "#FFF" }}>
-          <Typography component="h6" color="primary">Sign In</Typography>
-        </Button>
-      </Fragment>
+      <Grid container className={classes.container}>
+        <Grid item className={classes.grid} xs style={{ textAlign: "right", overflow: "hidden" }}>
+          <Button component={Link} to="/Signup" style={{ overflow: "hidden" }}>
+            <Typography component="h6" style={{ color: "#FFFFFF" }}>Join now</Typography>
+          </Button>
+        </Grid>
+        <Grid item className={classes.grid} xs style={{ textAlign: "left", overflow: "hidden" }}>
+          <Button component={Link} to="/Signin" variant="contained" style={{ color: "#FFF", overflow: "hidden" }}>
+            <Typography component="h6" color="primary">Sign In</Typography>
+          </Button>
+        </Grid>
+      </Grid>
     );
   }
 }
