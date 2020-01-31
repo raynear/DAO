@@ -174,12 +174,15 @@ class PublishProposal(graphene.Mutation):
 
         icon_service = IconService(HTTPProvider(NETWORK, 3))
 
+        print("a")
         result = jsonRpcCall("get_verify_info_by_id", {
             "_id": info.context.user.username})
         # print("AA:", result)
         result_json = json.loads(result)
+        print("b", result_json)
         if result_json['address'] != info.context.user.icon_address:
             return PublishProposal(proposal=None)
+        print("c")
 
         selectItems = SelectItemModel.objects.filter(proposal=proposal)
         _select_item = '['
@@ -188,8 +191,10 @@ class PublishProposal(graphene.Mutation):
             if idx < len(selectItems) - 1:
                 _select_item += ','
         _select_item += ']'
+        print("d")
 
         wallet = KeyWallet.load("../master.key", "p@ssw0rd")
+        print("e")
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
@@ -200,11 +205,14 @@ class PublishProposal(graphene.Mutation):
             .params({"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_date": proposal.expire_at.isoformat(), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th})\
             .build()
 
+        print("f")
         signed_transaction = SignedTransaction(transaction, wallet)
+        print("g")
         tx_hash = icon_service.send_transaction(signed_transaction)
+        print("h")
 
         # print("CC", tx_hash)
-        sleep(3)
+        sleep(5)
         tx_result = icon_service.get_transaction_result(tx_hash)
 
         # print("DD", tx_result)

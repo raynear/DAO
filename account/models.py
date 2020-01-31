@@ -24,10 +24,10 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser):
     username = models.CharField(max_length=50, unique=True, blank=False)
     email = models.EmailField(verbose_name="email", max_length=255, blank=True)
+    #avatar = models.CharField(max_length=255, default="", blank=True)
     icon_address = models.CharField(max_length=255, default="", blank=True)
     is_active = models.BooleanField(default=True)
     is_prep = models.BooleanField(default=False)
-    avatar = models.CharField(max_length=512, default="", blank=True)
     is_admin = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 
