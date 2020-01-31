@@ -22,7 +22,7 @@ function Proposals(props: any) {
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
           <Grid item className={classes.item} xs={12} md={8} lg={8}>
-            <img src={props.pRepInfo.logo} width="100" alt={props.pRepInfo.name} />
+            {/*<img src={props.pRepInfo.logo} width="100" alt={props.pRepInfo.name} />*/}
             <a href={props.pRepInfo.website} style={{ textDecoration: "none", color: "#000000" }}>
               <Typography variant="h4">{props.pRepInfo.name}</Typography>
             </a>
