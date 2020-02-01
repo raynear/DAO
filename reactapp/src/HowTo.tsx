@@ -20,9 +20,6 @@ function HowTo(props: any) {
     1. Click “Verify ICON Address” to sign a transaction
     2. Click “Check Your Verified Address” so that blockchain can confirm
 ![https://icon.vote/static/img2.png](https://icon.vote/static/img2.png)
-4. Blockchain has verified the P-rep ownership. The following image will appear
-    1. Click “Make New P-rep DAO Page” to build your own DAO page
-![https://icon.vote/static/img3.png](https://icon.vote/static/img3.png)
 
 #### Propose a vote
 
