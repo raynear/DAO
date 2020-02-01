@@ -47,15 +47,15 @@ class SetUser(graphene.Mutation):
 
     user = graphene.Field(UserType)
 
-    def mutate(self, info, username, password, new_password, avatar):
+    def mutate(self, info, username, password):#, new_password, avatar):
         try:
             user = get_user_model().objects.get(username=username, password=password)
-            user.avatar = avatar
-            user.set_password(new_password)
+#            user.avatar = avatar
+#            user.set_password(new_password)
             user.save()
         except get_user_model().DoesNotExist:
             user = get_user_model().objects.create(username=username)
-            user.avatar = avatar
+#            user.avatar = avatar
             user.set_password(password)
             user.save()
 

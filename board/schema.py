@@ -191,7 +191,7 @@ class PublishProposal(graphene.Mutation):
             if idx < len(selectItems) - 1:
                 _select_item += ','
         _select_item += ']'
-        print("d")
+        print("d", _select_item)
 
         wallet = KeyWallet.load("../master.key", "p@ssw0rd")
         print("e")
@@ -209,7 +209,7 @@ class PublishProposal(graphene.Mutation):
         signed_transaction = SignedTransaction(transaction, wallet)
         print("g")
         tx_hash = icon_service.send_transaction(signed_transaction)
-        print("h")
+        print("h", tx_hash)
 
         # print("CC", tx_hash)
         sleep(5)
