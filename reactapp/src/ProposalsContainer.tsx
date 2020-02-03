@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { VIEWER } from "./GQL";
 import { jsonRpcCall, governanceCall } from "./IconConnect";
-import axios from "axios";
 
 import Proposals from "./Proposals";
 
@@ -56,21 +55,21 @@ function ProposalsContainer(props: any) {
   }
 
   async function getPRepInfo(pRepName: string) {
-    const getPRepAddressResp = await jsonRpcCall("get_verify_info_by_id", { _id: "ICXstation"/*pRepName*/ });
+    const getPRepAddressResp = await jsonRpcCall("get_verify_info_by_id", { _id: "prep1"/*pRepName*/ });
     const getPRepAddress = JSON.parse(getPRepAddressResp);
     // console.log("getPRepAddress", getPRepAddress);
 
     const getPRepResp = await governanceCall("getPRep", { address: getPRepAddress.address });
     console.log("getPRepResp", getPRepResp);
 
-    let url = getPRepResp.details;
-    if (url.search("http://") === 0) {
-      url = "http://" + url.substr(7).split("/")[0];
-    }
-    if (url.search("https://") === 0) {
-      url = "https://" + url.substr(8).split("/")[0];
-    }
-    console.log(url);
+    // let url = getPRepResp.details;
+    // if (url.search("http://") === 0) {
+    //   url = "http://" + url.substr(7).split("/")[0];
+    // }
+    // if (url.search("https://") === 0) {
+    //   url = "https://" + url.substr(8).split("/")[0];
+    // }
+    // console.log(url);
 
     // const detail = await axios.get(getPRepResp.details);
     // console.log("detail", detail);
