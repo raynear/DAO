@@ -194,7 +194,7 @@ class PublishProposal(graphene.Mutation):
         print("d", _select_item)
 
         key = ""
-         with open('./key.pw') as f:
+        with open('./key.pw') as f:
             key = f.read().strip()
         wallet = KeyWallet.load("../master.key", key)
         print("e")
@@ -242,7 +242,7 @@ class VoteProposal(graphene.Mutation):
         # print("ABCDEFG")
 
         key = ""
-         with open('./key.pw') as f:
+        with open('./key.pw') as f:
             key = f.read().strip()
         wallet = KeyWallet.load("../master.key", key)
 
@@ -445,7 +445,7 @@ class Finalize(graphene.Mutation):
         print("prep_delegate!!!!!!!!!!!!!!!!", prep_delegate)
 
         key = ""
-         with open('./key.pw') as f:
+        with open('./key.pw') as f:
             key = f.read().strip()
         wallet = KeyWallet.load("../master.key", key)
 
