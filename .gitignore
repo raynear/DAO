@@ -41,3 +41,5 @@ test/*
 key_store_raynear
 key.pw
 SCORE/ICON_DAO/.idea/*
+static/*
+secret_key.txt

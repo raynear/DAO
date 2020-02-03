@@ -193,7 +193,10 @@ class PublishProposal(graphene.Mutation):
         _select_item += ']'
         print("d", _select_item)
 
-        wallet = KeyWallet.load("../master.key", "p@ssw0rd")
+        key = ""
+         with open('./key.pw') as f:
+            key = f.read().strip()
+        wallet = KeyWallet.load("../master.key", key)
         print("e")
 
         transaction = CallTransactionBuilder()\
@@ -238,7 +241,10 @@ class VoteProposal(graphene.Mutation):
         icon_service = IconService(HTTPProvider(NETWORK, 3))
         # print("ABCDEFG")
 
-        wallet = KeyWallet.load("../master.key", "p@ssw0rd")
+        key = ""
+         with open('./key.pw') as f:
+            key = f.read().strip()
+        wallet = KeyWallet.load("../master.key", key)
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
@@ -438,7 +444,10 @@ class Finalize(graphene.Mutation):
 
         print("prep_delegate!!!!!!!!!!!!!!!!", prep_delegate)
 
-        wallet = KeyWallet.load("../master.key", "p@ssw0rd")
+        key = ""
+         with open('./key.pw') as f:
+            key = f.read().strip()
+        wallet = KeyWallet.load("../master.key", key)
 
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\

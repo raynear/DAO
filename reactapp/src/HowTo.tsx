@@ -58,9 +58,6 @@ function HowTo(props: any) {
     1. Click “Verify ICON Address” to sign a transaction
     2. Click “Check Your Verified Address” so that the blockchain can confirm
 ![https://icon.vote/static/img9.png](https://icon.vote/static/img9.png)
-5. Blockchain has verified the wallet ownership. The following image will appear
-    1. Click “Make New Profile” to build your own profile
-![https://icon.vote/static/img10.png](https://icon.vote/static/img10.png)
 
 #### Participate in a vote
 
