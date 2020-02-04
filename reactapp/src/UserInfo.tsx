@@ -15,49 +15,51 @@ function UserInfo(props: any) {
 
   if (props.data && props.data.viewer.username) {
     return (
-      <Fragment>
-        <IconButton
-          aria-controls="user_menu"
-          color="inherit"
-          onClick={props.handleMenu}
-        >
-          <Badge
-            badgeContent={props.badgeCnt}
-            invisible={props.badgeCnt === 0}
-            color="secondary"
-            className={classes.noMarginPadding}
+      <Grid container className={classes.container}>
+        <Grid item className={classes.grid} xs style={{ textAlign: "right" }}>
+          <IconButton
+            aria-controls="user_menu"
+            color="inherit"
+            onClick={props.handleMenu}
           >
-            <Avatar
-              alt={props.data.viewer.username}
-              src={""}
+            <Badge
+              badgeContent={props.badgeCnt}
+              invisible={props.badgeCnt === 0}
+              color="secondary"
               className={classes.noMarginPadding}
             >
-              <AccountCircle fontSize="large" />
-            </Avatar>
-          </Badge>
-        </IconButton>
-        <Menu
-          id="user_menu"
-          anchorEl={props.anchorEl}
-          keepMounted
-          open={Boolean(props.anchorEl)}
-          onClose={props.handleMenuClose}
-        >
-          <MenuItem onClick={props.showUserInfo}>
-            <Typography component="h6">{props.data.viewer.username}</Typography>
-          </MenuItem>
-          <MenuItem onClick={props.handleMenuClose}>
-            <Link to="/Profile" className={classes.link}>
-              <Typography component="h6">Profile</Typography>
-            </Link>
-          </MenuItem>
-          <MenuItem onClick={props.handleMenuLogout}>
-            <Link to="/" className={classes.link}>
-              <Typography component="h6">Logout</Typography>
-            </Link>
-          </MenuItem>
-        </Menu>
-      </Fragment>
+              <Avatar
+                alt={props.data.viewer.username}
+                src={""}
+                className={classes.noMarginPadding}
+              >
+                <AccountCircle fontSize="large" />
+              </Avatar>
+            </Badge>
+          </IconButton>
+          <Menu
+            id="user_menu"
+            anchorEl={props.anchorEl}
+            keepMounted
+            open={Boolean(props.anchorEl)}
+            onClose={props.handleMenuClose}
+          >
+            <MenuItem onClick={props.showUserInfo}>
+              <Typography component="h6">{props.data.viewer.username}</Typography>
+            </MenuItem>
+            <MenuItem onClick={props.handleMenuClose}>
+              <Link to="/Profile" className={classes.link}>
+                <Typography component="h6">Profile</Typography>
+              </Link>
+            </MenuItem>
+            <MenuItem onClick={props.handleMenuLogout}>
+              <Link to="/" className={classes.link}>
+                <Typography component="h6">Logout</Typography>
+              </Link>
+            </MenuItem>
+          </Menu>
+        </Grid>
+      </Grid>
     );
   } else {
     return (

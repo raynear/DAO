@@ -55,7 +55,7 @@ function ProposalsContainer(props: any) {
   }
 
   async function getPRepInfo(pRepName: string) {
-    const getPRepAddressResp = await jsonRpcCall("get_verify_info_by_id", { _id: "prep1"/*pRepName*/ });
+    const getPRepAddressResp = await jsonRpcCall("get_verify_info_by_id", { _id: pRepName });
     const getPRepAddress = JSON.parse(getPRepAddressResp);
     // console.log("getPRepAddress", getPRepAddress);
 
