@@ -47,7 +47,7 @@ class SetUser(graphene.Mutation):
 
     user = graphene.Field(UserType)
 
-    def mutate(self, info, username, password):#, new_password, avatar):
+    def mutate(self, info, username, password):  # , new_password, avatar):
         try:
             user = get_user_model().objects.get(username=username, password=password)
 #            user.avatar = avatar

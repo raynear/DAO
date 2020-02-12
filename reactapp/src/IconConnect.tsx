@@ -7,6 +7,7 @@ const Provider = new IconService.HttpProvider(ICON_NETWORK);
 export const iconService = new IconService(Provider);
 export const IconBuilder = IconService.IconBuilder;
 export const IconConverter = IconService.IconConverter;
+export const IconUtil = IconService.IconUtil;
 
 export const selectedIconService = iconService;
 
@@ -31,7 +32,7 @@ export async function jsonRpcSendTx(fromWallet: string, methodName: string, para
     .to(CONTRACT)
     .nid(IconConverter.toBigNumber("1"))
     .version(IconConverter.toBigNumber("3"))
-    .stepLimit(IconConverter.toBigNumber("100000000"))
+    .stepLimit(IconConverter.toBigNumber("10000000"))
     .timestamp(timestamp.valueOf() * 1000)
     .method(methodName)
     .params(params)
@@ -75,7 +76,7 @@ export async function governanceSendTx(fromWallet: string, methodName: string, p
     .to("cx0000000000000000000000000000000000000000")
     .nid(IconConverter.toBigNumber("1"))
     .version(IconConverter.toBigNumber("3"))
-    .stepLimit(IconConverter.toBigNumber("100000000"))
+    .stepLimit(IconConverter.toBigNumber("10000000"))
     .timestamp(timestamp.valueOf() * 1000)
     .method(methodName)
     .params(params)
@@ -119,7 +120,7 @@ export async function networkProposalSendTx(fromWallet: string, methodName: stri
     .to("cx0000000000000000000000000000000000000001")
     .nid(IconConverter.toBigNumber("1"))
     .version(IconConverter.toBigNumber("3"))
-    .stepLimit(IconConverter.toBigNumber("100000000"))
+    .stepLimit(IconConverter.toBigNumber("10000000"))
     .timestamp(timestamp.valueOf() * 1000)
     .method(methodName)
     .params(params)

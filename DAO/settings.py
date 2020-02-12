@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
     "graphene_django",
-    # "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     "social_django",
     "corsheaders",
     "sslserver",
@@ -63,11 +63,11 @@ GRAPHENE = {
 }
 
 GRAPHQL_JWT = {
-    'JWT_VERIFY_EXPIRATION': True,
-    'JWT_EXPIRATION_DELTA': timedelta(minutes=60),
     'JWT_ALLOW_REFRESH': True,
-    # 'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
-    # 'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
+    'JWT_EXPIRATION_DELTA': timedelta(minutes=60),
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=7),
     # 'JWT_REFRESH_EXPIRED_HANDLER': lambda orig_iat, context: False,
 }
 
@@ -147,7 +147,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 #STATIC_ROOT = "./static/"
 #STATIC_URL = "/static/"
-# STATICFILES_DIRS = [os.path.join(
+#STATICFILES_DIRS = [os.path.join(
 #    BASE_DIR, 'reactapp', 'build', 'static'), os.path.join(BASE_DIR, 'DAO', 'static')]
 
 

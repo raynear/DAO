@@ -19,8 +19,9 @@ function SignInContainer(props: any) {
   function logIn(username: string, password: string) {
     mutateTokenAuth({
       variables: { username: username, password: password }
-    }).then(() => {
+    }).then((r) => {
       client.writeData({ data: { snack: { open: true, message: "Welcome " + username, __typename: "snack" } } });
+      localStorage.setItem("refreshToken", r.data.tokenAuth.refreshToken);
       props.history.go(-1);
       // window.location.reload();
     }).catch((e) => {

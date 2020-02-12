@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
-import { VIEWER, GET_LOCAL_SNACK } from "./GQL";
+import { GET_VIEWER, GET_LOCAL_SNACK } from "./GQL";
 
 import Layout from "./Layout";
 
@@ -11,6 +11,7 @@ function LayoutContainer(props: any) {
 
   const noSnack = { open: false, message: "" };
   const querySnack = useQuery(GET_LOCAL_SNACK);
+  // console.log("querySnack", querySnack);
 
   const handleClose = (event: React.SyntheticEvent | React.MouseEvent, reason?: string) => {
     if (reason === 'clickaway') {
@@ -20,14 +21,19 @@ function LayoutContainer(props: any) {
     client.writeData({ data: { snack: { open: false, message: "", __typename: "snack" } } });
   };
 
-  const queryVal = useQuery(VIEWER);
+  const queryVal = useQuery(GET_VIEWER);
+  // console.log("queryVal", queryVal);
 
   let snack = noSnack;
-  if (querySnack && querySnack.data && queryVal) {
+  if (!querySnack.loading && !querySnack.error && querySnack.data) {
     snack = querySnack.data.snack;
     if (snack.open) {
       queryVal.refetch();
     }
+  }
+  if (!queryVal.loading && !queryVal.error && queryVal.data) {
+    client.writeData({ data: { viewer: queryVal.data.viewer } });//, refetchViewer: queryVal.refetch } });
+    //    client.queryManager.addObservableQuery("getViewer", GET_VIEWER);
   }
 
   return (
