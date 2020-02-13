@@ -35,7 +35,7 @@ function EditProposalContainer(props: any) {
     winningTh: 50,
     subject: "",
     contents: "",
-    days: 0,
+    days: 1,
     hours: 0,
     expireAt: new Date(),
     selectitemmodelSet: []

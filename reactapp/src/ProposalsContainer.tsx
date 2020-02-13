@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
-import { VIEWER } from "./GQL";
+import { GET_VIEWER } from "./GQL";
 import { jsonRpcCall, governanceCall } from "./IconConnect";
 
 import Proposals from "./Proposals";
@@ -183,7 +183,7 @@ function ProposalsContainer(props: any) {
     setFlag(true);
   }
 
-  const queryVal = useQuery(VIEWER);
+  const queryVal = useQuery(GET_VIEWER);
 
   if (queryVal.loading) {
     return <p>Loading...</p>;

@@ -5,14 +5,11 @@ import clsx from "clsx";
 import useStyles from "./Style";
 
 import { selectWallet } from "./GQL";
-import LedgerDialog from "./SelectLedgerDialog";
+import LedgerDialogContainer from "./LedgerDialogContainer";
 
 function VerifyIcon(props: any) {
   // console.log("VerifyIcon props", props);
   const classes = useStyles();
-
-  const [open, setOpen] = useState(false);
-  //  const [selectedLedger, setSelected]
 
   function Contents() {
     return (
@@ -46,12 +43,7 @@ function VerifyIcon(props: any) {
             <Button variant="contained" color="primary" fullWidth onClick={props.callVerify} startIcon={<LooksTwoOutlined />}>Check and Register</Button>
           </Grid>
         </Grid>
-        <Grid container className={classes.container}>
-          <Grid item className={classes.item} xs={12} md={12} lg={12}>
-            <Button fullWidth onClick={() => setOpen(true)}>Ledger</Button>
-          </Grid>
-        </Grid>
-        <LedgerDialog open={open} setOpen={setOpen} />
+        <LedgerDialogContainer />
       </>
     );
   }

@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
-import { LOG_OUT, VIEWER } from "./GQL";
+import { LOG_OUT, GET_VIEWER } from "./GQL";
 
 import UserInfo from "./UserInfo";
 
@@ -35,7 +35,7 @@ function UserInfoContainer(props: any) {
     client.writeData({ data: { snack: { open: true, message: queryVal.data.viewer.username, __typename: "snack" } } });
   }
 
-  const queryVal = useQuery(VIEWER);
+  const queryVal = useQuery(GET_VIEWER);
 
   return (<UserInfo
     {...queryVal}

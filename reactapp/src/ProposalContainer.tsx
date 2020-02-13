@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { SET_VOTE, FINALIZE, VIEWER } from "./GQL";
+import { SET_VOTE, FINALIZE, GET_VIEWER } from "./GQL";
 
 import { governanceCall, jsonRpcCall } from "./IconConnect";
 
@@ -214,7 +214,7 @@ function ProposalContainer(props: any) {
     }
   }
 
-  const queryViewer = useQuery(VIEWER);
+  const queryViewer = useQuery(GET_VIEWER);
 
   if (queryViewer.loading) {
     return <p>loading</p>

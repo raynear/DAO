@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { SET_PUBLISH, GET_PROPOSAL, VIEWER } from "./GQL";
+import { SET_PUBLISH, GET_PROPOSAL, GET_VIEWER } from "./GQL";
 
 import { governanceCall } from "./IconConnect";
 
@@ -61,7 +61,7 @@ function NoteProposalContainer(props: any) {
     return false;
   }
 
-  const queryViewer = useQuery(VIEWER);
+  const queryViewer = useQuery(GET_VIEWER);
   const queryVal = useQuery(GET_PROPOSAL, { variables: { id: id } })
 
   if (queryVal.loading || queryViewer.loading) {

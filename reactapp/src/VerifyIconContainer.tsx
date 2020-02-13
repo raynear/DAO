@@ -1,12 +1,9 @@
 import React, { useState } from "react";
 
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
-import { NEW_PREP, ADD_ICON_ADDRESS, VIEWER } from "./GQL";
-import Transport from "@ledgerhq/hw-transport-u2f";
-import Icx from "./Icx";
-import { jsonRpcCall, jsonRpcSendTx, governanceCall, selectedIconService, iconService, IconConverter, IconBuilder, IconUtil } from "./IconConnect";
+import { NEW_PREP, ADD_ICON_ADDRESS, GET_VIEWER } from "./GQL";
+import { jsonRpcCall, jsonRpcSendTx, governanceCall, selectedIconService } from "./IconConnect";
 
-import { nodeURL, contractAddress } from "./Config";
 import VerifyIcon from "./VerifyIcon";
 
 function VerifyIconContainer(props: any) {
@@ -49,46 +46,8 @@ function VerifyIconContainer(props: any) {
     window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
   }
 
-  async function sendVerifyLedger(addressIdx: number) {
-    client.query({ query: VIEWER }).then(async (result) => {
-      const path = "44'/4801368'/0'/0'/" + addressIdx.toString() + "'";
-      const transport = await Transport.create();
-      transport.setDebugMode(true);         // if you want to print log
-      transport.setExchangeTimeout(60000);  // Set if you want to change U2F timeout. default: 30 sec
-
-      const icx = new Icx(transport);
-      // coin type: ICX(4801368), ICON testnet(1)
-      let addressResult = await icx.getAddress(path, false, true);
-      const address = addressResult.address.toString();
-      // console.log("address", address);
-      // console.log("balance", await iconService.getBalance(addressResult.address.toString()).execute());
-      let timestamp = new Date();
-      var txBuilder = new IconBuilder.CallTransactionBuilder();
-      const methodName = "verify";
-      const lastBlock = await iconService.getBlock('latest').execute();
-      const params = { "_block_hash": lastBlock.blockHash, "_id": result.data.viewer.username };
-      var txObj = txBuilder
-        .from(address)
-        .to(contractAddress)
-        .nid(IconConverter.toBigNumber("1"))
-        .version(IconConverter.toBigNumber("3"))
-        .stepLimit(IconConverter.toBigNumber("10000000"))
-        .timestamp(timestamp.valueOf() * 1000)
-        .method(methodName)
-        .params(params)
-        .build();
-      const rawTransaction = IconConverter.toRawTransaction(txObj);
-      const hashKey = IconUtil.generateHashKey(rawTransaction);
-
-      let { signedRawTxBase64 } = await icx.signTransaction(path, hashKey);
-      rawTransaction.signature = signedRawTxBase64;
-
-      iconService.sendTransaction({ getProperties: () => rawTransaction, getSignature: () => signedRawTxBase64 }).execute();
-    })
-  }
-
   function sendVerify(address: string) {
-    client.query({ query: VIEWER }).then(async (result) => {
+    client.query({ query: GET_VIEWER }).then(async (result) => {
       // console.log("reload OK");
       const lastBlock = await selectedIconService.getBlock('latest').execute();
       const params = { "_block_hash": lastBlock.blockHash, "_id": result.data.viewer.username };
@@ -136,7 +95,7 @@ function VerifyIconContainer(props: any) {
     });
   }
 
-  const queryVal = useQuery(VIEWER);
+  const queryVal = useQuery(GET_VIEWER);
 
   return (<VerifyIcon
     {...queryVal}
