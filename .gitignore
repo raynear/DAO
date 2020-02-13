@@ -7,7 +7,6 @@ reactapp/node_modules
 reactapp/coverage
 
 # production
-reactapp/build
 
 # misc
 reactapp/.DS_Store
