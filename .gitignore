@@ -19,6 +19,11 @@ reactapp/npm-debug.log*
 reactapp/yarn-debug.log*
 reactapp/yarn-error.log*
 
+reactapp/build/*/*.png
+reactapp/build/*.png
+reactapp/public/*.png
+reactapp/publish
+
 DAO/__pycache__
 board/__pycache__
 account/__pycache__
