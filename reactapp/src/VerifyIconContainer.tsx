@@ -34,7 +34,7 @@ function VerifyIconContainer(props: any) {
     } else if (type === "RESPONSE_JSON-RPC") {
       // console.log("response json rpc");
       // console.log(payload);
-      setNotice(msgForNotice[1]);
+      selectNotice(1);
     } else if (type === "RESPONSE_ADDRESS") {
       // console.log("response!!!!", event, event.detail);
       sendVerify(payload);
@@ -44,6 +44,10 @@ function VerifyIconContainer(props: any) {
   if (flag) {
     setFlag(false);
     window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
+  }
+
+  function selectNotice(idx: number) {
+    setNotice(msgForNotice[idx]);
   }
 
   function sendVerify(address: string) {
@@ -72,14 +76,14 @@ function VerifyIconContainer(props: any) {
         setIsPRep(true);
 
         newPRepPage(result_json.address);
-        setNotice(msgForNotice[2]);
+        selectNotice(2);
         return;
       }
     }
 
     if (result_json.address) {
       addIconAddress(result_json.address);
-      setNotice(msgForNotice[3]);
+      selectNotice(3);
     }
   }
 
@@ -107,6 +111,7 @@ function VerifyIconContainer(props: any) {
     verifiedAddress={verifiedAddress}
     isPRep={isPRep}
     notice={notice}
+    selectNotice={selectNotice}
   />);
 }
 

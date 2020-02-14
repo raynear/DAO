@@ -27,7 +27,7 @@ function LedgerDialogContainer(props: any) {
   async function getAddressNBalance(idx: number) {
     const path = "44'/4801368'/0'/0'/" + idx.toString() + "'";
     const transport = await Transport.create();
-    transport.setDebugMode(true);         // if you want to print log
+    transport.setDebugMode(false);         // if you want to print log
     transport.setExchangeTimeout(60000);  // Set if you want to change U2F timeout. default: 30 sec
 
     const icx = new Icx(transport);
@@ -38,14 +38,12 @@ function LedgerDialogContainer(props: any) {
     try {
       addressResult = await icx.getAddress(path, false, true);
       address = addressResult.address.toString();
-      // console.log("address", address);
       balance = await iconService.getBalance(addressResult.address.toString()).execute();
     } catch (e) {
       setPage(-1);
       setOpen(false);
       throw "Ledger Not Connected"
     }
-    console.log("addressResult", addressResult);
     return { address, balance };
   }
 
@@ -79,6 +77,7 @@ function LedgerDialogContainer(props: any) {
     setOpen(false);
     sendVerifyLedger(item.index);
     alert("Please Sign Transaction on Your Ledger");
+    props.selectNotice(1);
   }
 
   async function sendVerifyLedger(addressIdx: number) {

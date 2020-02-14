@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate
 import graphene
 import graphql_jwt
 from graphql_jwt.decorators import login_required
-import graphql_social_auth
+#import graphql_social_auth
 from graphene_django import DjangoObjectType
 
 from iconsdk.icon_service import IconService
@@ -73,7 +73,7 @@ class Mutation(board.schema.MyMutation, graphene.ObjectType):
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
-    social_auth = graphql_social_auth.SocialAuthJWT.Field()
+#    social_auth = graphql_social_auth.SocialAuthJWT.Field()
     set_user = SetUser.Field()
     logout = Logout.Field()
     pass

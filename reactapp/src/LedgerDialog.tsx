@@ -1,7 +1,6 @@
 import React from "react";
-import { useTheme } from "@material-ui/core/styles";
-import { Dialog, DialogTitle, DialogContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Paper, Typography, TableFooter, IconButton, Grid, Button } from "@material-ui/core";
-import { FirstPage, KeyboardArrowLeft, KeyboardArrowRight, LastPage } from "@material-ui/icons";
+import { Dialog, DialogTitle, DialogContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Paper, Typography, TableFooter, IconButton, Button } from "@material-ui/core";
+import { FirstPage, KeyboardArrowLeft, KeyboardArrowRight, LastPage, LooksOneOutlined } from "@material-ui/icons";
 // import clsx from "clsx";
 import useStyles from "./Style";
 
@@ -30,7 +29,6 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
   const handleLastPageButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     onChangePage(event, page + 5);
   };
-
 
   return (
     <div className={classes.root}>
@@ -66,15 +64,8 @@ function LedgerDialog(props: any) {
 
   return (
     <>
-      <Grid container className={classes.container}>
-        <Grid item className={classes.item} xs={12} md={12} lg={12}>
-          <Button fullWidth onClick={() => { props.setPage(0); props.setOpen(true) }}>Ledger</Button>
-        </Grid>
-      </Grid>
-
+      <Button variant="contained" color="primary" fullWidth onClick={() => { props.setPage(0); props.setOpen(true) }} startIcon={<LooksOneOutlined />}>Verify ICON Address(Ledger)</Button>
       <Dialog
-        disableBackdropClick
-        disableEscapeKeyDown
         maxWidth="lg"
         aria-labelledby="confirmation-dialog-title"
         open={props.open}
@@ -95,11 +86,14 @@ function LedgerDialog(props: any) {
                   <TableCell>
                     <Typography variant="subtitle2" color="textPrimary">Balance</Typography>
                   </TableCell>
+                  <TableCell>
+                    <Typography variant="subtitle2" color="textPrimary"></Typography>
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {props.list.map((item: any, idx: number) => (
-                  <TableRow key={idx} onClick={() => props.selectAddress(item)}>
+                  <TableRow key={idx}>
                     <TableCell>
                       <Typography variant="subtitle2" color="textPrimary">{(props.page * 5) + idx + 1}</Typography>
                     </TableCell>
@@ -108,6 +102,9 @@ function LedgerDialog(props: any) {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body1" color="textSecondary">{item.balance}</Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Button variant="contained" color="primary" onClick={() => props.selectAddress(item)}>Verify</Button>
                     </TableCell>
                   </TableRow>
                 ))}

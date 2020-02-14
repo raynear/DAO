@@ -60,7 +60,7 @@ function ProposalsContainer(props: any) {
     // console.log("getPRepAddress", getPRepAddress);
 
     const getPRepResp = await governanceCall("getPRep", { address: getPRepAddress.address });
-    console.log("getPRepResp", getPRepResp);
+    // console.log("getPRepResp", getPRepResp);
 
     // let url = getPRepResp.details;
     // if (url.search("http://") === 0) {

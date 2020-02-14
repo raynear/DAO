@@ -37,11 +37,11 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    # "django.contrib.staticfiles",
     "django.contrib.sites",
     "graphene_django",
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
-    "social_django",
+    # "social_django",
     "corsheaders",
     "sslserver",
     "board",
@@ -49,8 +49,8 @@ INSTALLED_APPS = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    "social_core.backends.kakao.KakaoOAuth2",
-    "social_core.backends.google.GoogleOAuth2",
+    # "social_core.backends.kakao.KakaoOAuth2",
+    # "social_core.backends.google.GoogleOAuth2",
     "graphql_jwt.backends.JSONWebTokenBackend",
     "django.contrib.auth.backends.ModelBackend",
 )
@@ -88,7 +88,7 @@ ROOT_URLCONF = "DAO.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, 'reactapp', 'build')],
+        "DIRS": [os.path.join(BASE_DIR, 'reactapp', 'publish')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -96,8 +96,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "social_django.context_processors.backends",
-                "social_django.context_processors.login_redirect",
+                # "social_django.context_processors.backends",
+                # "social_django.context_processors.login_redirect",
             ]
         },
     }
@@ -147,19 +147,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 #STATIC_ROOT = "./static/"
 #STATIC_URL = "/static/"
-#STATICFILES_DIRS = [os.path.join(
+# STATICFILES_DIRS = [os.path.join(
 #    BASE_DIR, 'reactapp', 'build', 'static'), os.path.join(BASE_DIR, 'DAO', 'static')]
 
 
 # auth
-
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
 LOGIN_REDIRECT_URL = "/graphql"
 ACCOUNT_AUTHENTICATED_LOGOUT_REDIRECTS = True
 ACCOUNT_LOGOUT_REDIRECT_URL = "/graphql"
 
-# Social Auth
 
+# Social Auth
+"""
 SOCIAL_AUTH_KAKAO_KEY = "7e0fdea97adc876ef96f46284c1be4d0"
 SOCIAL_AUTH_KAKAO_SECRET = "7e0fdea97adc876ef96f46284c1be4d0"
 
@@ -202,6 +202,7 @@ SOCIAL_AUTH_PIPELINE = [
     # Update the user record with any changed info from the auth service.
     "social_core.pipeline.user.user_details",
 ]
+"""
 
 # CORS
 CORS_ALLOW_CREDENTIALS = True

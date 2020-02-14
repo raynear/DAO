@@ -37,13 +37,17 @@ function VerifyIcon(props: any) {
         </Grid>
         <Grid container className={classes.container}>
           <Grid item className={classes.item} xs={6} md={6} lg={6}>
-            <Button variant="contained" color="primary" fullWidth onClick={selectWallet} startIcon={<LooksOneOutlined />}>Verify ICON Address</Button>
+            <Button variant="contained" color="primary" fullWidth onClick={selectWallet} startIcon={<LooksOneOutlined />}>Verify ICON Address(IconEX)</Button>
           </Grid>
           <Grid item className={classes.item} xs={6} md={6} lg={6}>
+            <LedgerDialogContainer selectNotice={props.selectNotice} />
+          </Grid>
+        </Grid>
+        <Grid container className={classes.container}>
+          <Grid item className={classes.item} xs={12} md={12} lg={12}>
             <Button variant="contained" color="primary" fullWidth onClick={props.callVerify} startIcon={<LooksTwoOutlined />}>Check and Register</Button>
           </Grid>
         </Grid>
-        <LedgerDialogContainer />
       </>
     );
   }
