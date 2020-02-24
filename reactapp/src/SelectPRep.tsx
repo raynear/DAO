@@ -57,7 +57,7 @@ function SelectPRep(props: any) {
                       <FiberManualRecord />
                     </ListItemIcon>
                   }
-                  <ListItemText>{props.getPRepName(item.iconAddress)}</ListItemText>
+                  <ListItemText>{item.username}</ListItemText>
                 </ListItem>
               ))}
             </List>
