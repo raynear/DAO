@@ -13,7 +13,7 @@ function UserInfo(props: any) {
   if (props.loading) return <p>Loading...</p>
   //  if (props.error) return <p>Error...{props.error.message}</p>
 
-  if (props.data && props.data.viewer.username) {
+  if (props.data && props.data.viewer && props.data.viewer.username) {
     return (
       <Grid container className={classes.container}>
         <Grid item className={classes.grid} xs style={{ textAlign: "right" }}>
