@@ -415,6 +415,8 @@ class Finalize(graphene.Mutation):
             final_delegate_tx = get_final_delegate_tx(proposer,
                                                       a_vote['voter'], final_blockheight)
             print("final_delegate_tx", final_delegate_tx)
+            if final_delegate_tx == False:
+                continue
             tx_amount = 0
             tx_id = ""
             for delegate in final_delegate_tx['data']['params']['delegations']:

@@ -5,7 +5,7 @@ import { jsonRpcCall, governanceCall } from "./IconConnect";
 import SelectPRep from "./SelectPRep";
 
 function SelectPRepContainer(props: any) {
-  // console.log("select prep props", props);
+  // console.log("select prep container props", props);
   const [delegations, setDelegations] = useState<any>(false);
 
   const queryVal = useQuery(GET_PREPS);
@@ -25,12 +25,21 @@ function SelectPRepContainer(props: any) {
     });
   }
 
+  async function getPRepName(address: string) {
+    const result = await governanceCall("getDelegation", { "address": address });
+    if (result && result.name) {
+      return result.name;
+    }
+    return address;
+  }
+
   return (
     <SelectPRep
       {...queryVal}
       selectedPRep={props.selectedPRep}
       delegations={delegations}
       handleClick={handleClick}
+      getPRepName={getPRepName}
     />
   )
 }

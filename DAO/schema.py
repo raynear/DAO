@@ -33,8 +33,9 @@ class Query(board.schema.Query, graphene.ObjectType):
 
     def resolve_viewer(self, info, **kwargs):
         user = info.context.user
-#        if not user.is_authenticated:
-#            raise Exception('Authentication credentials were not provided')
+        if not user.is_authenticated:
+            return None
+            #raise Exception('Authentication credentials were not provided')
         return user
 
 
