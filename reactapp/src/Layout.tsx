@@ -65,7 +65,7 @@ function Layout(props: any) {
                   </Link>
                 </Typography>
               </Grid>
-              {!props.error && props.data.viewer.isPrep &&
+              {!props.error && props.data && props.data.viewer && props.data.viewer.isPrep &&
                 <Grid item className={clsx(classes.grid, classes.center, classes.overflowHidden)} xs>
                   <Typography component="h6" variant="h6" color="inherit" noWrap style={{ flexGrow: 1 }}>
                     <Link to={"/NoteProposals/" + props.data.viewer.username} style={{ textDecoration: 'none', color: "#FFFFFF" }}>
