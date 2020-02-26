@@ -81,35 +81,42 @@ def find_blockheight_from_datetime(expire_datetime):
 
 
 def get_final_delegate_tx(prep_address, address, block_height):
-    resp = requests.get("https://tracker.icon.foundation/v3/address/txList",
-                        {'address': address, 'page': 1, 'count': 1000})
+    resp = requests.get("https://tracker.icon.foundation/v3/address/info",
+                        {'address': address})
+    count = resp.json()['data']['txCount']
+
     latest_tx = False
 
-    print("!!!!!!!", prep_address, address, block_height)
-    print("!@#", resp)
+    for i in range(1, (count//100)+2):
+        resp = requests.get("https://tracker.icon.foundation/v3/address/txList",
+                            {'address': address, 'page': i, 'count': 100})
 
-    if resp.status_code == 200:
-        tx_list = resp.json()['data']
+        print("!!!!!!!", prep_address, address, block_height)
+        print("!@#", resp)
 
-        # print("resp_json", resp_json)
-        # print("tx_list", tx_list)
+        if resp.status_code == 200:
+            tx_list = resp.json()['data']
 
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
+            # print("resp_json", resp_json)
+            # print("tx_list", tx_list)
 
-        for a_tx in tx_list:
-            # print("a")
-            if a_tx['height'] < block_height and a_tx['toAddr'] == "cx0000000000000000000000000000000000000000":
-                # print("b")
-                tx_detail = icon_service.get_transaction(a_tx['txHash'])
-                # print("tx_detail", tx_detail)
-                if tx_detail['data']['method'] == "setDelegation":
-                    # print("c")
-                    if latest_tx == False or latest_tx['blockHeight'] < tx_detail['blockHeight']:
-                        # 1 번만 나오면 순서대로 동작하는거니 처음껄로 리턴하면 됨
-                        # print("!!!!!!!!!!!!!!!!!!!!!!")
-                        latest_tx = tx_detail
+            icon_service = IconService(HTTPProvider(NETWORK, 3))
 
-        return latest_tx
+            for a_tx in tx_list:
+                # print("a")
+                if a_tx['height'] < block_height and a_tx['toAddr'] == "cx0000000000000000000000000000000000000000":
+                    # print("b")
+                    tx_detail = icon_service.get_transaction(a_tx['txHash'])
+                    # print("tx_deta il", tx_detail)
+                    if tx_detail['data']['method'] == "setDelegation":
+                        # print("c")
+                        if latest_tx == False or latest_tx['blockHeight'] < tx_detail['blockHeight']:
+                            # 1 번만 나오면 순서대로 동작하는거니 처음껄로 리턴하면 됨
+                            # print("!!!!!!!!!!!!!!!!!!!!!!")
+                            latest_tx = tx_detail
+        if latest_tx:
+            return latest_tx
+
 
 def finalize(proposer, proposal_id):
     icon_service = IconService(HTTPProvider(NETWORK, 3))
@@ -133,7 +140,7 @@ def finalize(proposer, proposal_id):
         final_delegate_tx = get_final_delegate_tx(proposer,
                                                   a_vote['voter'], final_blockheight)
         print("final_delegate_tx", final_delegate_tx)
-        if final_delegate_tx == False:
+        if final_delegate_tx == False or final_delegate_tx == None:
             continue
         tx_amount = 0
         tx_id = ""
@@ -164,6 +171,9 @@ def finalize(proposer, proposal_id):
 
     print("prep_delegate!!!!!!!!!!!!!!!!", prep_delegate)
 
+    print("\n\n\n")
+    print("final_delegate_tx_list", final_delegate_tx_list)
+
     key = ""
     with open('./key.pw') as f:
         key = f.read().strip()
@@ -181,19 +191,12 @@ def finalize(proposer, proposal_id):
     signed_transaction = SignedTransaction(transaction, wallet)
     tx_hash = icon_service.send_transaction(signed_transaction)
 
-    print("AAAAAAAAAAA")
-
     proposal_result = json_rpc_call(
         "get_proposal", {"_proposer": proposer, "_proposal_id": proposal_id})
     result_json = json.loads(proposal_result)
 
     print("result_json", result_json)
 
-    print("BBBBBBBBBBB")
-
-    # proposal.finalizeTxHash = tx_hash
-    # proposal.status = result_json['status']
-    # proposal.save()
 
 def loop_prep():
     prep_result = governance_call("getPReps", {})
@@ -224,6 +227,7 @@ def is_prep(address):
 
 def main():
     loop_prep()
+    # finalize(proposer, proposal_id)
 
 if __name__ == '__main__':
     main()
