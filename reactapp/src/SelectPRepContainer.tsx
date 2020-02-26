@@ -7,6 +7,7 @@ import SelectPRep from "./SelectPRep";
 function SelectPRepContainer(props: any) {
   // console.log("select prep container props", props);
   const [delegations, setDelegations] = useState<any>(false);
+  const [pReps, setPReps] = useState<any>(false);
 
   const queryVal = useQuery(GET_PREPS);
 
@@ -25,10 +26,17 @@ function SelectPRepContainer(props: any) {
     });
   }
 
-  async function getPRepName(address: string) {
-    const result = await governanceCall("getDelegation", { "address": address });
-    if (result && result.name) {
-      return result.name;
+  if (!pReps) {
+    governanceCall("getPReps", {}).then((result) => {
+      setPReps(result.preps);
+    })
+  }
+
+  function getPRepName(address: string) {
+    for (let i = 0; i < pReps.length; i++) {
+      if (pReps[i].address === address) {
+        return pReps[i].name;
+      }
     }
     return address;
   }

@@ -43,9 +43,7 @@ class CustomGraphQLView(GraphQLView):
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name="index.html")),
-    # path('oauth/', include('social_django.urls')),
     path(r'admin/', admin.site.urls),
-    path(r'board/', include('board.urls')),
     path(r'graphql/', jwt_cookie(CustomGraphQLView.as_view(graphiql=True, schema=schema))),
     path(r'csrf/', views.csrf),
     # TODO : change on test serve

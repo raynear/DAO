@@ -60,7 +60,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 function LedgerDialog(props: any) {
   // console.log("LedgerDialog props", props);
-  const classes = useStyles();
+  // const classes = useStyles();
 
   return (
     <>

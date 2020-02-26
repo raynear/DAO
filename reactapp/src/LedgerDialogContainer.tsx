@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import Transport from "@ledgerhq/hw-transport-u2f";
 import Icx from "./Icx";
 import { iconService, IconBuilder, IconConverter, IconUtil } from "./IconConnect";
-import useStyles from "./Style";
 import { GET_VIEWER } from "./GQL";
 import { useApolloClient } from "@apollo/react-hooks";
 import { contractAddress } from "./Config";
@@ -12,7 +11,6 @@ import LedgerDialog from "./LedgerDialog";
 
 function LedgerDialogContainer(props: any) {
   // console.log("LedgerDialog props", props);
-  const classes = useStyles();
 
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(-1);
@@ -42,7 +40,7 @@ function LedgerDialogContainer(props: any) {
     } catch (e) {
       setPage(-1);
       setOpen(false);
-      throw "Ledger Not Connected"
+      throw new Error("Ledger Not Connected");
     }
     return { address, balance };
   }

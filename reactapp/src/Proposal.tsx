@@ -181,25 +181,10 @@ function Proposal(props: any) {
     );
   }
 
-  function FinalizeVoteButton() {
-    return (
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={props.finalizeVote}
-      >
-        Finalize Vote
-      </Button>
-    );
-  }
-
   function ActionButton() {
     const expireAt = new Date(props.proposal.expire_date);
     if (expireAt.getTime() < Date.now()) {
-      if (props.owner && props.proposal.status === "Voting") {
-        return <FinalizeVoteButton />;
-      }
-      else if (props.proposal.status === "Voting") {
+      if (props.proposal.status === "Voting") {
         return <Typography>Vote End(Time over)</Typography>;
       }
     }

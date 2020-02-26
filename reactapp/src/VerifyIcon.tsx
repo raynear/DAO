@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Grid, Paper, Typography, Divider, Button } from "@material-ui/core";
 import { LooksOneOutlined, LooksTwoOutlined } from "@material-ui/icons";
 import clsx from "clsx";

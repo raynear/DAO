@@ -15,7 +15,7 @@ function SelectPRep(props: any) {
     for (let i = 0; i < props.data.allPrep.length; i++) {
       for (let j = 0; j < props.delegations.length; j++) {
         if (props.data.allPrep[i].iconAddress === props.delegations[j].address) {
-          allPRep.push({ username: props.data.allPrep[i].username, isMyPRep: true })
+          allPRep.push({ username: props.data.allPrep[i].username, iconAddress: props.data.allPrep[i].iconAddress, isMyPRep: true })
         }
       }
     }
@@ -27,7 +27,7 @@ function SelectPRep(props: any) {
         }
       }
       if (!flag) {
-        allPRep.push({ username: props.data.allPrep[i].username, isMyPRep: false })
+        allPRep.push({ username: props.data.allPrep[i].username, iconAddress: props.data.allPrep[i].iconAddress, isMyPRep: false })
       }
     }
   } catch {
@@ -57,7 +57,7 @@ function SelectPRep(props: any) {
                       <FiberManualRecord />
                     </ListItemIcon>
                   }
-                  <ListItemText>{item.username}</ListItemText>
+                  <ListItemText>{props.getPRepName(item.iconAddress)}</ListItemText>
                 </ListItem>
               ))}
             </List>

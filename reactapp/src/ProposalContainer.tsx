@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { SET_VOTE, FINALIZE, GET_VIEWER } from "./GQL";
+import { SET_VOTE, GET_VIEWER } from "./GQL";
 
 import { governanceCall, jsonRpcCall } from "./IconConnect";
 
@@ -20,7 +20,6 @@ function ProposalContainer(props: any) {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [mutateVote] = useMutation(SET_VOTE);
-  const [mutateFinalize] = useMutation(FINALIZE);
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
@@ -43,15 +42,6 @@ function ProposalContainer(props: any) {
     setVoteSelect(-1);
     window.location.reload();
     // queryVal.refetch();
-  }
-
-  function finalizeVote() {
-    mutateFinalize({
-      variables: { Proposer: queryViewer.data.viewer.username, ProposalID: parseInt(id) }
-    }).then(finalizeResult => {
-      // console.log("finalize", finalizeResult);
-    });
-    window.location.reload();
   }
 
   const back = () => {
@@ -276,7 +266,6 @@ function ProposalContainer(props: any) {
       voteData={voteData}
       votes={callResult.getVotes}
       vote={vote}
-      finalizeVote={finalizeVote}
       handleChange={handleChange}
       handleChangePage={handleChangePage}
       handleChangeRowsPerPage={handleChangeRowsPerPage}
