@@ -57,7 +57,7 @@ function SignUp(props: any) {
           </Grid>
           <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
             <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep + 1) }} disabled={props.activeStep >= 2}>
-              Forward
+              Next
             </Button>
           </Grid>
         </Grid>

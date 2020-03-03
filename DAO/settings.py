@@ -25,7 +25,7 @@ with open('./secret_key.txt') as f:
     SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["icon.vote", "localhost", "127.0.0.1"]
 
@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    # "django.contrib.staticfiles",
+    "django.contrib.staticfiles",
     "django.contrib.sites",
     "graphene_django",
     "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
@@ -145,10 +145,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
-#STATIC_ROOT = "./static/"
-#STATIC_URL = "/static/"
-# STATICFILES_DIRS = [os.path.join(
-#    BASE_DIR, 'reactapp', 'build', 'static'), os.path.join(BASE_DIR, 'DAO', 'static')]
+STATIC_ROOT = "./static/"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [os.path.join(
+    BASE_DIR, 'reactapp', 'build', 'static'), os.path.join(BASE_DIR, 'DAO', 'static')]
 
 
 # auth

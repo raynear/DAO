@@ -282,9 +282,9 @@ function Proposal(props: any) {
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} style={{ overflow: "auto" }} xs={12} md={8} lg={8}>
-            <BarChart width={600} height={70} data={[{ name: "Minimum approval rate", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
+            <BarChart width={600} height={70} data={[{ name: "Participation Quorum", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
               <Bar dataKey="voted" stackId="a" fill="#82ca9d" />
-              <Bar dataKey="left" stackId="a" fill="#888888" />
+              <Bar dataKey="left" stackId="a" fill="#FFFFFF" />
               <Bar dataKey="100" stackId="a" fill="#FFFFFF" />
               <BarTooltip cursor={false} />
               <ReferenceLine x={props.proposal.electoral_threshold} label={props.proposal.electoral_threshold} stroke="red" />
@@ -346,7 +346,7 @@ function Proposal(props: any) {
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <Typography variant="subtitle2" color="textSecondary">
-              Winning Threshold : {props.proposal.winning_threshold} %
+              Minimum Approval Rate : {props.proposal.winning_threshold} %
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>

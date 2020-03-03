@@ -18,7 +18,7 @@ from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.wallet.wallet import KeyWallet
 
 from account.models import User
-from .models import ProposalModel, SelectItemModel, VoteModel
+from .models import ProposalModel, SelectItemModel, TxModel
 from .icon_network import ICON_NETWORK, SCORE_ADDRESS
 
 NETWORK = ICON_NETWORK
@@ -43,9 +43,9 @@ class SelectItemModelType(DjangoObjectType):
         model = SelectItemModel
 
 
-class VoteModelType(DjangoObjectType):
+class TxModelType(DjangoObjectType):
     class Meta:
-        model = VoteModel
+        model = TxModel
 
 
 class Query(object):
@@ -161,7 +161,7 @@ class PublishProposal(graphene.Mutation):
             .step_limit(100000000)\
             .nid(1)\
             .method("set_proposal")\
-            .params({"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_date": proposal.expire_at.isoformat(), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th})\
+            .params({"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_timestamp": proposal.expire_at.timestamp(), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th})\
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
@@ -183,7 +183,7 @@ class VoteProposal(graphene.Mutation):
         proposal_id = graphene.Int()
         proposer = graphene.String()
 
-    proposal = graphene.Field(ProposalModelType)
+    tx = graphene.Field(TxModelType)
 
     @address_required
     @login_required
@@ -207,10 +207,11 @@ class VoteProposal(graphene.Mutation):
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
 
-        sleep(3)
+        tx.txHash = tx_hash
+        sleep(5)
         tx_result = icon_service.get_transaction_result(tx_hash)
 
-        return VoteProposal(proposal=proposal)
+        return VoteProposal(tx=tx)
 
 
 class SetProposal(graphene.Mutation):

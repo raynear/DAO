@@ -182,7 +182,7 @@ function ProposalContainer(props: any) {
         aProposal['contents'] = proposal.contents;
         aProposal['address'] = proposal.address;
         aProposal['status'] = proposal.status;
-        aProposal['expire_date'] = proposal.expire_date;
+        aProposal['expire_timestamp'] = proposal.expire_timestamp;
         aProposal['winning_threshold'] = proposal.winning_threshold;
         aProposal['electoral_threshold'] = proposal.electoral_threshold;
         aProposal['transaction'] = proposal.transaction;

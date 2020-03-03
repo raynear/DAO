@@ -41,18 +41,7 @@ class SelectItemModel(models.Model):
         return self.contents
 
 
-class VoteModel(models.Model):
-    voter = models.ForeignKey(
-        user,
-        related_name="votes",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        default=user,
-    )
-    select = models.ForeignKey(SelectItemModel, on_delete=models.CASCADE)
-    create_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
+class TxModel(models.Model):
     txHash = models.CharField(max_length=300, blank=False)
 
     def __str__(self):
