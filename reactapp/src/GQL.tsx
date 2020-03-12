@@ -1,7 +1,7 @@
 import gql from "graphql-tag";
 
 export const GET_PROPOSAL = gql`
-query Proposal($id: Int!) {
+query Proposal($id: Int!, $selectedPRep:String!) {
   proposal(id: $id) {
     id
     prep{
@@ -21,18 +21,12 @@ query Proposal($id: Int!) {
       id
       index
       contents
-      votemodelSet{
-        id
-        select {
-          id
-        }
-        voter {
-          id
-          username
-          iconAddress
-        }
-      }
     }
+  }
+  get_prep_info_by_id(_proposer:$selectedPRep) @client{
+    name
+    website
+    delegated
   }
 }
 `;
@@ -83,11 +77,6 @@ mutation PublishProposal($proposalId: Int!) {
       selectitemmodelSet {
         index
         contents
-        votemodelSet {
-          voter {
-            username
-          }
-        }
       }
     }
   }
@@ -109,11 +98,6 @@ mutation VoteProposal($proposer:String!, $proposalId: Int!, $selectItemIndex: In
       selectitemmodelSet {
         index
         contents
-        votemodelSet {
-          voter {
-            username
-          }
-        }
       }
     }
   }
@@ -211,18 +195,88 @@ query Proposals($selectedPRep:String, $first: Int, $end: Int) {
     contents
     selectitemmodelSet {
       contents
-      votemodelSet{
-        id
-        select {
-          id
-        }
-        voter {
-          id
-          username
-        }
-      }
     }
   }
+  proposalCnt(prep:$selectedPRep) {
+    aInt
+  }
+}
+`;
+
+export const PROPOSALS = gql`
+query Proposals($proposer:String, $currPage:Int, $perPage:Int) {
+  get_proposals(_proposer:$proposer, _currPage:$currPage, _perPage:$perPage) @client{
+      ID
+      subject
+      status
+      winner
+      select_item
+  }
+}
+`;
+
+export const PROPOSAL = gql`
+query Proposal($proposer:String!, $proposal_id:Int!) {
+  get_proposal(_proposer:$proposer, _proposal_id:$proposal_id) @client{
+    ID
+    address
+    subject
+    contents
+    electoral_threshold
+    winning_threshold
+    status
+    expire_date
+    transaction
+    final
+    winner
+    select_item
+  }
+}
+`;
+
+export const VOTES = gql`
+query Votes($proposer:String!, $proposal_id:Int!) {
+  get_votes(_proposer:$proposer, _proposal_id:$proposal_id) @client{
+    voter
+    selectItem
+    voteTxHash
+    delegateTxID
+    delegateAmount
+  }
+}
+`;
+
+export const PREP_INFO_BY_ID = gql`
+query PRepInfoByID($proposer:String!) {
+  get_prep_info_by_id(_proposer:$proposer) @client{
+    name
+    website
+    delegated
+  }
+}
+`;
+
+export const LAST_PROPOSAL_ID = gql`
+query LastProposalId($proposer:String!) {
+  get_last_proposal_id(_proposer:$proposer) @client
+}
+`;
+
+export const VOTING_POWER = gql`
+query VotingPower($proposer:String!, $user:String!) {
+  get_voting_power(_proposer:$proposer, _user:$user) @client
+}
+`;
+
+export const MY_VOTING_POWER = gql`
+query MyVotingPower($proposer:String!) {
+  get_my_voting_power(_proposer:$proposer) @client
+}
+`;
+
+export const VOTED_POWER_RATES = gql`
+query VotedPowerRates($proposer:String!, $proposal_id:Int!, $user:String!) {
+  get_voted_power_rates(_proposer:$proposer, _proposal_id:$proposal_id, _user:$user) @client
 }
 `;
 
@@ -245,18 +299,6 @@ mutation AddIconAddress($IconAddress:String!){
     user{
       username
       iconAddress
-    }
-  }
-}
-`;
-
-export const FINALIZE = gql`
-mutation Finalize($Proposer:String!, $ProposalID:Int!){
-  finalize(proposer:$Proposer, proposalId:$ProposalID){
-    proposal{
-      id
-      status
-      subject
     }
   }
 }
@@ -289,11 +331,3 @@ query {
   }
 }
 `;
-
-export function selectWallet() {
-  window.dispatchEvent(new CustomEvent('ICONEX_RELAY_REQUEST', {
-    detail: {
-      type: 'REQUEST_ADDRESS'
-    }
-  }));
-}

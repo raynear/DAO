@@ -56,8 +56,8 @@ function NoteProposal(props: any) {
     );
   }
 
-  if (props.loading) return <p>Loading...</p>;
-  if (props.error) return <p>Error!:</p>;
+  //  if (props.loading) return <p>Loading...</p>;
+  //  if (props.error) return <p>Error!:</p>;
   let icon;
   if (props.data.proposal.status === "Approved") {
     icon = <DoneIcon />;
@@ -142,24 +142,10 @@ function NoteProposal(props: any) {
                   </td>
                   <td style={{ float: "right" }}>
                     <Typography variant="body1" color="textPrimary">
-                      {props.value.totalVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
+                      {(parseInt(props.data.get_prep_info_by_id.delegated, 16) / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
                     </Typography>
                   </td>
                 </tr>
-                {/*
-                <tr>
-                  <td style={{ float: "left" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {" "}Your # of votes :
-                    </Typography>
-                  </td>
-                  <td style={{ float: "right" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {props.value.pRepVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
-                    </Typography>
-                  </td>
-                </tr>
-                */}
               </tbody>
             </table>
           </Grid>
@@ -176,10 +162,6 @@ function NoteProposal(props: any) {
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <SelectItemList />
           </Grid>
-          <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
-            <br />
-            <PublishButton />
-          </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <br />
             <Divider variant="fullWidth" />
@@ -194,6 +176,15 @@ function NoteProposal(props: any) {
             <TUIViewer
               initialValue={props.data.proposal.contents}
             />
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <br />
+            <Divider variant="fullWidth" />
+            <br />
+          </Grid>
+          <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
+            <br />
+            <PublishButton />
           </Grid>
         </Grid>
       </Paper>

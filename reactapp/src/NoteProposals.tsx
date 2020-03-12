@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { Paper, Typography, Grid, Button, Chip } from "@material-ui/core";
+import { Paper, Typography, Grid, Button, Chip, CircularProgress } from "@material-ui/core";
 import { Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
 import Pagination from "react-js-pagination";
 import clsx from "clsx";
@@ -13,7 +13,7 @@ function NoteProposals(props: any) {
   // console.log("NoteProposals props", props);
   const classes = useStyles();
 
-  if (props.loading) return <p>Loading...</p>;
+  if (props.loading) return <CircularProgress />;
   if (props.error) { console.log(props.error); return <p>Error!</p>; }
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
@@ -71,7 +71,7 @@ function NoteProposals(props: any) {
             <Pagination
               activePage={props.activePage}
               itemsCountPerPage={props.itemPerPage}
-              totalItemsCount={props.itemCount}
+              totalItemsCount={props.data.proposalCnt.aInt}
               pageRangeDisplayed={5}
               onChange={props.handlePageChange}
             />

@@ -49,18 +49,15 @@ function SignUp(props: any) {
             </Grid>
           </Grid>
         }
-        <Grid container className={classes.container}>
-          <Grid item className={clsx(classes.item, classes.left)} xs={6} md={6} lg={6}>
-            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep - 1) }} disabled={props.activeStep <= 0} >
-              Back
+        {props.activeStep === 1 &&
+          <Grid container className={classes.container}>
+            <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
+              <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep + 1) }}>
+                Done
             </Button>
+            </Grid>
           </Grid>
-          <Grid item className={clsx(classes.item, classes.right)} xs={6} md={6} lg={6}>
-            <Button variant="contained" color="primary" onClick={() => { props.setActiveStep(props.activeStep + 1) }} disabled={props.activeStep >= 2}>
-              Next
-            </Button>
-          </Grid>
-        </Grid>
+        }
       </Paper>
     </Grid>
   );

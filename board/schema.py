@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.db import models
 
 from time import sleep
 import json
@@ -21,8 +22,11 @@ from account.models import User
 from .models import ProposalModel, SelectItemModel, TxModel
 from .icon_network import ICON_NETWORK, SCORE_ADDRESS
 
-NETWORK = ICON_NETWORK
-SCORE = SCORE_ADDRESS
+GOVERNANCE_NETWORK = ICON_NETWORK
+#CONTRACT_NETWORK = ICON_NETWORK
+CONTRACT_NETWORK = "https://bicon.net.solidwallet.io"
+#SCORE = SCORE_ADDRESS
+SCORE = "cx361c5cff4741cc596a21478c8a2ca704b9917e38"
 
 prep_required = user_passes_test(lambda u: u.is_prep)
 address_required = user_passes_test(lambda u: u.icon_address)
@@ -48,6 +52,18 @@ class TxModelType(DjangoObjectType):
         model = TxModel
 
 
+class IntModel(models.Model):
+    aInt = models.IntegerField(default=0)
+
+    def __str__(self):
+        return str(self.aInt)
+
+
+class IntModelType(DjangoObjectType):
+    class Meta:
+        model = IntModel
+
+
 class Query(object):
     all_prep = graphene.List(CustomUserType)
     all_proposal = graphene.List(ProposalModelType)
@@ -63,6 +79,9 @@ class Query(object):
         first=graphene.Int(),
         end=graphene.Int(),
     )
+
+    proposal_cnt = graphene.Field(
+        IntModelType, prep=graphene.String())
 
     def resolve_prep(self, info, prep_name=None, **kwargs):
         return User.objects.get(username=prep_name)
@@ -101,6 +120,30 @@ class Query(object):
 
         return qs
 
+    @login_required
+    @prep_required
+    def resolve_proposal_cnt(self, info, prep=None, **kwargs):
+        qs = ProposalModel.objects.all()
+
+        if info.context.user.is_authenticated:
+            filter = Q(prep__exact=info.context.user) | Q(
+                published__exact=True)
+            qs = qs.filter(filter)
+        else:
+            filter = Q(published__exact=True)
+            qs = qs.filter(filter)
+
+        if (prep is not None) and (prep != ""):
+            aPRep = User.objects.get(username=prep)
+            filter = Q(prep__exact=aPRep)
+            qs = qs.filter(filter)
+
+        print(qs.count())
+        IntModel.objects.all().delete()
+        aInt = IntModel.objects.create(aInt=qs.count())
+
+        return aInt
+
     def resolve_all_prep(self, info, **kwargs):
         qs = User.objects.all()
         return qs.filter(Q(is_prep__exact=True))
@@ -132,7 +175,7 @@ class PublishProposal(graphene.Mutation):
     def mutate(self, info, proposal_id):
         proposal = ProposalModel.objects.get(pk=proposal_id)
 
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
+        icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
 
         result = jsonRpcCall("get_verify_info_by_id", {
                              "_id": info.context.user.username})
@@ -188,7 +231,7 @@ class VoteProposal(graphene.Mutation):
     @address_required
     @login_required
     def mutate(self, info, proposer, proposal_id, select_item_index):
-        icon_service = IconService(HTTPProvider(NETWORK, 3))
+        icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
 
         key = ""
         with open('./key.pw') as f:
@@ -316,7 +359,9 @@ class AddIconAddress(graphene.Mutation):
     def mutate(self, info, icon_address):
         user = info.context.user
 
+        print("username", user.username)
         result = jsonRpcCall("get_verify_info_by_id", {"_id": user.username})
+        print("verify result", result)
         result_json = json.loads(result)
 
         if result_json['address'] == icon_address:
@@ -328,7 +373,7 @@ class AddIconAddress(graphene.Mutation):
 
 
 def governanceCall(method, params):
-    icon_service = IconService(HTTPProvider(NETWORK, 3))
+    icon_service = IconService(HTTPProvider(GOVERNANCE_NETWORK, 3))
     call = CallBuilder()\
         .to("cx0000000000000000000000000000000000000000")\
         .method(method)\
@@ -339,7 +384,7 @@ def governanceCall(method, params):
 
 
 def jsonRpcCall(method, params):
-    icon_service = IconService(HTTPProvider(NETWORK, 3))
+    icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
     call = CallBuilder()\
         .to(SCORE)\
         .method(method)\

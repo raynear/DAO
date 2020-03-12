@@ -1,6 +1,6 @@
 import React from "react";
 import { Dialog, DialogTitle, DialogContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Paper, Typography, TableFooter, IconButton, Button } from "@material-ui/core";
-import { FirstPage, KeyboardArrowLeft, KeyboardArrowRight, LastPage, LooksOneOutlined } from "@material-ui/icons";
+import { FirstPage, KeyboardArrowLeft, KeyboardArrowRight, LastPage } from "@material-ui/icons";
 // import clsx from "clsx";
 import useStyles from "./Style";
 
@@ -64,7 +64,7 @@ function LedgerDialog(props: any) {
 
   return (
     <>
-      <Button variant="contained" color="primary" fullWidth onClick={() => { props.setPage(0); props.setOpen(true) }} startIcon={<LooksOneOutlined />}>Verify ICON Address(Ledger)</Button>
+      <Button variant="contained" color="primary" fullWidth onClick={() => { props.setPage(0); props.setOpen(true) }}>Verify ICON Address(Ledger)</Button>
       <Dialog
         maxWidth="lg"
         aria-labelledby="confirmation-dialog-title"

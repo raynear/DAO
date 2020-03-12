@@ -1,5 +1,5 @@
 import React from "react";
-import { IconButton, Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Chip, Table, TableHead, TableBody, TableFooter, TablePagination, TableRow, TableCell, useTheme } from "@material-ui/core";
+import { IconButton, Paper, Typography, FormControlLabel, FormControl, RadioGroup, Radio, Button, Grid, Divider, Tooltip, Chip, Table, TableHead, TableBody, TableFooter, TablePagination, TableRow, TableCell, useTheme, Dialog, DialogTitle, CircularProgress } from "@material-ui/core";
 import { ArrowLeft, ArrowRight, Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon, FirstPage, KeyboardArrowLeft, KeyboardArrowRight, LastPage } from "@material-ui/icons";
 import { BarChart, Bar, XAxis, YAxis, ReferenceLine, Tooltip as BarTooltip } from "recharts";
 import clsx from "clsx";
@@ -13,7 +13,7 @@ import facebookImg from "./img/facebook.png";
 import twitterImg from "./img/twitter.png";
 
 function Proposal(props: any) {
-  // console.log("Proposal props", props);
+  console.log("Proposal props", props);
   // const forceUpdate = useForceUpdate;
 
   const classes = useStyles();
@@ -92,6 +92,13 @@ function Proposal(props: any) {
                 voteRate = 0;
               } finally {
               }
+              let icx;
+              try {
+                icx = props.votedPowerRate[idx].icx.toLocaleString(undefined, { maximumFractionDigits: 2 })
+              } catch {
+                icx = 0;
+              }
+
               return (
                 <tr key={idx}>
                   <td><ArrowRight /></td>
@@ -106,7 +113,7 @@ function Proposal(props: any) {
                     }
                   </td>
                   <td align="right" style={{ minWidth: "50px" }}><Typography variant="h6" color="textSecondary">{" " + voteRate + " %"}</Typography></td>
-                  <td align="right" style={{ minWidth: "200px" }}><Typography variant="h6">{props.votedPowerRate.length > 0 && " " + props.votedPowerRate[idx].icx.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography></td>
+                  <td align="right" style={{ minWidth: "200px" }}><Typography variant="h6">{props.votedPowerRate.length > 0 && " " + icx + " ICX"}</Typography></td>
                 </tr>
               );
             }
@@ -205,7 +212,7 @@ function Proposal(props: any) {
   const leftHour = Math.floor((endTime.getTime() - Date.now()) / 3600000);
   const leftMinute = Math.floor(((endTime.getTime() - Date.now()) / 60000) - (leftHour * 60));
 
-  if (props.loading) return <p>Loading...</p>;
+  if (props.loading) return <CircularProgress />;
   if (props.error) return <p>Error!:</p>;
   let icon;
   if (props.proposal.status === "Approved") {
@@ -216,212 +223,234 @@ function Proposal(props: any) {
     icon = <DisapproveIcon />;
   }
   return (
-    <Grid item className={classes.grid} xs={12} md={12} lg={12}>
-      <Paper className={classes.paper}>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={props.back}
-          style={{ width: "200px", float: "right" }}
-          startIcon={<ArrowLeft />}
-        >
-          Back
+    <>
+      <Grid item className={classes.grid} xs={12} md={12} lg={12}>
+        <Paper className={classes.paper}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={props.back}
+            style={{ width: "200px", float: "right" }}
+            startIcon={<ArrowLeft />}
+          >
+            Back
         </Button>
-      </Paper>
+        </Paper>
 
-      <Paper className={classes.paper}>
-        <Grid container className={classes.container}>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Chip
-              icon={icon}
-              size="small"
-              label={props.proposal.status}
-              color="primary"
-              style={{ float: "left" }}
-            />
-            <br />
-            <br />
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <div className={classes.right}>
-              <div style={{ float: "left" }}>
-                <Typography variant="h4" color="textPrimary" gutterBottom>
-                  <b>
-                    {props.proposal.id + ". " + props.proposal.subject}{" "}
-                  </b>
-                </Typography>
+        <Paper className={classes.paper}>
+          <Grid container className={classes.container}>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <Chip
+                icon={icon}
+                size="small"
+                label={props.proposal.status}
+                color="primary"
+                style={{ float: "left" }}
+              />
+              <br />
+              <br />
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <div className={classes.right}>
+                <div style={{ float: "left" }}>
+                  <Typography variant="h4" color="textPrimary" gutterBottom>
+                    <b>
+                      {props.proposal.ID + ". " + props.proposal.subject}{" "}
+                    </b>
+                  </Typography>
+                </div>
+                <div onClick={twitterShare} style={{ float: "right" }}><img src={twitterImg} width="40" alt="트위터 공유하기" /></div>
+                <div onClick={facebookShare} style={{ float: "right" }}><img src={facebookImg} width="40" alt="페이스북 공유하기" /></div>
               </div>
-              <div onClick={twitterShare} style={{ float: "right" }}><img src={twitterImg} width="40" alt="트위터 공유하기" /></div>
-              <div onClick={facebookShare} style={{ float: "right" }}><img src={facebookImg} width="40" alt="페이스북 공유하기" /></div>
-            </div>
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="body1" color="textPrimary">
-              Proposer : {props.pRep}
-            </Typography>
-            <Typography variant="body1" color="textPrimary">
-              Ending Time : {endTime.toString()} {leftHour > 0 && "(" + leftHour + " Hour " + leftMinute + " Minute Left)"}
-            </Typography>
-            <Typography variant="body1" color="textPrimary" style={{ overflow: "auto" }}>
-              Transaction : <a href={trackerURL + "transaction/0x" + props.proposal.transaction} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.transaction}</a>
-            </Typography>
-            {props.proposal.final !== "" &&
-              <Typography variant="body1" color="textPrimary" style={{ overflow: "auto" }}>
-                Finalize Transaction : <a href={trackerURL + "transaction/0x" + props.proposal.final} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.final}</a>
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <Typography variant="body1" color="textPrimary">
+                Proposer : {props.pRep}
               </Typography>
+              <Typography variant="body1" color="textPrimary">
+                Ending Time : {endTime.toString()} {leftHour > 0 && "(" + leftHour + " Hour " + leftMinute + " Minute Left)"}
+              </Typography>
+              <Typography variant="body1" color="textPrimary" style={{ overflow: "auto" }}>
+                Transaction : <a href={trackerURL + "transaction/0x" + props.proposal.transaction} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.transaction}</a>
+              </Typography>
+              {props.proposal.final !== "" &&
+                <Typography variant="body1" color="textPrimary" style={{ overflow: "auto" }}>
+                  Finalize Transaction : <a href={trackerURL + "transaction/0x" + props.proposal.final} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + props.proposal.final}</a>
+                </Typography>
+              }
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <br />
+              <Divider variant="fullWidth" />
+              <br />
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <Typography variant="caption" color="textSecondary">
+                VOTING PROGRESS
+            </Typography>
+            </Grid>
+            <Grid item className={classes.paddingSide} style={{ overflow: "auto" }} xs={12} md={8} lg={8}>
+              <BarChart width={600} height={70} data={[{ name: "Participation Quorum", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
+                <Bar dataKey="voted" stackId="a" fill="#82ca9d" />
+                <Bar dataKey="left" stackId="a" fill="#FFFFFF" />
+                <Bar dataKey="100" stackId="a" fill="#FFFFFF" />
+                <BarTooltip cursor={false} />
+                <ReferenceLine x={props.proposal.electoral_threshold} label={props.proposal.electoral_threshold} stroke="red" />
+                <XAxis type="number" domain={[0, 100]} />
+                <YAxis hide dataKey="name" type="category" />
+              </BarChart>
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={4} lg={4}>
+              <table>
+                <tbody>
+                  <tr>
+                    <td style={{ float: "left" }}>
+                      <Typography variant="body1" color="textPrimary">
+                        {" "}Total # of delegates :
+                    </Typography>
+                    </td>
+                    <td style={{ float: "right" }}>
+                      <Typography variant="body1" color="textPrimary">
+                        {props.voteData.totalDelegate.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
+                      </Typography>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ float: "left" }}>
+                      <Typography variant="body1" color="textPrimary">
+                        {" "}Total # of votes :
+                    </Typography>
+                    </td>
+                    <td style={{ float: "right" }}>
+                      <Typography variant="body1" color="textPrimary">
+                        {props.voteData.totalVoted.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
+                      </Typography>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ float: "left" }}>
+                      <Typography variant="body1" color="textPrimary">
+                        {" "}Your # of votes :
+                    </Typography>
+                    </td>
+                    <td style={{ float: "right" }}>
+                      <Typography variant="body1" color="textPrimary">
+                        {props.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
+                      </Typography>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <br />
+              <Divider variant="fullWidth" />
+              <br />
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <Typography variant="caption" color="textSecondary">
+                SELECT ITEMS
+            </Typography>
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Minimum Approval Rate : {props.proposal.winning_threshold} %
+            </Typography>
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <SelectList />
+            </Grid>
+            <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
+              <br />
+              <ActionButton />
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <br />
+              <Divider variant="fullWidth" />
+              <br />
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <Typography variant="caption" color="textSecondary">
+                DESCRIPTION
+            </Typography>
+            </Grid>
+            <Grid item className={clsx(classes.paddingSide, classes.viewer)} xs={12} md={12} lg={12}>
+              <TUIViewer
+                initialValue={props.proposal.contents}
+              />
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <br />
+              <Divider variant="fullWidth" />
+              <br />
+            </Grid>
+            <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+              <Typography variant="caption" color="textSecondary">
+                VOTES
+            </Typography>
+            </Grid>
+            <Grid item className={classes.paddingSide} style={{ overflow: "auto" }} xs={12} md={12} lg={12}>
+              <Table className={classes.table} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">Voter</TableCell>
+                    <TableCell align="center">Transaction Hash</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {(props.votes.slice(props.page * props.rowsPerPage, props.page * props.rowsPerPage + props.rowsPerPage)).map((item: any, idx: any) => {
+                    return (
+                      <TableRow key={idx}>
+                        <TableCell align="center"><a href={trackerURL + "address/" + item.voter} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{item.voter}</a></TableCell>
+                        <TableCell align="center"><a href={trackerURL + "transaction/0x" + item.voteTxHash} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + item.voteTxHash}</a></TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TablePagination
+                      rowsPerPageOptions={[10, 20, 30]}
+                      colSpan={6}
+                      count={props.votes.length}
+                      rowsPerPage={props.rowsPerPage}
+                      page={props.page}
+                      SelectProps={{
+                        inputProps: { 'aria-label': 'rows per page' },
+                        native: true,
+                      }}
+                      onChangePage={props.handleChangePage}
+                      onChangeRowsPerPage={props.handleChangeRowsPerPage}
+                      ActionsComponent={TablePaginationActions}
+                    />
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </Grid>
+          </Grid>
+        </Paper>
+      </Grid >
+      <Dialog
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+        open={props.open}
+      >
+        <DialogTitle>{props.msg.title}</DialogTitle>
+        <Grid container className={classes.grid}>
+          <Grid item className={clsx(classes.item, classes.center)} xs={12} md={12} lg={12}>
+            {props.msg.title === "Wait" &&
+              <CircularProgress />
             }
+            <Typography variant="h5" color="textPrimary">{props.msg.contents}</Typography>
           </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <br />
-            <Divider variant="fullWidth" />
-            <br />
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="caption" color="textSecondary">
-              VOTING PROGRESS
-            </Typography>
-          </Grid>
-          <Grid item className={classes.paddingSide} style={{ overflow: "auto" }} xs={12} md={8} lg={8}>
-            <BarChart width={600} height={70} data={[{ name: "Participation Quorum", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
-              <Bar dataKey="voted" stackId="a" fill="#82ca9d" />
-              <Bar dataKey="left" stackId="a" fill="#FFFFFF" />
-              <Bar dataKey="100" stackId="a" fill="#FFFFFF" />
-              <BarTooltip cursor={false} />
-              <ReferenceLine x={props.proposal.electoral_threshold} label={props.proposal.electoral_threshold} stroke="red" />
-              <XAxis type="number" domain={[0, 100]} />
-              <YAxis hide dataKey="name" type="category" />
-            </BarChart>
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={4} lg={4}>
-            <table>
-              <tbody>
-                <tr>
-                  <td style={{ float: "left" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {" "}Total # of delegates :
-                    </Typography>
-                  </td>
-                  <td style={{ float: "right" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {props.voteData.totalDelegate.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
-                    </Typography>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ float: "left" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {" "}Total # of votes :
-                    </Typography>
-                  </td>
-                  <td style={{ float: "right" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {props.voteData.totalVoted.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
-                    </Typography>
-                  </td>
-                </tr>
-                <tr>
-                  <td style={{ float: "left" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {" "}Your # of votes :
-                    </Typography>
-                  </td>
-                  <td style={{ float: "right" }}>
-                    <Typography variant="body1" color="textPrimary">
-                      {props.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
-                    </Typography>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <br />
-            <Divider variant="fullWidth" />
-            <br />
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="caption" color="textSecondary">
-              SELECT ITEMS
-            </Typography>
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="subtitle2" color="textSecondary">
-              Minimum Approval Rate : {props.proposal.winning_threshold} %
-            </Typography>
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <SelectList />
-          </Grid>
-          <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
-            <br />
-            <ActionButton />
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <br />
-            <Divider variant="fullWidth" />
-            <br />
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="caption" color="textSecondary">
-              DESCRIPTION
-            </Typography>
-          </Grid>
-          <Grid item className={clsx(classes.paddingSide, classes.viewer)} xs={12} md={12} lg={12}>
-            <TUIViewer
-              initialValue={props.proposal.contents}
-            />
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <br />
-            <Divider variant="fullWidth" />
-            <br />
-          </Grid>
-          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
-            <Typography variant="caption" color="textSecondary">
-              VOTES
-            </Typography>
-          </Grid>
-          <Grid item className={classes.paddingSide} style={{ overflow: "auto" }} xs={12} md={12} lg={12}>
-            <Table className={classes.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">Voter</TableCell>
-                  <TableCell align="center">Transaction Hash</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {props.votes.map((item: any, idx: any) => {
-                  return (
-                    <TableRow key={idx}>
-                      <TableCell align="center"><a href={trackerURL + "address/" + item.voter} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{item.voter}</a></TableCell>
-                      <TableCell align="center"><a href={trackerURL + "transaction/0x" + item.voteTxHash} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "#000000" }}>{"0x" + item.voteTxHash}</a></TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-              <TableFooter>
-                <TableRow>
-                  <TablePagination
-                    rowsPerPageOptions={[10, 20, 30]}
-                    colSpan={6}
-                    count={props.votes.length}
-                    rowsPerPage={props.rowsPerPage}
-                    page={props.page}
-                    SelectProps={{
-                      inputProps: { 'aria-label': 'rows per page' },
-                      native: true,
-                    }}
-                    onChangePage={props.handleChangePage}
-                    onChangeRowsPerPage={props.handleChangeRowsPerPage}
-                    ActionsComponent={TablePaginationActions}
-                  />
-                </TableRow>
-              </TableFooter>
-            </Table>
+          <Grid item className={classes.item} xs={12} md={12} lg={12}>
+            <Button variant="contained" color="primary" fullWidth onClick={() => props.setOpen(false)}>
+              Close
+            </Button>
           </Grid>
         </Grid>
-      </Paper>
-    </Grid >
+      </Dialog>
+    </>
   );
 }
 

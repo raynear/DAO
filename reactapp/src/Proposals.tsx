@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { Paper, Typography, Grid, Chip } from "@material-ui/core";
+import { Paper, Typography, Grid, Chip, CircularProgress } from "@material-ui/core";
 import { MoreVert, ArrowRight, Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
 import Pagination from "react-js-pagination";
 import clsx from "clsx";
@@ -10,13 +10,14 @@ import useStyles from "./Style";
 import "./paginate.css";
 
 function Proposals(props: any) {
-  // console.log("Proposals props", props);
+  console.log("Proposals props", props);
   const classes = useStyles();
 
   const select_items = [0, 1, 2, 3];
 
-  // if (props.loading) return <p>Loading...</p>;
-  // if (props.error) { console.log(props.error); return <p>Error!</p>; }
+  if (props.loading) return <CircularProgress />;
+  if (props.error) { console.log(props.error); return <p>Error!</p>; }
+
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
@@ -38,7 +39,7 @@ function Proposals(props: any) {
                     <Typography variant="h6">:</Typography>
                   </td>
                   <td style={{ textAlign: "right" }}>
-                    <Typography variant="h6">{props.pRepInfo.totalDelegation.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+                    <Typography variant="h6">{(parseInt(props.pRepInfo.delegated, 16) / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
                   </td>
                 </tr>
                 <tr>
@@ -49,7 +50,7 @@ function Proposals(props: any) {
                     <Typography variant="h6">:</Typography>
                   </td>
                   <td style={{ textAlign: "right" }}>
-                    <Typography variant="h6">{props.pRepInfo.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+                    <Typography variant="h6">{props.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
                   </td>
                 </tr>
               </tbody>
@@ -59,7 +60,8 @@ function Proposals(props: any) {
       </Paper>
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
-          {props.proposals.map((item: any, idx: number) => {
+          {props.data.get_proposals.map((item: any, idx: number) => {
+            // console.log("item", select_item);
             let icon;
             if (item.status === "Approved") {
               icon = <DoneIcon />;
@@ -82,15 +84,15 @@ function Proposals(props: any) {
                     </Grid>
                     <Grid item className={classes.grid} style={{ overflow: "hidden" }} xs={12} md={12} lg={12}>
                       <Typography variant="h5" color="textPrimary" gutterBottom>
-                        <Link className={classes.link} to={"/Proposal/" + props.pRep + "/" + item.id} color="textPrimary">
-                          <b>{item.id}.</b>{" "}{item.subject}
+                        <Link className={classes.link} to={"/Proposal/" + props.pRep + "/" + item.ID} color="textPrimary">
+                          <b>{item.ID}.</b>{" "}{item.subject}
                         </Link>
                       </Typography>
                     </Grid>
                     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
                       <table>
                         <tbody>
-                          {select_items.map((itm: any, idx: number) => {
+                          {item.select_item.map((itm: any, idx: number) => {
                             const selectItem = item.select_item[idx];
                             if (idx > item.select_item.length - 1) {
                               return (
@@ -131,11 +133,11 @@ function Proposals(props: any) {
           })}
           <Grid item className={clsx(classes.item, classes.center)} xs={12} lg={12}>
             <Pagination
-              activePage={props.activePage}
+              activePage={props.currPage}
               itemsCountPerPage={props.itemPerPage}
-              totalItemsCount={props.itemCount}
+              totalItemsCount={props.lastProposalID}
               pageRangeDisplayed={5}
-              onChange={props.handlePageChange}
+              onChange={(data) => props.setCurrPage(data)}
               activeLinkClass={"link"}
             />
           </Grid>

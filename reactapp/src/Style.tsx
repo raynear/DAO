@@ -48,6 +48,14 @@ const useStyles = makeStyles((theme: Theme) =>
       padding: theme.spacing(0),
       overflow: "auto"
     },
+    modal: {
+      position: 'absolute',
+      width: 400,
+      backgroundColor: theme.palette.background.paper,
+      border: '2px solid #000',
+      boxShadow: theme.shadows[5],
+      padding: theme.spacing(2, 4, 3),
+    },
     paper: {
       margin: theme.spacing(1),
       padding: theme.spacing(1),

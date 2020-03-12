@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Paper, List, ListSubheader, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { Grid, Paper, List, ListSubheader, ListItem, ListItemIcon, ListItemText, CircularProgress } from "@material-ui/core";
 import { Star, FiberManualRecord } from "@material-ui/icons";
 import useStyles from "./Style";
 
@@ -7,8 +7,8 @@ function SelectPRep(props: any) {
   // console.log("select prep props", props);
   const classes = useStyles();
 
-  if (props.loading) return <p>Loading...</p>
-  if (props.error) return <p>Error...</p>
+  if (props.loading) return <CircularProgress />;
+  if (props.error) return <p>Error...</p>;
 
   let allPRep: any[] = [];
   try {

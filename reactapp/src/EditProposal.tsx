@@ -1,6 +1,6 @@
 import React from "react";
 // import { withRouter } from "react-router-dom";
-import { Paper, Grid, Typography, TextField, Button, Slider } from "@material-ui/core";
+import { Paper, Grid, Typography, TextField, Button, Slider, CircularProgress } from "@material-ui/core";
 import { AddRounded } from "@material-ui/icons";
 import clsx from "clsx";
 
@@ -13,7 +13,7 @@ function EditProposal(props: any) {
 
   const classes = useStyles();
 
-  if (props.loading) return <p>Loading...</p>;
+  if (props.loading) return <CircularProgress />;
   if (props.error) return <p>Error: Check your login status.</p>;
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>

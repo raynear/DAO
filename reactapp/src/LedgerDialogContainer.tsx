@@ -113,6 +113,7 @@ function LedgerDialogContainer(props: any) {
       rawTransaction.signature = signedRawTxBase64;
 
       iconService.sendTransaction({ getProperties: () => rawTransaction, getSignature: () => signedRawTxBase64 }).execute();
+      props.waitResult(5, 2);
     })
   }
 

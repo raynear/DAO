@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, Switch, Route } from "react-router-dom";
-import { CssBaseline, AppBar, Toolbar, Typography, Container, Grid, Snackbar } from "@material-ui/core";
+import { CssBaseline, AppBar, Toolbar, Typography, Container, Grid, Snackbar, CircularProgress } from "@material-ui/core";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 import clsx from "clsx";
 
@@ -34,7 +34,7 @@ function Layout(props: any) {
   // console.log("Layout props", props);
   const classes = useStyles();
 
-  if (props.loading) return <p>Loading...</p>
+  if (props.loading) return <CircularProgress />;
   //  if (props.error) return <p>Error...</p>
   return (
     <ThemeProvider theme={IconTheme}>

@@ -2,14 +2,19 @@ import IconService from 'icon-sdk-js';
 import { nodeURL, contractAddress } from "./Config";
 
 const ICON_NETWORK = nodeURL + "api/v3";
-const CONTRACT = contractAddress;
+//const CONTRACT = contractAddress;
+const CONTRACT = "cx361c5cff4741cc596a21478c8a2ca704b9917e38";
 const Provider = new IconService.HttpProvider(ICON_NETWORK);
 export const iconService = new IconService(Provider);
 export const IconBuilder = IconService.IconBuilder;
 export const IconConverter = IconService.IconConverter;
 export const IconUtil = IconService.IconUtil;
 
-export const selectedIconService = iconService;
+export const governanceIconService = iconService;
+//export const contractIconService = iconService;
+
+const TestProvider = new IconService.HttpProvider("https://bicon.net.solidwallet.io/api/v3");
+export const contractIconService = new IconService(TestProvider);
 
 export async function jsonRpcCall(methodName: string, params: any) {
   // console.log("params", params);
@@ -21,7 +26,7 @@ export async function jsonRpcCall(methodName: string, params: any) {
     .build();
 
   // console.log(callObj);
-  return await selectedIconService.call(callObj).execute();
+  return await contractIconService.call(callObj).execute();
 }
 
 export async function jsonRpcSendTx(fromWallet: string, methodName: string, params: any) {
@@ -30,7 +35,8 @@ export async function jsonRpcSendTx(fromWallet: string, methodName: string, para
   var txObj = txBuilder
     .from(fromWallet)
     .to(CONTRACT)
-    .nid(IconConverter.toBigNumber("1"))
+    //    .nid(IconConverter.toBigNumber("1"))
+    .nid(IconConverter.toBigNumber("3"))
     .version(IconConverter.toBigNumber("3"))
     .stepLimit(IconConverter.toBigNumber("10000000"))
     .timestamp(timestamp.valueOf() * 1000)
@@ -65,7 +71,7 @@ export async function governanceCall(methodName: string, params: any) {
     .build();
 
   // console.log(callObj);
-  return await selectedIconService.call(callObj).execute();
+  return await governanceIconService.call(callObj).execute();
 }
 
 export async function governanceSendTx(fromWallet: string, methodName: string, params: any) {
@@ -109,7 +115,7 @@ export async function networkProposalCall(methodName: string, params: any) {
     .build();
 
   // console.log(callObj);
-  return await selectedIconService.call(callObj).execute();
+  return await governanceIconService.call(callObj).execute();
 }
 
 export async function networkProposalSendTx(fromWallet: string, methodName: string, params: any) {
