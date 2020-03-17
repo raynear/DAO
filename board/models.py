@@ -16,6 +16,7 @@ class ProposalModel(models.Model):
         default=user
     )
     status = models.CharField(max_length=300, blank=True, default="")
+    isPublicVote = models.BooleanField(default=False)
     published = models.BooleanField(default=False)
     prep_pid = models.IntegerField(default=0)
     subject = models.CharField(max_length=50, blank=True)

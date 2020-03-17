@@ -13,12 +13,17 @@ function LayoutContainer(props: any) {
   const querySnack = useQuery(GET_LOCAL_SNACK);
   // console.log("querySnack", querySnack);
 
-  const handleClose = (event: React.SyntheticEvent | React.MouseEvent, reason?: string) => {
-    if (reason === 'clickaway') {
+  const handleClose = (
+    event: React.SyntheticEvent | React.MouseEvent,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
       return;
     }
 
-    client.writeData({ data: { snack: { open: false, message: "", __typename: "snack" } } });
+    client.writeData({
+      data: { snack: { open: false, message: "", __typename: "snack" } }
+    });
   };
 
   const queryVal = useQuery(GET_VIEWER);
@@ -32,13 +37,10 @@ function LayoutContainer(props: any) {
     }
   }
   if (!queryVal.loading && !queryVal.error && queryVal.data) {
-    client.writeData({ data: { viewer: queryVal.data.viewer } });//, refetchViewer: queryVal.refetch } });
-    //    client.queryManager.addObservableQuery("getViewer", GET_VIEWER);
+    client.writeData({ data: { viewer: queryVal.data.viewer } });
   }
 
-  return (
-    <Layout {...queryVal} {...snack} handleClose={handleClose} />
-  );
+  return <Layout {...queryVal} {...snack} handleClose={handleClose} />;
 }
 
 export default LayoutContainer;

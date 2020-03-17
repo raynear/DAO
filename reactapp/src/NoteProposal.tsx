@@ -1,7 +1,20 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
-import { Paper, Typography, Button, Grid, Divider, Chip } from "@material-ui/core";
-import { ArrowLeft, ArrowRight, Done as DoneIcon, HowToVote as VoteIcon, NotInterested as DisapproveIcon } from "@material-ui/icons";
+import {
+  Paper,
+  Typography,
+  Button,
+  Grid,
+  Divider,
+  Chip
+} from "@material-ui/core";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Done as DoneIcon,
+  HowToVote as VoteIcon,
+  NotInterested as DisapproveIcon
+} from "@material-ui/icons";
 import { BarChart, Bar, XAxis, YAxis, Tooltip as BarTooltip } from "recharts";
 import clsx from "clsx";
 
@@ -20,20 +33,20 @@ function NoteProposal(props: any) {
     return (
       <table>
         <tbody>
-          {props.data.proposal.selectitemmodelSet.map(
-            (selectItem: any) => {
-              return (
-                <tr key={selectItem.index}>
-                  <td><ArrowRight /></td>
-                  <td style={{ minWidth: "100px" }}>
-                    <Typography variant="h6">{selectItem.contents}</Typography>
-                  </td>
-                </tr>
-              );
-            }
-          )}
+          {props.data.proposal.selectitemmodelSet.map((selectItem: any) => {
+            return (
+              <tr key={selectItem.index}>
+                <td>
+                  <ArrowRight />
+                </td>
+                <td style={{ minWidth: "100px" }}>
+                  <Typography variant="h6">{selectItem.contents}</Typography>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
-      </table >
+      </table>
     );
   }
 
@@ -45,11 +58,7 @@ function NoteProposal(props: any) {
             Edit
           </Link>
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={props.publish}
-        >
+        <Button variant="contained" color="primary" onClick={props.publish}>
           Publish
         </Button>
       </Fragment>
@@ -88,18 +97,33 @@ function NoteProposal(props: any) {
               size="small"
               label={props.data.proposal.status}
               color="primary"
-            />{"  "}
-            <Typography className={classes.title} variant="body1" color="textSecondary" gutterBottom>
+            />
+            {"  "}
+            <Typography
+              className={classes.title}
+              variant="body1"
+              color="textSecondary"
+              gutterBottom
+            >
               <b>{props.data.proposal.ID}.</b>
+            </Typography>
+            <Typography
+              className={classes.title}
+              variant="body1"
+              color="textSecondary"
+              gutterBottom
+            >
+              <b>
+                {props.data.proposal.isPublicVote && "Public Vote"}
+                {!props.data.proposal.isPublicVote && "PRep Vote"}
+              </b>
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <div className={classes.right}>
               <div style={{ float: "left" }}>
                 <Typography variant="h4" color="textPrimary" gutterBottom>
-                  <b>
-                    {props.data.proposal.subject}{" "}
-                  </b>
+                  <b>{props.data.proposal.subject} </b>
                 </Typography>
               </div>
             </div>
@@ -123,7 +147,19 @@ function NoteProposal(props: any) {
             </Typography>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={8} lg={8}>
-            <BarChart width={600} height={80} data={[{ name: "Thresholds", "Minimum approval rate": props.data.proposal.winningTh, "Quorum": props.data.proposal.electoralTh, "100": 100 }]} layout="vertical">
+            <BarChart
+              width={600}
+              height={80}
+              data={[
+                {
+                  name: "Thresholds",
+                  "Minimum approval rate": props.data.proposal.winningTh,
+                  Quorum: props.data.proposal.electoralTh,
+                  "100": 100
+                }
+              ]}
+              layout="vertical"
+            >
               <Bar dataKey="Minimum approval rate" fill="#82ca9d" />
               <Bar dataKey="Quorum" fill="#3888c8" />
               <BarTooltip cursor={false} />
@@ -137,12 +173,18 @@ function NoteProposal(props: any) {
                 <tr>
                   <td style={{ float: "left" }}>
                     <Typography variant="body1" color="textPrimary">
-                      {" "}Total Delegates :
+                      {" "}
+                      Total Delegates :
                     </Typography>
                   </td>
                   <td style={{ float: "right" }}>
                     <Typography variant="body1" color="textPrimary">
-                      {(parseInt(props.data.get_prep_info_by_id.delegated, 16) / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
+                      {(
+                        parseInt(props.data.get_prep_info_by_id.delegated, 16) /
+                        1000000000000000000
+                      ).toLocaleString(undefined, {
+                        maximumFractionDigits: 2
+                      }) + " ICX"}
                     </Typography>
                   </td>
                 </tr>
@@ -172,23 +214,33 @@ function NoteProposal(props: any) {
               DESCRIPTION
             </Typography>
           </Grid>
-          <Grid item className={clsx(classes.paddingSide, classes.viewer)} xs={12} md={12} lg={12}>
-            <TUIViewer
-              initialValue={props.data.proposal.contents}
-            />
+          <Grid
+            item
+            className={clsx(classes.paddingSide, classes.viewer)}
+            xs={12}
+            md={12}
+            lg={12}
+          >
+            <TUIViewer initialValue={props.data.proposal.contents} />
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
             <br />
             <Divider variant="fullWidth" />
             <br />
           </Grid>
-          <Grid item className={clsx(classes.grid, classes.center)} xs={12} md={12} lg={12}>
+          <Grid
+            item
+            className={clsx(classes.grid, classes.center)}
+            xs={12}
+            md={12}
+            lg={12}
+          >
             <br />
             <PublishButton />
           </Grid>
         </Grid>
       </Paper>
-    </Grid >
+    </Grid>
   );
 }
 

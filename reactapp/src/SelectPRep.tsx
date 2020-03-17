@@ -1,5 +1,14 @@
 import React from "react";
-import { Grid, Paper, List, ListSubheader, ListItem, ListItemIcon, ListItemText, CircularProgress } from "@material-ui/core";
+import {
+  Grid,
+  Paper,
+  List,
+  ListSubheader,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  CircularProgress
+} from "@material-ui/core";
 import { Star, FiberManualRecord } from "@material-ui/icons";
 import useStyles from "./Style";
 
@@ -14,8 +23,14 @@ function SelectPRep(props: any) {
   try {
     for (let i = 0; i < props.data.allPrep.length; i++) {
       for (let j = 0; j < props.delegations.length; j++) {
-        if (props.data.allPrep[i].iconAddress === props.delegations[j].address) {
-          allPRep.push({ username: props.data.allPrep[i].username, iconAddress: props.data.allPrep[i].iconAddress, isMyPRep: true })
+        if (
+          props.data.allPrep[i].iconAddress === props.delegations[j].address
+        ) {
+          allPRep.push({
+            username: props.data.allPrep[i].username,
+            iconAddress: props.data.allPrep[i].iconAddress,
+            isMyPRep: true
+          });
         }
       }
     }
@@ -27,11 +42,14 @@ function SelectPRep(props: any) {
         }
       }
       if (!flag) {
-        allPRep.push({ username: props.data.allPrep[i].username, iconAddress: props.data.allPrep[i].iconAddress, isMyPRep: false })
+        allPRep.push({
+          username: props.data.allPrep[i].username,
+          iconAddress: props.data.allPrep[i].iconAddress,
+          isMyPRep: false
+        });
       }
     }
-  } catch {
-  }
+  } catch {}
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
@@ -40,24 +58,43 @@ function SelectPRep(props: any) {
             <List
               component="nav"
               subheader={
-                <ListSubheader component="div">
-                  Select P-Rep
-                </ListSubheader>
+                <ListSubheader component="div">Community Vote</ListSubheader>
+              }
+            >
+              <ListItem button onClick={() => props.handleClick("Community")}>
+                <ListItemIcon>
+                  <FiberManualRecord />
+                </ListItemIcon>
+                <ListItemText>{"Community"}</ListItemText>
+              </ListItem>
+            </List>
+          </Grid>
+          <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
+            <List
+              component="nav"
+              subheader={
+                <ListSubheader component="div">Select P-Rep</ListSubheader>
               }
             >
               {allPRep.map((item: any, idx: number) => (
-                <ListItem key={idx} button onClick={() => props.handleClick(item.username)}>
-                  {item.isMyPRep &&
+                <ListItem
+                  key={idx}
+                  button
+                  onClick={() => props.handleClick(item.username)}
+                >
+                  {item.isMyPRep && (
                     <ListItemIcon>
                       <Star />
                     </ListItemIcon>
-                  }
-                  {!item.isMyPRep &&
+                  )}
+                  {!item.isMyPRep && (
                     <ListItemIcon>
                       <FiberManualRecord />
                     </ListItemIcon>
-                  }
-                  <ListItemText>{props.getPRepName(item.iconAddress)}</ListItemText>
+                  )}
+                  <ListItemText>
+                    {props.getPRepName(item.iconAddress)}
+                  </ListItemText>
                 </ListItem>
               ))}
             </List>
@@ -65,7 +102,6 @@ function SelectPRep(props: any) {
         </Grid>
       </Paper>
     </Grid>
-
   );
 }
 

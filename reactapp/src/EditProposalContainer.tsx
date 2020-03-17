@@ -18,7 +18,12 @@ function EditProposalContainer(props: any) {
   //  const prop_proposal = props.proposal;
 
   let proposal_id: any;
-  if (props && props.match && props.match.params && props.match.params.proposal_id) {
+  if (
+    props &&
+    props.match &&
+    props.match.params &&
+    props.match.params.proposal_id
+  ) {
     proposal_id = props.match.params.proposal_id;
   } else {
     proposal_id = -1;
@@ -31,6 +36,7 @@ function EditProposalContainer(props: any) {
   const [selectItems, setSelectItems] = useState(["", "", "", ""]);
   const [values, setValues] = useState({
     id: -1,
+    isPublicVote: false,
     electoralTh: 50,
     winningTh: 50,
     subject: "",
@@ -43,40 +49,42 @@ function EditProposalContainer(props: any) {
 
   const [mutateProposal] = useMutation(SET_PROPOSAL);
 
-  const [validator] = useState(new SimpleReactValidator({
-    validators: {
-      diff: {
-        message: "input different options.",
-        rule: (val: any, params: any) => {
-          // console.log(val, params);
-          for (let i = 0; i < val.length; i++) {
-            for (let j = i + 1; j < val.length; j++) {
-              if (val[i] === val[j]) {
-                return false;
+  const [validator] = useState(
+    new SimpleReactValidator({
+      validators: {
+        diff: {
+          message: "input different options.",
+          rule: (val: any, params: any) => {
+            // console.log(val, params);
+            for (let i = 0; i < val.length; i++) {
+              for (let j = i + 1; j < val.length; j++) {
+                if (val[i] === val[j]) {
+                  return false;
+                }
               }
             }
+            return true;
           }
-          return true;
+        },
+        listFilled: {
+          message: "input every field",
+          rule: (val: any, params: any) => {
+            if (val[parseInt(params[0])] === "") {
+              return false;
+            }
+            return true;
+          }
         }
       },
-      listFilled: {
-        message: "input every field",
-        rule: (val: any, params: any) => {
-          if (val[parseInt(params[0])] === "") {
-            return false;
-          }
-          return true;
-        }
-      }
-    },
-    locale: "en",
-    className: "text-danger",
-    element: (message: any, className: any) => (
-      <Typography variant="caption" color="error" className={className}>
-        {message}
-      </Typography>
-    )
-  }));
+      locale: "en",
+      className: "text-danger",
+      element: (message: any, className: any) => (
+        <Typography variant="caption" color="error" className={className}>
+          {message}
+        </Typography>
+      )
+    })
+  );
 
   const addSelectItem = () => {
     setSelectItems([...selectItems, ""]);
@@ -99,6 +107,10 @@ function EditProposalContainer(props: any) {
     forceUpdate();
   }
 
+  function toggleVoteType() {
+    setValues({ ...values, isPublicVote: !values.isPublicVote });
+  }
+
   const handleDateChange = (days: number) => {
     // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
     var today = new Date();
@@ -118,26 +130,30 @@ function EditProposalContainer(props: any) {
         var today = new Date();
         if (name === "days") {
           today.setDate(today.getDate() + parseInt(event.target.value));
-          today.setHours(today.getHours() + values.hours)
-        }
-        else {
+          today.setHours(today.getHours() + values.hours);
+        } else {
           today.setDate(today.getDate() + values.days);
-          today.setHours(today.getHours() + parseInt(event.target.value))
+          today.setHours(today.getHours() + parseInt(event.target.value));
         }
         // console.log(today.toString());
-        setValues({ ...values, [name]: parseInt(event.target.value), expireAt: today });
+        setValues({
+          ...values,
+          [name]: parseInt(event.target.value),
+          expireAt: today
+        });
       }
-    }
-    else {
+    } else {
       setValues({ ...values, [name]: event.target.value });
     }
   };
 
-  const handleSliderChange = (name: string) => (event: any, newValue: number | number[]) => {
+  const handleSliderChange = (name: string) => (
+    event: any,
+    newValue: number | number[]
+  ) => {
     if (Array.isArray(newValue)) {
       setValues({ ...values, [name]: newValue[0] });
-    }
-    else {
+    } else {
       setValues({ ...values, [name]: newValue });
     }
     // console.log(values);
@@ -167,6 +183,7 @@ function EditProposalContainer(props: any) {
     const mutate_var: { [index: string]: any } = {
       variables: {
         proposalId: values.id,
+        isPublicVote: values.isPublicVote,
         subject: values.subject,
         contents: values.contents,
         published: false,
@@ -176,6 +193,8 @@ function EditProposalContainer(props: any) {
         selectItemList: tmpSelectItemList
       }
     };
+
+    console.log("MUTATE_VAR", mutate_var);
 
     submitProposal(mutate_var);
   }
@@ -189,13 +208,17 @@ function EditProposalContainer(props: any) {
 
   function renderRedirect() {
     if (redirect) {
-      return <Redirect to={"/NoteProposal/" + queryVal.data.viewer.username + "/" + redirect} />;
+      return (
+        <Redirect
+          to={"/NoteProposal/" + queryVal.data.viewer.username + "/" + redirect}
+        />
+      );
     }
   }
 
   const queryVal = useQuery(GET_PROPOSAL4EDIT, {
     variables: { id: proposal_id }
-  })
+  });
 
   if (queryVal.data && queryVal.data.proposal && values.id === -1) {
     const proposal = queryVal.data.proposal;
@@ -208,13 +231,14 @@ function EditProposalContainer(props: any) {
 
     if (diff > 0) {
       dayDiff = Math.floor(diff / (60 * 60 * 24));
-      hourDiff = Math.floor((diff - (dayDiff * 60 * 60 * 24)) / (60 * 60));
+      hourDiff = Math.floor((diff - dayDiff * 60 * 60 * 24) / (60 * 60));
     }
 
     setValues({
       id: proposal.id,
       electoralTh: proposal.electoralTh,
       winningTh: proposal.winningTh,
+      isPublicVote: proposal.isPublicVote,
       subject: proposal.subject,
       contents: proposal.contents,
       days: dayDiff,
@@ -250,6 +274,7 @@ function EditProposalContainer(props: any) {
         handleSliderChange={handleSliderChange}
         handleEditorChange={handleEditorChange}
         handlesubmitProposal={handlesubmitProposal}
+        toggleVoteType={toggleVoteType}
       />
     </Fragment>
   );

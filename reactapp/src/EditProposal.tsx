@@ -1,6 +1,14 @@
 import React from "react";
 // import { withRouter } from "react-router-dom";
-import { Paper, Grid, Typography, TextField, Button, Slider, CircularProgress } from "@material-ui/core";
+import {
+  Paper,
+  Grid,
+  Typography,
+  TextField,
+  Button,
+  Slider,
+  CircularProgress
+} from "@material-ui/core";
 import { AddRounded } from "@material-ui/icons";
 import clsx from "clsx";
 
@@ -19,6 +27,30 @@ function EditProposal(props: any) {
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
         <form>
+          <Grid container className={classes.container} spacing={0}>
+            <Grid className={classes.item} item xs={3} md={3} lg={3}>
+              {" "}
+            </Grid>
+            <Grid className={classes.item} item xs={6} md={6} lg={6}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Set Voting Type
+              </Typography>
+              <Button
+                fullWidth
+                color="primary"
+                variant="contained"
+                onClick={props.toggleVoteType}
+              >
+                <Typography style={{ color: "#FFFFFF" }}>
+                  {props.values.isPublicVote && "Public Vote"}
+                  {!props.values.isPublicVote && "P-Rep Vote"}
+                </Typography>
+              </Button>
+            </Grid>
+            <Grid className={classes.item} item xs={3} md={3} lg={3}>
+              {" "}
+            </Grid>
+          </Grid>
           <Grid container className={classes.container} spacing={0}>
             <Grid className={classes.item} item xs={12} md={12} lg={12}>
               <TextField
@@ -89,7 +121,9 @@ function EditProposal(props: any) {
             })}
 
             <Grid className={classes.item} item xs={12} md={12} lg={12}>
-              <Typography variant="subtitle2" color="textSecondary">Description</Typography>
+              <Typography variant="subtitle2" color="textSecondary">
+                Description
+              </Typography>
               <TUIEditor
                 usageStatistics={false}
                 height="600px"
@@ -118,13 +152,26 @@ function EditProposal(props: any) {
                 "contents",
                 props.values.contents,
                 "required|min:10"
-              )
-            }
+              )}
 
-            <Grid className={clsx(classes.item, classes.center)} item xs={12} md={12} lg={12}>
-              <Typography><b>Vote Duration</b></Typography>
+            <Grid
+              className={clsx(classes.item, classes.center)}
+              item
+              xs={12}
+              md={12}
+              lg={12}
+            >
+              <Typography>
+                <b>Vote Duration</b>
+              </Typography>
             </Grid>
-            <Grid className={clsx(classes.item, classes.center)} item xs={12} md={12} lg={12}>
+            <Grid
+              className={clsx(classes.item, classes.center)}
+              item
+              xs={12}
+              md={12}
+              lg={12}
+            >
               <div>
                 <TextField
                   id="days"
@@ -135,7 +182,12 @@ function EditProposal(props: any) {
                   inputProps={{ min: 0, max: 365, step: 1 }}
                   style={{ float: "left", width: "200" }}
                 />
-                <Typography variant="h6" style={{ float: "left", width: "200" }}><b>Days</b></Typography>
+                <Typography
+                  variant="h6"
+                  style={{ float: "left", width: "200" }}
+                >
+                  <b>Days</b>
+                </Typography>
                 <TextField
                   id="hours"
                   type="number"
@@ -145,10 +197,21 @@ function EditProposal(props: any) {
                   inputProps={{ min: 0, max: 24, step: 1 }}
                   style={{ float: "left", width: "200" }}
                 />
-                <Typography variant="h6" style={{ float: "left", width: "200" }}><b>Hours</b></Typography>
+                <Typography
+                  variant="h6"
+                  style={{ float: "left", width: "200" }}
+                >
+                  <b>Hours</b>
+                </Typography>
               </div>
             </Grid>
-            <Grid className={clsx(classes.item, classes.center)} item xs={12} md={12} lg={12}>
+            <Grid
+              className={clsx(classes.item, classes.center)}
+              item
+              xs={12}
+              md={12}
+              lg={12}
+            >
               <br />
               <Typography>End At {props.values.expireAt.toString()}</Typography>
               <br />
@@ -161,12 +224,14 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
-              <Typography><b>Participation Quorum : {props.values.electoralTh}</b></Typography>
+              <Typography>
+                <b>Participation Quorum : {props.values.electoralTh}</b>
+              </Typography>
               <Slider
                 value={props.values.electoralTh}
                 onChange={props.handleSliderChange("electoralTh")}
                 defaultValue={50}
-                getAriaValueText={(val) => val + "%"}
+                getAriaValueText={val => val + "%"}
                 aria-labelledby="discrete-slider"
                 valueLabelDisplay="auto"
                 step={5}
@@ -183,12 +248,14 @@ function EditProposal(props: any) {
               md={12}
               lg={12}
             >
-              <Typography><b>Minimum Approval Rate to Pass : {props.values.winningTh}</b></Typography>
+              <Typography>
+                <b>Minimum Approval Rate to Pass : {props.values.winningTh}</b>
+              </Typography>
               <Slider
                 value={props.values.winningTh}
                 onChange={props.handleSliderChange("winningTh")}
                 defaultValue={50}
-                getAriaValueText={(val) => val + "%"}
+                getAriaValueText={val => val + "%"}
                 aria-labelledby="discrete-slider"
                 valueLabelDisplay="auto"
                 step={5}

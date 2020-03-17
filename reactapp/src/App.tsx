@@ -18,74 +18,127 @@ const queryResolver = {
     console.log("get_proposals", context);
     let jsonResult;
     try {
-      const lastProposalID = await queryResolver.get_last_proposal_id(obj, args, context, info);
+      const lastProposalID = await queryResolver.get_last_proposal_id(
+        obj,
+        args,
+        context,
+        info
+      );
       // const result = await jsonRpcCall("get_proposals", { "_proposer": args._proposer, "_end_proposal_id": args._end_proposal_id, "_count": args._count });
-      const result = await jsonRpcCall("get_proposals", { "_proposer": args._proposer, "_end_proposal_id": (lastProposalID - ((args._currPage - 1) * args._perPage)).toString(), "_count": args._perPage.toString() });
+      const result = await jsonRpcCall("get_proposals", {
+        _proposer: args._proposer,
+        _end_proposal_id: (
+          lastProposalID -
+          (args._currPage - 1) * args._perPage
+        ).toString(),
+        _count: args._perPage.toString()
+      });
+      console.log("11111", result);
       jsonResult = JSON.parse(result);
     } catch {
       jsonResult = [];
     }
     let ret = [];
     for (let i = 0; i < jsonResult.length; i++) {
-      jsonResult[i]['__typename'] = "proposal";
+      jsonResult[i]["__typename"] = "proposal";
       const select_item = JSON.parse(jsonResult[i].select_item);
       jsonResult[i].select_item = select_item;
-      ret.push(jsonResult[i])
+      ret.push(jsonResult[i]);
     }
     return ret;
   },
   get_proposal: async (obj: any, args: any, context: any, info: any) => {
     console.log("get_proposal");
-    const result = await jsonRpcCall("get_proposal", { "_proposer": args._proposer, "_proposal_id": args._proposal_id });
+    const result = await jsonRpcCall("get_proposal", {
+      _proposer: args._proposer,
+      _proposal_id: args._proposal_id
+    });
     const jsonResult = JSON.parse(result);
-    jsonResult['__typename'] = "proposal";
+    jsonResult["__typename"] = "proposal";
     const select_item = JSON.parse(jsonResult.select_item);
     jsonResult.select_item = select_item;
     return jsonResult;
   },
-  get_verify_info_by_id: async (obj: any, args: any, context: any, info: any) => {
+  get_verify_info_by_id: async (
+    obj: any,
+    args: any,
+    context: any,
+    info: any
+  ) => {
     console.log("get_verify_info_by_id");
-    const result = await jsonRpcCall("get_verify_info_by_id", { "_id": args._id });
-    result['__typename'] = 'PRep';
+    const result = await jsonRpcCall("get_verify_info_by_id", {
+      _id: args._id
+    });
+    result["__typename"] = "PRep";
     return result;
   },
-  get_last_proposal_id: async (obj: any, args: any, context: any, info: any) => {
+  get_last_proposal_id: async (
+    obj: any,
+    args: any,
+    context: any,
+    info: any
+  ) => {
     console.log("get_last_proposal_id");
-    const result = await jsonRpcCall("get_last_proposal_id", { "_proposer": args._proposer });
+    const result = await jsonRpcCall("get_last_proposal_id", {
+      _proposer: args._proposer
+    });
     return parseInt(result);
   },
   get_votes: async (obj: any, args: any, context: any, info: any) => {
     console.log("get_votes");
-    const result = await jsonRpcCall("get_votes", { "_proposer": args._proposer, "_proposal_id": args._proposal_id });
+    const result = await jsonRpcCall("get_votes", {
+      _proposer: args._proposer,
+      _proposal_id: args._proposal_id
+    });
     const votes = JSON.parse(result).vote;
-    votes['__typename'] = 'votes';
+    votes["__typename"] = "votes";
     let ret = [];
     for (let i = 0; i < votes.length; i++) {
-      votes[i]['__typename'] = "vote";
-      ret.push(votes[i])
+      votes[i]["__typename"] = "vote";
+      ret.push(votes[i]);
     }
     return ret;
   },
   get_prep_info_by_id: async (obj: any, args: any, context: any, info: any) => {
     console.log("get_prep_info_by_id");
-    const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", { "_id": args._proposer });
+    const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
+      _id: args._proposer
+    });
     const verifyInfoJson = JSON.parse(verifyInfoResult);
-    const result = await governanceCall("getPRep", { "address": "hxfba37e91ccc13ec1dab115811f73e429cde44d48"/*raynear verifyInfoJson.address*/ });
-    result['__typename'] = 'PRep';
+    const result = await governanceCall("getPRep", {
+      address:
+        "hxfba37e91ccc13ec1dab115811f73e429cde44d48" /*raynear verifyInfoJson.address*/
+    });
+    result["__typename"] = "PRep";
     return result;
   },
-  get_prep_info_by_address: async (obj: any, args: any, context: any, info: any) => {
+  get_prep_info_by_address: async (
+    obj: any,
+    args: any,
+    context: any,
+    info: any
+  ) => {
     console.log("get_prep_info_by_address");
-    const result = await governanceCall("getPRep", { "address": "hxfba37e91ccc13ec1dab115811f73e429cde44d48"/*raynear args.address*/ });
-    result['__typename'] = 'PRep';
+    const result = await governanceCall("getPRep", {
+      address:
+        "hxfba37e91ccc13ec1dab115811f73e429cde44d48" /*raynear args.address*/
+    });
+    result["__typename"] = "PRep";
     return result;
   },
   get_delegation: async (obj: any, args: any, context: any, info: any) => {
     console.log("get_delegation");
-    const delegateResp = await governanceCall("getDelegation", { "address": args.address });
+    const delegateResp = await governanceCall("getDelegation", {
+      address: args.address
+    });
     return delegateResp;
   },
-  get_voted_power_rates: async (obj: any, args: any, context: any, info: any) => {
+  get_voted_power_rates: async (
+    obj: any,
+    args: any,
+    context: any,
+    info: any
+  ) => {
     console.log("get_voted_power_rates");
     const votes = await queryResolver.get_votes(obj, args, context, info);
     const proposal = await queryResolver.get_proposal(obj, args, context, info);
@@ -112,31 +165,53 @@ const queryResolver = {
     for (let i = 0; i < votedPowerRate.length; i++) {
       let votingPower = 0;
       for (let j = 0; j < votedPowerRate[i].length; j++) {
-        votingPower += await queryResolver.get_voting_power(obj, { _proposer: args._proposer, _user: votedPowerRate[i][j] }, context, info);
+        votingPower += await queryResolver.get_voting_power(
+          obj,
+          { _proposer: args._proposer, _user: votedPowerRate[i][j] },
+          context,
+          info
+        );
       }
 
       votedPowers[i] = votingPower;
       totalVotedPower += votingPower;
     }
 
-    return ({ votedPowerRate: votedPowerRate, votedPowers: votedPowers, totalVotedPower: totalVotedPower });
+    return {
+      votedPowerRate: votedPowerRate,
+      votedPowers: votedPowers,
+      totalVotedPower: totalVotedPower
+    };
   },
-  get_delegation_by_id: async (obj: any, args: any, context: any, info: any) => {
+  get_delegation_by_id: async (
+    obj: any,
+    args: any,
+    context: any,
+    info: any
+  ) => {
     console.log("get_delegation_by_id");
-    const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", { "_id": args.id });
+    const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
+      _id: args.id
+    });
     const verifyInfoJson = JSON.parse(verifyInfoResult);
     console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!");
     console.log("verify info ", verifyInfoJson);
-    const delegateResp = await governanceCall("getDelegation", { "address": verifyInfoJson.address });
+    const delegateResp = await governanceCall("getDelegation", {
+      address: verifyInfoJson.address
+    });
     return delegateResp;
   },
   get_voting_power: async (obj: any, args: any, context: any, info: any) => {
-    const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", { "_id": args._proposer });
+    const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
+      _id: args._proposer
+    });
     const verifyInfoJson = JSON.parse(verifyInfoResult);
 
     let delegateList;
     try {
-      const delegateResp = await governanceCall("getDelegation", { "address": args._user });
+      const delegateResp = await governanceCall("getDelegation", {
+        address: args._user
+      });
       delegateList = delegateResp.delegations;
     } catch {
       delegateList = [];
@@ -144,7 +219,7 @@ const queryResolver = {
     for (let i = 0; i < delegateList.length; i++) {
       if (delegateList[i].address === verifyInfoJson.address) {
         let myVotingPower = parseInt(delegateList[i].value, 16);
-        myVotingPower = (myVotingPower / 1000000000000000000);
+        myVotingPower = myVotingPower / 1000000000000000000;
         return myVotingPower;
       }
     }
@@ -155,27 +230,33 @@ const queryResolver = {
     const viewer = await context.client.query({ query: GET_VIEWER });
     console.log(viewer);
 
-    const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", { "_id": args._proposer });
+    const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
+      _id: args._proposer
+    });
     const verifyInfoJson = JSON.parse(verifyInfoResult);
 
     let delegateList;
     try {
-      const delegateResp = await governanceCall("getDelegation", { "address": viewer.data.viewer.iconAddress });
+      const delegateResp = await governanceCall("getDelegation", {
+        address: viewer.data.viewer.iconAddress
+      });
       delegateList = delegateResp.delegations;
     } catch {
       delegateList = [];
     }
     for (let i = 0; i < delegateList.length; i++) {
-      if (delegateList[i].address === "hxfba37e91ccc13ec1dab115811f73e429cde44d48"/*raynear verifyInfoJson.address*/) {
+      if (
+        delegateList[i].address ===
+        "hxfba37e91ccc13ec1dab115811f73e429cde44d48" /*raynear verifyInfoJson.address*/
+      ) {
         let myVotingPower = parseInt(delegateList[i].value, 16);
-        myVotingPower = (myVotingPower / 1000000000000000000);
+        myVotingPower = myVotingPower / 1000000000000000000;
         return myVotingPower;
       }
     }
     return 0;
-  },
-}
-
+  }
+};
 
 const client = new ApolloClient({
   uri: graphqlURL,
@@ -202,7 +283,14 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
   clientState: {
     defaults: {
-      data: { username: "", email: "", photo: "", icon_address: "", snack: { open: false, message: "", __typename: "snack" }, __typename: "user" }
+      data: {
+        username: "",
+        email: "",
+        photo: "",
+        icon_address: "",
+        snack: { open: false, message: "", __typename: "snack" },
+        __typename: "user"
+      }
     },
     resolvers: {
       Query: queryResolver
