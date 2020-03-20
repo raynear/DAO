@@ -34,6 +34,7 @@ function VerifyIconContainer(props: any) {
 
   async function waitResult(count: number, interval: number) {
     setOpen(true);
+    setMsg({ title: "Wait", contents: "Verify Not exist" });
 
     const iconAddress = window.localStorage.getItem("iconAddress");
     for (let i = 0; i < count + 1; i++) {
@@ -54,6 +55,7 @@ function VerifyIconContainer(props: any) {
         await sleep(interval * 1000);
       }
     }
+    setMsg({ title: "Fail", contents: "Verify Fail" });
   }
 
   const eventHandler = (event: any) => {

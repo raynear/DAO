@@ -19,14 +19,14 @@ from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.wallet.wallet import KeyWallet
 
 from account.models import User
-from .models import ProposalModel, SelectItemModel, TxModel
+from .models import ProposalModel, SelectItemModel
 from .icon_network import ICON_NETWORK, SCORE_ADDRESS
 
 GOVERNANCE_NETWORK = ICON_NETWORK
 #CONTRACT_NETWORK = ICON_NETWORK
 CONTRACT_NETWORK = "https://bicon.net.solidwallet.io"
 #SCORE = SCORE_ADDRESS
-SCORE = "cx361c5cff4741cc596a21478c8a2ca704b9917e38"
+SCORE = "cxfacbe52bac0caf7063a0390b102de6b524d1e18b"
 
 prep_required = user_passes_test(lambda u: u.is_prep)
 address_required = user_passes_test(lambda u: u.icon_address)
@@ -45,11 +45,6 @@ class ProposalModelType(DjangoObjectType):
 class SelectItemModelType(DjangoObjectType):
     class Meta:
         model = SelectItemModel
-
-
-class TxModelType(DjangoObjectType):
-    class Meta:
-        model = TxModel
 
 
 class IntModel(models.Model):
@@ -167,24 +162,20 @@ class PublishProposal(graphene.Mutation):
     class Arguments:
         proposal_id = graphene.Int()
 
-    proposal = graphene.Field(ProposalModelType)
+    tx = graphene.String()
 
     @login_required
     @prep_required
     def mutate(self, info, proposal_id):
-        print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        print("proposal_id", proposal_id)
         proposal = ProposalModel.objects.get(pk=proposal_id)
-        print("proposal", proposal)
 
         icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
 
         result = jsonRpcCall("get_verify_info_by_id", {
                              "_id": info.context.user.username})
         result_json = json.loads(result)
-        # raynear
-        #if result_json['address'] != info.context.user.icon_address:
-        #    return PublishProposal(proposal=None)
+        if result_json['address'] != info.context.user.icon_address:
+            return PublishProposal(proposal=None)
 
         selectItems = SelectItemModel.objects.filter(proposal=proposal)
         _select_item = '['
@@ -194,7 +185,6 @@ class PublishProposal(graphene.Mutation):
                 _select_item += ','
         _select_item += ']'
 
-        print("!!!!!!!!!!!!!!!!")
         print(proposal)
         print(_select_item)
 
@@ -204,7 +194,8 @@ class PublishProposal(graphene.Mutation):
         wallet = KeyWallet.load("../master.key", key)
 
         vote_page = "Community" if proposal.isPublicVote else "MyVoter"
-        print("param", {"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_timestamp": int(proposal.expire_at.timestamp()*1000), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th, "_vote_page":vote_page})
+        print("param", {"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_timestamp": int(
+            proposal.expire_at.timestamp()*1000), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th, "_vote_page": vote_page})
         # raynear nid
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
@@ -212,7 +203,7 @@ class PublishProposal(graphene.Mutation):
             .step_limit(100000000)\
             .nid(3)\
             .method("set_proposal")\
-            .params({"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_timestamp": int(proposal.expire_at.timestamp()*1000), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th, "_vote_page":vote_page})\
+            .params({"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_timestamp": int(proposal.expire_at.timestamp()*1000), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th, "_vote_page": vote_page})\
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
@@ -220,14 +211,18 @@ class PublishProposal(graphene.Mutation):
         tx_hash = icon_service.send_transaction(signed_transaction)
         print("tx_hash", tx_hash)
 
-        sleep(5)
-        tx_result = icon_service.get_transaction_result(tx_hash)
-        print("tx_result", tx_result)
+        for i in range(5):
+            sleep(2)
+            try:
+                tx_result = icon_service.get_transaction_result(tx_hash)
 
-        if tx_result['status'] == 1:
-            proposal.delete()
+                if tx_result['status'] == 1:
+                    proposal.delete()
+                    return PublishProposal(tx=tx_hash)
+            except:
+                print("Wait")
 
-        return PublishProposal(proposal=None)
+        return PublishProposal(tx="Fail")
 
 
 class VoteProposal(graphene.Mutation):
@@ -236,7 +231,7 @@ class VoteProposal(graphene.Mutation):
         proposal_id = graphene.Int()
         proposer = graphene.String()
 
-    tx = graphene.Field(TxModelType)
+    tx = graphene.String()
 
     @address_required
     @login_required
@@ -249,23 +244,27 @@ class VoteProposal(graphene.Mutation):
         wallet = KeyWallet.load("../master.key", key)
 
         # raynear nid
-        transaction = CallTransactionBuilder()\
+        param = transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
             .to(SCORE)\
             .step_limit(100000000)\
             .nid(3)\
             .method("vote")\
-            .params({"_proposer": proposer, "_proposal_id": proposal_id, "_user_id": info.context.user.username, "_vote_item": select_item_index})\
+            .params({"_proposer": proposer, "_proposal_id": proposal_id, "_voter_address": info.context.user.icon_address, "_vote_item": select_item_index})\
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
 
-        tx.txHash = tx_hash
-        sleep(5)
-        tx_result = icon_service.get_transaction_result(tx_hash)
+        for i in range(5):
+            sleep(2)
+            try:
+                tx_result = icon_service.get_transaction_result(tx_hash)
+                return VoteProposal(tx=tx_hash)
+            except:
+                print("Wait")
 
-        return VoteProposal(tx=tx)
+        return VoteProposal(tx="Fail")
 
 
 class SetProposal(graphene.Mutation):
@@ -350,39 +349,50 @@ class SetPRep(graphene.Mutation):
     def mutate(self, info, icon_address):
         user = info.context.user
 
-        prep_result = governanceCall("getPRep", {"address": icon_address})
+        #prep_result = governanceCall("getPRep", {"address": icon_address})
+        # print(prep_result)
 
         result = jsonRpcCall("get_verify_info_by_id", {"_id": user.username})
         result_json = json.loads(result)
+        print(result)
 
-        # raynear
-        # if prep_result and result_json['address'] == icon_address:
-        user.icon_address = icon_address
-        user.is_prep = True
-        user.save()
+        if prep_result and result_json['address'] == icon_address:
+            user.icon_address = icon_address
+            user.is_prep = True
+            user.save()
 
-        icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
+            icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
 
-        key = ""
-        with open('./key.pw') as f:
-            key = f.read().strip()
-        wallet = KeyWallet.load("../master.key", key)
+            key = ""
+            with open('./key.pw') as f:
+                key = f.read().strip()
+            wallet = KeyWallet.load("../master.key", key)
 
-        # raynear nid
-        transaction = CallTransactionBuilder()\
-            .from_(wallet.get_address())\
-            .to(SCORE)\
-            .step_limit(100000000)\
-            .nid(3)\
-            .method("add_prep")\
-            .params({"_prep_id": user.username})\
-            .build()
+            # raynear nid
+            transaction = CallTransactionBuilder()\
+                .from_(wallet.get_address())\
+                .to(SCORE)\
+                .step_limit(100000000)\
+                .nid(3)\
+                .method("add_prep")\
+                .params({"_prep_id": user.username})\
+                .build()
 
-        signed_transaction = SignedTransaction(transaction, wallet)
-        tx_hash = icon_service.send_transaction(signed_transaction)
-        # 여기까지
+            signed_transaction = SignedTransaction(transaction, wallet)
+            tx_hash = icon_service.send_transaction(signed_transaction)
 
-        return SetPRep(prep=user)
+            for i in range(5):
+                sleep(2)
+                try:
+                    tx_result = icon_service.get_transaction_result(tx_hash)
+
+                    if tx_result['status'] == 1:
+                        return SetPRep(prep=user)
+                    break
+                except:
+                    print("Wait")
+
+        return SetPRep(prep=None)
 
 
 class AddIconAddress(graphene.Mutation):

@@ -8,8 +8,9 @@ import Proposals from "./Proposals";
 function ProposalsContainer(props: any) {
   // console.log("ProposalsContainer props", props);
   const selectedPRep = props.match.params.PRep;
-  const perPage = 12;
+  const perPage = 6;
 
+  const [proposals, setProposals] = useState<any>([]);
   const [currPage, setCurrPage] = useState(1);
   const [pRepInfo, setPRepInfo] = useState({ name: "", website: "", delegate: 0 });
   const [lastProposalID, setLastProposalID] = useState(0);
@@ -17,10 +18,22 @@ function ProposalsContainer(props: any) {
 
 
   const queryVal = useQuery(GET_VIEWER);
-  const queryProposals = useQuery(PROPOSALS, { variables: { proposer: selectedPRep, currPage: 1, perPage: 12 } });
-  const queryPRepInfoByID = useQuery(PREP_INFO_BY_ID, { variables: { proposer: selectedPRep } });
+  const queryProposals = useQuery(PROPOSALS, { variables: { proposer: selectedPRep, startProposalID: (currPage - 1) * perPage + 1, endProposalID: currPage * perPage } });
   const queryLastProposalID = useQuery(LAST_PROPOSAL_ID, { variables: { proposer: selectedPRep } });
+
+  // Community Vote에선 필요없음
+  const queryPRepInfoByID = useQuery(PREP_INFO_BY_ID, { variables: { proposer: selectedPRep } });
   const queryMyVotingPower = useQuery(MY_VOTING_POWER, { variables: { proposer: selectedPRep } });
+
+  useEffect(() => {
+    let _proposals;
+    try {
+      _proposals = queryProposals.data.get_proposals;
+    } catch {
+      _proposals = [];
+    }
+    setProposals(_proposals);
+  }, [queryProposals.data])
 
   useEffect(() => {
     let _pRepInfo;
@@ -52,10 +65,12 @@ function ProposalsContainer(props: any) {
     setMyVotingPower(_votingPower);
   }, [queryMyVotingPower.data])
 
-  // console.log("queryVal", queryVal);
-  // console.log("queryProposals", queryProposals);
-  // console.log("queryPRepInfoByID", queryPRepInfoByID);
-  // console.log("queryLastProposalID", queryLastProposalID);
+
+
+  console.log("queryVal", queryVal);
+  console.log("queryProposals", queryProposals);
+  console.log("queryPRepInfoByID", queryPRepInfoByID);
+  console.log("queryLastProposalID", queryLastProposalID);
   console.log("queryMyVotingPower", queryMyVotingPower);
 
   return (
@@ -63,6 +78,7 @@ function ProposalsContainer(props: any) {
       loading={queryVal.loading || queryProposals.loading}
       error={queryProposals.error}
       data={queryProposals.data}
+      proposals={proposals}
       pRepInfo={pRepInfo}
       lastProposalID={lastProposalID}
       myVotingPower={myVotingPower}

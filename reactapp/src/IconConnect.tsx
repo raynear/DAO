@@ -3,7 +3,7 @@ import { nodeURL, contractAddress } from "./Config";
 
 const ICON_NETWORK = nodeURL + "api/v3";
 //const CONTRACT = contractAddress;
-const CONTRACT = "cx361c5cff4741cc596a21478c8a2ca704b9917e38";
+const CONTRACT = "cxfacbe52bac0caf7063a0390b102de6b524d1e18b";
 const Provider = new IconService.HttpProvider(ICON_NETWORK);
 export const iconService = new IconService(Provider);
 export const IconBuilder = IconService.IconBuilder;

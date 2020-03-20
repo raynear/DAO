@@ -68,20 +68,7 @@ export const SET_PROPOSAL = gql`
 export const SET_PUBLISH = gql`
   mutation PublishProposal($proposalId: Int!) {
     publishProposal(proposalId: $proposalId) {
-      proposal {
-        id
-        status
-        subject
-        contents
-        published
-        electoralTh
-        winningTh
-        expireAt
-        selectitemmodelSet {
-          index
-          contents
-        }
-      }
+      tx
     }
   }
 `;
@@ -97,21 +84,7 @@ export const SET_VOTE = gql`
       proposalId: $proposalId
       selectItemIndex: $selectItemIndex
     ) {
-      proposal {
-        id
-        status
-        subject
-        contents
-        published
-        electoralTh
-        winningTh
-        expireAt
-        selectitemmodelSet {
-          index
-          contents
-        }
-      }
-    }
+      tx    }
   }
 `;
 
@@ -159,6 +132,22 @@ export const GET_PREPS = gql`
       username
       iconAddress
     }
+  }
+`;
+
+export const PREPS = gql`
+  query {
+    get_preps @client{
+      address
+      username
+      pRepName
+    }
+  }
+`;
+
+export const PAGES = gql`
+  query {
+    get_pages @client
   }
 `;
 
@@ -215,11 +204,11 @@ export const GET_PROPOSALS = gql`
 `;
 
 export const PROPOSALS = gql`
-  query Proposals($proposer: String, $currPage: Int, $perPage: Int) {
+  query Proposals($proposer: String, $startProposalID: Int, $endProposalID: Int) {
     get_proposals(
       _proposer: $proposer
-      _currPage: $currPage
-      _perPage: $perPage
+      _start_proposal_id: $startProposalID
+      _end_proposal_id: $endProposalID
     ) @client {
       ID
       subject
@@ -234,13 +223,14 @@ export const PROPOSAL = gql`
   query Proposal($proposer: String!, $proposal_id: Int!) {
     get_proposal(_proposer: $proposer, _proposal_id: $proposal_id) @client {
       ID
+      proposer
       address
       subject
       contents
       electoral_threshold
       winning_threshold
       status
-      expire_date
+      expire_timestamp
       transaction
       final
       winner

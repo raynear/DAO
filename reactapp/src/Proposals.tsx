@@ -22,26 +22,34 @@ function Proposals(props: any) {
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
         <Grid container className={classes.container} spacing={0}>
-          <Grid item className={classes.item} xs={12} md={8} lg={8}>
-            {/*<img src={props.pRepInfo.logo} width="100" alt={props.pRepInfo.name} />*/}
-            <a href={props.pRepInfo.website} style={{ textDecoration: "none", color: "#000000" }}>
-              <Typography variant="h4">{props.pRepInfo.name}</Typography>
-            </a>
-          </Grid>
+          {props.pRepInfo.name !== "" &&
+            <Grid item className={classes.item} xs={12} md={8} lg={8}>
+              <a href={props.pRepInfo.website} style={{ textDecoration: "none", color: "#000000" }}>
+                <Typography variant="h4">{props.pRepInfo.name}</Typography>
+              </a>
+            </Grid>
+          }
+          {props.pRepInfo.name === "" &&
+            <Grid item className={classes.item} xs={12} md={8} lg={8}>
+              <Typography variant="h4">{props.pRep}</Typography>
+            </Grid>
+          }
           <Grid item className={classes.item} xs={12} md={4} lg={4}>
             <table>
               <tbody>
-                <tr>
-                  <td>
-                    <Typography variant="h6">Total Delegations</Typography>
-                  </td>
-                  <td>
-                    <Typography variant="h6">:</Typography>
-                  </td>
-                  <td style={{ textAlign: "right" }}>
-                    <Typography variant="h6">{(parseInt(props.pRepInfo.delegated, 16) / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
-                  </td>
-                </tr>
+                {props.pRepInfo.name !== "" &&
+                  <tr>
+                    <td>
+                      <Typography variant="h6">Total Delegations</Typography>
+                    </td>
+                    <td>
+                      <Typography variant="h6">:</Typography>
+                    </td>
+                    <td style={{ textAlign: "right" }}>
+                      <Typography variant="h6">{(parseInt(props.pRepInfo.delegated, 16) / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+                    </td>
+                  </tr>
+                }
                 <tr>
                   <td>
                     <Typography variant="h6">My Voting Power</Typography>
@@ -59,8 +67,8 @@ function Proposals(props: any) {
         </Grid>
       </Paper>
       <Paper className={classes.paper}>
-        <Grid container className={classes.container} spacing={0}>
-          {props.data.get_proposals.map((item: any, idx: number) => {
+        <Grid container className={clsx(classes.container, classes.top)} spacing={0}>
+          {props.proposals.map((item: any, idx: number) => {
             // console.log("item", select_item);
             let icon;
             if (item.status === "Approved") {

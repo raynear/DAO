@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { SET_VOTE, GET_VIEWER, PROPOSAL, VOTES, PREP_INFO_BY_ID, VOTING_POWER, VOTED_POWER_RATES } from "./GQL";
+import { SET_VOTE, GET_VIEWER, PROPOSAL, VOTES, PREP_INFO_BY_ID, MY_VOTING_POWER, VOTED_POWER_RATES } from "./GQL";
 import { jsonRpcCall } from "./IconConnect";
 
 import Proposal from "./Proposal";
@@ -17,13 +17,14 @@ function ProposalContainer(props: any) {
   const [votes, setVotes] = useState<any>([]);
   const [proposal, setProposal] = useState<any>({
     ID: "0",
+    proposer: "",
     address: "",
     subject: "",
     contents: "",
-    electoral_threshold: "",
-    winning_threshold: "",
+    electoral_threshold: 0,
+    winning_threshold: 0,
     status: "",
-    expire_date: "1970/01/01T00:00:00",
+    expire_timestamp: 0,
     select_item: [""],
     transaction: "",
     final: "",
@@ -31,7 +32,6 @@ function ProposalContainer(props: any) {
   }
   );
   const [values, setValues] = useState<any>({
-    username: "", iconAddress: "",
     owner: false,
     myPRep: false,
     myVotingPower: 0,
@@ -41,6 +41,11 @@ function ProposalContainer(props: any) {
     totalDelegate: 0,
     totalVotedPower: 0,
   });
+
+  const [viewer, setViewer] = useState<any>({
+    username: "",
+    iconAddress: ""
+  })
 
   const [voteSelect, setVoteSelect] = useState(-1);
   const [voteData, setVoteData] = useState({ name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 })
@@ -67,7 +72,7 @@ function ProposalContainer(props: any) {
     mutateVote({
       variables: { proposer: pRep, proposalId: id, selectItemIndex: voteSelect }
     }).then(voteResult => {
-      // console.log("vote", voteResult);
+      console.log("vote", voteResult);
     });
     // console.log("Vote!!!!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
@@ -102,8 +107,6 @@ function ProposalContainer(props: any) {
     return false;
   }
 
-
-
   function sleep(t: number) {
     return new Promise(resolve => setTimeout(resolve, t));
   }
@@ -122,6 +125,7 @@ function ProposalContainer(props: any) {
       }
       await sleep(interval * 1000);
     }
+    setMsg({ title: "Fail", contents: "Cannot find your vote" });
   }
 
 
@@ -134,9 +138,9 @@ function ProposalContainer(props: any) {
 
   const queryPRepInfoByID = useQuery(PREP_INFO_BY_ID, { variables: { proposer: pRep } });
   console.log("queryPRepInfoByID", queryPRepInfoByID);
-  const queryVotingPower = useQuery(VOTING_POWER, { variables: { proposer: pRep, username: values.username } });
+  const queryVotingPower = useQuery(MY_VOTING_POWER, { variables: { proposer: pRep, username: viewer.username } });
   console.log("queryVotingPower", queryVotingPower);
-  const queryVotedPowerRates = useQuery(VOTED_POWER_RATES, { variables: { proposer: pRep, proposal_id: id, username: values.username } });
+  const queryVotedPowerRates = useQuery(VOTED_POWER_RATES, { variables: { proposer: pRep, proposal_id: id, username: viewer.username } });
   console.log("queryVotedPowerRates", queryVotedPowerRates);
 
   useEffect(() => {
@@ -146,13 +150,14 @@ function ProposalContainer(props: any) {
     } catch {
       _proposal = {
         ID: "0",
+        proposer: "",
         address: "",
         subject: "Loading",
         contents: "",
-        electoral_threshold: "0",
-        winning_threshold: "0",
+        electoral_threshold: 0,
+        winning_threshold: 0,
         status: "Loading",
-        expire_date: "1970-01-01T00:00:00.000000+00:00",
+        expire_timestamp: 0,
         select_item: [""],
         transaction: "",
         final: "",
@@ -182,16 +187,15 @@ function ProposalContainer(props: any) {
       _username = "";
       _iconAddress = "";
     }
-    setValues({ ...values, username: _username, iconAddress: _iconAddress });
+    setViewer({ username: _username, iconAddress: _iconAddress });
   }, [queryViewer.data]);
-
 
   useEffect(() => {
     let _myPRep;
     let _myVotingPower;
     try {
-      _myPRep = !(queryVotingPower.data.get_voting_power === 0)
-      _myVotingPower = queryVotingPower.data.get_voting_power;
+      _myPRep = !(queryVotingPower.data.get_my_voting_power === 0);
+      _myVotingPower = queryVotingPower.data.get_my_voting_power;
     } catch {
       _myPRep = false;
       _myVotingPower = 0;
@@ -234,17 +238,17 @@ function ProposalContainer(props: any) {
   useEffect(() => {
     let _owner;
     try {
-      _owner = amIOwner(values.username);
+      _owner = amIOwner(viewer.username);
     } catch {
       _owner = false;
     }
     setValues({ ...values, owner: _owner });
-  }, [values.username]);
+  }, [viewer.username]);
 
   useEffect(() => {
     let tmpVoteData = voteData;
     try {
-      tmpVoteData.voted = Math.round((values.totalVotedPower / values.totalDelegate) * 100);
+      tmpVoteData.voted = Math.round((values.totalVotedPower / values.totalDelegate ? values.totalDelegate : 0.00000001) * 100);
       tmpVoteData.th = parseInt(proposal.electoral_threshold) - tmpVoteData.voted;
       if (tmpVoteData.th < 0) tmpVoteData.th = 0;
       tmpVoteData.totalVoted = values.totalVotedPower;
@@ -260,18 +264,24 @@ function ProposalContainer(props: any) {
     let _voteItem;
     try {
       const winningTh = proposal.winningTh;
+      if (values.totalVotedPower === 0) {
+        throw Error;
+      }
       let voteItem: any[] = [];
       for (let i = 0; i < values.votedPowers.length; i++) {
-        const votedRate = Math.round((values.votedPowers[i] / values.totalVotedPower) * 100);
+        const votedRate = Math.round((values.votedPowers[i] / values.totalVotedPower ? values.totalVotedPower : 0.0000001) * 100);
         voteItem.push({ name: proposal.select_item[i], voted: votedRate ? votedRate : 0, left: votedRate ? (votedRate > winningTh ? 0 : winningTh - votedRate) : 0, icx: values.votedPowers[i] });
       }
       _voteItem = voteItem;
     } catch{
-      _voteItem = [];
+      let voteItem: any[] = [];
+      for (let i = 0; i < values.votedPowers.length; i++) {
+        voteItem.push({ name: proposal.select_item[i], voted: 0, left: 0, icx: 0 });
+      }
+      _voteItem = voteItem;
     }
     setValues({ ...values, votedPowerRate: _voteItem });
   }, [proposal, values.votedPowers, values.totalVotedPower, values.totalDelegate])
-
 
   console.log("values", values);
 

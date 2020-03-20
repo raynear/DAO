@@ -90,7 +90,6 @@ function Proposal(props: any) {
                 voteRate = props.votedPowerRate[idx].voted;
               } catch {
                 voteRate = 0;
-              } finally {
               }
               let icx;
               try {
@@ -165,7 +164,7 @@ function Proposal(props: any) {
   }
 
   function SelectList() {
-    const expireAt = new Date(props.proposal.expire_date);
+    const expireAt = new Date(props.proposal.expire_timestamp);
     if (expireAt.getTime() > Date.now() &&
       (props.myPRep || props.owner) &&
       props.votedIdx === -1 &&
@@ -189,7 +188,7 @@ function Proposal(props: any) {
   }
 
   function ActionButton() {
-    const expireAt = new Date(props.proposal.expire_date);
+    const expireAt = new Date(props.proposal.expire_timestamp);
     if (expireAt.getTime() < Date.now()) {
       if (props.proposal.status === "Voting") {
         return <Typography>Vote End(Time over)</Typography>;
@@ -208,7 +207,7 @@ function Proposal(props: any) {
   function twitterShare() {
     window.open('https://twitter.com/intent/tweet?text=[%EA%B3%B5%EC%9C%A0]%20' + encodeURIComponent(document.URL) + '%20-%20' + encodeURIComponent(document.title), 'twittersharedialog', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');
   }
-  const endTime = new Date(props.proposal.expire_date);
+  const endTime = new Date(props.proposal.expire_timestamp);
   const leftHour = Math.floor((endTime.getTime() - Date.now()) / 3600000);
   const leftMinute = Math.floor(((endTime.getTime() - Date.now()) / 60000) - (leftHour * 60));
 
@@ -265,7 +264,7 @@ function Proposal(props: any) {
             </Grid>
             <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
               <Typography variant="body1" color="textPrimary">
-                Proposer : {props.pRep}
+                Proposer : {props.proposal.proposer}
               </Typography>
               <Typography variant="body1" color="textPrimary">
                 Ending Time : {endTime.toString()} {leftHour > 0 && "(" + leftHour + " Hour " + leftMinute + " Minute Left)"}
@@ -303,18 +302,20 @@ function Proposal(props: any) {
             <Grid item className={classes.paddingSide} xs={12} md={4} lg={4}>
               <table>
                 <tbody>
-                  <tr>
-                    <td style={{ float: "left" }}>
-                      <Typography variant="body1" color="textPrimary">
-                        {" "}Total # of delegates :
+                  {props.voteData.totalDelegate !== 0 &&
+                    <tr>
+                      <td style={{ float: "left" }}>
+                        <Typography variant="body1" color="textPrimary">
+                          {" "}Total # of delegates :
                     </Typography>
-                    </td>
-                    <td style={{ float: "right" }}>
-                      <Typography variant="body1" color="textPrimary">
-                        {props.voteData.totalDelegate.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
-                      </Typography>
-                    </td>
-                  </tr>
+                      </td>
+                      <td style={{ float: "right" }}>
+                        <Typography variant="body1" color="textPrimary">
+                          {props.voteData.totalDelegate.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
+                        </Typography>
+                      </td>
+                    </tr>
+                  }
                   <tr>
                     <td style={{ float: "left" }}>
                       <Typography variant="body1" color="textPrimary">

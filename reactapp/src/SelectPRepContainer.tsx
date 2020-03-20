@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@apollo/react-hooks"
-import { GET_PREPS, GET_VIEWER } from "./GQL";
+import { PREPS, PAGES, GET_VIEWER } from "./GQL";
 import { jsonRpcCall, governanceCall } from "./IconConnect";
 import SelectPRep from "./SelectPRep";
 
@@ -8,8 +8,32 @@ function SelectPRepContainer(props: any) {
   // console.log("select prep container props", props);
   const [delegations, setDelegations] = useState<any>(false);
   const [pReps, setPReps] = useState<any>(false);
+  const [regPages, setRegPages] = useState([]);
+  const [regPReps, setRegPReps] = useState([]);
 
-  const queryVal = useQuery(GET_PREPS);
+  const queryPReps = useQuery(PREPS);
+  const queryPages = useQuery(PAGES);
+
+  useEffect(() => {
+    let _preps;
+    try {
+      _preps = queryPReps.data.get_preps;
+    } catch {
+      _preps = []
+    }
+    setRegPReps(_preps);
+  }, [queryPReps.data])
+
+  useEffect(() => {
+    let _pages;
+    try {
+      _pages = queryPages.data.get_pages;
+    } catch {
+      _pages = []
+    }
+    setRegPages(_pages);
+  }, [queryPages.data])
+
 
   const handleClick = (PRepName: string) => {
     props.history.push("/Proposals/" + PRepName)
@@ -35,7 +59,7 @@ function SelectPRepContainer(props: any) {
   function getPRepName(address: string) {
     for (let i = 0; i < pReps.length; i++) {
       if (pReps[i].address === address) {
-        return pReps[i].name;
+        return pReps[i].username;
       }
     }
     return address;
@@ -43,7 +67,8 @@ function SelectPRepContainer(props: any) {
 
   return (
     <SelectPRep
-      {...queryVal}
+      regPages={regPages}
+      regPReps={regPReps}
       selectedPRep={props.selectedPRep}
       delegations={delegations}
       handleClick={handleClick}

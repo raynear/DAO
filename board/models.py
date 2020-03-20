@@ -40,10 +40,3 @@ class SelectItemModel(models.Model):
 
     def __str__(self):
         return self.contents
-
-
-class TxModel(models.Model):
-    txHash = models.CharField(max_length=300, blank=False)
-
-    def __str__(self):
-        return self.txHash

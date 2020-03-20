@@ -4,28 +4,38 @@ TAG = 'ICON_DAO'
 
 
 def is_none(par):
-    if isinstance(par, int):
-        return True if par == 0 else False
-    elif isinstance(par, float):
-        return True if par == 0.0 else False
-    elif isinstance(par, str):
-        return True if par == '' else False
-    elif isinstance(par, dict):
-        return True if par == {} else False
-    elif isinstance(par, list):
-        return True if par == [] else False
-    elif isinstance(par, tuple):
-        return True if par == () else False
-    elif isinstance(par, complex):
-        return True if par == 0+0j else False
-    elif isinstance(par, bool):
-        return not par
+    if not par:
+        return True
     else:
         return False
 
 
 def is_not_none(par):
-    return not is_none(par)
+    if par:
+        return True
+    else:
+        return False
+
+
+def only_owner(func):
+    @wraps(func)
+    def __wrapper(self: object, *args, **kwargs):
+        if self.msg.sender != self.owner and self.msg.sender != self._owner.get():
+            revert("Not owner")
+
+        return func(self, *args, **kwargs)
+    return __wrapper
+
+
+def catch_error(func):
+    @wraps(func)
+    def __wrapper(self: object, *args, **kwargs):
+        try:
+            return func(self, *args, **kwargs)
+        except Exception as e:
+            revert(repr(e))
+
+    return __wrapper
 
 
 class VoteStatus:
@@ -74,7 +84,7 @@ class IconDAO(IconScoreBase):
 
     TARGET_MY_VOTER = "MyVoter"
 
-    @eventlog(indexed=1)
+    @eventlog
     def logging(self, msg: str):
         pass
 
@@ -118,29 +128,31 @@ class IconDAO(IconScoreBase):
 
     def on_update(self) -> None:
         super().on_update()
-        self._i_preps[self.COUNT] = 0
-        self._i_page[self.COUNT] = 0
-        self._i_recent_proposal[self.COUNT] = 0
-        self._i_verify_id[self.COUNT][self.COUNT] = 0
 
+    @external(readonly=True)
+    def get_user_count(self) -> int:
+        return self._i_verify_id[self.COUNT][self.COUNT]
+
+    @only_owner
     @external(readonly=False)
+    @catch_error
     def transfer_ownership(self, _new_owner_address: Address):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
         self._ready_to_owner.set(_new_owner_address)
 
+    @only_owner
     @external(readonly=False)
+    @catch_error
     def accept_ownership(self):
-        if self._ready_to_owner.get() == self.msg.sender:
-            self._owner.set(self._ready_to_owner.get())
-            self._ready_to_owner.remove()
+        self._owner.set(self._ready_to_owner.get())
+        self._ready_to_owner.remove()
 
     @external(readonly=False)
+    @catch_error
     def verify(self, _block_hash: str, _id: str):
         if self._verify_id[str(self.msg.sender)][self.ID] == _id and self._a_verify_id[_id][self.ADDRESS] == self.msg.sender:
             revert("Already Verified by given Information")
 
-        if is_none(self._a_verify_id[_id][self.ADDRESS]):
+        if is_none(self._verify_id[str(self._a_verify_id[_id][self.ADDRESS])][self.ID]):
             self._i_verify_id[self.COUNT][self.COUNT] = self._i_verify_id[self.COUNT][self.COUNT] + 1
         self._a_verify_id[_id][self.ADDRESS] = self.msg.sender
         self._verify_id[str(self.msg.sender)][self.ID] = _id
@@ -150,7 +162,7 @@ class IconDAO(IconScoreBase):
     def get_verify_info_by_address(self, _address: str) -> str:
         id_by_address = self._verify_id[_address][self.ID]
         if is_none(id_by_address) or self._a_verify_id[id_by_address][self.ADDRESS] != Address.from_string(_address):
-            revert(_address + " is not verified")
+            return _address + " is not verified"
 
         return_json = dict()
         return_json[self.ADDRESS] = str(
@@ -164,7 +176,7 @@ class IconDAO(IconScoreBase):
     def get_verify_info_by_id(self, _id: str) -> str:
         address_by_id = str(self._a_verify_id[_id][self.ADDRESS])
         if is_none(address_by_id) or self._verify_id[address_by_id][self.ID] != _id:
-            revert(_id + " is not verified")
+            return _id + " is not verified"
 
         return_json = dict()
         return_json[self.ADDRESS] = address_by_id
@@ -173,10 +185,7 @@ class IconDAO(IconScoreBase):
 
         return json_dumps(return_json)
 
-    @external(readonly=False)
-    def add_page(self, _page_id: str):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
+    def _add_page(self, _page_id: str):
         if is_not_none(self._page[_page_id]):
             revert("Already registered")
 
@@ -185,10 +194,16 @@ class IconDAO(IconScoreBase):
         self._i_page[_page_id] = self._i_page[self.COUNT]
         self._page[str(self._i_page[self.COUNT])] = _page_id
 
+    @only_owner
     @external(readonly=False)
+    @catch_error
+    def add_page(self, _page_id: str):
+        self._add_page(_page_id)
+
+    @only_owner
+    @external(readonly=False)
+    @catch_error
     def toggle_page_status(self, _page_id: str):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
         if is_not_none(self._page[_page_id]):
             if self._i_page[_page_id] == Status.DISABLE:
                 for page in range(self._i_page[self.COUNT]):
@@ -208,14 +223,17 @@ class IconDAO(IconScoreBase):
         if is_not_none(self._page[str(_cnt)]) and self._i_page[self._page[str(_cnt)]] != Status.DISABLE:
             return self._page[str(_cnt)]
         else:
-            revert("No Page on " + str(_cnt))
+            return "No Page on " + str(_cnt)
 
-    @external(readonly=True)
-    def is_page(self, _id: str) -> bool:
+    def _is_page(self, _id: str) -> bool:
         if is_not_none(self._page[_id]):
             return True
         else:
             return False
+
+    @external(readonly=True)
+    def is_page(self, _id: str) -> bool:
+        return self._is_page(_id)
 
     @external(readonly=True)
     def is_page_disabled(self, _id: str) -> bool:
@@ -225,30 +243,29 @@ class IconDAO(IconScoreBase):
             return False
 
     @external(readonly=True)
-    def get_pages(self) -> str:
+    def get_pages(self) -> list:
         return_json = []
         for i in range(1, self._i_page[self.COUNT]+1):
             if self._i_page[self._page[str(i)]] != Status.DISABLE:
                 return_json.append(self._page[str(i)])
-        return json_dumps(return_json)
+        return return_json
 
+    @only_owner
     @external(readonly=False)
     def add_prep(self, _prep_id: str):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
-        self.logging(str(self._preps[_prep_id]))
         if is_not_none(self._preps[_prep_id]):
             revert("Already registered")
+
+        self.logging(_prep_id + ':' + str(self._preps[_prep_id]))
 
         self._i_preps[self.COUNT] = self._i_preps[self.COUNT] + 1
 
         self._i_preps[_prep_id] = self._i_preps[self.COUNT]
         self._preps[str(self._i_preps[self.COUNT])] = _prep_id
 
+    @only_owner
     @external(readonly=False)
     def toggle_prep_status(self, _prep_id: str):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
         if is_not_none(self._preps[_prep_id]):
             if self._i_preps[_prep_id] == Status.DISABLE:
                 for prep in range(self._i_preps[self.COUNT]):
@@ -268,7 +285,7 @@ class IconDAO(IconScoreBase):
         if is_not_none(self._preps[str(_cnt)]) and self._i_preps[self._preps[str(_cnt)]] != Status.DISABLE:
             return self._preps[str(_cnt)]
         else:
-            revert("No PRep on " + str(_cnt))
+            return "No PRep on " + str(_cnt)
 
     @external(readonly=True)
     def is_prep(self, _id: str) -> bool:
@@ -285,17 +302,20 @@ class IconDAO(IconScoreBase):
             return False
 
     @external(readonly=True)
-    def get_preps(self) -> str:
+    def get_preps(self) -> list:
         return_json = []
         for i in range(1, self._i_preps[self.COUNT]+1):
             if self._i_preps[self._preps[str(i)]] != Status.DISABLE:
-                return_json.append(self._preps[str(i)])
-        return json_dumps(return_json)
+                _id = self._preps[str(i)]
+                a_prep = dict()
+                a_prep['username'] = _id
+                a_prep['address'] = str(self._a_verify_id[_id][self.ADDRESS])
+                return_json.append(a_prep)
+        return return_json
 
+    @only_owner
     @external(readonly=False)
     def vote(self, _proposer: str, _proposal_id: int, _voter_address: str, _vote_item: int):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
         pid = str(_proposal_id)
         if is_none(self._verify_id[_voter_address][self.ID]):
             revert("Voter Not Verified")
@@ -304,22 +324,21 @@ class IconDAO(IconScoreBase):
         if self._proposal[_proposer][pid][self.STATUS] != VoteStatus.VOTING:
             revert("Proposal is Not Voting")
 
-        expire_timestamp = self._proposal[_proposer][pid][self.EXPIRE_TIMESTAMP]
-        if expire_timestamp < self.now():
-            revert(_proposer + "'s " + str(_proposal_id) + " proposal is expired")
+        expire_timestamp = self._i_proposal[_proposer][pid][self.EXPIRE_TIMESTAMP]
+        if expire_timestamp > self.now():
+            revert(_proposer + "'s " + pid + " proposal is expired")
 
         user_vote_idx = self._i_vote[_proposer][pid][_voter_address][self.COUNT]
         if user_vote_idx != 0:
-            self._vote[_proposer][pid][str(
-                user_vote_idx)][self.TX] = bytes.hex(self.tx.hash)
-            self._i_vote[_proposer][pid][str(
-                user_vote_idx)][self.SELECT_ITEM] = _vote_item
+            vid = str(user_vote_idx)
+            self._vote[_proposer][pid][vid][self.TX] = self.tx.hash.hex()
+            self._i_vote[_proposer][pid][vid][self.SELECT_ITEM] = _vote_item
         else:
             vote_idx = self._i_vote[_proposer][pid][self.COUNT][self.COUNT] + 1
             vid = str(vote_idx)
             self._vote[_proposer][pid][vid][self.VOTER] = _voter_address
             self._i_vote[_proposer][pid][vid][self.SELECT_ITEM] = _vote_item
-            self._vote[_proposer][pid][vid][self.TX] = bytes.hex(self.tx.hash)
+            self._vote[_proposer][pid][vid][self.TX] = self.tx.hash.hex()
             self._i_vote[_proposer][pid][self.COUNT][self.COUNT] = vote_idx
             self._i_vote[_proposer][pid][_voter_address][self.COUNT] = vote_idx
 
@@ -360,33 +379,34 @@ class IconDAO(IconScoreBase):
 
         return json_dumps({})
 
+    @only_owner
     @external(readonly=False)
+    @catch_error
     def cancel_proposal(self, _proposer: str, _proposal_id: int):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
         self._proposal[_proposer][str(
             _proposal_id)][self.STATUS] = VoteStatus.CANCELED
 
+    @only_owner
     @external(readonly=False)
+    @catch_error
     def remove_proposal(self, _proposer: str, _proposal_id: int):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
         self._proposal[_proposer][str(
             _proposal_id)][self.STATUS] = VoteStatus.REMOVED
 
+    @only_owner
     @external(readonly=False)
+    @catch_error
     def finalize(self, _proposer: str, _proposal_id: int, _total_delegate: int, _final_data: str):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
         pid = str(_proposal_id)
         if is_none(self._proposal[_proposer][pid][self.SUBJECT]):
             revert("No Proposal")
         if self._proposal[_proposer][pid][self.STATUS] != VoteStatus.VOTING:
             revert("Proposal is Not Voting")
 
-        expire_timestamp = self._proposal[_proposer][pid][self.EXPIRE_TIMESTAMP]
+        expire_timestamp = self._i_proposal[_proposer][pid][self.EXPIRE_TIMESTAMP]
         if expire_timestamp > self.now():
-            revert(_proposer + "'s " + str(_proposal_id) + " proposal is not expired")
+            revert(_proposer + "'s " + str(_proposal_id) +
+                   " proposal is not expired")
 
         self._proposal[_proposer][pid][self.FINAL] = bytes.hex(self.tx.hash)
 
@@ -427,23 +447,23 @@ class IconDAO(IconScoreBase):
         else:
             self._proposal[_proposer][pid][self.STATUS] = VoteStatus.REJECTED
 
+    @only_owner
     @external(readonly=False)
+    @catch_error
     def set_timestamp(self, _proposer: str, _proposal_id: int, _expire_date: str, _expire_timestamp: int):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
         pid = str(_proposal_id)
         if self._proposal[_proposer][pid]["expire_date"] == _expire_date:
-            self._proposal[_proposer][pid][self.EXPIRE_TIMESTAMP] = _expire_timestamp
+            self._i_proposal[_proposer][pid][self.EXPIRE_TIMESTAMP] = _expire_timestamp
 
     @external(readonly=True)
     def get_expire_date(self, _proposer: str, _proposal_id: int) -> str:
         return self._proposal[_proposer][str(_proposal_id)]["expire_date"]
 
+    @only_owner
     @external(readonly=False)
+    @catch_error
     def set_proposal(self, _proposer: str, _subject: str, _contents: str, _electoral_th: int, _winning_th: int,
                      _expire_timestamp: int, _select_items: str, _vote_page: str):
-        if self._owner.get() != self.msg.sender and self.owner != self.msg.sender:
-            revert("Only Owner can execute")
         if is_none(self._a_verify_id[_proposer][self.ADDRESS]):
             revert("Proposer is not Verified")
         if is_none(self._preps[_proposer]):
@@ -452,8 +472,8 @@ class IconDAO(IconScoreBase):
         if _vote_page == self.TARGET_MY_VOTER:
             proposer = _proposer
         else:
-            if not self.is_page(_vote_page):
-                self.add_page(_vote_page)
+            if not self._is_page(_vote_page):
+                self._add_page(_vote_page)
 
             proposer = _vote_page
 
@@ -468,6 +488,8 @@ class IconDAO(IconScoreBase):
             "pid": p_id
         })
 
+        self.logging("page:"+proposer+":prep:"+_proposer+":title:"+_subject+":pid:"+str(p_id))
+
         pid = str(p_id)
         self._i_proposal[proposer][self.ID][self.ID] = p_id
         self._proposal[proposer][pid][self.ADDRESS] = str(
@@ -478,15 +500,16 @@ class IconDAO(IconScoreBase):
         self._i_proposal[proposer][pid][self.ELECTORAL_TH] = _electoral_th
         self._i_proposal[proposer][pid][self.WINNING_TH] = _winning_th
         self._proposal[proposer][pid][self.STATUS] = VoteStatus.VOTING
-        self._proposal[proposer][pid][self.EXPIRE_TIMESTAMP] = _expire_timestamp
+        self._i_proposal[proposer][pid][self.EXPIRE_TIMESTAMP] = _expire_timestamp
         self._proposal[proposer][pid][self.SELECT_ITEM] = _select_items
         self._proposal[proposer][pid][self.TX] = bytes.hex(self.tx.hash)
         self._i_vote[proposer][pid][self.COUNT][self.COUNT] = 0
 
-    def get_recent_proposals(self, _count: int) -> object:
+    @external(readonly=True)
+    def get_recent_proposals(self, _count: int) -> list:
         proposal_count = self._i_recent_proposal[self.COUNT]
         ret = []
-        for i in range(proposal_count, proposal_count - _count, -1):
+        for i in range(proposal_count, proposal_count - _count if (proposal_count - _count) > 0 else 0, -1):
             ret.append(json_loads(self._recent_proposal[str(i)]))
 
         return ret
@@ -499,7 +522,7 @@ class IconDAO(IconScoreBase):
         pid = str(_proposal_id)
         return_json = dict()
 
-        if self._i_proposal[_proposer][self.ID][self.ID] > _proposal_id:
+        if self._i_proposal[_proposer][self.ID][self.ID] < _proposal_id:
             return return_json
         if self._proposal[_proposer][pid][self.STATUS] == VoteStatus.REMOVED:
             return return_json
@@ -509,12 +532,10 @@ class IconDAO(IconScoreBase):
         return_json[self.PROPOSER] = self._proposal[_proposer][pid][self.PROPOSER]
         return_json[self.SUBJECT] = self._proposal[_proposer][pid][self.SUBJECT]
         return_json[self.CONTENTS] = self._proposal[_proposer][pid][self.CONTENTS]
-        return_json[self.ELECTORAL_TH] = str(
-            self._i_proposal[_proposer][pid][self.ELECTORAL_TH])
-        return_json[self.WINNING_TH] = str(
-            self._i_proposal[_proposer][pid][self.WINNING_TH])
+        return_json[self.ELECTORAL_TH] = str(self._i_proposal[_proposer][pid][self.ELECTORAL_TH])
+        return_json[self.WINNING_TH] = str(self._i_proposal[_proposer][pid][self.WINNING_TH])
         return_json[self.STATUS] = self._proposal[_proposer][pid][self.STATUS]
-        return_json[self.EXPIRE_TIMESTAMP] = self._proposal[_proposer][pid][self.EXPIRE_TIMESTAMP]
+        return_json[self.EXPIRE_TIMESTAMP] = self._i_proposal[_proposer][pid][self.EXPIRE_TIMESTAMP]
         return_json[self.SELECT_ITEM] = self._proposal[_proposer][pid][self.SELECT_ITEM]
         return_json[self.TX] = self._proposal[_proposer][pid][self.TX]
         return_json[self.FINAL] = self._proposal[_proposer][pid][self.FINAL]
@@ -526,7 +547,7 @@ class IconDAO(IconScoreBase):
     def get_proposal(self, _proposer: str, _proposal_id: int) -> str:
         return_json = self._get_proposal(_proposer, _proposal_id)
         if return_json == dict():
-            revert("No Proposal: " + _proposer + " " + str(_proposal_id))
+            return "No Proposal: " + _proposer + " " + str(_proposal_id)
         return json_dumps(return_json)
 
     @external(readonly=True)
@@ -540,9 +561,7 @@ class IconDAO(IconScoreBase):
 
         return_json = []
         for i in range(_start_proposal_id, end+1):
-            pid = str(i)
-
-            json = self._get_proposal(_proposer, int(pid))
+            json = self._get_proposal(_proposer, i)
             if json == dict():
                 continue
             else:

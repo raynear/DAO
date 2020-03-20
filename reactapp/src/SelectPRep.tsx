@@ -13,7 +13,7 @@ import { Star, FiberManualRecord } from "@material-ui/icons";
 import useStyles from "./Style";
 
 function SelectPRep(props: any) {
-  // console.log("select prep props", props);
+  console.log("select prep props", props);
   const classes = useStyles();
 
   if (props.loading) return <CircularProgress />;
@@ -21,35 +21,35 @@ function SelectPRep(props: any) {
 
   let allPRep: any[] = [];
   try {
-    for (let i = 0; i < props.data.allPrep.length; i++) {
+    for (let i = 0; i < props.regPReps.length; i++) {
       for (let j = 0; j < props.delegations.length; j++) {
-        if (
-          props.data.allPrep[i].iconAddress === props.delegations[j].address
-        ) {
+        if (props.regPReps[i].address === props.delegations[j].address) {
           allPRep.push({
-            username: props.data.allPrep[i].username,
-            iconAddress: props.data.allPrep[i].iconAddress,
+            username: props.regPReps[i].username,
+            pRepName: props.regPReps[i].pRepName,
+            iconAddress: props.regPReps[i].address,
             isMyPRep: true
           });
         }
       }
     }
-    for (let i = 0; i < props.data.allPrep.length; i++) {
+    for (let i = 0; i < props.regPReps.length; i++) {
       let flag = false;
       for (let j = 0; j < allPRep.length; j++) {
-        if (props.data.allPrep[i].username === allPRep[j].username) {
+        if (props.regPReps[i].username === allPRep[j].username) {
           flag = true;
         }
       }
       if (!flag) {
         allPRep.push({
-          username: props.data.allPrep[i].username,
-          iconAddress: props.data.allPrep[i].iconAddress,
+          username: props.regPReps[i].username,
+          pRepName: props.regPReps[i].pRepName,
+          iconAddress: props.regPReps[i].address,
           isMyPRep: false
         });
       }
     }
-  } catch {}
+  } catch { }
   return (
     <Grid item className={classes.grid} xs={12} md={12} lg={12}>
       <Paper className={classes.paper}>
@@ -61,12 +61,14 @@ function SelectPRep(props: any) {
                 <ListSubheader component="div">Community Vote</ListSubheader>
               }
             >
-              <ListItem button onClick={() => props.handleClick("Community")}>
-                <ListItemIcon>
-                  <FiberManualRecord />
-                </ListItemIcon>
-                <ListItemText>{"Community"}</ListItemText>
-              </ListItem>
+              {props.regPages.map((item: any, idx: any) => (
+                <ListItem key={idx} button onClick={() => props.handleClick(item)}>
+                  <ListItemIcon>
+                    <FiberManualRecord />
+                  </ListItemIcon>
+                  <ListItemText>{item}</ListItemText>
+                </ListItem>
+              ))}
             </List>
           </Grid>
           <Grid item className={classes.paddingSide} xs={12} md={12} lg={12}>
@@ -93,7 +95,7 @@ function SelectPRep(props: any) {
                     </ListItemIcon>
                   )}
                   <ListItemText>
-                    {props.getPRepName(item.iconAddress)}
+                    {item.pRepName}
                   </ListItemText>
                 </ListItem>
               ))}
