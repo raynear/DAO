@@ -83,17 +83,17 @@ function Proposal(props: any) {
     return (
       <table>
         <tbody>
-          {props.proposal.select_item.map(
+          {props.votedPowerRate.map(
             (selectItem: any, idx: number) => {
               let voteRate = 0;
               try {
-                voteRate = props.votedPowerRate[idx].voted;
+                voteRate = selectItem.votedPower;
               } catch {
                 voteRate = 0;
               }
               let icx;
               try {
-                icx = props.votedPowerRate[idx].icx.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                icx = selectItem.votedPower.toLocaleString(undefined, { maximumFractionDigits: 2 })
               } catch {
                 icx = 0;
               }
@@ -104,15 +104,15 @@ function Proposal(props: any) {
                   <td style={{ minWidth: "200px" }}>
                     {props.votedIdx === idx &&
                       <Tooltip key={idx} title="Voted" placement="left">
-                        <Typography variant="h6">{selectItem}</Typography>
+                        <Typography variant="h6">{selectItem.item}</Typography>
                       </Tooltip>
                     }
                     {props.votedIdx !== idx &&
-                      <Typography variant="h6">{selectItem}</Typography>
+                      <Typography variant="h6">{selectItem.item}</Typography>
                     }
                   </td>
                   <td align="right" style={{ minWidth: "50px" }}><Typography variant="h6" color="textSecondary">{" " + voteRate + " %"}</Typography></td>
-                  <td align="right" style={{ minWidth: "200px" }}><Typography variant="h6">{props.votedPowerRate.length > 0 && " " + icx + " ICX"}</Typography></td>
+                  <td align="right" style={{ minWidth: "200px" }}><Typography variant="h6">{" " + icx + " ICX"}</Typography></td>
                 </tr>
               );
             }
@@ -128,11 +128,11 @@ function Proposal(props: any) {
         <RadioGroup value={props.voteSelect} onChange={props.handleChange}>
           <table>
             <tbody>
-              {props.proposal.select_item.map(
+              {props.votedPowerRate.map(
                 (selectItem: any, idx: number) => {
                   let voteRate = 0;
                   try {
-                    voteRate = props.votedPowerRate[idx].voted;
+                    voteRate = selectItem.votedPower;
                   } catch {
                     voteRate = 0;
                   } finally {
@@ -143,14 +143,14 @@ function Proposal(props: any) {
                         <FormControlLabel
                           control={<Radio />}
                           value={idx}
-                          label={<Typography variant="h6" color="textPrimary">{selectItem}</Typography>}
+                          label={<Typography variant="h6" color="textPrimary">{selectItem.item}</Typography>}
                         />
                       </td>
                       <td align="right" style={{ minWidth: "50px" }}>
                         <Typography variant="h6" color="textSecondary">{voteRate + " %"}</Typography>
                       </td>
                       <td align="right" style={{ minWidth: "200px" }}>
-                        <Typography variant="h6" color="textSecondary">{props.votedPowerRate[idx].icx.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+                        <Typography variant="h6" color="textSecondary">{selectItem.votedPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
                       </td>
                     </tr>
                   );

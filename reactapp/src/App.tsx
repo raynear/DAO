@@ -112,50 +112,61 @@ const queryResolver = {
     console.log("get_voted_power_rates");
     const votes = await queryResolver.get_votes(obj, args, context, info);
     const proposal = await queryResolver.get_proposal(obj, args, context, info);
+    const pages = await queryResolver.get_pages(obj, args, context, info);
+
+    // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    // console.log("votes", votes);
+    // console.log("proposal", proposal);
+    // console.log("pages", pages);
 
     let totalVotedPower = 0;
 
     let votedPowerRate = [];
-    let votedPowers = [];
     for (let i = 0; i < proposal.select_item.length; i++) {
-      votedPowerRate[i] = [];
-      votedPowers[i] = 0;
+      const r: any[] = [];
+      votedPowerRate[i] = { item: proposal.select_item[i], voteList: r, votedPower: 0 };
     }
 
     for (let i = 0; i < votes.length; i++) {
       const aVote = votes[i];
 
       if (votedPowerRate[aVote.selectItem]) {
-        votedPowerRate[aVote.selectItem].push(aVote);
+        votedPowerRate[aVote.selectItem].voteList.push(aVote);
       } else {
-        votedPowerRate[aVote.selectItem] = [aVote];
+        votedPowerRate[aVote.selectItem].voteList = [aVote];
+      }
+    }
+
+    let communityPage = false;
+    for (let i = 0; i < pages.length; i++) {
+      if (communityPage === false && args._proposer === pages[i]) {
+        communityPage = true;
       }
     }
 
     for (let i = 0; i < votedPowerRate.length; i++) {
       let votingPower = 0;
-      for (let j = 0; j < votedPowerRate[i].length; j++) {
-        if (proposal.status === "Voting") {
+      for (let j = 0; j < votedPowerRate[i].voteList.length; j++) {
+        if (proposal.status === "Voting" && !communityPage) {
           votingPower += await queryResolver.get_voting_power(
             obj,
-            { _proposer: args._proposer, _user: votedPowerRate[i][j].voter },
+            { _proposer: args._proposer, _user: votedPowerRate[i].voteList[j].voter },
             context,
             info
           );
         }
         else {
-          votingPower += votedPowerRate[i][j].delegateAmount;
+          votingPower += votedPowerRate[i].voteList[j].delegateAmount;
         }
       }
 
-      votedPowers[i] = votingPower;
+      votedPowerRate[i].votedPower = votingPower;
       totalVotedPower += votingPower;
     }
 
-    console.log("VotedPowerRate!!!!", votedPowerRate, votedPowers, totalVotedPower);
+    console.log("VotedPowerRate!!!!", votedPowerRate, totalVotedPower);
     return {
       votedPowerRate: votedPowerRate,
-      votedPowers: votedPowers,
       totalVotedPower: totalVotedPower
     };
   },
@@ -211,13 +222,15 @@ const queryResolver = {
       delegateList = [];
     }
 
+    console.log("delegateList", delegateList);
+
     try {
       const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
         _id: args._proposer
       });
-      console.log(verifyInfoResult);
+      console.log("verify info result", verifyInfoResult);
       const verifyInfoJson = JSON.parse(verifyInfoResult);
-      console.log(verifyInfoJson);
+      console.log("verify info json", verifyInfoJson);
 
       for (let i = 0; i < delegateList.length; i++) {
         if (delegateList[i].address === verifyInfoJson.address) {

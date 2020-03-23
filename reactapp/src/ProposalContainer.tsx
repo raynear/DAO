@@ -36,8 +36,6 @@ function ProposalContainer(props: any) {
     myPRep: false,
     myVotingPower: 0,
     votedIdx: -1,
-    votedPowerRate: [],
-    votedPowers: [],
     totalDelegate: 0,
     totalVotedPower: 0,
   });
@@ -49,7 +47,7 @@ function ProposalContainer(props: any) {
 
   const [voteSelect, setVoteSelect] = useState(-1);
   const [voteData, setVoteData] = useState({ name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 })
-  //  const [votedPowerRate, setVotedPowerRate] = useState<any[]>([])
+  const [votedPowerRate, setVotedPowerRate] = useState<any>([])
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -140,7 +138,7 @@ function ProposalContainer(props: any) {
   console.log("queryPRepInfoByID", queryPRepInfoByID);
   const queryVotingPower = useQuery(MY_VOTING_POWER, { variables: { proposer: pRep, username: viewer.username } });
   console.log("queryVotingPower", queryVotingPower);
-  const queryVotedPowerRates = useQuery(VOTED_POWER_RATES, { variables: { proposer: pRep, proposal_id: id, username: viewer.username } });
+  const queryVotedPowerRates = useQuery(VOTED_POWER_RATES, { variables: { proposer: pRep, proposal_id: id } });
   console.log("queryVotedPowerRates", queryVotedPowerRates);
 
   useEffect(() => {
@@ -214,17 +212,18 @@ function ProposalContainer(props: any) {
   }, [queryPRepInfoByID.data]);
 
   useEffect(() => {
-    let _votedPowers;
+    let _votedPowerRate;
     let _totalVotedPower;
     try {
       let Item = queryVotedPowerRates.data.get_voted_power_rates;
-      _votedPowers = Item.votedPowers;
+      _votedPowerRate = Item.votedPowerRate;
       _totalVotedPower = Item.totalVotedPower;
     } catch {
-      _votedPowers = [];
+      _votedPowerRate = [];
       _totalVotedPower = 0;
     }
-    setValues({ ...values, votedPowers: _votedPowers, totalVotedPower: _totalVotedPower })
+    setVotedPowerRate(_votedPowerRate);
+    setValues({ ...values, totalVotedPower: _totalVotedPower });
   }, [queryVotedPowerRates.data])
 
 
@@ -259,30 +258,30 @@ function ProposalContainer(props: any) {
     setVoteData(tmpVoteData);
   }, [proposal, values.totalVotedPower, values.totalDelegate])
 
-
-  useEffect(() => {
-    let _voteItem;
-    try {
-      const winningTh = proposal.winningTh;
-      if (values.totalVotedPower === 0) {
-        throw Error;
+  /*
+    useEffect(() => {
+      let _voteItem;
+      try {
+        const winningTh = proposal.winningTh;
+        if (values.totalVotedPower === 0) {
+          throw Error;
+        }
+        let voteItem: any[] = [];
+        for (let i = 0; i < votedPowerRate.length; i++) {
+          const votedRate = Math.round((votedPowerRate[i].votedPower / values.totalVotedPower ? values.totalVotedPower : 0.0000001) * 100);
+          voteItem.push({ name: proposal.select_item[i], voted: votedRate ? votedRate : 0, left: votedRate ? (votedRate > winningTh ? 0 : winningTh - votedRate) : 0, icx: votedPowerRate[i].votedPower });
+        }
+        _voteItem = voteItem;
+      } catch{
+        let voteItem: any[] = [];
+        for (let i = 0; i < votedPowerRate.length; i++) {
+          voteItem.push({ name: proposal.select_item[i], voted: 0, left: 0, icx: 0 });
+        }
+        _voteItem = voteItem;
       }
-      let voteItem: any[] = [];
-      for (let i = 0; i < values.votedPowers.length; i++) {
-        const votedRate = Math.round((values.votedPowers[i] / values.totalVotedPower ? values.totalVotedPower : 0.0000001) * 100);
-        voteItem.push({ name: proposal.select_item[i], voted: votedRate ? votedRate : 0, left: votedRate ? (votedRate > winningTh ? 0 : winningTh - votedRate) : 0, icx: values.votedPowers[i] });
-      }
-      _voteItem = voteItem;
-    } catch{
-      let voteItem: any[] = [];
-      for (let i = 0; i < values.votedPowers.length; i++) {
-        voteItem.push({ name: proposal.select_item[i], voted: 0, left: 0, icx: 0 });
-      }
-      _voteItem = voteItem;
-    }
-    setValues({ ...values, votedPowerRate: _voteItem });
-  }, [proposal, values.votedPowers, values.totalVotedPower, values.totalDelegate])
-
+      setVotedPowerRate(_voteItem);
+    }, [proposal, votedPowerRate, values.totalVotedPower, values.totalDelegate])
+  */
   console.log("values", values);
 
   return (
@@ -301,7 +300,7 @@ function ProposalContainer(props: any) {
       myVotingPower={values.myVotingPower}
       votedIdx={_votedIdx}
       voteSelect={voteSelect}
-      votedPowerRate={values.votedPowerRate}
+      votedPowerRate={votedPowerRate}
       voteData={voteData}
 
       // functions

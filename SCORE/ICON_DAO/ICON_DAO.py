@@ -162,7 +162,8 @@ class IconDAO(IconScoreBase):
     def get_verify_info_by_address(self, _address: str) -> str:
         id_by_address = self._verify_id[_address][self.ID]
         if is_none(id_by_address) or self._a_verify_id[id_by_address][self.ADDRESS] != Address.from_string(_address):
-            return _address + " is not verified"
+            revert(_address + " is not verified")
+            # return _address + " is not verified"
 
         return_json = dict()
         return_json[self.ADDRESS] = str(
