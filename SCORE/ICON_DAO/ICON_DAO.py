@@ -128,6 +128,10 @@ class IconDAO(IconScoreBase):
 
     def on_update(self) -> None:
         super().on_update()
+        self._i_preps[self.COUNT] = 0
+        self._i_page[self.COUNT] = 0
+        self._i_recent_proposal[self.COUNT] = 0
+        self._i_verify_id[self.COUNT][self.COUNT] = 0
 
     @external(readonly=True)
     def get_user_count(self) -> int:
@@ -170,6 +174,7 @@ class IconDAO(IconScoreBase):
             self._a_verify_id[id_by_address][self.ADDRESS])
         return_json[self.ID] = self._verify_id[_address][self.ID]
         return_json[self.BLOCK_HASH] = self._verify_id[_address][self.BLOCK_HASH]
+        return_json[self.COUNT] = self._i_verify_id[id_by_address][self.COUNT]
 
         return json_dumps(return_json)
 
@@ -183,6 +188,7 @@ class IconDAO(IconScoreBase):
         return_json[self.ADDRESS] = address_by_id
         return_json[self.ID] = self._verify_id[address_by_id][self.ID]
         return_json[self.BLOCK_HASH] = self._verify_id[address_by_id][self.BLOCK_HASH]
+        return_json[self.COUNT] = self._i_verify_id[_id][self.COUNT]
 
         return json_dumps(return_json)
 
@@ -451,18 +457,6 @@ class IconDAO(IconScoreBase):
     @only_owner
     @external(readonly=False)
     @catch_error
-    def set_timestamp(self, _proposer: str, _proposal_id: int, _expire_date: str, _expire_timestamp: int):
-        pid = str(_proposal_id)
-        if self._proposal[_proposer][pid]["expire_date"] == _expire_date:
-            self._i_proposal[_proposer][pid][self.EXPIRE_TIMESTAMP] = _expire_timestamp
-
-    @external(readonly=True)
-    def get_expire_date(self, _proposer: str, _proposal_id: int) -> str:
-        return self._proposal[_proposer][str(_proposal_id)]["expire_date"]
-
-    @only_owner
-    @external(readonly=False)
-    @catch_error
     def set_proposal(self, _proposer: str, _subject: str, _contents: str, _electoral_th: int, _winning_th: int,
                      _expire_timestamp: int, _select_items: str, _vote_page: str):
         if is_none(self._a_verify_id[_proposer][self.ADDRESS]):
@@ -489,7 +483,8 @@ class IconDAO(IconScoreBase):
             "pid": p_id
         })
 
-        self.logging("page:"+proposer+":prep:"+_proposer+":title:"+_subject+":pid:"+str(p_id))
+        self.logging("page:"+proposer+":prep:"+_proposer +
+                     ":title:"+_subject+":pid:"+str(p_id))
 
         pid = str(p_id)
         self._i_proposal[proposer][self.ID][self.ID] = p_id
@@ -533,8 +528,10 @@ class IconDAO(IconScoreBase):
         return_json[self.PROPOSER] = self._proposal[_proposer][pid][self.PROPOSER]
         return_json[self.SUBJECT] = self._proposal[_proposer][pid][self.SUBJECT]
         return_json[self.CONTENTS] = self._proposal[_proposer][pid][self.CONTENTS]
-        return_json[self.ELECTORAL_TH] = str(self._i_proposal[_proposer][pid][self.ELECTORAL_TH])
-        return_json[self.WINNING_TH] = str(self._i_proposal[_proposer][pid][self.WINNING_TH])
+        return_json[self.ELECTORAL_TH] = str(
+            self._i_proposal[_proposer][pid][self.ELECTORAL_TH])
+        return_json[self.WINNING_TH] = str(
+            self._i_proposal[_proposer][pid][self.WINNING_TH])
         return_json[self.STATUS] = self._proposal[_proposer][pid][self.STATUS]
         return_json[self.EXPIRE_TIMESTAMP] = self._i_proposal[_proposer][pid][self.EXPIRE_TIMESTAMP]
         return_json[self.SELECT_ITEM] = self._proposal[_proposer][pid][self.SELECT_ITEM]
@@ -569,3 +566,50 @@ class IconDAO(IconScoreBase):
                 return_json.append(json)
 
         return json_dumps(return_json)
+
+    ####################################
+    # data migration temp functions
+    ####################################
+    @external(readonly=False)
+    @catch_error
+    def input_verify_count(self, _verify_list: str):
+        verify_list = json_loads(_verify_list)
+
+        for i in range(len(verify_list)):
+            _id = verify_list[i]
+            vid = i+1
+            self._verify_id[str(vid)][self.ID] = _id
+            self._a_verify_id[str(
+                vid)][self.ADDRESS] = self._a_verify_id[_id][self.ADDRESS]
+            self._i_verify_id[str(self.msg.sender)][self.COUNT] = vid
+            self._i_verify_id[_id][self.COUNT] = vid
+
+        self._i_verify_id[self.COUNT][self.COUNT] = len(verify_list)
+
+    @only_owner
+    @external(readonly=False)
+    @catch_error
+    def set_timestamp(self, _proposer: str, _proposal_id: int, _expire_date: str, _expire_timestamp: int):
+        pid = str(_proposal_id)
+        if self._proposal[_proposer][pid]["expire_date"] == _expire_date:
+            self._i_proposal[_proposer][pid][self.EXPIRE_TIMESTAMP] = _expire_timestamp
+
+    @external(readonly=True)
+    def get_expire_date(self, _proposer: str, _proposal_id: int) -> str:
+        return self._proposal[_proposer][str(_proposal_id)]["expire_date"]
+
+    @only_owner
+    @external(readonly=False)
+    @catch_error
+    def set_recent_proposal(self, _proposal_list: str) -> str:
+        proposal_list = json_loads(_proposal_list)
+
+        for i in range(len(proposal_list)):
+            a_proposal = proposal_list[i]
+            pid = i+1
+
+            self._recent_proposal[str(pid)] = json_dumps({
+                "proposer": a_proposal['proposer'],
+                "pid": a_proposal['pid']
+            })
+        self._i_recent_proposal[self.COUNT] = len(proposal_list)

@@ -34,6 +34,7 @@ function ProposalContainer(props: any) {
   const [values, setValues] = useState<any>({
     owner: false,
     myPRep: false,
+    isCommunityPage: false,
     myVotingPower: 0,
     votedIdx: -1,
     totalDelegate: 0,
@@ -46,8 +47,7 @@ function ProposalContainer(props: any) {
   })
 
   const [voteSelect, setVoteSelect] = useState(-1);
-  const [voteData, setVoteData] = useState({ name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 })
-  const [votedPowerRate, setVotedPowerRate] = useState<any>([])
+  const [votedPowerRate, setVotedPowerRate] = useState<any>({ list: [], totalVotedPower: 0 })
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -163,7 +163,7 @@ function ProposalContainer(props: any) {
       };
     }
     setProposal(_proposal);
-  }, [queryProposal.data]);
+  }, [queryProposal]);
 
   useEffect(() => {
     let _votes: any;
@@ -173,7 +173,7 @@ function ProposalContainer(props: any) {
       _votes = [];
     }
     setVotes(_votes);
-  }, [queryVotes.data]);
+  }, [queryVotes]);
 
   useEffect(() => {
     let _username;
@@ -186,7 +186,7 @@ function ProposalContainer(props: any) {
       _iconAddress = "";
     }
     setViewer({ username: _username, iconAddress: _iconAddress });
-  }, [queryViewer.data]);
+  }, [queryViewer]);
 
   useEffect(() => {
     let _myPRep;
@@ -199,17 +199,20 @@ function ProposalContainer(props: any) {
       _myVotingPower = 0;
     }
     setValues({ ...values, myPRep: _myPRep, myVotingPower: _myVotingPower });
-  }, [queryVotingPower.data])
+  }, [queryVotingPower])
 
   useEffect(() => {
     let _totalDelegate;
+    let _isCommunityPage;
     try {
       _totalDelegate = parseInt(queryPRepInfoByID.data.get_prep_info_by_id.delegated, 16) / 1000000000000000000;
+      _isCommunityPage = false;
     } catch {
       _totalDelegate = 0;
+      _isCommunityPage = true;
     }
-    setValues({ ...values, totalDelegate: _totalDelegate });
-  }, [queryPRepInfoByID.data]);
+    setValues({ ...values, totalDelegate: _totalDelegate, isCommunityPage: _isCommunityPage });
+  }, [queryPRepInfoByID]);
 
   useEffect(() => {
     let _votedPowerRate;
@@ -222,9 +225,9 @@ function ProposalContainer(props: any) {
       _votedPowerRate = [];
       _totalVotedPower = 0;
     }
-    setVotedPowerRate(_votedPowerRate);
-    setValues({ ...values, totalVotedPower: _totalVotedPower });
-  }, [queryVotedPowerRates.data])
+    setVotedPowerRate({ ...votedPowerRate, list: _votedPowerRate, totalVotedPower: _totalVotedPower });
+    //    setValues({ ...values, totalVotedPower: _totalVotedPower });
+  }, [queryVotedPowerRates])
 
 
   let _votedIdx;
@@ -244,44 +247,17 @@ function ProposalContainer(props: any) {
     setValues({ ...values, owner: _owner });
   }, [viewer.username]);
 
-  useEffect(() => {
-    let tmpVoteData = voteData;
-    try {
-      tmpVoteData.voted = Math.round((values.totalVotedPower / values.totalDelegate ? values.totalDelegate : 0.00000001) * 100);
-      tmpVoteData.th = parseInt(proposal.electoral_threshold) - tmpVoteData.voted;
-      if (tmpVoteData.th < 0) tmpVoteData.th = 0;
-      tmpVoteData.totalVoted = values.totalVotedPower;
-      tmpVoteData.totalDelegate = values.totalDelegate;
-    } catch {
-      tmpVoteData = voteData;
-    }
-    setVoteData(tmpVoteData);
-  }, [proposal, values.totalVotedPower, values.totalDelegate])
+  let voteData = { name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 };
+  try {
+    voteData.voted = Math.round((values.totalVotedPower / values.totalDelegate ? values.totalDelegate : 0.00000001) * 100);
+    voteData.th = parseInt(proposal.electoral_threshold) - voteData.voted;
+    if (voteData.th < 0) voteData.th = 0;
+    voteData.totalVoted = values.totalVotedPower;
+    voteData.totalDelegate = values.totalDelegate;
+  } catch {
+    voteData = { name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 };
+  }
 
-  /*
-    useEffect(() => {
-      let _voteItem;
-      try {
-        const winningTh = proposal.winningTh;
-        if (values.totalVotedPower === 0) {
-          throw Error;
-        }
-        let voteItem: any[] = [];
-        for (let i = 0; i < votedPowerRate.length; i++) {
-          const votedRate = Math.round((votedPowerRate[i].votedPower / values.totalVotedPower ? values.totalVotedPower : 0.0000001) * 100);
-          voteItem.push({ name: proposal.select_item[i], voted: votedRate ? votedRate : 0, left: votedRate ? (votedRate > winningTh ? 0 : winningTh - votedRate) : 0, icx: votedPowerRate[i].votedPower });
-        }
-        _voteItem = voteItem;
-      } catch{
-        let voteItem: any[] = [];
-        for (let i = 0; i < votedPowerRate.length; i++) {
-          voteItem.push({ name: proposal.select_item[i], voted: 0, left: 0, icx: 0 });
-        }
-        _voteItem = voteItem;
-      }
-      setVotedPowerRate(_voteItem);
-    }, [proposal, votedPowerRate, values.totalVotedPower, values.totalDelegate])
-  */
   console.log("values", values);
 
   return (
@@ -295,12 +271,14 @@ function ProposalContainer(props: any) {
       votes={votes}
 
       // edited data
+      isCommunityPage={values.isCommunityPage}
       owner={values.owner}
       myPRep={values.myPRep}
       myVotingPower={values.myVotingPower}
       votedIdx={_votedIdx}
       voteSelect={voteSelect}
-      votedPowerRate={votedPowerRate}
+      votedPowerRate={votedPowerRate.list}
+      totalVotedPower={votedPowerRate.totalVotedPower}
       voteData={voteData}
 
       // functions

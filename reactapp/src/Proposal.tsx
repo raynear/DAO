@@ -86,9 +86,8 @@ function Proposal(props: any) {
           {props.votedPowerRate.map(
             (selectItem: any, idx: number) => {
               let voteRate = 0;
-              try {
-                voteRate = selectItem.votedPower;
-              } catch {
+              voteRate = (selectItem.votedPower / props.totalVotedPower) * 100;
+              if (isNaN(voteRate) || !isFinite(voteRate)) {
                 voteRate = 0;
               }
               let icx;
@@ -131,12 +130,11 @@ function Proposal(props: any) {
               {props.votedPowerRate.map(
                 (selectItem: any, idx: number) => {
                   let voteRate = 0;
-                  try {
-                    voteRate = selectItem.votedPower;
-                  } catch {
+                  voteRate = (selectItem.votedPower / props.totalVotedPower) * 100;
+                  if (isNaN(voteRate) || !isFinite(voteRate)) {
                     voteRate = 0;
-                  } finally {
                   }
+
                   return (
                     <tr key={idx}>
                       <td style={{ minWidth: "200px" }}>
@@ -233,6 +231,7 @@ function Proposal(props: any) {
             startIcon={<ArrowLeft />}
           >
             Back
+
         </Button>
         </Paper>
 
@@ -288,26 +287,29 @@ function Proposal(props: any) {
                 VOTING PROGRESS
             </Typography>
             </Grid>
-            <Grid item className={classes.paddingSide} style={{ overflow: "auto" }} xs={12} md={8} lg={8}>
-              <BarChart width={600} height={70} data={[{ name: "Participation Quorum", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
-                <Bar dataKey="voted" stackId="a" fill="#82ca9d" />
-                <Bar dataKey="left" stackId="a" fill="#FFFFFF" />
-                <Bar dataKey="100" stackId="a" fill="#FFFFFF" />
-                <BarTooltip cursor={false} />
-                <ReferenceLine x={props.proposal.electoral_threshold} label={props.proposal.electoral_threshold} stroke="red" />
-                <XAxis type="number" domain={[0, 100]} />
-                <YAxis hide dataKey="name" type="category" />
-              </BarChart>
-            </Grid>
+            {!props.isCommunityPage &&
+              <Grid item className={classes.paddingSide} style={{ overflow: "auto" }} xs={12} md={8} lg={8}>
+                <BarChart width={600} height={70} data={[{ name: "Participation Quorum", voted: props.voteData.voted, left: props.voteData.th, "100": 100 - props.voteData.voted - props.voteData.th }]} layout="vertical">
+                  <Bar dataKey="voted" stackId="a" fill="#82ca9d" />
+                  <Bar dataKey="left" stackId="a" fill="#FFFFFF" />
+                  <Bar dataKey="100" stackId="a" fill="#FFFFFF" />
+                  <BarTooltip cursor={false} />
+                  <ReferenceLine x={props.proposal.electoral_threshold} label={props.proposal.electoral_threshold} stroke="red" />
+                  <XAxis type="number" domain={[0, 100]} />
+                  <YAxis hide dataKey="name" type="category" />
+                </BarChart>
+              </Grid>
+
+            }
             <Grid item className={classes.paddingSide} xs={12} md={4} lg={4}>
               <table>
                 <tbody>
-                  {props.voteData.totalDelegate !== 0 &&
+                  {!props.isCommunityPage &&
                     <tr>
                       <td style={{ float: "left" }}>
                         <Typography variant="body1" color="textPrimary">
                           {" "}Total # of delegates :
-                    </Typography>
+                        </Typography>
                       </td>
                       <td style={{ float: "right" }}>
                         <Typography variant="body1" color="textPrimary">
@@ -324,7 +326,7 @@ function Proposal(props: any) {
                     </td>
                     <td style={{ float: "right" }}>
                       <Typography variant="body1" color="textPrimary">
-                        {props.voteData.totalVoted.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
+                        {props.totalVotedPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
                       </Typography>
                     </td>
                   </tr>

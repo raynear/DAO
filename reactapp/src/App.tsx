@@ -85,13 +85,18 @@ const queryResolver = {
       _id: args._proposer
     });
     console.log("verifyInfoResult", verifyInfoResult);
-    const verifyInfoJson = JSON.parse(verifyInfoResult);
-    console.log("verifyInfoJson", verifyInfoJson);
-    const result = await governanceCall("getPRep", {
-      address: verifyInfoJson.address
-    });
-    result["__typename"] = "PRep";
-    return result;
+    try {
+      const verifyInfoJson = JSON.parse(verifyInfoResult);
+      console.log("verifyInfoJson", verifyInfoJson);
+      const result = await governanceCall("getPRep", {
+        address: verifyInfoJson.address
+      });
+      result["__typename"] = "PRep";
+      return result;
+
+    } catch {
+      throw Error("not verified");
+    }
   },
   get_prep_info_by_address: async (obj: any, args: any, context: any, info: any) => {
     console.log("get_prep_info_by_address");
@@ -145,23 +150,38 @@ const queryResolver = {
     }
 
     for (let i = 0; i < votedPowerRate.length; i++) {
-      let votingPower = 0;
+      let votingPowerSum = 0;
       for (let j = 0; j < votedPowerRate[i].voteList.length; j++) {
-        if (proposal.status === "Voting" && !communityPage) {
-          votingPower += await queryResolver.get_voting_power(
+        if (communityPage) {
+          let delegateList;
+          try {
+            const delegateResp = await governanceCall("getDelegation", {
+              address: votedPowerRate[i].voteList[j].voter
+            });
+            delegateList = delegateResp.delegations;
+          } catch {
+            delegateList = [];
+          }
+          for (let i = 0; i < delegateList.length; i++) {
+            votingPowerSum += parseInt(delegateList[i].value, 16) / 1000000000000000000;
+          }
+        }
+        else if (proposal.status === "Voting") {
+          const votingPower = await queryResolver.get_voting_power(
             obj,
             { _proposer: args._proposer, _user: votedPowerRate[i].voteList[j].voter },
             context,
             info
           );
+          votingPowerSum += votingPower;
         }
         else {
-          votingPower += votedPowerRate[i].voteList[j].delegateAmount;
+          votingPowerSum += votedPowerRate[i].voteList[j].delegateAmount;
         }
       }
 
-      votedPowerRate[i].votedPower = votingPower;
-      totalVotedPower += votingPower;
+      votedPowerRate[i].votedPower = votingPowerSum;
+      totalVotedPower += votingPowerSum;
     }
 
     console.log("VotedPowerRate!!!!", votedPowerRate, totalVotedPower);
@@ -184,10 +204,18 @@ const queryResolver = {
     return delegateResp;
   },
   get_voting_power: async (obj: any, args: any, context: any, info: any) => {
+    console.log("get_voting_power", args);
     const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
       _id: args._proposer
     });
-    const verifyInfoJson = JSON.parse(verifyInfoResult);
+    console.log("verifyInfoResult", verifyInfoResult);
+    let verifyInfoJson;
+    try {
+      verifyInfoJson = JSON.parse(verifyInfoResult);
+      console.log("verifyInfoJson", verifyInfoJson);
+    } catch {
+      verifyInfoJson = { address: "" };
+    }
 
     let delegateList;
     try {
@@ -198,12 +226,24 @@ const queryResolver = {
     } catch {
       delegateList = [];
     }
-    for (let i = 0; i < delegateList.length; i++) {
-      if (delegateList[i].address === verifyInfoJson.address) {
-        let myVotingPower = parseInt(delegateList[i].value, 16);
-        myVotingPower = myVotingPower / 1000000000000000000;
-        return myVotingPower;
+    if (verifyInfoJson.address) {
+      for (let i = 0; i < delegateList.length; i++) {
+        if (delegateList[i].address === verifyInfoJson.address) {
+          let myVotingPower = parseInt(delegateList[i].value, 16);
+          myVotingPower = myVotingPower / 1000000000000000000;
+          return myVotingPower;
+        }
       }
+    }
+    else {
+      let myVotingPower = 0;
+      for (let i = 0; i < delegateList.length; i++) {
+        if (delegateList[i].address === verifyInfoJson.address) {
+          let votingPower = parseInt(delegateList[i].value, 16);
+          myVotingPower = votingPower / 1000000000000000000;
+        }
+      }
+      return myVotingPower;
     }
     return 0;
   },
