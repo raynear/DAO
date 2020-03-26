@@ -2,8 +2,7 @@ import IconService from 'icon-sdk-js';
 import { nodeURL, contractAddress } from "./Config";
 
 const ICON_NETWORK = nodeURL + "api/v3";
-//const CONTRACT = contractAddress;
-const CONTRACT = "cxfacbe52bac0caf7063a0390b102de6b524d1e18b";
+const CONTRACT = contractAddress;
 const Provider = new IconService.HttpProvider(ICON_NETWORK);
 export const iconService = new IconService(Provider);
 export const IconBuilder = IconService.IconBuilder;
@@ -11,10 +10,7 @@ export const IconConverter = IconService.IconConverter;
 export const IconUtil = IconService.IconUtil;
 
 export const governanceIconService = iconService;
-//export const contractIconService = iconService;
-
-const TestProvider = new IconService.HttpProvider("https://bicon.net.solidwallet.io/api/v3");
-export const contractIconService = new IconService(TestProvider);
+export const contractIconService = iconService;
 
 export async function jsonRpcCall(methodName: string, params: any) {
   // console.log("params", params);

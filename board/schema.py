@@ -23,10 +23,8 @@ from .models import ProposalModel, SelectItemModel
 from .icon_network import ICON_NETWORK, SCORE_ADDRESS
 
 GOVERNANCE_NETWORK = ICON_NETWORK
-#CONTRACT_NETWORK = ICON_NETWORK
-CONTRACT_NETWORK = "https://bicon.net.solidwallet.io"
-#SCORE = SCORE_ADDRESS
-SCORE = "cxfacbe52bac0caf7063a0390b102de6b524d1e18b"
+CONTRACT_NETWORK = ICON_NETWORK
+SCORE = SCORE_ADDRESS
 
 prep_required = user_passes_test(lambda u: u.is_prep)
 address_required = user_passes_test(lambda u: u.icon_address)
@@ -196,12 +194,11 @@ class PublishProposal(graphene.Mutation):
         vote_page = "Community" if proposal.isPublicVote else "MyVoter"
         print("param", {"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_timestamp": int(
             proposal.expire_at.timestamp()*1000), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th, "_vote_page": vote_page})
-        # raynear nid
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
             .to(SCORE)\
             .step_limit(100000000)\
-            .nid(3)\
+            .nid(1)\
             .method("set_proposal")\
             .params({"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_timestamp": int(proposal.expire_at.timestamp()*1000), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th, "_vote_page": vote_page})\
             .build()
@@ -243,12 +240,11 @@ class VoteProposal(graphene.Mutation):
             key = f.read().strip()
         wallet = KeyWallet.load("../master.key", key)
 
-        # raynear nid
         param = transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
             .to(SCORE)\
             .step_limit(100000000)\
-            .nid(3)\
+            .nid(1)\
             .method("vote")\
             .params({"_proposer": proposer, "_proposal_id": proposal_id, "_voter_address": info.context.user.icon_address, "_vote_item": select_item_index})\
             .build()
@@ -368,12 +364,11 @@ class SetPRep(graphene.Mutation):
                 key = f.read().strip()
             wallet = KeyWallet.load("../master.key", key)
 
-            # raynear nid
             transaction = CallTransactionBuilder()\
                 .from_(wallet.get_address())\
                 .to(SCORE)\
                 .step_limit(100000000)\
-                .nid(3)\
+                .nid(1)\
                 .method("add_prep")\
                 .params({"_prep_id": user.username})\
                 .build()
