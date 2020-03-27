@@ -70,7 +70,7 @@ function ProposalContainer(props: any) {
     mutateVote({
       variables: { proposer: pRep, proposalId: id, selectItemIndex: voteSelect }
     }).then(voteResult => {
-      console.log("vote", voteResult);
+      // console.log("vote", voteResult);
     });
     // console.log("Vote!!!!!!!!!!!!!!!!!", queryVal.data.proposal);
     setVoteSelect(-1);
@@ -128,18 +128,18 @@ function ProposalContainer(props: any) {
 
 
   const queryViewer = useQuery(GET_VIEWER);
-  console.log("queryViewer", queryViewer);
+  // console.log("queryViewer", queryViewer);
   const queryProposal = useQuery(PROPOSAL, { variables: { proposer: pRep, proposal_id: id } });
-  console.log("queryProposal", queryProposal);
+  // console.log("queryProposal", queryProposal);
   const queryVotes = useQuery(VOTES, { variables: { proposer: pRep, proposal_id: id } });
-  console.log("queryVotes", queryVotes);
+  // console.log("queryVotes", queryVotes);
 
   const queryPRepInfoByID = useQuery(PREP_INFO_BY_ID, { variables: { proposer: pRep } });
-  console.log("queryPRepInfoByID", queryPRepInfoByID);
+  // console.log("queryPRepInfoByID", queryPRepInfoByID);
   const queryVotingPower = useQuery(MY_VOTING_POWER, { variables: { proposer: pRep, username: viewer.username } });
-  console.log("queryVotingPower", queryVotingPower);
+  // console.log("queryVotingPower", queryVotingPower);
   const queryVotedPowerRates = useQuery(VOTED_POWER_RATES, { variables: { proposer: pRep, proposal_id: id } });
-  console.log("queryVotedPowerRates", queryVotedPowerRates);
+  // console.log("queryVotedPowerRates", queryVotedPowerRates);
 
   useEffect(() => {
     let _proposal;
@@ -258,7 +258,7 @@ function ProposalContainer(props: any) {
     voteData = { name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 };
   }
 
-  console.log("values", values);
+  // console.log("values", values);
 
   return (
     <Proposal

@@ -67,11 +67,11 @@ function ProposalsContainer(props: any) {
 
 
 
-  console.log("queryVal", queryVal);
-  console.log("queryProposals", queryProposals);
-  console.log("queryPRepInfoByID", queryPRepInfoByID);
-  console.log("queryLastProposalID", queryLastProposalID);
-  console.log("queryMyVotingPower", queryMyVotingPower);
+  // console.log("queryVal", queryVal);
+  // console.log("queryProposals", queryProposals);
+  // console.log("queryPRepInfoByID", queryPRepInfoByID);
+  // console.log("queryLastProposalID", queryLastProposalID);
+  // console.log("queryMyVotingPower", queryMyVotingPower);
 
   return (
     <Proposals

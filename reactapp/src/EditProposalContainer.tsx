@@ -194,7 +194,7 @@ function EditProposalContainer(props: any) {
       }
     };
 
-    console.log("MUTATE_VAR", mutate_var);
+    // console.log("MUTATE_VAR", mutate_var);
 
     submitProposal(mutate_var);
   }

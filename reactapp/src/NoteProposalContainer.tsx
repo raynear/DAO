@@ -46,7 +46,7 @@ function NoteProposalContainer(props: any) {
     mutatePublish({
       variables: { proposalId: id }
     }).then(publishResult => {
-      console.log("Publish", publishResult);
+      // console.log("Publish", publishResult);
     });
     // console.log("Publish!!!!!!!!!!!!!!", queryVal.data.proposal);
     props.history.push("/Proposals/" + pRep);
@@ -80,7 +80,7 @@ function NoteProposalContainer(props: any) {
     );
   }
   // console.log("___________________________________________");
-  console.log(queryVal, queryViewer);
+  // console.log(queryVal, queryViewer);
 
   return (
     <NoteProposal

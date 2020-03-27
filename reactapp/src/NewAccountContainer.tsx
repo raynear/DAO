@@ -88,7 +88,7 @@ function NewAccountContainer(props: any) {
     mutateTokenAuth({
       variables: { username: username, password: password }
     }).then(result => {
-      console.log(result);
+      // console.log(result);
       props.setActiveStep(props.activeStep + 1);
     });
   }

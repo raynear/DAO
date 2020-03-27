@@ -15,7 +15,7 @@ import { graphqlURL, csrfURL } from "./Config";
 
 const queryResolver = {
   get_proposals: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_proposals", context);
+    // console.log("get_proposals", context);
     let jsonResult;
     try {
       const result = await jsonRpcCall("get_proposals", {
@@ -38,7 +38,7 @@ const queryResolver = {
     return ret;
   },
   get_proposal: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_proposal");
+    // console.log("get_proposal");
     const result = await jsonRpcCall("get_proposal", {
       _proposer: args._proposer,
       _proposal_id: args._proposal_id
@@ -50,7 +50,7 @@ const queryResolver = {
     return jsonResult;
   },
   get_verify_info_by_id: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_verify_info_by_id");
+    // console.log("get_verify_info_by_id");
     const result = await jsonRpcCall("get_verify_info_by_id", {
       _id: args._id
     });
@@ -58,14 +58,14 @@ const queryResolver = {
     return result;
   },
   get_last_proposal_id: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_last_proposal_id");
+    // console.log("get_last_proposal_id");
     const result = await jsonRpcCall("get_last_proposal_id", {
       _proposer: args._proposer
     });
     return parseInt(result);
   },
   get_votes: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_votes");
+    // console.log("get_votes");
     const result = await jsonRpcCall("get_votes", {
       _proposer: args._proposer,
       _proposal_id: args._proposal_id
@@ -80,14 +80,14 @@ const queryResolver = {
     return ret;
   },
   get_prep_info_by_id: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_prep_info_by_id");
+    // console.log("get_prep_info_by_id");
     const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
       _id: args._proposer
     });
-    console.log("verifyInfoResult", verifyInfoResult);
+    // console.log("verifyInfoResult", verifyInfoResult);
     try {
       const verifyInfoJson = JSON.parse(verifyInfoResult);
-      console.log("verifyInfoJson", verifyInfoJson);
+      // console.log("verifyInfoJson", verifyInfoJson);
       const result = await governanceCall("getPRep", {
         address: verifyInfoJson.address
       });
@@ -99,7 +99,7 @@ const queryResolver = {
     }
   },
   get_prep_info_by_address: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_prep_info_by_address");
+    // console.log("get_prep_info_by_address");
     const result = await governanceCall("getPRep", {
       address: args._address
     });
@@ -107,14 +107,14 @@ const queryResolver = {
     return result;
   },
   get_delegation: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_delegation");
+    // console.log("get_delegation");
     const delegateResp = await governanceCall("getDelegation", {
       address: args._address
     });
     return delegateResp;
   },
   get_voted_power_rates: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_voted_power_rates");
+    // console.log("get_voted_power_rates");
     const votes = await queryResolver.get_votes(obj, args, context, info);
     const proposal = await queryResolver.get_proposal(obj, args, context, info);
     const pages = await queryResolver.get_pages(obj, args, context, info);
@@ -184,35 +184,35 @@ const queryResolver = {
       totalVotedPower += votingPowerSum;
     }
 
-    console.log("VotedPowerRate!!!!", votedPowerRate, totalVotedPower);
+    // console.log("VotedPowerRate!!!!", votedPowerRate, totalVotedPower);
     return {
       votedPowerRate: votedPowerRate,
       totalVotedPower: totalVotedPower
     };
   },
   get_delegation_by_id: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_delegation_by_id");
+    // console.log("get_delegation_by_id");
     const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
       _id: args._id
     });
     const verifyInfoJson = JSON.parse(verifyInfoResult);
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    console.log("verify info ", verifyInfoJson);
+    // console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    // console.log("verify info ", verifyInfoJson);
     const delegateResp = await governanceCall("getDelegation", {
       address: verifyInfoJson.address
     });
     return delegateResp;
   },
   get_voting_power: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_voting_power", args);
+    // console.log("get_voting_power", args);
     const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
       _id: args._proposer
     });
-    console.log("verifyInfoResult", verifyInfoResult);
+    // console.log("verifyInfoResult", verifyInfoResult);
     let verifyInfoJson;
     try {
       verifyInfoJson = JSON.parse(verifyInfoResult);
-      console.log("verifyInfoJson", verifyInfoJson);
+      // console.log("verifyInfoJson", verifyInfoJson);
     } catch {
       verifyInfoJson = { address: "" };
     }
@@ -248,9 +248,9 @@ const queryResolver = {
     return 0;
   },
   get_my_voting_power: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_my_voting_power", args);
+    // console.log("get_my_voting_power", args);
     const viewer = await context.client.query({ query: GET_VIEWER });
-    console.log(viewer);
+    // console.log(viewer);
 
     let delegateList;
     try {
@@ -262,15 +262,15 @@ const queryResolver = {
       delegateList = [];
     }
 
-    console.log("delegateList", delegateList);
+    // console.log("delegateList", delegateList);
 
     try {
       const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
         _id: args._proposer
       });
-      console.log("verify info result", verifyInfoResult);
+      // console.log("verify info result", verifyInfoResult);
       const verifyInfoJson = JSON.parse(verifyInfoResult);
-      console.log("verify info json", verifyInfoJson);
+      // console.log("verify info json", verifyInfoJson);
 
       for (let i = 0; i < delegateList.length; i++) {
         if (delegateList[i].address === verifyInfoJson.address) {
@@ -289,7 +289,7 @@ const queryResolver = {
     }
   },
   get_preps: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_preps", args);
+    // console.log("get_preps", args);
 
     const registeredPReps = await jsonRpcCall("get_preps", {});
     const pReps = await governanceCall("getPReps", {});
@@ -307,7 +307,7 @@ const queryResolver = {
     return registeredPReps;
   },
   get_pages: async (obj: any, args: any, context: any, info: any) => {
-    console.log("get_pages", args);
+    // console.log("get_pages", args);
 
     const registeredPages = await jsonRpcCall("get_pages", {});
 

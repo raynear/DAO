@@ -13,7 +13,7 @@ import { Star, FiberManualRecord } from "@material-ui/icons";
 import useStyles from "./Style";
 
 function SelectPRep(props: any) {
-  console.log("select prep props", props);
+  // console.log("select prep props", props);
   const classes = useStyles();
 
   if (props.loading) return <CircularProgress />;
