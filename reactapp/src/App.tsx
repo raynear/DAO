@@ -163,7 +163,7 @@ const queryResolver = {
             delegateList = [];
           }
           for (let i = 0; i < delegateList.length; i++) {
-            votingPowerSum += parseInt(delegateList[i].value, 16) / 1000000000000000000;
+            votingPowerSum += parseInt(delegateList[i].value, 16);
           }
         }
         else if (proposal.status === "Voting") {

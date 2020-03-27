@@ -85,11 +85,11 @@ function Proposal(props: any) {
         <tbody>
           {props.votedPowerRate.map(
             (selectItem: any, idx: number) => {
-              let voteRate = 0;
-              voteRate = (selectItem.votedPower / props.totalVotedPower) * 100;
+              let voteRate = (selectItem.votedPower / props.totalVotedPower) * 100;
               if (isNaN(voteRate) || !isFinite(voteRate)) {
                 voteRate = 0;
               }
+              const voteRateStr = voteRate.toLocaleString(undefined, { maximumFractionDigits: 2 });
               let icx;
               try {
                 icx = (selectItem.votedPower / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 })
@@ -110,7 +110,7 @@ function Proposal(props: any) {
                       <Typography variant="h6">{selectItem.item}</Typography>
                     }
                   </td>
-                  <td align="right" style={{ minWidth: "50px" }}><Typography variant="h6" color="textSecondary">{" " + voteRate + " %"}</Typography></td>
+                  <td align="right" style={{ minWidth: "50px" }}><Typography variant="h6" color="textSecondary">{" " + voteRateStr + " %"}</Typography></td>
                   <td align="right" style={{ minWidth: "200px" }}><Typography variant="h6">{" " + icx + " ICX"}</Typography></td>
                 </tr>
               );
@@ -134,6 +134,7 @@ function Proposal(props: any) {
                   if (isNaN(voteRate) || !isFinite(voteRate)) {
                     voteRate = 0;
                   }
+                  const voteRateStr = voteRate.toLocaleString(undefined, { maximumFractionDigits: 2 });
 
                   return (
                     <tr key={idx}>
@@ -145,7 +146,7 @@ function Proposal(props: any) {
                         />
                       </td>
                       <td align="right" style={{ minWidth: "50px" }}>
-                        <Typography variant="h6" color="textSecondary">{voteRate + " %"}</Typography>
+                        <Typography variant="h6" color="textSecondary">{voteRateStr + " %"}</Typography>
                       </td>
                       <td align="right" style={{ minWidth: "200px" }}>
                         <Typography variant="h6" color="textSecondary">{(selectItem.votedPower / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>

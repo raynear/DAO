@@ -70,13 +70,10 @@ function ProposalContainer(props: any) {
     mutateVote({
       variables: { proposer: pRep, proposalId: id, selectItemIndex: voteSelect }
     }).then(voteResult => {
-      // console.log("vote", voteResult);
+      setVoteSelect(-1);
+      waitResult(5, 2);
+      queryVotes.refetch();
     });
-    // console.log("Vote!!!!!!!!!!!!!!!!!", queryVal.data.proposal);
-    setVoteSelect(-1);
-    waitResult(5, 2);
-    queryVotes.refetch();
-    // queryVal.refetch();
   }
 
   const back = () => {

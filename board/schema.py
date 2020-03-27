@@ -2,7 +2,6 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.db import models
 
-from time import sleep
 import json
 
 import graphene
@@ -208,18 +207,7 @@ class PublishProposal(graphene.Mutation):
         tx_hash = icon_service.send_transaction(signed_transaction)
         print("tx_hash", tx_hash)
 
-        for i in range(10):
-            sleep(2)
-            try:
-                tx_result = icon_service.get_transaction_result(tx_hash)
-
-                if tx_result['status'] == 1:
-                    proposal.delete()
-                    return PublishProposal(tx=tx_hash)
-            except:
-                print("Wait")
-
-        return PublishProposal(tx="Fail")
+        return PublishProposal(tx=tx_hash)
 
 
 class VoteProposal(graphene.Mutation):
@@ -252,15 +240,7 @@ class VoteProposal(graphene.Mutation):
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
 
-        for i in range(10):
-            sleep(2)
-            try:
-                tx_result = icon_service.get_transaction_result(tx_hash)
-                return VoteProposal(tx=tx_hash)
-            except:
-                print("Wait")
-
-        return VoteProposal(tx="Fail")
+        return VoteProposal(tx=tx_hash)
 
 
 class SetProposal(graphene.Mutation):
@@ -376,18 +356,7 @@ class SetPRep(graphene.Mutation):
             signed_transaction = SignedTransaction(transaction, wallet)
             tx_hash = icon_service.send_transaction(signed_transaction)
 
-            for i in range(10):
-                sleep(2)
-                try:
-                    tx_result = icon_service.get_transaction_result(tx_hash)
-
-                    if tx_result['status'] == 1:
-                        return SetPRep(prep=user)
-                    break
-                except:
-                    print("Wait")
-
-        return SetPRep(prep=None)
+            return SetPRep(prep=user)
 
 
 class AddIconAddress(graphene.Mutation):
