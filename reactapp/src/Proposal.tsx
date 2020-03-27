@@ -92,7 +92,7 @@ function Proposal(props: any) {
               }
               let icx;
               try {
-                icx = selectItem.votedPower.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                icx = (selectItem.votedPower / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 })
               } catch {
                 icx = 0;
               }
@@ -148,7 +148,7 @@ function Proposal(props: any) {
                         <Typography variant="h6" color="textSecondary">{voteRate + " %"}</Typography>
                       </td>
                       <td align="right" style={{ minWidth: "200px" }}>
-                        <Typography variant="h6" color="textSecondary">{selectItem.votedPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+                        <Typography variant="h6" color="textSecondary">{(selectItem.votedPower / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
                       </td>
                     </tr>
                   );
@@ -326,7 +326,7 @@ function Proposal(props: any) {
                     </td>
                     <td style={{ float: "right" }}>
                       <Typography variant="body1" color="textPrimary">
-                        {props.totalVotedPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
+                        {(props.totalVotedPower / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
                       </Typography>
                     </td>
                   </tr>

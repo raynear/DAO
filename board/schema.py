@@ -208,7 +208,7 @@ class PublishProposal(graphene.Mutation):
         tx_hash = icon_service.send_transaction(signed_transaction)
         print("tx_hash", tx_hash)
 
-        for i in range(5):
+        for i in range(10):
             sleep(2)
             try:
                 tx_result = icon_service.get_transaction_result(tx_hash)
@@ -252,7 +252,7 @@ class VoteProposal(graphene.Mutation):
         signed_transaction = SignedTransaction(transaction, wallet)
         tx_hash = icon_service.send_transaction(signed_transaction)
 
-        for i in range(5):
+        for i in range(10):
             sleep(2)
             try:
                 tx_result = icon_service.get_transaction_result(tx_hash)
@@ -376,7 +376,7 @@ class SetPRep(graphene.Mutation):
             signed_transaction = SignedTransaction(transaction, wallet)
             tx_hash = icon_service.send_transaction(signed_transaction)
 
-            for i in range(5):
+            for i in range(10):
                 sleep(2)
                 try:
                     tx_result = icon_service.get_transaction_result(tx_hash)

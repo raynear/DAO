@@ -31,8 +31,7 @@ export async function jsonRpcSendTx(fromWallet: string, methodName: string, para
   var txObj = txBuilder
     .from(fromWallet)
     .to(CONTRACT)
-    //    .nid(IconConverter.toBigNumber("1"))
-    .nid(IconConverter.toBigNumber("3"))
+    .nid(IconConverter.toBigNumber("1"))
     .version(IconConverter.toBigNumber("3"))
     .stepLimit(IconConverter.toBigNumber("10000000"))
     .timestamp(timestamp.valueOf() * 1000)
