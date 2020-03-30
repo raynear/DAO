@@ -13,7 +13,7 @@ import facebookImg from "./img/facebook.png";
 import twitterImg from "./img/twitter.png";
 
 function Proposal(props: any) {
-  // console.log("Proposal props", props);
+  console.log("Proposal props", props);
   // const forceUpdate = useForceUpdate;
 
   const classes = useStyles();
@@ -339,7 +339,7 @@ function Proposal(props: any) {
                     </td>
                     <td style={{ float: "right" }}>
                       <Typography variant="body1" color="textPrimary">
-                        {props.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
+                        {(props.myVotingPower / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}
                       </Typography>
                     </td>
                   </tr>

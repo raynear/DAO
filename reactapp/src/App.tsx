@@ -230,7 +230,7 @@ const queryResolver = {
       for (let i = 0; i < delegateList.length; i++) {
         if (delegateList[i].address === verifyInfoJson.address) {
           let myVotingPower = parseInt(delegateList[i].value, 16);
-          myVotingPower = myVotingPower / 1000000000000000000;
+          myVotingPower = myVotingPower;
           return myVotingPower;
         }
       }
@@ -240,7 +240,7 @@ const queryResolver = {
       for (let i = 0; i < delegateList.length; i++) {
         if (delegateList[i].address === verifyInfoJson.address) {
           let votingPower = parseInt(delegateList[i].value, 16);
-          myVotingPower = votingPower / 1000000000000000000;
+          myVotingPower = votingPower;
         }
       }
       return myVotingPower;
@@ -275,7 +275,7 @@ const queryResolver = {
       for (let i = 0; i < delegateList.length; i++) {
         if (delegateList[i].address === verifyInfoJson.address) {
           let myVotingPower = parseInt(delegateList[i].value, 16);
-          myVotingPower = myVotingPower / 1000000000000000000;
+          myVotingPower = myVotingPower;
           return myVotingPower;
         }
       }
@@ -283,7 +283,7 @@ const queryResolver = {
       let totalVotingPower = 0;
       for (let i = 0; i < delegateList.length; i++) {
         let votingPower = parseInt(delegateList[i].value, 16);
-        totalVotingPower += votingPower / 1000000000000000000;
+        totalVotingPower += votingPower;
       }
       return totalVotingPower;
     }
