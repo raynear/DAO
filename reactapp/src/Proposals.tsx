@@ -58,7 +58,7 @@ function Proposals(props: any) {
                     <Typography variant="h6">:</Typography>
                   </td>
                   <td style={{ textAlign: "right" }}>
-                    <Typography variant="h6">{props.myVotingPower.toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
+                    <Typography variant="h6">{(props.myVotingPower / 1000000000000000000).toLocaleString(undefined, { maximumFractionDigits: 2 }) + " ICX"}</Typography>
                   </td>
                 </tr>
               </tbody>

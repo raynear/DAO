@@ -67,7 +67,7 @@ function VerifyIconContainer(props: any) {
     } else if (type === "RESPONSE_JSON-RPC") {
       //console.log("response json rpc");
       //console.log(payload);
-      waitResult(5, 2);
+      waitResult(10, 3);
     } else if (type === "RESPONSE_ADDRESS") {
       //console.log("response!!!!", event, event.detail);
       window.localStorage.setItem("iconAddress", payload);

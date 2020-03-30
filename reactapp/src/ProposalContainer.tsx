@@ -71,7 +71,7 @@ function ProposalContainer(props: any) {
       variables: { proposer: pRep, proposalId: id, selectItemIndex: voteSelect }
     }).then(voteResult => {
       setVoteSelect(-1);
-      waitResult(5, 2);
+      waitResult(10, 3);
       queryVotes.refetch();
     });
   }
