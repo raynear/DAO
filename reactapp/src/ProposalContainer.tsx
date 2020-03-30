@@ -202,7 +202,7 @@ function ProposalContainer(props: any) {
     let _totalDelegate;
     let _isCommunityPage;
     try {
-      _totalDelegate = parseInt(queryPRepInfoByID.data.get_prep_info_by_id.delegated, 16) / 1000000000000000000;
+      _totalDelegate = parseInt(queryPRepInfoByID.data.get_prep_info_by_id.delegated, 16);
       _isCommunityPage = false;
     } catch {
       _totalDelegate = 0;
@@ -246,10 +246,10 @@ function ProposalContainer(props: any) {
 
   let voteData = { name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 };
   try {
-    voteData.voted = Math.round((values.totalVotedPower / values.totalDelegate ? values.totalDelegate : 0.00000001) * 100);
+    voteData.voted = Math.round((votedPowerRate.totalVotedPower / values.totalDelegate) * 100);
     voteData.th = parseInt(proposal.electoral_threshold) - voteData.voted;
     if (voteData.th < 0) voteData.th = 0;
-    voteData.totalVoted = values.totalVotedPower;
+    voteData.totalVoted = votedPowerRate.totalVotedPower;
     voteData.totalDelegate = values.totalDelegate;
   } catch {
     voteData = { name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 };
