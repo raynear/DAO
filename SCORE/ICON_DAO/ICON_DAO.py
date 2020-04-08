@@ -407,8 +407,6 @@ class IconDAO(IconScoreBase):
         pid = str(_proposal_id)
         if is_none(self._proposal[_proposer][pid][self.SUBJECT]):
             revert("No Proposal")
-        if self._proposal[_proposer][pid][self.STATUS] != VoteStatus.VOTING:
-            revert("Proposal is Not Voting")
 
         expire_timestamp = self._i_proposal[_proposer][pid][self.EXPIRE_TIMESTAMP]
         if expire_timestamp > self.now():
