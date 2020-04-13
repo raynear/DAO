@@ -221,6 +221,11 @@ class IconDAO(IconScoreBase):
         else:
             revert("There is no PRep name " + _page_id)
 
+    @only_owner
+    @external(readonly=False)
+    def set_page_cnt(self, _page_cnt:int):
+        self._i_page[self.COUNT] = _page_cnt
+
     @external(readonly=True)
     def get_page_cnt(self) -> int:
         return self._i_page[self.COUNT]
@@ -282,6 +287,11 @@ class IconDAO(IconScoreBase):
                 self._i_preps[_prep_id] = Status.DISABLE
         else:
             revert("There is no PRep name " + _prep_id)
+
+    @only_owner
+    @external(readonly=False)
+    def set_prep_cnt(self, _prep_cnt:int):
+        self._i_preps[self.COUNT] = _prep_cnt
 
     @external(readonly=True)
     def get_prep_cnt(self) -> int:
