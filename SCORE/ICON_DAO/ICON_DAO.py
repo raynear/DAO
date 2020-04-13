@@ -128,10 +128,6 @@ class IconDAO(IconScoreBase):
 
     def on_update(self) -> None:
         super().on_update()
-        self._i_preps[self.COUNT] = 0
-        self._i_page[self.COUNT] = 0
-        self._i_recent_proposal[self.COUNT] = 0
-        self._i_verify_id[self.COUNT][self.COUNT] = 0
 
     @external(readonly=True)
     def get_user_count(self) -> int:
