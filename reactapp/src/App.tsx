@@ -249,11 +249,11 @@ const queryResolver = {
   },
   get_my_voting_power: async (obj: any, args: any, context: any, info: any) => {
     // console.log("get_my_voting_power", args);
-    const viewer = await context.client.query({ query: GET_VIEWER });
-    // console.log(viewer);
 
     let delegateList;
     try {
+      const viewer = await context.client.query({ query: GET_VIEWER });
+      // console.log("!!@@", viewer);
       const delegateResp = await governanceCall("getDelegation", {
         address: viewer.data.viewer.iconAddress
       });
@@ -263,7 +263,6 @@ const queryResolver = {
     }
 
     // console.log("delegateList", delegateList);
-
     try {
       const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
         _id: args._proposer

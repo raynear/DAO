@@ -32,14 +32,18 @@ function ProposalContainer(props: any) {
   }
   );
   const [values, setValues] = useState<any>({
-    owner: false,
-    myPRep: false,
     isCommunityPage: false,
-    myVotingPower: 0,
     votedIdx: -1,
     totalDelegate: 0,
     totalVotedPower: 0,
   });
+
+  const [myPRep, setMyPRep] = useState<any>({
+    myPRep: false,
+    myVotingPower: 0,
+  });
+
+  const [owner, setOwner] = useState<any>();
 
   const [viewer, setViewer] = useState<any>({
     username: "",
@@ -195,7 +199,7 @@ function ProposalContainer(props: any) {
       _myPRep = false;
       _myVotingPower = 0;
     }
-    setValues({ ...values, myPRep: _myPRep, myVotingPower: _myVotingPower });
+    setMyPRep({ myPRep: _myPRep, myVotingPower: _myVotingPower });
   }, [queryVotingPower])
 
   useEffect(() => {
@@ -223,7 +227,6 @@ function ProposalContainer(props: any) {
       _totalVotedPower = 0;
     }
     setVotedPowerRate({ ...votedPowerRate, list: _votedPowerRate, totalVotedPower: _totalVotedPower });
-    //    setValues({ ...values, totalVotedPower: _totalVotedPower });
   }, [queryVotedPowerRates])
 
 
@@ -241,7 +244,7 @@ function ProposalContainer(props: any) {
     } catch {
       _owner = false;
     }
-    setValues({ ...values, owner: _owner });
+    setOwner(_owner);
   }, [viewer.username]);
 
   let voteData = { name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 };
@@ -269,9 +272,9 @@ function ProposalContainer(props: any) {
 
       // edited data
       isCommunityPage={values.isCommunityPage}
-      owner={values.owner}
-      myPRep={values.myPRep}
-      myVotingPower={values.myVotingPower}
+      owner={owner}
+      myPRep={myPRep.myPRep}
+      myVotingPower={myPRep.myVotingPower}
       votedIdx={_votedIdx}
       voteSelect={voteSelect}
       votedPowerRate={votedPowerRate.list}
