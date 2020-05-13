@@ -28,9 +28,6 @@ GOVERNANCE_NETWORK = ICON_NETWORK
 CONTRACT_NETWORK = ICON_NETWORK
 SCORE = SCORE_ADDRESS
 
-prep_required = user_passes_test(lambda u: u.is_prep)
-address_required = user_passes_test(lambda u: u.icon_address)
-
 
 class CustomUserType(DjangoObjectType):
     class Meta:
@@ -82,16 +79,18 @@ class Query(object):
         return User.objects.get(username=prep_name)
 
     @login_required
-    @prep_required
     def resolve_proposal(self, info, id=None, **kwargs):
+        if not jsonRpcCall("is_prep", {"_id":info.context.user.username}):
+            return None
         if id == -1:
             return None
 
         return ProposalModel.objects.get(pk=id)
 
     @login_required
-    @prep_required
     def resolve_proposals(self, info, prep=None, first=None, end=None, **kwargs):
+        if not jsonRpcCall("is_prep", {"_id":info.context.user.username}):
+            return None
         qs = ProposalModel.objects.all()
 
         if info.context.user.is_authenticated:
@@ -116,8 +115,9 @@ class Query(object):
         return qs
 
     @login_required
-    @prep_required
     def resolve_proposal_cnt(self, info, prep=None, **kwargs):
+        if not jsonRpcCall("is_prep", {"_id":info.context.user.username}):
+            return None
         qs = ProposalModel.objects.all()
 
         if info.context.user.is_authenticated:
@@ -143,13 +143,15 @@ class Query(object):
         return qs.filter(Q(is_prep__exact=True))
 
     @login_required
-    @prep_required
     def resolve_all_proposal(self, info, **kwargs):
+        if not jsonRpcCall("is_prep", {"_id":info.context.user.username}):
+            return None
         return ProposalModel.objects.select_related("prep").all()
 
     @login_required
-    @prep_required
     def resolve_all_selectitem(self, info, **kwargs):
+        if not jsonRpcCall("is_prep", {"_id":info.context.user.username}):
+            return None
         return SelectItemModel.objects.select_related("proposal").all()
 
 
@@ -165,8 +167,9 @@ class PublishProposal(graphene.Mutation):
     tx = graphene.String()
 
     @login_required
-    @prep_required
     def mutate(self, info, proposal_id):
+        if not jsonRpcCall("is_prep", {"_id":info.context.user.username}):
+            return PublishProposal(proposal=None)
         proposal = ProposalModel.objects.get(pk=proposal_id)
 
         icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
@@ -220,9 +223,10 @@ class VoteProposal(graphene.Mutation):
 
     tx = graphene.String()
 
-    @address_required
     @login_required
     def mutate(self, info, proposer, proposal_id, select_item_index):
+        if not jsonRpcCall("get_verify_info_by_id", {"_id":info.context.user.username}):
+            return VoteProposal(tx=None)
         icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
 
         key = ""
@@ -230,7 +234,7 @@ class VoteProposal(graphene.Mutation):
             key = f.read().strip()
         wallet = KeyWallet.load("../master.key", key)
 
-        param = transaction = CallTransactionBuilder()\
+        transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
             .to(SCORE)\
             .step_limit(100000000)\
@@ -260,7 +264,6 @@ class SetProposal(graphene.Mutation):
     proposal = graphene.Field(ProposalModelType)
 
     @login_required
-    @prep_required
     def mutate(
         self,
         info,
@@ -274,6 +277,8 @@ class SetProposal(graphene.Mutation):
         expire_at,
         select_item_list,
     ):
+        if not jsonRpcCall("is_prep", {"_id":info.context.user.username}):
+            return SetProposal(proposal=None)
         try:
             proposal = ProposalModel.objects.get(pk=proposal_id)
         except ProposalModel.DoesNotExist:
@@ -327,8 +332,8 @@ class SetPRep(graphene.Mutation):
     def mutate(self, info, icon_address):
         user = info.context.user
 
-        #prep_result = governanceCall("getPRep", {"address": icon_address})
-        # print(prep_result)
+        prep_result = governanceCall("getPRep", {"address": icon_address})
+        logger.debug(prep_result)
 
         result = jsonRpcCall("get_verify_info_by_id", {"_id": user.username})
         result_json = json.loads(result)
@@ -357,6 +362,7 @@ class SetPRep(graphene.Mutation):
 
             signed_transaction = SignedTransaction(transaction, wallet)
             tx_hash = icon_service.send_transaction(signed_transaction)
+            logger.debug(tx_hash)
 
             return SetPRep(prep=user)
 
