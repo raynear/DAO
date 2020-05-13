@@ -41,6 +41,9 @@ account/.DS_Store
 *.pyc
 gunicorn_start
 
+logs/
+reactapp/publish_backup/
+
 test/*
 key_store_raynear
 key.pw

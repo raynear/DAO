@@ -21,6 +21,9 @@ from account.models import User
 from .models import ProposalModel, SelectItemModel
 from .icon_network import ICON_NETWORK, SCORE_ADDRESS
 
+import logging
+logger = logging.getLogger(__name__)
+
 GOVERNANCE_NETWORK = ICON_NETWORK
 CONTRACT_NETWORK = ICON_NETWORK
 SCORE = SCORE_ADDRESS
@@ -182,8 +185,8 @@ class PublishProposal(graphene.Mutation):
                 _select_item += ','
         _select_item += ']'
 
-        print(proposal)
-        print(_select_item)
+        logger.debug(proposal)
+        logger.debug(_select_item)
 
         key = ""
         with open('./key.pw') as f:
@@ -191,8 +194,7 @@ class PublishProposal(graphene.Mutation):
         wallet = KeyWallet.load("../master.key", key)
 
         vote_page = "Community" if proposal.isPublicVote else "MyVoter"
-        print("param", {"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_timestamp": int(
-            proposal.expire_at.timestamp()*1000), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th, "_vote_page": vote_page})
+        logger.debug("param", {"_subject": proposal.subject, "_contents": proposal.contents, "_proposer": proposal.prep.username, "_expire_timestamp": int(proposal.expire_at.timestamp()*1000), "_select_items": _select_item, "_electoral_th": proposal.electoral_th, "_winning_th": proposal.winning_th, "_vote_page": vote_page})
         transaction = CallTransactionBuilder()\
             .from_(wallet.get_address())\
             .to(SCORE)\
@@ -203,9 +205,9 @@ class PublishProposal(graphene.Mutation):
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
-        print("signed_tx", signed_transaction)
+        logger.debug("signed_tx", signed_transaction)
         tx_hash = icon_service.send_transaction(signed_transaction)
-        print("tx_hash", tx_hash)
+        logger.debug("tx_hash", tx_hash)
 
         return PublishProposal(tx=tx_hash)
 
@@ -330,7 +332,7 @@ class SetPRep(graphene.Mutation):
 
         result = jsonRpcCall("get_verify_info_by_id", {"_id": user.username})
         result_json = json.loads(result)
-        print(result)
+        logger.debug(result)
 
         if prep_result and result_json['address'] == icon_address:
             user.icon_address = icon_address
