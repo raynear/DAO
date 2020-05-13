@@ -168,6 +168,7 @@ class PublishProposal(graphene.Mutation):
 
     @login_required
     def mutate(self, info, proposal_id):
+        logger.debug("publish proposal")
         if not jsonRpcCall("is_prep", {"_id":info.context.user.username}):
             return PublishProposal(proposal=None)
         proposal = ProposalModel.objects.get(pk=proposal_id)
@@ -225,6 +226,7 @@ class VoteProposal(graphene.Mutation):
 
     @login_required
     def mutate(self, info, proposer, proposal_id, select_item_index):
+        logger.debug("vote proposal")
         if not jsonRpcCall("get_verify_info_by_id", {"_id":info.context.user.username}):
             return VoteProposal(tx=None)
         icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
@@ -277,6 +279,7 @@ class SetProposal(graphene.Mutation):
         expire_at,
         select_item_list,
     ):
+        logger.debug("set proposal")
         if not jsonRpcCall("is_prep", {"_id":info.context.user.username}):
             return SetProposal(proposal=None)
         try:
@@ -330,6 +333,7 @@ class SetPRep(graphene.Mutation):
 
     @login_required
     def mutate(self, info, icon_address):
+        logger.debug("set prep")
         user = info.context.user
 
         prep_result = governanceCall("getPRep", {"address": icon_address})
@@ -375,6 +379,7 @@ class AddIconAddress(graphene.Mutation):
 
     @login_required
     def mutate(self, info, icon_address):
+        logger.debug("add icon address")
         user = info.context.user
 
         result = jsonRpcCall("get_verify_info_by_id", {"_id": user.username})
