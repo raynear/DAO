@@ -27,7 +27,7 @@ with open('./secret_key.txt') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["icon.vote", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["icon.vote", "localhost", "127.0.0.1", "13.58.159.193"]
 
 # Application definition
 
