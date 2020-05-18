@@ -178,8 +178,6 @@ class PublishProposal(graphene.Mutation):
         result = jsonRpcCall("get_verify_info_by_id", {
                              "_id": info.context.user.username})
         result_json = json.loads(result)
-        if result_json['address'] != info.context.user.icon_address:
-            return PublishProposal(proposal=None)
 
         selectItems = SelectItemModel.objects.filter(proposal=proposal)
         _select_item = '['
@@ -227,8 +225,14 @@ class VoteProposal(graphene.Mutation):
     @login_required
     def mutate(self, info, proposer, proposal_id, select_item_index):
         logger.debug("vote proposal")
-        if not jsonRpcCall("get_verify_info_by_id", {"_id":info.context.user.username}):
+        result = jsonRpcCall("get_verify_info_by_id", {"_id": info.context.user.username})
+        if result.find("is not verified"):
             return VoteProposal(tx=None)
+
+        result_json = json.loads(result)
+
+        voter_address = result_json["address"]
+
         icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
 
         key = ""
@@ -242,7 +246,7 @@ class VoteProposal(graphene.Mutation):
             .step_limit(100000000)\
             .nid(1)\
             .method("vote")\
-            .params({"_proposer": proposer, "_proposal_id": proposal_id, "_voter_address": info.context.user.icon_address, "_vote_item": select_item_index})\
+            .params({"_proposer": proposer, "_proposal_id": proposal_id, "_voter_address": voter_address, "_vote_item": select_item_index})\
             .build()
 
         signed_transaction = SignedTransaction(transaction, wallet)
@@ -344,7 +348,6 @@ class SetPRep(graphene.Mutation):
         logger.debug(result)
 
         if prep_result and result_json['address'] == icon_address:
-            user.icon_address = icon_address
             user.is_prep = True
             user.save()
 
@@ -386,7 +389,6 @@ class AddIconAddress(graphene.Mutation):
         result_json = json.loads(result)
 
         if result_json['address'] == icon_address:
-            user.icon_address = icon_address
             user.is_prep = False
             user.save()
 
