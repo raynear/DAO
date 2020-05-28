@@ -50,3 +50,4 @@ key.pw
 SCORE/ICON_DAO/.idea/*
 static/*
 secret_key.txt
+master.key
