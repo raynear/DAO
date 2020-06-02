@@ -17,7 +17,10 @@ function ProposalsContainer(props: any) {
   const [myVotingPower, setMyVotingPower] = useState(0);
 
   const queryVal = useQuery(VIEWER);
-  const queryProposals = useQuery(PROPOSALS, { variables: { proposer: selectedPRep, startProposalID: (Math.ceil(lastProposalID/perPage) - currPage) * perPage + 1, endProposalID: (Math.ceil(lastProposalID/perPage) - currPage + 1) * perPage } });
+  let startID = (Math.ceil(lastProposalID/perPage) - currPage) * perPage + 1 - (lastProposalID%perPage);
+  if (startID < 1) startID = 1;
+  const endID = (Math.ceil(lastProposalID/perPage) - currPage + 1) * perPage - (lastProposalID%perPage);
+  const queryProposals = useQuery(PROPOSALS, { variables: { proposer: selectedPRep, startProposalID: startID, endProposalID: endID } });
   const queryLastProposalID = useQuery(LAST_PROPOSAL_ID, { variables: { proposer: selectedPRep } });
 
   // Community Vote에선 필요없음
