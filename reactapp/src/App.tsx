@@ -254,7 +254,7 @@ const queryResolver = {
       const viewer = await queryResolver.viewer(obj, args, context, info);
       // console.log("!!@@", viewer);
       const delegateResp = await governanceCall("getDelegation", {
-        address: viewer.data.viewer.iconAddress
+        address: viewer.iconAddress
       });
       delegateList = delegateResp.delegations;
     } catch {
@@ -312,7 +312,6 @@ const queryResolver = {
   },
   viewer: async (obj: any, args: any, context: any, info: any) => {
     const viewer = await context.client.query({ query: GET_VIEWER });
-    console.log("viewer", viewer);
     const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
       _id: viewer.data.viewer.username
     });
@@ -326,10 +325,10 @@ const queryResolver = {
         isPrep = false;
       else
         isPrep = true;
-      return {data:{viewer:{username:verifyInfoJson.username, iconAddress:verifyInfoJson.address, isPrep:isPrep}}}
+      return {username:verifyInfoJson.username, iconAddress:verifyInfoJson.address, isPrep:isPrep};
     }
     catch {
-      return {data:{viewer:{username:"", iconAddress:"", isPrep:false}}}
+      return {username:"", iconAddress:"", isPrep:false};
     }
   }
 };
