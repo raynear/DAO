@@ -230,7 +230,6 @@ const queryResolver = {
       for (let i = 0; i < delegateList.length; i++) {
         if (delegateList[i].address === verifyInfoJson.address) {
           let myVotingPower = parseInt(delegateList[i].value, 16);
-          myVotingPower = myVotingPower;
           return myVotingPower;
         }
       }
@@ -275,7 +274,6 @@ const queryResolver = {
       for (let i = 0; i < delegateList.length; i++) {
         if (delegateList[i].address === verifyInfoJson.address) {
           let myVotingPower = parseInt(delegateList[i].value, 16);
-          myVotingPower = myVotingPower;
           return myVotingPower;
         }
       }

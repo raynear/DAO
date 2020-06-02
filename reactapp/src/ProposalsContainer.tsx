@@ -16,9 +16,8 @@ function ProposalsContainer(props: any) {
   const [lastProposalID, setLastProposalID] = useState(0);
   const [myVotingPower, setMyVotingPower] = useState(0);
 
-
   const queryVal = useQuery(VIEWER);
-  const queryProposals = useQuery(PROPOSALS, { variables: { proposer: selectedPRep, startProposalID: (currPage - 1) * perPage + 1, endProposalID: currPage * perPage } });
+  const queryProposals = useQuery(PROPOSALS, { variables: { proposer: selectedPRep, startProposalID: (Math.ceil(lastProposalID/perPage) - currPage) * perPage + 1, endProposalID: (Math.ceil(lastProposalID/perPage) - currPage + 1) * perPage } });
   const queryLastProposalID = useQuery(LAST_PROPOSAL_ID, { variables: { proposer: selectedPRep } });
 
   // Community Vote에선 필요없음
@@ -50,7 +49,7 @@ function ProposalsContainer(props: any) {
     try {
       _lastProposalID = queryLastProposalID.data.get_last_proposal_id;
     } catch {
-      _lastProposalID = { name: "", website: "", delegate: 0 };
+      _lastProposalID = 0;
     }
     setLastProposalID(_lastProposalID);
   }, [queryLastProposalID.data])
