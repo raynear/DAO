@@ -226,7 +226,7 @@ class VoteProposal(graphene.Mutation):
     def mutate(self, info, proposer, proposal_id, select_item_index):
         logger.debug("vote proposal")
         result = jsonRpcCall("get_verify_info_by_id", {"_id": info.context.user.username})
-        if result.find("is not verified"):
+        if result.find("is not verified") == -1:
             return VoteProposal(tx=None)
 
         result_json = json.loads(result)
