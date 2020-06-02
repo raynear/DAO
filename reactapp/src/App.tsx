@@ -252,7 +252,6 @@ const queryResolver = {
     let delegateList;
     try {
       const viewer = await queryResolver.viewer(obj, args, context, info);
-//      const viewer = await context.client.query({ query: GET_VIEWER });
       // console.log("!!@@", viewer);
       const delegateResp = await governanceCall("getDelegation", {
         address: viewer.data.viewer.iconAddress
@@ -313,6 +312,7 @@ const queryResolver = {
   },
   viewer: async (obj: any, args: any, context: any, info: any) => {
     const viewer = await context.client.query({ query: GET_VIEWER });
+    console.log("viewer", viewer);
     const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
       _id: viewer.data.viewer.username
     });

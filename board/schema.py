@@ -175,8 +175,7 @@ class PublishProposal(graphene.Mutation):
 
         icon_service = IconService(HTTPProvider(CONTRACT_NETWORK, 3))
 
-        result = jsonRpcCall("get_verify_info_by_id", {
-                             "_id": info.context.user.username})
+        result = jsonRpcCall("get_verify_info_by_id", {"_id": info.context.user.username})
         result_json = json.loads(result)
 
         selectItems = SelectItemModel.objects.filter(proposal=proposal)
