@@ -252,7 +252,8 @@ const queryResolver = {
 
     let delegateList;
     try {
-      const viewer = await context.client.query({ query: GET_VIEWER });
+      const viewer = await queryResolver.viewer(obj, args, context, info);
+//      const viewer = await context.client.query({ query: GET_VIEWER });
       // console.log("!!@@", viewer);
       const delegateResp = await governanceCall("getDelegation", {
         address: viewer.data.viewer.iconAddress
@@ -311,6 +312,27 @@ const queryResolver = {
     const registeredPages = await jsonRpcCall("get_pages", {});
 
     return registeredPages;
+  },
+  viewer: async (obj: any, args: any, context: any, info: any) => {
+    const viewer = await context.client.query({ query: GET_VIEWER });
+    const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
+      _id: viewer.data.viewer.username
+    });
+    const prepInfoResult = await jsonRpcCall("is_prep", {
+      _id: viewer.data.viewer.username
+    });
+    try {
+      const verifyInfoJson = JSON.parse(verifyInfoResult);
+      let isPrep;
+      if (prepInfoResult === "0x0" || prepInfoResult === false)
+        isPrep = false;
+      else
+        isPrep = true;
+      return {data:{viewer:{username:verifyInfoJson.username, iconAddress:verifyInfoJson.address, isPrep:isPrep}}}
+    }
+    catch {
+      return {data:{viewer:{username:"", iconAddress:"", isPrep:false}}}
+    }
   }
 };
 

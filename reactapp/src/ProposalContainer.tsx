@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { SET_VOTE, GET_VIEWER, PROPOSAL, VOTES, PREP_INFO_BY_ID, MY_VOTING_POWER, VOTED_POWER_RATES } from "./GQL";
+import { SET_VOTE, VIEWER, PROPOSAL, VOTES, PREP_INFO_BY_ID, MY_VOTING_POWER, VOTED_POWER_RATES } from "./GQL";
 import { jsonRpcCall } from "./IconConnect";
 
 import Proposal from "./Proposal";
@@ -128,7 +128,7 @@ function ProposalContainer(props: any) {
   }
 
 
-  const queryViewer = useQuery(GET_VIEWER);
+  const queryViewer = useQuery(VIEWER);
   // console.log("queryViewer", queryViewer);
   const queryProposal = useQuery(PROPOSAL, { variables: { proposer: pRep, proposal_id: id } });
   // console.log("queryProposal", queryProposal);

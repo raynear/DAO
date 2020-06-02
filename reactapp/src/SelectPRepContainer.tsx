@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@apollo/react-hooks"
-import { PREPS, PAGES, GET_VIEWER } from "./GQL";
+import { PREPS, PAGES, VIEWER } from "./GQL";
 import { jsonRpcCall, governanceCall } from "./IconConnect";
 import SelectPRep from "./SelectPRep";
 
@@ -39,7 +39,7 @@ function SelectPRepContainer(props: any) {
     props.history.push("/Proposals/" + PRepName)
   }
 
-  const queryViewer = useQuery(GET_VIEWER);
+  const queryViewer = useQuery(VIEWER);
 
   if (queryViewer.data && queryViewer.data.viewer && queryViewer.data.viewer.username && !delegations) {
     jsonRpcCall("get_verify_info_by_id", { "_id": queryViewer.data.viewer.username }).then((result) => {

@@ -1,7 +1,7 @@
 import React from "react";
 
 import { useQuery, useApolloClient } from "@apollo/react-hooks";
-import { GET_VIEWER, GET_LOCAL_SNACK } from "./GQL";
+import { VIEWER, GET_LOCAL_SNACK } from "./GQL";
 
 import Layout from "./Layout";
 
@@ -26,7 +26,7 @@ function LayoutContainer(props: any) {
     });
   };
 
-  const queryVal = useQuery(GET_VIEWER);
+  const queryVal = useQuery(VIEWER);
   // console.log("queryVal", queryVal);
 
   let snack = noSnack;

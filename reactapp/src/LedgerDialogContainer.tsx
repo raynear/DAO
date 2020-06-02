@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Transport from "@ledgerhq/hw-transport-u2f";
 import Icx from "./Icx";
 import { iconService, IconBuilder, IconConverter, IconUtil } from "./IconConnect";
-import { GET_VIEWER } from "./GQL";
+import { VIEWER } from "./GQL";
 import { useApolloClient } from "@apollo/react-hooks";
 import { contractAddress } from "./Config";
 
@@ -79,7 +79,7 @@ function LedgerDialogContainer(props: any) {
   }
 
   async function sendVerifyLedger(addressIdx: number) {
-    client.query({ query: GET_VIEWER }).then(async (result) => {
+    client.query({ query: VIEWER }).then(async (result) => {
       const path = "44'/4801368'/0'/0'/" + addressIdx.toString() + "'";
       const transport = await Transport.create();
       transport.setDebugMode(true);         // if you want to print log

@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { SET_PUBLISH, GET_PROPOSAL, GET_VIEWER } from "./GQL";
+import { SET_PUBLISH, GET_PROPOSAL, VIEWER } from "./GQL";
 
 import NoteProposal from "./NoteProposal";
 
@@ -52,7 +52,7 @@ function NoteProposalContainer(props: any) {
     props.history.push("/Proposals/" + pRep);
   }
 
-  const queryViewer = useQuery(GET_VIEWER);
+  const queryViewer = useQuery(VIEWER);
   const queryVal = useQuery(GET_PROPOSAL, { variables: { id: id, selectedPRep: pRep } })
 
   if (queryVal.loading || queryViewer.loading) {

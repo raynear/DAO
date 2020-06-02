@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
-import { GET_VIEWER, PROPOSALS, PREP_INFO_BY_ID, MY_VOTING_POWER, LAST_PROPOSAL_ID } from "./GQL";
+import { VIEWER, PROPOSALS, PREP_INFO_BY_ID, MY_VOTING_POWER, LAST_PROPOSAL_ID } from "./GQL";
 
 import Proposals from "./Proposals";
 
@@ -17,7 +17,7 @@ function ProposalsContainer(props: any) {
   const [myVotingPower, setMyVotingPower] = useState(0);
 
 
-  const queryVal = useQuery(GET_VIEWER);
+  const queryVal = useQuery(VIEWER);
   const queryProposals = useQuery(PROPOSALS, { variables: { proposer: selectedPRep, startProposalID: (currPage - 1) * perPage + 1, endProposalID: currPage * perPage } });
   const queryLastProposalID = useQuery(LAST_PROPOSAL_ID, { variables: { proposer: selectedPRep } });
 

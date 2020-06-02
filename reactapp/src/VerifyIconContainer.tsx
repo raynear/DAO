@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
-import { NEW_PREP, ADD_ICON_ADDRESS, GET_VIEWER } from "./GQL";
+import { NEW_PREP, ADD_ICON_ADDRESS, VIEWER } from "./GQL";
 import { jsonRpcCall, jsonRpcSendTx, governanceCall, governanceIconService } from "./IconConnect";
 
 import VerifyIcon from "./VerifyIcon";
@@ -111,7 +111,7 @@ function VerifyIconContainer(props: any) {
   }
 
   async function sendVerify(address: string) {
-    // client.query({ query: GET_VIEWER }).then(async (result) => {
+    // client.query({ query: VIEWER }).then(async (result) => {
     // console.log("reload OK");
     const lastBlock = await governanceIconService.getBlock('latest').execute();
     const params = { "_block_hash": lastBlock.blockHash, "_id": username };
@@ -158,7 +158,7 @@ function VerifyIconContainer(props: any) {
     });
   }
 
-  const queryVal = useQuery(GET_VIEWER, { fetchPolicy: "network-only" });
+  const queryVal = useQuery(VIEWER, { fetchPolicy: "network-only" });
   // console.log("GET VIEWER", queryVal);
 
   let _username = "";
