@@ -357,7 +357,7 @@ class IconDAO(IconScoreBase):
             self._i_vote[_voter_address][self.COUNT][self.COUNT][self.COUNT] = vote_cnt + 1
 
     @external(readonly=True)
-    def get_user_votes(self, _voter_address:str):
+    def get_user_votes(self, _voter_address:str) -> str:
         return_json = dict()
         return_json['votes'] = []
         for i in range(self._i_vote[_voter_address][self.COUNT][self.COUNT][self.COUNT]):
