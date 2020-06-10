@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 import { NEW_PREP, ADD_ICON_ADDRESS, VIEWER } from "./GQL";
-import { jsonRpcCall, jsonRpcSendTx, governanceCall, governanceIconService } from "./IconConnect";
+import {
+  jsonRpcCall,
+  jsonRpcSendTx,
+  governanceCall,
+  governanceIconService,
+} from "./IconConnect";
 
 import VerifyIcon from "./VerifyIcon";
 
@@ -11,15 +16,18 @@ function VerifyIconContainer(props: any) {
 
   const msgForNotice = [
     "",
-    "You are not Verified. Press\"VERIFY ICON ADDRESS\" to verify.",
-    "If you want verify other address. Press\"VERIFY ICON ADDRESS\".",
+    'You are not Verified. Press"VERIFY ICON ADDRESS" to verify.',
+    'If you want verify other address. Press"VERIFY ICON ADDRESS".',
     "You are verified as P-Rep",
-    "You are verified as User"
+    "You are verified as User",
   ];
 
   const [open, setOpen] = useState(false);
   const [username, setUsername] = useState("");
-  const [msg, setMsg] = useState({ title: "Wait", contents: "Wait for write on ICON" });
+  const [msg, setMsg] = useState({
+    title: "Wait",
+    contents: "Wait for write on ICON",
+  });
 
   const [notice, setNotice] = useState(msgForNotice[0]);
   const [verifiedAddress, setVerifiedAddress] = useState("");
@@ -29,7 +37,7 @@ function VerifyIconContainer(props: any) {
   const [mutateAddIconAddress] = useMutation(ADD_ICON_ADDRESS);
 
   function sleep(t: number) {
-    return new Promise(resolve => setTimeout(resolve, t));
+    return new Promise((resolve) => setTimeout(resolve, t));
   }
 
   async function waitResult(count: number, interval: number) {
@@ -40,7 +48,9 @@ function VerifyIconContainer(props: any) {
     for (let i = 0; i < count + 1; i++) {
       let result_json;
       try {
-        const result = await jsonRpcCall("get_verify_info_by_id", { "_id": username });
+        const result = await jsonRpcCall("get_verify_info_by_id", {
+          _id: username,
+        });
         result_json = JSON.parse(result);
         if (result_json.address === iconAddress) {
           callVerify();
@@ -78,18 +88,21 @@ function VerifyIconContainer(props: any) {
 
   function selectWallet() {
     window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandler);
-    window.dispatchEvent(new CustomEvent('ICONEX_RELAY_REQUEST', {
-      detail: {
-        type: 'REQUEST_ADDRESS'
-      }
-    }));
+    window.dispatchEvent(
+      new CustomEvent("ICONEX_RELAY_REQUEST", {
+        detail: {
+          type: "REQUEST_ADDRESS",
+        },
+      })
+    );
   }
-
 
   useEffect(() => {
     async function CheckVerify() {
       try {
-        let result = await jsonRpcCall("get_verify_info_by_id", { "_id": username });
+        let result = await jsonRpcCall("get_verify_info_by_id", {
+          _id: username,
+        });
         let result_json = JSON.parse(result);
         if (result_json.address) {
           setVerifiedAddress(result_json.address);
@@ -104,7 +117,7 @@ function VerifyIconContainer(props: any) {
       //    console.log("callVerify verify result", result_json);
     }
     CheckVerify();
-  }, [username])
+  }, [username]);
 
   function selectNotice(idx: number) {
     setNotice(msgForNotice[idx]);
@@ -113,15 +126,15 @@ function VerifyIconContainer(props: any) {
   async function sendVerify(address: string) {
     // client.query({ query: VIEWER }).then(async (result) => {
     // console.log("reload OK");
-    const lastBlock = await governanceIconService.getBlock('latest').execute();
-    const params = { "_block_hash": lastBlock.blockHash, "_id": username };
+    const lastBlock = await governanceIconService.getBlock("latest").execute();
+    const params = { _block_hash: lastBlock.blockHash, _id: username };
 
     jsonRpcSendTx(address, "verify", params);
     // });
   }
 
   async function callVerify() {
-    let result = await jsonRpcCall("get_verify_info_by_id", { "_id": username });
+    let result = await jsonRpcCall("get_verify_info_by_id", { _id: username });
     // console.log(username, result);
     let result_json = JSON.parse(result);
     //    console.log("callVerify verify result", result_json);
@@ -153,18 +166,22 @@ function VerifyIconContainer(props: any) {
   }
 
   function addIconAddress(address: string) {
-    mutateAddIconAddress({ variables: { IconAddress: address } }).then((result) => {
-      //client.writeData({ data: { snack: { open: true, message: "You Are Verified as User!", __typename: "snack" } } })
-    });
+    mutateAddIconAddress({ variables: { IconAddress: address } }).then(
+      (result) => {
+        //client.writeData({ data: { snack: { open: true, message: "You Are Verified as User!", __typename: "snack" } } })
+      }
+    );
   }
 
-  const queryVal = useQuery(VIEWER);
+  const queryVal = useQuery(VIEWER, {
+    fetchPolicy: "network-only",
+  });
   console.log("VIEWER", queryVal);
 
   let _username = "";
   try {
     _username = queryVal.data.viewer.username;
-  } catch{
+  } catch {
     _username = "";
   }
 
@@ -172,20 +189,22 @@ function VerifyIconContainer(props: any) {
     setUsername(_username);
   }
 
-  return (<VerifyIcon
-    {...queryVal}
-    open={open}
-    setOpen={setOpen}
-    msg={msg}
-    activeStep={props.activeStep}
-    username={username}
-    connectedAddress={connectedAddress}
-    verifiedAddress={verifiedAddress}
-    notice={notice}
-    selectNotice={selectNotice}
-    waitResult={waitResult}
-    selectWallet={selectWallet}
-  />);
+  return (
+    <VerifyIcon
+      {...queryVal}
+      open={open}
+      setOpen={setOpen}
+      msg={msg}
+      activeStep={props.activeStep}
+      username={username}
+      connectedAddress={connectedAddress}
+      verifiedAddress={verifiedAddress}
+      notice={notice}
+      selectNotice={selectNotice}
+      waitResult={waitResult}
+      selectWallet={selectWallet}
+    />
+  );
 }
 
 export default VerifyIconContainer;
