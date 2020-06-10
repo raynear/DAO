@@ -25,29 +25,43 @@ function UserInfoContainer(props: any) {
   const handleMenuLogout = () => {
     mutateLogout().then((result) => {
       setAnchorEl(null);
-      client.writeData({ data: { username: "", snack: { open: true, message: "logouted", __typename: "snack" } } });
+      client.writeData({
+        data: {
+          username: "",
+          snack: { open: true, message: "logouted", __typename: "snack" },
+        },
+      });
       props.refetch();
       window.location.reload();
     });
   };
 
   function showUserInfo() {
-    client.writeData({ data: { snack: { open: true, message: queryVal.data.viewer.username, __typename: "snack" } } });
+    client.writeData({
+      data: {
+        snack: {
+          open: true,
+          message: queryVal.data.viewer.username,
+          __typename: "snack",
+        },
+      },
+    });
   }
 
-  const queryVal = useQuery(VIEWER);
+  const queryVal = useQuery(VIEWER, { fetchPolicy: "network-only" });
 
-  return (<UserInfo
-    {...queryVal}
-    anchorEl={anchorEl}
-    setAnchorEl={setAnchorEl}
-    badgeCnt={badgeCnt}
-    handleMenu={handleMenu}
-    handleMenuClose={handleMenuClose}
-    handleMenuLogout={handleMenuLogout}
-    showUserInfo={showUserInfo}
-  />);
-
+  return (
+    <UserInfo
+      {...queryVal}
+      anchorEl={anchorEl}
+      setAnchorEl={setAnchorEl}
+      badgeCnt={badgeCnt}
+      handleMenu={handleMenu}
+      handleMenuClose={handleMenuClose}
+      handleMenuLogout={handleMenuLogout}
+      showUserInfo={showUserInfo}
+    />
+  );
 }
 
 export default UserInfoContainer;
