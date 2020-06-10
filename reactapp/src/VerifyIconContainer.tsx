@@ -173,9 +173,7 @@ function VerifyIconContainer(props: any) {
     );
   }
 
-  const queryVal = useQuery(VIEWER, {
-    fetchPolicy: "network-only",
-  });
+  const queryVal = useQuery(VIEWER);
   console.log("VIEWER", queryVal);
 
   let _username = "";

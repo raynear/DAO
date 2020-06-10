@@ -341,7 +341,6 @@ const queryResolver = {
   viewer: async (obj: any, args: any, context: any, info: any) => {
     const viewer = await context.client.query({
       query: GET_VIEWER,
-      options: { fetchPolicy: "network-only" },
     });
     console.log("viewer", viewer.data.viewer);
     const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
