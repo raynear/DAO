@@ -340,12 +340,12 @@ const queryResolver = {
   },
   viewer: async (obj: any, args: any, context: any, info: any) => {
     const viewer = await context.client.query({ query: GET_VIEWER });
-    console.log("viewer", viewer.data.viewer);
+    console.log("viewer", viewer);
     const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
-      _id: viewer.data.viewer.username,
+      _id: viewer.data.me.username,
     });
     const prepInfoResult = await jsonRpcCall("is_prep", {
-      _id: viewer.data.viewer.username,
+      _id: viewer.data.me.username,
     });
     try {
       const verifyInfoJson = JSON.parse(verifyInfoResult);
