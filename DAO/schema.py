@@ -29,9 +29,9 @@ class UserType(DjangoObjectType):
 
 
 class Query(board.schema.Query, graphene.ObjectType):
-    viewer = graphene.Field(UserType)
+    me = graphene.Field(UserType)
 
-    def resolve_viewer(self, info, **kwargs):
+    def resolve_me(self, info, **kwargs):
         user = info.context.user
         if not user.is_authenticated:
             return None

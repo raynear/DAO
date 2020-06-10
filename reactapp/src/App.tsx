@@ -339,9 +339,7 @@ const queryResolver = {
     return registeredPages;
   },
   viewer: async (obj: any, args: any, context: any, info: any) => {
-    const viewer = await context.client.query({
-      query: GET_VIEWER,
-    });
+    const viewer = await context.client.query({ query: GET_VIEWER });
     console.log("viewer", viewer.data.viewer);
     const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
       _id: viewer.data.viewer.username,

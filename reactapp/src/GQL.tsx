@@ -84,7 +84,8 @@ export const SET_VOTE = gql`
       proposalId: $proposalId
       selectItemIndex: $selectItemIndex
     ) {
-      tx    }
+      tx
+    }
   }
 `;
 
@@ -137,7 +138,7 @@ export const GET_PREPS = gql`
 
 export const PREPS = gql`
   query {
-    get_preps @client{
+    get_preps @client {
       address
       username
       pRepName
@@ -204,7 +205,11 @@ export const GET_PROPOSALS = gql`
 `;
 
 export const PROPOSALS = gql`
-  query Proposals($proposer: String, $startProposalID: Int, $endProposalID: Int) {
+  query Proposals(
+    $proposer: String
+    $startProposalID: Int
+    $endProposalID: Int
+  ) {
     get_proposals(
       _proposer: $proposer
       _start_proposal_id: $startProposalID
@@ -337,10 +342,8 @@ export const VIEWER = gql`
 
 export const GET_VIEWER = gql`
   query {
-    viewer {
+    me {
       username
-      iconAddress
-      isPrep
     }
   }
 `;
