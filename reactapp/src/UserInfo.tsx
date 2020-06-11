@@ -1,7 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { Grid, Avatar, Typography, IconButton, Badge, Menu, MenuItem, Button, CircularProgress } from "@material-ui/core";
+import {
+  Grid,
+  Avatar,
+  Typography,
+  IconButton,
+  Badge,
+  Menu,
+  MenuItem,
+  Button,
+  CircularProgress,
+} from "@material-ui/core";
 import { AccountCircle } from "@material-ui/icons";
 
 import useStyles from "./Style";
@@ -12,6 +22,8 @@ function UserInfo(props: any) {
 
   if (props.loading) return <CircularProgress />;
   //  if (props.error) return <p>Error...{props.error.message}</p>;
+
+  console.log("userinfo viewer", props.data);
 
   if (props.data && props.data.viewer && props.data.viewer.username) {
     return (
@@ -45,7 +57,9 @@ function UserInfo(props: any) {
             onClose={props.handleMenuClose}
           >
             <MenuItem onClick={props.showUserInfo}>
-              <Typography component="h6">{props.data.viewer.username}</Typography>
+              <Typography component="h6">
+                {props.data.viewer.username}
+              </Typography>
             </MenuItem>
             <MenuItem onClick={props.handleMenuClose}>
               <Link to="/Profile" className={classes.link}>
@@ -64,14 +78,33 @@ function UserInfo(props: any) {
   } else {
     return (
       <Grid container className={classes.container}>
-        <Grid item className={classes.grid} xs style={{ textAlign: "right", overflow: "hidden" }}>
+        <Grid
+          item
+          className={classes.grid}
+          xs
+          style={{ textAlign: "right", overflow: "hidden" }}
+        >
           <Button component={Link} to="/Signup" style={{ overflow: "hidden" }}>
-            <Typography component="h6" style={{ color: "#FFFFFF" }}>Join now</Typography>
+            <Typography component="h6" style={{ color: "#FFFFFF" }}>
+              Join now
+            </Typography>
           </Button>
         </Grid>
-        <Grid item className={classes.grid} xs style={{ textAlign: "left", overflow: "hidden" }}>
-          <Button component={Link} to="/Signin" variant="contained" style={{ color: "#FFF", overflow: "hidden" }}>
-            <Typography component="h6" color="primary">Sign In</Typography>
+        <Grid
+          item
+          className={classes.grid}
+          xs
+          style={{ textAlign: "left", overflow: "hidden" }}
+        >
+          <Button
+            component={Link}
+            to="/Signin"
+            variant="contained"
+            style={{ color: "#FFF", overflow: "hidden" }}
+          >
+            <Typography component="h6" color="primary">
+              Sign In
+            </Typography>
           </Button>
         </Grid>
       </Grid>
