@@ -173,7 +173,7 @@ function VerifyIconContainer(props: any) {
     );
   }
 
-  const queryVal = useQuery(VIEWER, { fetchPolicy: "no-cache" });
+  const queryVal = useQuery(VIEWER);
   console.log("VIEWER", queryVal);
 
   let _username = "";

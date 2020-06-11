@@ -23,7 +23,7 @@ function NoteProposalsContainer(props: any) {
 
   // console.log("what we send?", values);
   const queryVal = useQuery(GET_PROPOSALS, {
-    fetchPolicy: "no-cache",
+    fetchPolicy: "network-only",
     variables: {
       selectedPRep: selectedPRep,
       first: (activePage - 1) * perPage,
