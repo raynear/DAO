@@ -51,7 +51,7 @@ function NoteProposalContainer(props: any) {
     props.history.push("/Proposals/" + pRep);
   }
 
-  const queryViewer = useQuery(VIEWER, { fetchPolicy: "no-cache" });
+  const queryViewer = useQuery(VIEWER);
   const queryVal = useQuery(GET_PROPOSAL, {
     variables: { id: id, selectedPRep: pRep },
   });

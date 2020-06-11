@@ -453,6 +453,12 @@ const client = new ApolloClient({
         address: String
       }
 
+      type userInfo {
+        username: String
+        iconAddress: String
+        isPrep: Boolean
+      }
+
       type Query {
         get_proposals(proposer:String!, currPage:Int!, perPage:Int!): [proposal]
         get_proposal(proposer:String!, proposal_id:Int!): proposal
@@ -462,6 +468,7 @@ const client = new ApolloClient({
         get_prep_info_by_address(address:String!):PRep
         get_voting_power(proposer:String!, address:String!):Int
         get_preps():[pRepInfo]
+        viewer():userInfo
       }
     `,
   },

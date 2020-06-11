@@ -152,7 +152,7 @@ function ProposalContainer(props: any) {
     setMsg({ title: "Fail", contents: "Cannot find your vote" });
   }
 
-  const queryViewer = useQuery(VIEWER, { fetchPolicy: "no-cache" });
+  const queryViewer = useQuery(VIEWER);
   // console.log("queryViewer", queryViewer);
   const queryProposal = useQuery(PROPOSAL, {
     variables: { proposer: pRep, proposal_id: id },

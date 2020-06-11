@@ -26,7 +26,7 @@ function ProposalsContainer(props: any) {
   const [lastProposalID, setLastProposalID] = useState(0);
   const [myVotingPower, setMyVotingPower] = useState(0);
 
-  const queryVal = useQuery(VIEWER, { fetchPolicy: "no-cache" });
+  const queryVal = useQuery(VIEWER);
   let startID =
     (Math.ceil(lastProposalID / perPage) - currPage) * perPage +
     1 -
