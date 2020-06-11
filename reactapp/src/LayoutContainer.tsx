@@ -22,11 +22,11 @@ function LayoutContainer(props: any) {
     }
 
     client.writeData({
-      data: { snack: { open: false, message: "", __typename: "snack" } }
+      data: { snack: { open: false, message: "", __typename: "snack" } },
     });
   };
 
-  const queryVal = useQuery(VIEWER);
+  const queryVal = useQuery(VIEWER, { fetchPolicy: "no-cache" });
   // console.log("queryVal", queryVal);
 
   let snack = noSnack;

@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/react-hooks";
-import { SET_VOTE, VIEWER, PROPOSAL, VOTES, PREP_INFO_BY_ID, MY_VOTING_POWER, VOTED_POWER_RATES } from "./GQL";
+import {
+  SET_VOTE,
+  VIEWER,
+  PROPOSAL,
+  VOTES,
+  PREP_INFO_BY_ID,
+  MY_VOTING_POWER,
+  VOTED_POWER_RATES,
+} from "./GQL";
 import { jsonRpcCall } from "./IconConnect";
 
 import Proposal from "./Proposal";
 
-
 function ProposalContainer(props: any) {
   // console.log("ProposalContainer props", props);
-  const pRep = props.match.params.PRep
+  const pRep = props.match.params.PRep;
   const id = props.match.params.ID;
 
   const [open, setOpen] = useState(false);
-  const [msg, setMsg] = useState({ title: "Wait", contents: "Now your vote write on ICON" });
+  const [msg, setMsg] = useState({
+    title: "Wait",
+    contents: "Now your vote write on ICON",
+  });
 
   const [votes, setVotes] = useState<any>([]);
   const [proposal, setProposal] = useState<any>({
@@ -28,9 +38,8 @@ function ProposalContainer(props: any) {
     select_item: [""],
     transaction: "",
     final: "",
-    winner: ""
-  }
-  );
+    winner: "",
+  });
   const [values, setValues] = useState<any>({
     isCommunityPage: false,
     votedIdx: -1,
@@ -47,22 +56,28 @@ function ProposalContainer(props: any) {
 
   const [viewer, setViewer] = useState<any>({
     username: "",
-    iconAddress: ""
-  })
+    iconAddress: "",
+  });
 
   const [voteSelect, setVoteSelect] = useState(-1);
-  const [votedPowerRate, setVotedPowerRate] = useState<any>({ list: [], totalVotedPower: 0 })
+  const [votedPowerRate, setVotedPowerRate] = useState<any>({
+    list: [],
+    totalVotedPower: 0,
+  });
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const [mutateVote] = useMutation(SET_VOTE);
 
-  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handleChangePage = (
+    event: React.MouseEvent<HTMLButtonElement> | null,
+    newPage: number
+  ) => {
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -72,8 +87,12 @@ function ProposalContainer(props: any) {
     setOpen(true);
     setMsg({ title: "Wait", contents: "Now your vote write on ICON" });
     mutateVote({
-      variables: { proposer: pRep, proposalId: id, selectItemIndex: voteSelect }
-    }).then(voteResult => {
+      variables: {
+        proposer: pRep,
+        proposalId: id,
+        selectItemIndex: voteSelect,
+      },
+    }).then((voteResult) => {
       setVoteSelect(-1);
       waitResult(10, 3);
       queryVotes.refetch();
@@ -82,7 +101,7 @@ function ProposalContainer(props: any) {
 
   const back = () => {
     props.history.go(-1);
-  }
+  };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // console.log("Selected", (event.target as HTMLInputElement).value);
@@ -96,7 +115,7 @@ function ProposalContainer(props: any) {
         votedIdx = votes[i].selectItem;
       }
     }
-    return votedIdx
+    return votedIdx;
   }
 
   function amIOwner(username: string) {
@@ -107,18 +126,24 @@ function ProposalContainer(props: any) {
   }
 
   function sleep(t: number) {
-    return new Promise(resolve => setTimeout(resolve, t));
+    return new Promise((resolve) => setTimeout(resolve, t));
   }
 
   async function waitResult(count: number, interval: number) {
     setOpen(true);
     for (let i = 0; i < count + 1; i++) {
-      let result = await jsonRpcCall("get_votes", { "_proposer": pRep, "_proposal_id": id });
+      let result = await jsonRpcCall("get_votes", {
+        _proposer: pRep,
+        _proposal_id: id,
+      });
       const votes_call = JSON.parse(result);
       for (let i = 0; i < votes_call.length; i++) {
         const aVote = votes_call[i];
         if (aVote.voter === queryViewer.data.viewer.iconAddress) {
-          setMsg({ title: "Done", contents: "You vote on " + aVote.selectItem });
+          setMsg({
+            title: "Done",
+            contents: "You vote on " + aVote.selectItem,
+          });
           return aVote;
         }
       }
@@ -127,19 +152,28 @@ function ProposalContainer(props: any) {
     setMsg({ title: "Fail", contents: "Cannot find your vote" });
   }
 
-
-  const queryViewer = useQuery(VIEWER);
+  const queryViewer = useQuery(VIEWER, { fetchPolicy: "no-cache" });
   // console.log("queryViewer", queryViewer);
-  const queryProposal = useQuery(PROPOSAL, { variables: { proposer: pRep, proposal_id: id } });
+  const queryProposal = useQuery(PROPOSAL, {
+    variables: { proposer: pRep, proposal_id: id },
+  });
   // console.log("queryProposal", queryProposal);
-  const queryVotes = useQuery(VOTES, { variables: { proposer: pRep, proposal_id: id } });
+  const queryVotes = useQuery(VOTES, {
+    variables: { proposer: pRep, proposal_id: id },
+  });
   // console.log("queryVotes", queryVotes);
 
-  const queryPRepInfoByID = useQuery(PREP_INFO_BY_ID, { variables: { proposer: pRep } });
+  const queryPRepInfoByID = useQuery(PREP_INFO_BY_ID, {
+    variables: { proposer: pRep },
+  });
   // console.log("queryPRepInfoByID", queryPRepInfoByID);
-  const queryVotingPower = useQuery(MY_VOTING_POWER, { variables: { proposer: pRep, username: viewer.username } });
+  const queryVotingPower = useQuery(MY_VOTING_POWER, {
+    variables: { proposer: pRep, username: viewer.username },
+  });
   // console.log("queryVotingPower", queryVotingPower);
-  const queryVotedPowerRates = useQuery(VOTED_POWER_RATES, { variables: { proposer: pRep, proposal_id: id } });
+  const queryVotedPowerRates = useQuery(VOTED_POWER_RATES, {
+    variables: { proposer: pRep, proposal_id: id },
+  });
   // console.log("queryVotedPowerRates", queryVotedPowerRates);
 
   useEffect(() => {
@@ -160,7 +194,7 @@ function ProposalContainer(props: any) {
         select_item: [""],
         transaction: "",
         final: "",
-        winner: ""
+        winner: "",
       };
     }
     setProposal(_proposal);
@@ -200,19 +234,26 @@ function ProposalContainer(props: any) {
       _myVotingPower = 0;
     }
     setMyPRep({ myPRep: _myPRep, myVotingPower: _myVotingPower });
-  }, [queryVotingPower])
+  }, [queryVotingPower]);
 
   useEffect(() => {
     let _totalDelegate;
     let _isCommunityPage;
     try {
-      _totalDelegate = parseInt(queryPRepInfoByID.data.get_prep_info_by_id.delegated, 16);
+      _totalDelegate = parseInt(
+        queryPRepInfoByID.data.get_prep_info_by_id.delegated,
+        16
+      );
       _isCommunityPage = false;
     } catch {
       _totalDelegate = 0;
       _isCommunityPage = true;
     }
-    setValues({ ...values, totalDelegate: _totalDelegate, isCommunityPage: _isCommunityPage });
+    setValues({
+      ...values,
+      totalDelegate: _totalDelegate,
+      isCommunityPage: _isCommunityPage,
+    });
   }, [queryPRepInfoByID]);
 
   useEffect(() => {
@@ -226,9 +267,12 @@ function ProposalContainer(props: any) {
       _votedPowerRate = [];
       _totalVotedPower = 0;
     }
-    setVotedPowerRate({ ...votedPowerRate, list: _votedPowerRate, totalVotedPower: _totalVotedPower });
-  }, [queryVotedPowerRates])
-
+    setVotedPowerRate({
+      ...votedPowerRate,
+      list: _votedPowerRate,
+      totalVotedPower: _totalVotedPower,
+    });
+  }, [queryVotedPowerRates]);
 
   let _votedIdx;
   try {
@@ -247,15 +291,31 @@ function ProposalContainer(props: any) {
     setOwner(_owner);
   }, [viewer.username]);
 
-  let voteData = { name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 };
+  let voteData = {
+    name: "electoralTH",
+    th: 0,
+    voted: 0,
+    totalVoted: 0,
+    totalDelegate: 0,
+    icx: 0,
+  };
   try {
-    voteData.voted = Math.round((votedPowerRate.totalVotedPower / values.totalDelegate) * 100);
+    voteData.voted = Math.round(
+      (votedPowerRate.totalVotedPower / values.totalDelegate) * 100
+    );
     voteData.th = parseInt(proposal.electoral_threshold) - voteData.voted;
     if (voteData.th < 0) voteData.th = 0;
     voteData.totalVoted = votedPowerRate.totalVotedPower;
     voteData.totalDelegate = values.totalDelegate;
   } catch {
-    voteData = { name: 'electoralTH', th: 0, voted: 0, totalVoted: 0, totalDelegate: 0, icx: 0 };
+    voteData = {
+      name: "electoralTH",
+      th: 0,
+      voted: 0,
+      totalVoted: 0,
+      totalDelegate: 0,
+      icx: 0,
+    };
   }
 
   // console.log("values", values);
@@ -265,11 +325,9 @@ function ProposalContainer(props: any) {
       // Data from url
       pRep={pRep}
       id={id}
-
       // return pure data
       proposal={proposal}
       votes={votes}
-
       // edited data
       isCommunityPage={values.isCommunityPage}
       owner={owner}
@@ -280,18 +338,15 @@ function ProposalContainer(props: any) {
       votedPowerRate={votedPowerRate.list}
       totalVotedPower={votedPowerRate.totalVotedPower}
       voteData={voteData}
-
       // functions
       back={back}
       vote={vote}
-
       // pagination
       handleChange={handleChange}
       handleChangePage={handleChangePage}
       handleChangeRowsPerPage={handleChangeRowsPerPage}
       page={page}
       rowsPerPage={rowsPerPage}
-
       // Dialog
       open={open}
       setOpen={setOpen}

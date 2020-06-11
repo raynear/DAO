@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 
 import { useQuery } from "@apollo/react-hooks";
-import { VIEWER, PROPOSALS, PREP_INFO_BY_ID, MY_VOTING_POWER, LAST_PROPOSAL_ID } from "./GQL";
+import {
+  VIEWER,
+  PROPOSALS,
+  PREP_INFO_BY_ID,
+  MY_VOTING_POWER,
+  LAST_PROPOSAL_ID,
+} from "./GQL";
 
 import Proposals from "./Proposals";
 
@@ -12,20 +18,41 @@ function ProposalsContainer(props: any) {
 
   const [proposals, setProposals] = useState<any>([]);
   const [currPage, setCurrPage] = useState(1);
-  const [pRepInfo, setPRepInfo] = useState({ name: "", website: "", delegate: 0 });
+  const [pRepInfo, setPRepInfo] = useState({
+    name: "",
+    website: "",
+    delegate: 0,
+  });
   const [lastProposalID, setLastProposalID] = useState(0);
   const [myVotingPower, setMyVotingPower] = useState(0);
 
-  const queryVal = useQuery(VIEWER);
-  let startID = (Math.ceil(lastProposalID/perPage) - currPage) * perPage + 1 - (lastProposalID%perPage);
+  const queryVal = useQuery(VIEWER, { fetchPolicy: "no-cache" });
+  let startID =
+    (Math.ceil(lastProposalID / perPage) - currPage) * perPage +
+    1 -
+    (lastProposalID % perPage);
   if (startID < 1) startID = 1;
-  const endID = (Math.ceil(lastProposalID/perPage) - currPage + 1) * perPage - (lastProposalID%perPage);
-  const queryProposals = useQuery(PROPOSALS, { variables: { proposer: selectedPRep, startProposalID: startID, endProposalID: endID } });
-  const queryLastProposalID = useQuery(LAST_PROPOSAL_ID, { variables: { proposer: selectedPRep } });
+  const endID =
+    (Math.ceil(lastProposalID / perPage) - currPage + 1) * perPage -
+    (lastProposalID % perPage);
+  const queryProposals = useQuery(PROPOSALS, {
+    variables: {
+      proposer: selectedPRep,
+      startProposalID: startID,
+      endProposalID: endID,
+    },
+  });
+  const queryLastProposalID = useQuery(LAST_PROPOSAL_ID, {
+    variables: { proposer: selectedPRep },
+  });
 
   // Community Vote에선 필요없음
-  const queryPRepInfoByID = useQuery(PREP_INFO_BY_ID, { variables: { proposer: selectedPRep } });
-  const queryMyVotingPower = useQuery(MY_VOTING_POWER, { variables: { proposer: selectedPRep } });
+  const queryPRepInfoByID = useQuery(PREP_INFO_BY_ID, {
+    variables: { proposer: selectedPRep },
+  });
+  const queryMyVotingPower = useQuery(MY_VOTING_POWER, {
+    variables: { proposer: selectedPRep },
+  });
 
   useEffect(() => {
     let _proposals;
@@ -35,7 +62,7 @@ function ProposalsContainer(props: any) {
       _proposals = [];
     }
     setProposals(_proposals);
-  }, [queryProposals.data])
+  }, [queryProposals.data]);
 
   useEffect(() => {
     let _pRepInfo;
@@ -45,7 +72,7 @@ function ProposalsContainer(props: any) {
       _pRepInfo = { name: "", website: "", delegate: 0 };
     }
     setPRepInfo(_pRepInfo);
-  }, [queryPRepInfoByID.data])
+  }, [queryPRepInfoByID.data]);
 
   useEffect(() => {
     let _lastProposalID;
@@ -55,7 +82,7 @@ function ProposalsContainer(props: any) {
       _lastProposalID = 0;
     }
     setLastProposalID(_lastProposalID);
-  }, [queryLastProposalID.data])
+  }, [queryLastProposalID.data]);
 
   useEffect(() => {
     let _votingPower;
@@ -65,9 +92,7 @@ function ProposalsContainer(props: any) {
       _votingPower = 0;
     }
     setMyVotingPower(_votingPower);
-  }, [queryMyVotingPower.data])
-
-
+  }, [queryMyVotingPower.data]);
 
   // console.log("queryVal", queryVal);
   // console.log("queryProposals", queryProposals);
