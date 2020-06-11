@@ -354,7 +354,7 @@ const queryResolver = {
       if (prepInfoResult === "0x0" || prepInfoResult === false) isPrep = false;
       else isPrep = true;
       return {
-        username: verifyInfoJson.username,
+        username: viewer.data.me.username,
         iconAddress: verifyInfoJson.address,
         isPrep: isPrep,
       };
