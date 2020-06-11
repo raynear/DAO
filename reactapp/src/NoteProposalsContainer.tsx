@@ -15,7 +15,7 @@ function NoteProposalsContainer(props: any) {
   const handlePageChange = (data: any) => {
     // console.log(data);
     setActivePage(data);
-  }
+  };
 
   function createNewProposal() {
     props.history.push("/EditProposal");
@@ -23,12 +23,12 @@ function NoteProposalsContainer(props: any) {
 
   // console.log("what we send?", values);
   const queryVal = useQuery(GET_PROPOSALS, {
-    fetchPolicy: "network-only",
+    fetchPolicy: "no-cache",
     variables: {
       selectedPRep: selectedPRep,
       first: (activePage - 1) * perPage,
-      end: activePage * perPage - 1
-    }
+      end: activePage * perPage - 1,
+    },
   });
 
   return (
