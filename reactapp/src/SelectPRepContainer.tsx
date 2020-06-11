@@ -38,7 +38,7 @@ function SelectPRepContainer(props: any) {
     props.history.push("/Proposals/" + PRepName);
   };
 
-  const queryViewer = useQuery(VIEWER);
+  const queryViewer = useQuery(VIEWER, { fetchPolicy: "no-cache" });
 
   if (
     queryViewer.data &&

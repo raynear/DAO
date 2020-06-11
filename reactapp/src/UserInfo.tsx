@@ -23,8 +23,6 @@ function UserInfo(props: any) {
   if (props.loading) return <CircularProgress />;
   //  if (props.error) return <p>Error...{props.error.message}</p>;
 
-  console.log("userinfo viewer", props.data);
-
   if (props.data && props.data.viewer && props.data.viewer.username) {
     return (
       <Grid container className={classes.container}>

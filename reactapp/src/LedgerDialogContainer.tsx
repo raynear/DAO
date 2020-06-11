@@ -93,50 +93,52 @@ function LedgerDialogContainer(props: any) {
   }
 
   async function sendVerifyLedger(addressIdx: number) {
-    client.query({ query: VIEWER }).then(async (result) => {
-      const path = "44'/4801368'/0'/0'/" + addressIdx.toString() + "'";
-      const transport = await Transport.create();
-      transport.setDebugMode(true); // if you want to print log
-      transport.setExchangeTimeout(60000); // Set if you want to change U2F timeout. default: 30 sec
+    client
+      .query({ query: VIEWER, fetchPolicy: "no-cache" })
+      .then(async (result) => {
+        const path = "44'/4801368'/0'/0'/" + addressIdx.toString() + "'";
+        const transport = await Transport.create();
+        transport.setDebugMode(true); // if you want to print log
+        transport.setExchangeTimeout(60000); // Set if you want to change U2F timeout. default: 30 sec
 
-      const icx = new Icx(transport);
-      // coin type: ICX(4801368), ICON testnet(1)
-      let addressResult = await icx.getAddress(path, false, true);
-      const address = addressResult.address.toString();
-      // console.log("address", address);
-      // console.log("balance", await iconService.getBalance(addressResult.address.toString()).execute());
-      let timestamp = new Date();
-      var txBuilder = new IconBuilder.CallTransactionBuilder();
-      const methodName = "verify";
-      const lastBlock = await iconService.getBlock("latest").execute();
-      const params = {
-        _block_hash: lastBlock.blockHash,
-        _id: result.data.viewer.username,
-      };
-      var txObj = txBuilder
-        .from(address)
-        .to(contractAddress)
-        .nid(IconConverter.toBigNumber("1"))
-        .version(IconConverter.toBigNumber("3"))
-        .stepLimit(IconConverter.toBigNumber("10000000"))
-        .timestamp(timestamp.valueOf() * 1000)
-        .method(methodName)
-        .params(params)
-        .build();
-      const rawTransaction = IconConverter.toRawTransaction(txObj);
-      const hashKey = IconUtil.generateHashKey(rawTransaction);
+        const icx = new Icx(transport);
+        // coin type: ICX(4801368), ICON testnet(1)
+        let addressResult = await icx.getAddress(path, false, true);
+        const address = addressResult.address.toString();
+        // console.log("address", address);
+        // console.log("balance", await iconService.getBalance(addressResult.address.toString()).execute());
+        let timestamp = new Date();
+        var txBuilder = new IconBuilder.CallTransactionBuilder();
+        const methodName = "verify";
+        const lastBlock = await iconService.getBlock("latest").execute();
+        const params = {
+          _block_hash: lastBlock.blockHash,
+          _id: result.data.viewer.username,
+        };
+        var txObj = txBuilder
+          .from(address)
+          .to(contractAddress)
+          .nid(IconConverter.toBigNumber("1"))
+          .version(IconConverter.toBigNumber("3"))
+          .stepLimit(IconConverter.toBigNumber("10000000"))
+          .timestamp(timestamp.valueOf() * 1000)
+          .method(methodName)
+          .params(params)
+          .build();
+        const rawTransaction = IconConverter.toRawTransaction(txObj);
+        const hashKey = IconUtil.generateHashKey(rawTransaction);
 
-      let { signedRawTxBase64 } = await icx.signTransaction(path, hashKey);
-      rawTransaction.signature = signedRawTxBase64;
+        let { signedRawTxBase64 } = await icx.signTransaction(path, hashKey);
+        rawTransaction.signature = signedRawTxBase64;
 
-      iconService
-        .sendTransaction({
-          getProperties: () => rawTransaction,
-          getSignature: () => signedRawTxBase64,
-        })
-        .execute();
-      props.waitResult(10, 3);
-    });
+        iconService
+          .sendTransaction({
+            getProperties: () => rawTransaction,
+            getSignature: () => signedRawTxBase64,
+          })
+          .execute();
+        props.waitResult(10, 3);
+      });
   }
 
   return (

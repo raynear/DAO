@@ -26,7 +26,7 @@ function LayoutContainer(props: any) {
     });
   };
 
-  const queryVal = useQuery(VIEWER);
+  const queryVal = useQuery(VIEWER, { fetchPolicy: "no-cache" });
   // console.log("queryVal", queryVal);
 
   let snack = noSnack;

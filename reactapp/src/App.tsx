@@ -339,27 +339,43 @@ const queryResolver = {
     return registeredPages;
   },
   viewer: async (obj: any, args: any, context: any, info: any) => {
-    const viewer = await context.client.query({ query: GET_VIEWER });
-    console.log("viewer", viewer);
+    const me = await context.client.query({
+      query: GET_VIEWER,
+      fetchPolicy: "no-cache",
+    });
+    // console.log("me", me.data);
     const verifyInfoResult = await jsonRpcCall("get_verify_info_by_id", {
-      _id: viewer.data.me.username,
+      _id: me.data.me.username,
     });
     const prepInfoResult = await jsonRpcCall("is_prep", {
-      _id: viewer.data.me.username,
+      _id: me.data.me.username,
     });
     try {
+      if (verifyInfoResult.includes("is not verified")) {
+        return {
+          username: me.data.me.username,
+          iconAddress: "",
+          isPrep: false,
+          __typename: "viewer",
+        };
+      }
       const verifyInfoJson = JSON.parse(verifyInfoResult);
-      console.log("verifyInfoJson", verifyInfoJson);
       let isPrep;
       if (prepInfoResult === "0x0" || prepInfoResult === false) isPrep = false;
       else isPrep = true;
       return {
-        username: viewer.data.me.username,
+        username: me.data.me.username,
         iconAddress: verifyInfoJson.address,
         isPrep: isPrep,
+        __typename: "viewer",
       };
     } catch {
-      return { username: "", iconAddress: "", isPrep: false };
+      return {
+        username: "",
+        iconAddress: "",
+        isPrep: false,
+        __typename: "noViewer",
+      };
     }
   },
 };

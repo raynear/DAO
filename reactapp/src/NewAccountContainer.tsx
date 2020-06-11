@@ -18,44 +18,47 @@ function NewAccountContainer(props: any) {
   const [signInfo, setSignInfo] = useState({
     username: "",
     password: "",
-    password2: ""
+    password2: "",
   });
 
-  const [validator] = useState(new SimpleReactValidator({
-    validators: {
-      same: {
-        message: "input same password.",
-        rule: (val: any, params: any) => {
-          // console.log(val, params, validator);
-          for (let i = 0; i < val.length; i++) {
-            for (let j = i + 1; j < val.length; j++) {
-              if (val[i] !== val[j]) {
-                return false;
+  const [validator] = useState(
+    new SimpleReactValidator({
+      validators: {
+        same: {
+          message: "input same password.",
+          rule: (val: any, params: any) => {
+            // console.log(val, params, validator);
+            for (let i = 0; i < val.length; i++) {
+              for (let j = i + 1; j < val.length; j++) {
+                if (val[i] !== val[j]) {
+                  return false;
+                }
               }
             }
-          }
-          return true;
-        }
-      },
-      minpass: {
-        message: "input more than :param character",
-        rule: (val: any, params: any) => {
-          if (val[0].length >= parseInt(params[0])) {
             return true;
-          }
-          return false;
+          },
         },
-        messageReplace: (msg: any, params: any) => msg.replace(':param', validator.helpers.toSentence(params))
-      }
-    },
-    locale: "en",
-    className: "text-danger",
-    element: (message: any, className: any) => (
-      <Typography variant="caption" color="error" className={className}>
-        {message}
-      </Typography>
-    )
-  }));
+        minpass: {
+          message: "input more than :param character",
+          rule: (val: any, params: any) => {
+            if (val[0].length >= parseInt(params[0])) {
+              return true;
+            }
+            return false;
+          },
+          messageReplace: (msg: any, params: any) =>
+            msg.replace(":param", validator.helpers.toSentence(params)),
+        },
+      },
+      locale: "en",
+      className: "text-danger",
+      element: (message: any, className: any) => (
+        <Typography variant="caption" color="error" className={className}>
+          {message}
+        </Typography>
+      ),
+    })
+  );
 
   function sameValidate(val: any) {
     if (val[0] === val[1]) {
@@ -72,12 +75,11 @@ function NewAccountContainer(props: any) {
   async function newUser(username: string, password: string) {
     try {
       await mutateSetUser({
-        variables: { username: username, password: password }
-      })
-    }
-    catch (e) {
+        variables: { username: username, password: password },
+      });
+    } catch (e) {
       if (e.toString().indexOf("UNIQUE")) {
-        alert("id exist. make another id")
+        alert("id exist. make another id");
       }
       return false;
     }
@@ -86,9 +88,8 @@ function NewAccountContainer(props: any) {
 
   function logIn(username: string, password: string) {
     mutateTokenAuth({
-      variables: { username: username, password: password }
-    }).then(result => {
-      // console.log(result);
+      variables: { username: username, password: password },
+    }).then((result) => {
       props.setActiveStep(props.activeStep + 1);
     });
   }
@@ -101,7 +102,6 @@ function NewAccountContainer(props: any) {
     } else {
       let result = await newUser(signInfo.username, signInfo.password);
       if (result) {
-        // console.log(result);
         logIn(signInfo.username, signInfo.password);
       }
     }
@@ -111,13 +111,15 @@ function NewAccountContainer(props: any) {
     setSignInfo({ ...signInfo, [e.target.name]: e.target.value });
   }
 
-  return (<NewAccount
-    signInfo={signInfo}
-    handleSignInfo={handleSignInfo}
-    validator={validator}
-    signUp={signUp}
-    sameValidate={sameValidate}
-  />);
+  return (
+    <NewAccount
+      signInfo={signInfo}
+      handleSignInfo={handleSignInfo}
+      validator={validator}
+      signUp={signUp}
+      sameValidate={sameValidate}
+    />
+  );
 }
 
 export default NewAccountContainer;
