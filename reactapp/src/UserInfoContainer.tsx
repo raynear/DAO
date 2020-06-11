@@ -48,7 +48,7 @@ function UserInfoContainer(props: any) {
     });
   }
 
-  const queryVal = useQuery(VIEWER, { fetchPolicy: "network-only" });
+  const queryVal = useQuery(VIEWER, { fetchPolicy: "no-cache" });
 
   return (
     <UserInfo
