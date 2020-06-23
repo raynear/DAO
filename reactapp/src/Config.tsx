@@ -1,4 +1,4 @@
-const server = "icon.vote";
+const server = "18.223.77.41";
 export const graphqlURL = "https://" + server + "/graphql/";
 export const csrfURL = "https://" + server + "/csrf/";
 export const nodeURL = "https://ctz.solidwallet.io/";
