@@ -19,6 +19,7 @@ from iconsdk.wallet.wallet import KeyWallet
 NETWORK = "https://ctz.solidwallet.io"
 SCORE = "cx2ec14b928b87ef5c1cbe0b9abda151ff088ba03c"
 
+
 def governance_call(method, params):
     icon_service = IconService(HTTPProvider(NETWORK, 3))
     call = CallBuilder()\
@@ -91,7 +92,7 @@ def get_final_delegate_tx(prep_address, address, block_height):
                             {'address': address, 'page': i, 'count': 100})
 
         #print(i, " !!!!!!!", prep_address, address, block_height)
-        #print("!@#", resp)
+        # print("!@#", resp)
 
         if resp.status_code == 200:
             tx_list = resp.json()['data']
@@ -122,6 +123,8 @@ def finalize(proposer, proposal_id):
     result_json = json.loads(proposal_result)
     print("Proposal!!!!!!!!!!", result_json)
 
+    is_public_vote = True if result_json['type'] != "MyVoter" else False
+
     final_blockheight = find_blockheight_from_timestamp(
         result_json['expire_timestamp'])
 
@@ -141,11 +144,17 @@ def finalize(proposer, proposal_id):
             continue
         tx_amount = ''
         tx_id = ''
-        for delegate in final_delegate_tx['data']['params']['delegations']:
-            print("delegate", delegate)
-            if delegate['address'] == result_json['address']:
-                tx_amount = delegate['value']
-                tx_id = final_delegate_tx['txHash']
+        if is_public_vote:
+            tx_id = final_delegate_tx['txHash']
+            for delegate in final_delegate_tx['data']['params']['delegations']:
+                print("delegate", delegate)
+                tx_amount += delegate['value']
+        else:
+            for delegate in final_delegate_tx['data']['params']['delegations']:
+                print("delegate", delegate)
+                if delegate['address'] == result_json['address']:
+                    tx_amount = delegate['value']
+                    tx_id = final_delegate_tx['txHash']
 
         print(tx_id, tx_amount)
         final_delegate_tx_list.append(
@@ -175,14 +184,9 @@ def finalize(proposer, proposal_id):
         key = f.read().strip()
     wallet = KeyWallet.load("./master.key", key)
 
-    transaction = CallTransactionBuilder()\
-        .from_(wallet.get_address())\
-        .to(SCORE)\
-        .step_limit(300000000)\
-        .nid(1)\
-        .method("finalize")\
-        .params({"_proposer": proposer, "_proposal_id": proposal_id, "_total_delegate": prep_delegate, "_final_data": json.dumps(final_delegate_tx_list)})\
-        .build()
+    transaction = CallTransactionBuilder().from_(wallet.get_address()).to(SCORE).step_limit(300000000).nid(1).method(
+        "finalize").params({"_proposer": proposer, "_proposal_id": proposal_id, "_total_delegate": prep_delegate,
+                            "_final_data": json.dumps(final_delegate_tx_list)}).build()
 
     signed_transaction = SignedTransaction(transaction, wallet)
     print("AAAAAAAAAAA", signed_transaction)
@@ -205,25 +209,25 @@ def loop_prep():
 
 def is_prep(address):
     try:
-        verify_result = json_rpc_call("get_verify_info_by_address", {"_address":address})
+        verify_result = json_rpc_call("get_verify_info_by_address", {"_address": address})
         print("verify_result", verify_result)
         if verify_result.find("is not verified") == -1:
             result_json = json.loads(verify_result)
         else:
-            result_json = {'ID':''}
+            result_json = {'ID': ''}
     except:
-        result_json = {'ID':''}
+        result_json = {'ID': ''}
 
     print("result_json", result_json)
 
     if 'ID' in result_json and result_json['ID'] != "":
         proposer = result_json['ID']
         print("ID", result_json['ID'])
-        last_proposal_id = json_rpc_call("get_last_proposal_id", {"_proposer":proposer})
+        last_proposal_id = json_rpc_call("get_last_proposal_id", {"_proposer": proposer})
         print("last pid", last_proposal_id)
         for i in range(1, int(last_proposal_id)+1):
             proposal_id = i
-            proposal_result = json_rpc_call("get_proposal", {"_proposer":proposer, "_proposal_id":proposal_id})
+            proposal_result = json_rpc_call("get_proposal", {"_proposer": proposer, "_proposal_id": proposal_id})
             print(proposal_result)
             if proposal_result.find("No Proposal") != -1:
                 continue
@@ -231,10 +235,11 @@ def is_prep(address):
             print(proposal_json)
 
             expire_date = proposal_json['expire_timestamp']/1000
-            if expire_date<int(time.time()) and proposal_json['status']=="Voting":
+            if expire_date < int(time.time()) and proposal_json['status'] == "Voting":
                 print("Start Finalize!!!")
 
                 finalize(proposer, proposal_id)
+
 
 def finalize_page(proposer, proposal_id):
     icon_service = IconService(HTTPProvider(NETWORK, 3))
@@ -268,7 +273,9 @@ def finalize_page(proposer, proposal_id):
         print("tx_amount", tx_amount)
         print("td_id", tx_id)
         final_delegate_tx_list.append(
-            {"voter": a_vote['voter'], "final_delegate_tx_id": final_delegate_tx['txHash'], "final_delegate_amount": tx_amount})
+            {"voter": a_vote['voter'],
+             "final_delegate_tx_id": final_delegate_tx['txHash'],
+             "final_delegate_amount": tx_amount})
 
         if a_vote['selectItem'] in select_list:
             select_list[a_vote['selectItem']] += tx_amount
@@ -280,7 +287,7 @@ def finalize_page(proposer, proposal_id):
         "getPReps", {"blockHeight": final_blockheight})
 
     prep_delegate = 0
-    #for a_prep in prep_result['preps']:
+    # for a_prep in prep_result['preps']:
     #    if a_prep['address'] == result_json['address']:
     #        prep_delegate = a_prep['delegated']
 
@@ -294,14 +301,9 @@ def finalize_page(proposer, proposal_id):
         key = f.read().strip()
     wallet = KeyWallet.load("./master.key", key)
 
-    transaction = CallTransactionBuilder()\
-        .from_(wallet.get_address())\
-        .to(SCORE)\
-        .step_limit(300000000)\
-        .nid(1)\
-        .method("finalize")\
-        .params({"_proposer": proposer, "_proposal_id": proposal_id, "_total_delegate": prep_delegate, "_final_data": json.dumps(final_delegate_tx_list)})\
-        .build()
+    transaction = CallTransactionBuilder().from_(wallet.get_address()).to(SCORE).step_limit(300000000).nid(1).method(
+        "finalize").params({"_proposer": proposer, "_proposal_id": proposal_id, "_total_delegate": prep_delegate,
+                            "_final_data": json.dumps(final_delegate_tx_list)}).build()
 
     signed_transaction = SignedTransaction(transaction, wallet)
     tx_hash = icon_service.send_transaction(signed_transaction)
@@ -312,6 +314,7 @@ def finalize_page(proposer, proposal_id):
 
     print("result_json", result_json)
 
+
 def loop_page():
     get_pages_result = json_rpc_call("get_pages", {})
     print(get_pages_result)
@@ -321,28 +324,29 @@ def loop_page():
 
 
 def is_page(page):
-    last_proposal_id = json_rpc_call("get_last_proposal_id", {"_proposer":page})
+    last_proposal_id = json_rpc_call("get_last_proposal_id", {"_proposer": page})
     print("last pid", last_proposal_id)
     for i in range(1, int(last_proposal_id)+1):
         proposal_id = i
-        proposal_result = json_rpc_call("get_proposal", {"_proposer":page, "_proposal_id":proposal_id})
+        proposal_result = json_rpc_call("get_proposal", {"_proposer": page, "_proposal_id": proposal_id})
         try:
             proposal_json = json.loads(proposal_result)
             print(proposal_id, proposal_json['status'], proposal_json['expire_timestamp']/1000, int(time.time()))
 
             expire_date = proposal_json['expire_timestamp']/1000
-            if expire_date<time.time() and proposal_json['status']=="Voting":
+            if expire_date < time.time() and proposal_json['status'] == "Voting":
                 print("Start Finalize!!!", page, proposal_id)
 
                 finalize_page(page, proposal_id)
         except Exception as e:
             print("no proposal", proposal_result, e)
- 
+
 
 def main():
     #finalize('Iconbetcommunity', 5 )
     loop_prep()
     loop_page()
+
 
 if __name__ == '__main__':
     main()

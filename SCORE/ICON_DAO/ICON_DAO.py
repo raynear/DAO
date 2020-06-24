@@ -69,6 +69,7 @@ class IconDAO(IconScoreBase):
     STATUS = "status"
     TX = "transaction"
     FINAL = "final"
+    TYPE = "type"
 
     DELEGATE_TX_ID = "final_delegate_tx_id"
     DELEGATE_AMOUNT = "final_delegate_amount"
@@ -82,6 +83,7 @@ class IconDAO(IconScoreBase):
     _PAGE = "page"
     _PROPOSAL = "proposal"
     _RECENT_PROPOSAL = "recent_proposal"
+    _COMMUNITY_PROPOSAL = "community_proposal"
 
     TARGET_MY_VOTER = "MyVoter"
 
@@ -104,6 +106,8 @@ class IconDAO(IconScoreBase):
 
         self._recent_proposal = DictDB(self._RECENT_PROPOSAL, db, value_type=str, depth=1)
         self._i_recent_proposal = DictDB(self._RECENT_PROPOSAL, db, value_type=int, depth=1)
+        self._community_proposal = DictDB(self._COMMUNITY_PROPOSAL, db, value_type=str, depth=3)
+        self._i_community_proposal = DictDB(self._COMMUNITY_PROPOSAL, db, value_type=int, depth=3)
         self._owner = VarDB(self._OWNER, db, value_type=Address)
         self._ready_to_owner = VarDB(self._READY_TO_OWNER, db, value_type=Address)
 
@@ -124,6 +128,7 @@ class IconDAO(IconScoreBase):
 
     def on_update(self) -> None:
         super().on_update()
+        self._i_community_proposal["Community"][self.COUNT][self.COUNT] = 0
 
     @external(readonly=True)
     def get_user_count(self) -> int:
@@ -191,6 +196,8 @@ class IconDAO(IconScoreBase):
         self._i_page[_page_id] = self._i_page[self.COUNT]
         self._page[str(self._i_page[self.COUNT])] = _page_id
 
+        self._i_community_proposal[_page_id][self.COUNT][self.COUNT] = 0
+
     @only_owner
     @external(readonly=False)
     @catch_error
@@ -213,7 +220,7 @@ class IconDAO(IconScoreBase):
 
     @only_owner
     @external(readonly=False)
-    def set_page_cnt(self, _page_cnt:int):
+    def set_page_cnt(self, _page_cnt: int):
         self._i_page[self.COUNT] = _page_cnt
 
     @external(readonly=True)
@@ -280,7 +287,7 @@ class IconDAO(IconScoreBase):
 
     @only_owner
     @external(readonly=False)
-    def set_prep_cnt(self, _prep_cnt:int):
+    def set_prep_cnt(self, _prep_cnt: int):
         self._i_preps[self.COUNT] = _prep_cnt
 
     @external(readonly=True)
@@ -357,7 +364,7 @@ class IconDAO(IconScoreBase):
             self._i_vote[_voter_address][self.COUNT][self.COUNT][self.COUNT] = vote_cnt + 1
 
     @external(readonly=True)
-    def get_user_votes(self, _voter_address:str) -> str:
+    def get_user_votes(self, _voter_address: str) -> str:
         return_json = dict()
         return_json['votes'] = []
         for i in range(self._i_vote[_voter_address][self.COUNT][self.COUNT][self.COUNT]):
@@ -372,7 +379,8 @@ class IconDAO(IconScoreBase):
                 "selectItem": self._i_vote[_proposer][pid][vid][self.SELECT_ITEM],
                 "voteTxHash": self._vote[_proposer][pid][vid][self.TX],
                 "delegateTxID": self._vote[_proposer][pid][vid][self.DELEGATE_TX_ID],
-                "delegateAmount": self._i_vote[_proposer][pid][vid][self.DELEGATE_AMOUNT]
+                "delegateAmount": self._i_vote[_proposer][pid][vid][self.DELEGATE_AMOUNT],
+                "subject": self._proposal[_proposer][pid][self.SUBJECT]
             })
 
         return json_dumps(return_json)
@@ -459,7 +467,9 @@ class IconDAO(IconScoreBase):
             else:
                 result[select_item] = amount
 
-        if _total_delegate != 0 and (total_voting_power/_total_delegate)*100 < self._i_proposal[_proposer][pid][self.ELECTORAL_TH]:
+        if _total_delegate != 0 and (
+                total_voting_power / _total_delegate) * 100 < self._i_proposal[_proposer][pid][
+                self.ELECTORAL_TH]:
             self._proposal[_proposer][pid][self.STATUS] = VoteStatus.REJECTED
             return
 
@@ -470,7 +480,9 @@ class IconDAO(IconScoreBase):
                 most_voted = result[i]
                 most_voted_item = i
 
-        if total_voting_power != 0 and (most_voted/total_voting_power)*100 > self._i_proposal[_proposer][pid][self.WINNING_TH]:
+        if total_voting_power != 0 and (
+                most_voted / total_voting_power) * 100 > self._i_proposal[_proposer][pid][
+                self.WINNING_TH]:
             self._i_proposal[_proposer][pid][self.WINNER] = most_voted_item
             self._proposal[_proposer][pid][self.STATUS] = VoteStatus.APPROVED
         else:
@@ -479,48 +491,54 @@ class IconDAO(IconScoreBase):
     @only_owner
     @external(readonly=False)
     @catch_error
-    def set_proposal(self, _proposer: str, _subject: str, _contents: str, _electoral_th: int, _winning_th: int, _expire_timestamp: int, _select_items: str, _vote_page: str):
+    def set_proposal(self, _proposer: str, _subject: str, _contents: str, _electoral_th: int, _winning_th: int,
+                     _expire_timestamp: int, _select_items: str, _vote_page: str):
         if is_none(self._a_verify_id[_proposer][self.ADDRESS]):
             revert("Proposer is not Verified")
         if is_none(self._preps[_proposer]):
             revert("Proposer is not PRep")
 
-        if _vote_page == self.TARGET_MY_VOTER:
-            proposer = _proposer
-        else:
+        self._i_proposal[_proposer][self.ID][self.ID] += 1
+
+        p_id = self._i_proposal[_proposer][self.ID][self.ID]
+
+        if _vote_page != self.TARGET_MY_VOTER:
             if not self._is_page(_vote_page):
                 self._add_page(_vote_page)
 
-            proposer = _vote_page
-
-        self._i_proposal[proposer][self.ID][self.ID] += 1
-
-        p_id = self._i_proposal[proposer][self.ID][self.ID]
+        page_cnt = self._i_community_proposal[_vote_page][self.COUNT][self.COUNT] + 1
+        self._i_community_proposal[_vote_page][self.COUNT][self.COUNT] = page_cnt
+        self._community_proposal[_vote_page][str(page_cnt)][self.PROPOSER] = _proposer
+        self._i_community_proposal[_vote_page][str(page_cnt)][self.ID] = p_id
 
         self._i_recent_proposal[self.COUNT] = self._i_recent_proposal[self.COUNT] + 1
-        self._recent_proposal[str(self._i_recent_proposal[self.COUNT])] = json_dumps({"proposer": proposer, "pid": p_id})
+        self._recent_proposal[str(self._i_recent_proposal[self.COUNT])
+                              ] = json_dumps({"proposer": _proposer, "pid": p_id})
 
-        self.logging("page:"+proposer+":prep:"+_proposer + ":title:"+_subject+":pid:"+str(p_id))
+        self.logging("page:"+_vote_page+":prep:"+_proposer + ":title:"+_subject+":pid:"+str(p_id))
 
         pid = str(p_id)
-        self._proposal[proposer][pid][self.ADDRESS] = str(self._a_verify_id[_proposer][self.ADDRESS])
-        self._proposal[proposer][pid][self.PROPOSER] = _proposer
-        self._proposal[proposer][pid][self.SUBJECT] = _subject
-        self._proposal[proposer][pid][self.CONTENTS] = _contents
-        self._i_proposal[proposer][pid][self.ELECTORAL_TH] = _electoral_th
-        self._i_proposal[proposer][pid][self.WINNING_TH] = _winning_th
-        self._proposal[proposer][pid][self.STATUS] = VoteStatus.VOTING
-        self._i_proposal[proposer][pid][self.EXPIRE_TIMESTAMP] = _expire_timestamp
-        self._proposal[proposer][pid][self.SELECT_ITEM] = _select_items
-        self._proposal[proposer][pid][self.TX] = bytes.hex(self.tx.hash)
-        self._i_vote[proposer][pid][self.COUNT][self.COUNT] = 0
+        self._proposal[_proposer][pid][self.ADDRESS] = str(self._a_verify_id[_proposer][self.ADDRESS])
+        self._proposal[_proposer][pid][self.PROPOSER] = _proposer
+        self._proposal[_proposer][pid][self.SUBJECT] = _subject
+        self._proposal[_proposer][pid][self.CONTENTS] = _contents
+        self._i_proposal[_proposer][pid][self.ELECTORAL_TH] = _electoral_th
+        self._i_proposal[_proposer][pid][self.WINNING_TH] = _winning_th
+        self._proposal[_proposer][pid][self.STATUS] = VoteStatus.VOTING
+        self._i_proposal[_proposer][pid][self.EXPIRE_TIMESTAMP] = _expire_timestamp
+        self._proposal[_proposer][pid][self.SELECT_ITEM] = _select_items
+        self._proposal[_proposer][pid][self.TYPE] = _vote_page
+        self._proposal[_proposer][pid][self.TX] = bytes.hex(self.tx.hash)
+        self._i_vote[_proposer][pid][self.COUNT][self.COUNT] = 0
 
     @external(readonly=True)
     def get_recent_proposals(self, _count: int) -> list:
         proposal_count = self._i_recent_proposal[self.COUNT]
         ret = []
         for i in range(proposal_count, proposal_count - _count if (proposal_count - _count) > 0 else 0, -1):
-            ret.append(json_loads(self._recent_proposal[str(i)]))
+            a_proposal = json_loads(self._recent_proposal[str(i)])
+            a_proposal[self.SUBJECT] = self._proposal[a_proposal["proposer"]][a_proposal["pid"]][self.SUBJECT]
+            ret.append(a_proposal)
 
         return ret
 
@@ -579,6 +597,7 @@ class IconDAO(IconScoreBase):
         return_json[self.EXPIRE_TIMESTAMP] = self._i_proposal[_proposer][pid][self.EXPIRE_TIMESTAMP]
         return_json[self.SELECT_ITEM] = self._proposal[_proposer][pid][self.SELECT_ITEM]
         return_json[self.TX] = self._proposal[_proposer][pid][self.TX]
+        return_json[self.TYPE] = self._proposal[_proposer][pid][self.TYPE]
         return_json[self.FINAL] = self._proposal[_proposer][pid][self.FINAL]
         return_json[self.WINNER] = self._i_proposal[_proposer][pid][self.WINNER]
 
