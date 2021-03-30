@@ -16,7 +16,7 @@ coincurve==12.0.0
 cytoolz==0.10.1
 decorator==4.4.2
 defusedxml==0.6.0
-Django==3.0.7
+Django==3.0.12
 django-cors-headers==3.2.1
 django-graphql-jwt==0.3.0
 django-social-auth==0.7.28
